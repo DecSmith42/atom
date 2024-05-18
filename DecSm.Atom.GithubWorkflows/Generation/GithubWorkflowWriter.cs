@@ -122,7 +122,7 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ILogger<GithubWorkflow
                     .Name!;
                 
                 WriteLine($"- name: {commandStep.Name}");
-                WriteLine($"  run: dotnet run --project {assemblyName}\\{assemblyName}.csproj {commandStep.Name} --skip");
+                WriteLine($"  run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
                 
                 break;
         }
