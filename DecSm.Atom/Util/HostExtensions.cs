@@ -2,14 +2,16 @@
 
 public static class HostExtensions
 {
-    public static IAtomConfigurator AddAtom<T>(this IHostApplicationBuilder builder, string[] args) where T : AtomBuild
+    public static IAtomConfigurator AddAtom<T>(this IHostApplicationBuilder builder, string[] args)
+        where T : AtomBuildDefinition
     {
         var configurator = new AtomConfigurator(builder);
         builder.Services.AddSingleton<IAtomConfigurator>(configurator);
-
-        builder.Services.TryAddSingleton<IAtomBuild, T>();
+        
+        builder.Services.TryAddSingleton<IAtomBuildDefinition, T>();
         builder.Services.AddHostedService<AtomBuildService>();
         builder.Services.TryAddSingleton<AtomBuildExecutor>();
+        builder.Services.TryAddSingleton<ExecutableBuild>();
 
         builder.Services.TryAddSingleton<AtomWorkflowGenerator>();
         builder.Services.TryAddSingleton<AtomWorkflowBuilder>();
@@ -20,7 +22,8 @@ public static class HostExtensions
         builder.Services.TryAddSingleton(services =>
         {
             var raw = services.GetRequiredService<RawCommandLineArgs>();
-            return CommandLineArgsParser.Parse(raw.Args, services.GetRequiredService<IAtomBuild>());
+            
+            return CommandLineArgsParser.Parse(raw.Args, services.GetRequiredService<IAtomBuildDefinition>());
         });
 
         builder.Services.TryAddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);

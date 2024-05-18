@@ -3,6 +3,7 @@
 public class AtomBuildService(
     CommandLineArgs args,
     AtomBuildExecutor executor,
+    ExecutableBuild executableBuild,
     IHostApplicationLifetime lifetime,
     ILogger<AtomBuildService> logger,
     ICheatsheetService cheatsheetService,
@@ -12,26 +13,30 @@ public class AtomBuildService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Atom Build");
-
+        
         try
         {
+            executableBuild.Init();
+            
             if (args.Args is { Length: 0 })
             {
                 cheatsheetService.ShowCheatsheet();
+                
                 return;
             }
-
+            
             if (args.HasHelp)
                 cheatsheetService.ShowCheatsheet();
-
+            
             if (args.HasGen)
             {
                 logger.LogInformation("Generating workflows");
                 workflowGenerator.GenerateWorkflows();
                 logger.LogInformation("Workflows generated");
+                
                 return;
             }
-
+            
             await executor.Execute();
         }
         catch (Exception ex)

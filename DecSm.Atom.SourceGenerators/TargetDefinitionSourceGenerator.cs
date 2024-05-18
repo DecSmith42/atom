@@ -98,7 +98,7 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                          {{namespaceLine}}
                          
                          [PublicAPI]
-                         partial interface {{interfaceName}} : IAtomBuild
+                         partial interface {{interfaceName}} : IAtomBuildDefinition
                          {
                              private ILogger<{{interfaceName}}> Logger => Services.GetRequiredService<ILogger<{{interfaceName}}>>();
                          }

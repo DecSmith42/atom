@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Tests", "DecSm.A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5AD016BB-9A1F-4D16-AD1F-083184D7689E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_atom", "_atom\_atom.csproj", "{A26DBCF8-6379-4445-8D71-F72D724A7DB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{F6FFD343-5FDC-404E-996F-D76F8F29402F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6FFD343-5FDC-404E-996F-D76F8F29402F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6FFD343-5FDC-404E-996F-D76F8F29402F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26DBCF8-6379-4445-8D71-F72D724A7DB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26DBCF8-6379-4445-8D71-F72D724A7DB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26DBCF8-6379-4445-8D71-F72D724A7DB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26DBCF8-6379-4445-8D71-F72D724A7DB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E} = {7F9DC0A4-12AC-48C1-B17F-B656EDFE5AFD}

@@ -1,7 +1,5 @@
 using DecSm.Atom.Args;
 using DecSm.Atom.Args.Types;
-using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Params;
 
 namespace DecSm.Atom.Tests;
 
@@ -12,7 +10,7 @@ public class ComandLineArgParserTests
     public void Parse_No_Args()
     {
         string[] rawArgs = [];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -26,7 +24,7 @@ public class ComandLineArgParserTests
     public void Parse_Help_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -41,7 +39,7 @@ public class ComandLineArgParserTests
     public void Parse_Gen_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -56,7 +54,7 @@ public class ComandLineArgParserTests
     public void Parse_Skip_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -71,7 +69,7 @@ public class ComandLineArgParserTests
     public void Parse_Params_Arg(string arg, string argName, string paramName)
     {
         string[] rawArgs = [arg, "value"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),
@@ -94,7 +92,7 @@ public class ComandLineArgParserTests
     public void Parse_Param_Without_Value()
     {
         string[] rawArgs = ["--param1", "--param2"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),
@@ -109,7 +107,7 @@ public class ComandLineArgParserTests
     public void Parse_Param_At_End()
     {
         string[] rawArgs = ["--param1"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),
@@ -127,7 +125,7 @@ public class ComandLineArgParserTests
     public void Parse_Command_Arg(string arg, string commandName)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.TargetDefinitions).Returns(new()
         {
             ["Command1"] = definition => definition,
@@ -150,7 +148,7 @@ public class ComandLineArgParserTests
     public void Parse_Unknown_Command_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.TargetDefinitions).Returns(new()
         {
             ["Command1"] = definition => definition,
@@ -165,7 +163,7 @@ public class ComandLineArgParserTests
     public void Parse_Complex_1()
     {
         string[] rawArgs = ["-h", "--param1", "value1", "--param2", "value2", "Command1"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),
@@ -206,7 +204,7 @@ public class ComandLineArgParserTests
     public void Parse_Complex_2()
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "--skip"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),
@@ -247,7 +245,7 @@ public class ComandLineArgParserTests
     public void Parse_Complex_3()
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "-s", "--param3", "value3"];
-        var build = A.Fake<IAtomBuild>();
+        var build = A.Fake<IAtomBuildDefinition>();
         A.CallTo(() => build.ParamDefinitions).Returns(new()
         {
             ["Param1"] = new("Param1", typeof(ComandLineArgParserTests), new("param1", "Param 1")),

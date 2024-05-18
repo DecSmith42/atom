@@ -1,5 +1,6 @@
 global using System.IO.Abstractions;
 global using System.Linq.Expressions;
+global using System.Reflection;
 global using System.Text;
 global using DecSm.Atom.Args;
 global using DecSm.Atom.Args.Types;
