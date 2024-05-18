@@ -8,7 +8,8 @@ builder.Configuration.AddJsonFile("appsettings.json", true, true);
 
 builder
     .AddAtom<Build>(args)
-    .AddBatWorkflows();
+    .AddBatWorkflows()
+    .AddGithubWorkflows();
 
 var app = builder.Build();
 

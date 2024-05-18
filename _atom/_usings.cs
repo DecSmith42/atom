@@ -1,5 +1,7 @@
-﻿global using System.IO.Abstractions;
+﻿global using System.Diagnostics;
+global using System.IO.Abstractions;
 global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.GithubWorkflows.Generation;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Workflows.Definition;

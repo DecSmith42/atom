@@ -1,0 +1,12 @@
+// Global using directives
+
+global using System.IO.Abstractions;
+global using System.Reflection;
+global using DecSm.Atom.Util;
+global using DecSm.Atom.Workflows.Definition;
+global using DecSm.Atom.Workflows.Generation;
+global using DecSm.Atom.Workflows.Implementation.Step.Command;
+global using DecSm.Atom.Workflows.Model;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
