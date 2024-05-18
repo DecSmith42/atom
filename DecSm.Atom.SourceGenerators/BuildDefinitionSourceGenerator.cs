@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -139,7 +137,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          {{namespaceLine}}
 
                          [PublicAPI]
-                         partial class {{className}} : AtomBuild
+                         partial class {{className}} : AtomBuildDefinition
                          {
                              public {{className}}(IServiceProvider services) : base(services) { }
                              

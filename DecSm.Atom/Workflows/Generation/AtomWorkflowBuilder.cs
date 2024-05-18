@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Generation;
 
-public sealed class AtomWorkflowBuilder(IAtomBuild build)
+public sealed class AtomWorkflowBuilder(IAtomBuildDefinition buildDefinition)
 {
     public Workflow Build(WorkflowDefinition definition)
     {
@@ -8,7 +8,7 @@ public sealed class AtomWorkflowBuilder(IAtomBuild build)
 
         foreach (var stepDefinition in definition.StepDefinitions)
         {
-            var step = stepDefinition.CreateStep(build);
+            var step = stepDefinition.CreateStep(buildDefinition);
             jobs.Add(new(step.Name, [step]));
         }
 

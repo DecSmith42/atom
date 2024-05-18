@@ -2,7 +2,7 @@
 
 public static class CommandLineArgsParser
 {
-    public static CommandLineArgs Parse(string[] rawArgs, IAtomBuild build)
+    public static CommandLineArgs Parse(string[] rawArgs, IAtomBuildDefinition buildDefinition)
     {
         List<IArg> args = [];
 
@@ -39,8 +39,8 @@ public static class CommandLineArgsParser
             {
                 var argParam = rawArg[2..];
                 var matchedParam = false;
-
-                foreach (var buildParam in build.ParamDefinitions.Where(buildParam =>
+                
+                foreach (var buildParam in buildDefinition.ParamDefinitions.Where(buildParam =>
                              string.Equals(argParam, buildParam.Value.Attribute.ArgName, StringComparison.OrdinalIgnoreCase)))
                 {
                     if (i == rawArgs.Length - 1)
@@ -63,8 +63,8 @@ public static class CommandLineArgsParser
 
             // Commands
             var matchedCommand = false;
-
-            foreach (var buildTarget in build.TargetDefinitions.Where(buildTarget =>
+            
+            foreach (var buildTarget in buildDefinition.TargetDefinitions.Where(buildTarget =>
                          string.Equals(rawArg, buildTarget.Key, StringComparison.OrdinalIgnoreCase)))
             {
                 args.Add(new CommandArg(buildTarget.Key));

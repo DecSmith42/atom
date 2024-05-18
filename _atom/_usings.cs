@@ -1,0 +1,9 @@
+﻿global using System.IO.Abstractions;
+global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.Params;
+global using DecSm.Atom.Util;
+global using DecSm.Atom.Workflows.Definition;
+global using DecSm.Atom.Workflows.Implementation.Step.Command;
+global using DecSm.Atom.Workflows.Implementation.Workflow.Bat;
+global using DecSm.AtomGen;
+global using Targets;

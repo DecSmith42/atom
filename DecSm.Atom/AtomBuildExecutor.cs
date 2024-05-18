@@ -1,75 +1,70 @@
 ﻿namespace DecSm.Atom;
 
-public class AtomBuildExecutor(CommandLineArgs args, IAtomBuild build, ILogger<AtomBuildExecutor> logger)
+public class AtomBuildExecutor(
+    CommandLineArgs args,
+    IAtomBuildDefinition buildDefinition,
+    ExecutableBuild executableBuild,
+    IParamService paramService,
+    ILogger<AtomBuildExecutor> logger
+)
 {
-    private HashSet<string> executedTargets = [];
-
     public async Task Execute()
     {
         logger.LogInformation("Executing build...");
-
+        
         var commands = args.Commands;
-
+        
         if (commands is { Length: 0 })
         {
             logger.LogInformation("No targets specified. Exiting...");
+            
             return;
         }
-
-        var plan = build.ExecutionPlan;
-
+        
         foreach (var command in commands)
-            await ExecuteTarget(plan.GetTarget(command.Name));
+            await ExecuteTarget(executableBuild.GetTarget(command.Name));
     }
-
-    private List<ExecutableTarget> GetOrderedTargets()
-    {
-        var plan = build.ExecutionPlan;
-        var allTargets = plan.Targets;
-        var orderedTargets = new List<ExecutableTarget>(args.Commands.Select(x => plan.GetTarget(x.Name)));
-
-        var orderRules = new Dictionary<ExecutableTarget, List<ExecutableTarget>>();
-
-        foreach (var target in allTargets)
-        {
-            foreach (var dependency in target.Dependencies)
-            {
-                if (!orderRules.ContainsKey(dependency))
-                    orderRules[dependency] = [];
-
-                orderRules[dependency].Add(target);
-            }
-
-            foreach (var dependent in target.Dependents)
-            {
-                if (!orderRules.ContainsKey(target))
-                    orderRules[target] = [];
-
-                orderRules[target].Add(dependent);
-            }
-        }
-
-        return orderedTargets;
-    }
-
+    
     private async Task ExecuteTarget(ExecutableTarget target)
     {
-        if (executedTargets.Contains(target.TargetDefinition.Name))
+        if (executableBuild.TargetStates[target] is not TargetRunState.PendingRun)
             return;
-
+        
         foreach (var dependency in target.Dependencies)
-            await ExecuteTarget(target);
-
-        logger.LogInformation("Executing target {TargetDefinitionName}...", target.TargetDefinition.Name);
-
-        // Check requirements
-        foreach (var requirement in target.TargetDefinition.Requirements)
+            await ExecuteTarget(dependency);
+        
+        if (target.Dependencies.Any(depTarget => executableBuild.TargetStates[depTarget] is TargetRunState.Failed))
         {
+            executableBuild.TargetStates[target] = TargetRunState.Skipped;
+            logger.LogWarning("Skipping target {TargetDefinitionName} due to failed dependencies", target.TargetDefinition.Name);
+            
+            return;
         }
-
-        foreach (var task in target.TargetDefinition.Tasks)
-            await task(build);
-
-        executedTargets.Add(target.TargetDefinition.Name);
+        
+        foreach (var requirement in target.TargetDefinition.Requirements.Where(requirement => paramService.GetParam(requirement) is null))
+        {
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
+                requirement,
+                target.TargetDefinition.Name);
+            
+            executableBuild.TargetStates[target] = TargetRunState.Failed;
+        }
+        
+        logger.LogInformation("Executing target {TargetDefinitionName}...", target.TargetDefinition.Name);
+        
+        executableBuild.TargetStates[target] = TargetRunState.Running;
+        
+        try
+        {
+            foreach (var task in target.TargetDefinition.Tasks)
+                await task(buildDefinition);
+            
+            executableBuild.TargetStates[target] = TargetRunState.Succeeded;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while executing target {TargetDefinitionName}", target.TargetDefinition.Name);
+            executableBuild.TargetStates[target] = TargetRunState.Failed;
+        }
     }
 }

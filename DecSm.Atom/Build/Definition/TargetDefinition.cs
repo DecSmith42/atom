@@ -3,11 +3,12 @@
 public sealed class TargetDefinition
 {
     public string Name { get; init; } = string.Empty;
-    public List<Func<IAtomBuild, Task>> Tasks { get; } = [];
+    
+    public List<Func<IAtomBuildDefinition, Task>> Tasks { get; } = [];
     public List<string> Dependencies { get; } = [];
     public List<string> Requirements { get; } = [];
-
-    public TargetDefinition Executes(Func<IAtomBuild, Task> task)
+    
+    public TargetDefinition Executes(Func<IAtomBuildDefinition, Task> task)
     {
         if (Tasks.Contains(task))
             return this;

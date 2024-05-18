@@ -8,9 +8,10 @@ public partial interface ITest1
 
     Target Test1 => d => d
         .Requires(() => MyParam1)
+        .DependsOn<ITestDependency>()
         .Executes(_ =>
         {
-            Logger.LogInformation("Hello, '{MyParam1}'!", MyParam1);
+            Logger.LogInformation("Hello, '{MyParam1}', from ITest1!", MyParam1);
             return Task.CompletedTask;
         });
 }

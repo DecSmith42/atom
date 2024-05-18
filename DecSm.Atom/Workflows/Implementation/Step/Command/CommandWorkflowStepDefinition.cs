@@ -2,6 +2,6 @@
 
 public sealed record CommandWorkflowStepDefinition(string Name) : IWorkflowStepDefinition
 {
-    public IWorkflowStep CreateStep(IAtomBuild build) =>
+    public IWorkflowStep CreateStep(IAtomBuildDefinition buildDefinition) =>
         new CommandWorkflowStep(Name);
 }
