@@ -199,15 +199,8 @@ public class GithubWorkflowWriter(
                         using (WriteSection("env:"))
                         {
                             foreach (var secret in injectedSecrets)
-                            {
-                                var name = secret
-                                    .Attribute
-                                    .ArgName
-                                    .ToUpper()
-                                    .Replace('-', '_');
-                                
-                                WriteLine($"{name}: ${{{{ secrets.{name} }}}}");
-                            }
+                                WriteLine(
+                                    $"{secret.Attribute.ArgName}: ${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}");
                         }
                 }
                 
