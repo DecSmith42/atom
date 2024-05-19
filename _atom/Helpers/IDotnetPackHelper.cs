@@ -19,7 +19,7 @@ public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
         // Move package to publish directory
         var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{projectName}.{packageVersion}.nupkg";
         var publishDir = FileSystem.PublishDirectory() / projectName;
-        Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir);
+        Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
         FileSystem.File.Move(packagePath, publishDir / packagePath.FileName!);
         
         Logger.LogInformation("Packed Atom project {AtomProjectName}", projectName);
