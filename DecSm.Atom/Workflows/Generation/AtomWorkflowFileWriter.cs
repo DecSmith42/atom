@@ -9,7 +9,7 @@ public abstract class AtomWorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<
     
     protected virtual int TabSize => 2;
     
-    protected virtual AbsolutePath FileLocation => fileSystem.AtomRoot();
+    protected virtual AbsolutePath FileLocation => fileSystem.SolutionRoot();
     
     protected abstract string FileExtension { get; }
     
@@ -47,6 +47,7 @@ public abstract class AtomWorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<
         WriteWorkflow(workflow);
         
         var newText = _stringBuilder.ToString();
+        _stringBuilder.Clear();
         
         var existingText = fileSystem.File.Exists(filePath)
             ? fileSystem.File.ReadAllText(filePath)

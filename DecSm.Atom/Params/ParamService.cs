@@ -65,7 +65,11 @@ public class ParamService(IAtomBuildDefinition buildDefinition, CommandLineArgs 
         
         if (paramDefinition.Attribute.SourceFromSecrets)
         {
-            // TODO
+            var userSecretsConfigValue = config
+                .GetSection("Secrets")[paramDefinition.Name];
+            
+            if (userSecretsConfigValue is not null)
+                return _cache[paramDefinition] = userSecretsConfigValue;
         }
         
         return _cache[paramDefinition] = null;

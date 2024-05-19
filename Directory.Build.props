@@ -1,0 +1,11 @@
+<Project>
+    <PropertyGroup>
+        <Product>Atom</Product>
+        <Authors>Declan Smith</Authors>
+        <Version>1.0.0</Version>
+        <AssemblyVersion>$(Version)</AssemblyVersion>
+        <PackageVersion>1.0.0-alpha.1</PackageVersion>
+        <FileVersion>1.0.0.1</FileVersion>
+        <InformationalVersion>$(PackageVersion)</InformationalVersion>
+    </PropertyGroup>
+</Project>

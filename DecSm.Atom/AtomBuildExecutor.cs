@@ -2,7 +2,6 @@
 
 public class AtomBuildExecutor(
     CommandLineArgs args,
-    IAtomBuildDefinition buildDefinition,
     ExecutableBuild executableBuild,
     IParamService paramService,
     ILogger<AtomBuildExecutor> logger
@@ -57,7 +56,7 @@ public class AtomBuildExecutor(
         try
         {
             foreach (var task in target.TargetDefinition.Tasks)
-                await task(buildDefinition);
+                await task();
             
             executableBuild.TargetStates[target] = TargetRunState.Succeeded;
         }

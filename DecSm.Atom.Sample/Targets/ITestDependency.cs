@@ -7,8 +7,7 @@ public partial interface ITestDependency
     string? MyParam2 => GetParam(() => MyParam2);
     
     Target TestDependency =>
-        d => d
-        .Executes(_ =>
+        d => d.Executes(() =>
         {
             Logger.LogInformation("Hello, '{MyParam2}', from ITestDependency!", MyParam2);
             

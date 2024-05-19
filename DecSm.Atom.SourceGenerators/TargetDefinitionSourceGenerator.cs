@@ -101,6 +101,7 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                          partial interface {{interfaceName}} : IAtomBuildDefinition
                          {
                              private ILogger<{{interfaceName}}> Logger => Services.GetRequiredService<ILogger<{{interfaceName}}>>();
+                             private System.IO.Abstractions.IFileSystem FileSystem => Services.GetRequiredService<System.IO.Abstractions.IFileSystem>();
                          }
 
                          """;
