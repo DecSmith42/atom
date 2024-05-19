@@ -1,7 +1,7 @@
 ﻿namespace Atom;
 
 [BuildDefinition]
-internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSourceGenerators, IPushToNuget, IDiagnostics
+internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSourceGenerators, IPushToNuget, IDiagnostics, IPackAtomTool
 {
     public override WorkflowDefinition[] Workflows =>
     [

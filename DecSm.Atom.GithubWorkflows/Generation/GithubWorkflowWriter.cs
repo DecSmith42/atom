@@ -1,4 +1,7 @@
-﻿namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿using System.Linq.Expressions;
+using DecSm.Atom.Workflows.Definition.Command;
+
+namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
     IFileSystem fileSystem,
@@ -188,7 +191,7 @@ public sealed class GithubWorkflowWriter(
                     var injectedSecrets = target
                         .TargetDefinition
                         .Requirements
-                        .Select(x => buildDefinition.ParamDefinitions[x])
+                        .Select(x => buildDefinition.ParamDefinitions[(x.Body as MemberExpression)!.Member.Name])
                         .Where(paramDef => workflow
                             .Options
                             .OfType<InjectGithubSecret>()

@@ -35,13 +35,17 @@ public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
     
     public bool Exists => FileSystem.File.Exists(Path) || FileSystem.Directory.Exists(Path);
     
+    public bool FileExists => FileSystem.File.Exists(Path);
+    
+    public bool DirectoryExists => FileSystem.Directory.Exists(Path);
+    
     public string? FileName =>
-        FileSystem.File.Exists(Path)
+        FileExists
             ? FileSystem.Path.GetFileName(Path)
             : null;
     
     public string? FileExtension =>
-        FileSystem.File.Exists(Path)
+        FileExists
             ? FileSystem.Path.GetExtension(Path)
             : null;
 }
