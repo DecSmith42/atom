@@ -40,7 +40,8 @@ public class AtomBuildExecutor(
             return;
         }
         
-        foreach (var requirement in target.TargetDefinition.Requirements.Where(requirement => paramService.GetParam(requirement) is null))
+        foreach (var requirement in target.TargetDefinition.Requirements.Where(requirement =>
+                     paramService.GetParam(requirement) is null or ""))
         {
             logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
                 requirement,

@@ -1,7 +1,11 @@
 ﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
-public class GithubWorkflowWriter(IFileSystem fileSystem, ExecutableBuild build, ILogger<GithubWorkflowWriter> logger)
-    : AtomWorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
+public class GithubWorkflowWriter(
+    IFileSystem fileSystem,
+    IAtomBuildDefinition buildDefinition,
+    ExecutableBuild build,
+    ILogger<GithubWorkflowWriter> logger
+) : AtomWorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     
@@ -115,12 +119,12 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ExecutableBuild build,
             foreach (var job in workflow.Jobs)
             {
                 WriteLine();
-                WriteJob(job);
+                WriteJob(workflow, job);
             }
         }
     }
     
-    private void WriteJob(WorkflowJob job)
+    private void WriteJob(Workflow workflow, WorkflowJob job)
     {
         using (WriteSection($"{job.Name}:"))
         {
@@ -137,13 +141,13 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ExecutableBuild build,
                 foreach (var step in job.Steps)
                 {
                     WriteLine();
-                    WriteStep(step);
+                    WriteStep(workflow, job, step);
                 }
             }
         }
     }
     
-    private void WriteStep(IWorkflowStep step)
+    private void WriteStep(Workflow workflow, WorkflowJob job, IWorkflowStep step)
     {
         switch (step)
         {
@@ -177,8 +181,28 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ExecutableBuild build,
                     WriteLine();
                 }
                 
-                WriteLine($"- name: {commandStep.Name}");
-                WriteLine($"  run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
+                using (WriteSection($"- name: {commandStep.Name}"))
+                {
+                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
+                    
+                    var injectedSecrets = target
+                        .TargetDefinition
+                        .Requirements
+                        .Select(x => buildDefinition.ParamDefinitions[x])
+                        .Where(paramDef => workflow
+                            .Options
+                            .OfType<InjectGithubSecret>()
+                            .Any(injection => injection.Name == paramDef.Name))
+                        .ToArray();
+                    
+                    if (injectedSecrets.Length > 0)
+                        using (WriteSection("env:"))
+                        {
+                            foreach (var secret in injectedSecrets)
+                                WriteLine(
+                                    $"{secret.Attribute.ArgName}: ${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}");
+                        }
+                }
                 
                 foreach (var artifact in target.TargetDefinition.ProducedArtifacts)
                 {

@@ -59,6 +59,6 @@ public class AtomWorkflowGenerator(
             job.JobRequirements.AddRange(target.Dependencies.Select(x => jobMap[x.TargetDefinition.Name]));
         }
         
-        return new(definition.Name, definition.Triggers, jobs);
+        return new(definition.Name, definition.Triggers, definition.Options, jobs);
     }
 }

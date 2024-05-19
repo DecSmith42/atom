@@ -7,6 +7,6 @@ public sealed record WorkflowDefinition(string Name)
     public IReadOnlyList<IWorkflowType> WorkflowTypes { get; init; } = [];
     
     public IReadOnlyList<IWorkflowTrigger> Triggers { get; init; } = [];
+    
+    public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
 }
-
-public interface IWorkflowTrigger;

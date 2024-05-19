@@ -20,6 +20,7 @@ internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSou
         new("Build")
         {
             Triggers = [new GithubManualTrigger(), new GithubPushTrigger(["main"])],
+            Options = [new InjectGithubSecret(nameof(IPushToNuget.NugetApiKey))],
             StepDefinitions =
             [
                 new CommandDefinition(nameof(IDiagnostics.Diagnostics)),

@@ -3,8 +3,8 @@
 [TargetDefinition]
 public partial interface IPushToNuget : INugetHelper, IVersionHelper
 {
-    [Param("nuget-feed", "The Nuget feed to push to.")]
-    string? NugetFeed => GetParam(() => NugetFeed);
+    [Param("nuget-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
+    string NugetFeed => GetParam(() => NugetFeed) ?? "https://api.nuget.org/v3/index.json";
     
     [SecretParam("nuget-api-key", "The API key to use to push to Nuget.")]
     string? NugetApiKey => GetParam(() => NugetApiKey);
@@ -12,6 +12,7 @@ public partial interface IPushToNuget : INugetHelper, IVersionHelper
     Target PushToNuget =>
         d => d
             .Consumes<IPackAtom>(IPackAtom.AtomProjectName)
+            .Consumes<IPackAtomGithubWorkflows>(IPackAtomGithubWorkflows.AtomGithubWorkflowsProjectName)
             .Consumes<IPackAtomSourceGenerators>(IPackAtomSourceGenerators.AtomSourceGeneratorsProjectName)
             .Requires(() => NugetFeed)
             .Requires(() => NugetApiKey)
