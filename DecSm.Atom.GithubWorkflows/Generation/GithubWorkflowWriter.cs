@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
-public class GithubWorkflowWriter(
+public sealed class GithubWorkflowWriter(
     IFileSystem fileSystem,
     IAtomBuildDefinition buildDefinition,
     ExecutableBuild build,
