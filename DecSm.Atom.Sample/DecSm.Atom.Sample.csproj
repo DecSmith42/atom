@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="DecSm.Atom.SourceGenerators" Version="1.0.0-rc.1" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.9.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     </ItemGroup>
 

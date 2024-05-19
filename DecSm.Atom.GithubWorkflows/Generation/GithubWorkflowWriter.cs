@@ -17,7 +17,7 @@ public sealed class GithubWorkflowWriter(
     
     protected override void WriteWorkflow(Workflow workflow)
     {
-        WriteLine($"name: {workflow.Name.ToLower()}");
+        WriteLine($"name: {workflow.Name}");
         WriteLine();
         
         using (WriteSection("on:"))
