@@ -8,25 +8,6 @@ on:
 
 jobs:
   
-  PackAtomGithubWorkflows:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-      
-      - name: PackAtomGithubWorkflows
-        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip
-      
-      - name: Upload DecSm.Atom.GithubWorkflows
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.GithubWorkflows
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.GithubWorkflows"
-  
   PackAtom:
     runs-on: ubuntu-latest
     steps:
@@ -45,6 +26,25 @@ jobs:
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
+  
+  PackAtomGithubWorkflows:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+      
+      - name: PackAtomGithubWorkflows
+        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip
+      
+      - name: Upload DecSm.Atom.GithubWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.GithubWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.GithubWorkflows"
   
   PackAtomSourceGenerators:
     runs-on: ubuntu-latest
@@ -66,7 +66,7 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators"
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomSourceGenerators ]
+    needs: [ PackAtom, PackAtomGithubWorkflows, PackAtomSourceGenerators ]
     runs-on: ubuntu-latest
     steps:
       
@@ -82,6 +82,12 @@ jobs:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
       
+      - name: Download DecSm.Atom.GithubWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.GithubWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.GithubWorkflows"
+      
       - name: Download DecSm.Atom.SourceGenerators
         uses: actions/download-artifact@v4
         with:
@@ -90,6 +96,8 @@ jobs:
       
       - name: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip
+        env:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
   
   Diagnostics:
     runs-on: ubuntu-latest

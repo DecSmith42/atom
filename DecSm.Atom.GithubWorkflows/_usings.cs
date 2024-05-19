@@ -1,6 +1,7 @@
 // Global using directives
 
 global using System.IO.Abstractions;
+global using System.Linq.Expressions;
 global using System.Reflection;
 global using DecSm.Atom.Build.Model;
 global using DecSm.Atom.GithubWorkflows.Triggers;
