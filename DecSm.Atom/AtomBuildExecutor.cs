@@ -48,6 +48,8 @@ public class AtomBuildExecutor(
                 target.TargetDefinition.Name);
             
             executableBuild.TargetStates[target] = TargetRunState.Failed;
+            
+            return;
         }
         
         logger.LogInformation("Executing target {TargetDefinitionName}...", target.TargetDefinition.Name);

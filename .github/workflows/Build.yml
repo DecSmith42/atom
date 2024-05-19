@@ -97,7 +97,7 @@ jobs:
       - name: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip
         env:
-          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
   
   Diagnostics:
     runs-on: ubuntu-latest
