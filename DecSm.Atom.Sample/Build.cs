@@ -9,8 +9,7 @@ public partial class Build : ITest1, ITestDependency
         {
             StepDefinitions =
             [
-                new CommandWorkflowStepDefinition(nameof(ITest1.Test1)),
-                new CommandWorkflowStepDefinition(nameof(ITestDependency.TestDependency)),
+                new CommandDefinition(nameof(ITest1.Test1)), new CommandDefinition(nameof(ITestDependency.TestDependency)),
             ],
             WorkflowTypes = [new BatWorkflowType()],
         },

@@ -47,6 +47,7 @@ public abstract class AtomWorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<
         WriteWorkflow(workflow);
         
         var newText = _stringBuilder.ToString();
+        _stringBuilder.Clear();
         
         var existingText = fileSystem.File.Exists(filePath)
             ? fileSystem.File.ReadAllText(filePath)

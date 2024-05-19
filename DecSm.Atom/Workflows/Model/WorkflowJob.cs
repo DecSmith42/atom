@@ -2,7 +2,7 @@
 
 public sealed record WorkflowJob(string Name, IReadOnlyList<IWorkflowStep> Steps)
 {
-    public List<ParamDefinition> ParamRequirements { get; } = [];
+    public List<ParamDefinition> ParamRequirements { get; init; } = [];
     
-    public List<WorkflowJob> JobRequirements { get; } = [];
+    public List<WorkflowJob> JobRequirements { get; init; } = [];
 }

@@ -30,29 +30,28 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
         // Initial targets are those that have no dependencies
         Targets.AddRange(targetList.Where(target => targetDependencies.All(dependency => dependency.To != target)));
         
-        var totalTargetCount = targetList.Count;
         var targetCount = Targets.Count;
         
-        while (targetCount < totalTargetCount)
+        var remainingTargets = targetList
+            .Where(x => !Targets.Contains(x))
+            .ToList();
+        
+        while (remainingTargets.Count > 0)
         {
             // Insert a target's deps before it. Remove before insert if moving forward
-            for (var i = 0; i < targetList.Count; i++)
+            foreach (var remainingTarget in remainingTargets)
             {
-                var target = targetList[i];
+                var firstDependentTarget = Targets.FirstOrDefault(t => t.Dependencies.Contains(remainingTarget));
                 
-                foreach (var targetDependency in target.Dependencies)
-                {
-                    var existingTargetDependencyIndex = Targets.IndexOf(targetDependency);
-                    
-                    if (existingTargetDependencyIndex > i)
-                    {
-                        Targets.Remove(targetDependency);
-                        Targets.Insert(i, targetDependency);
-                    }
-                    
-                    if (existingTargetDependencyIndex == -1)
-                        Targets.Insert(i, targetDependency);
-                }
+                if (firstDependentTarget is null)
+                    continue;
+                
+                var firstDependentTargetIndex = Targets.IndexOf(firstDependentTarget);
+                
+                Targets.Insert(firstDependentTargetIndex, remainingTarget);
+                remainingTargets.Remove(remainingTarget);
+                
+                break;
             }
             
             if (targetCount == Targets.Count)

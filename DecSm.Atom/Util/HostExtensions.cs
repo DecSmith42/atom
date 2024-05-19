@@ -14,7 +14,6 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<ExecutableBuild>();
 
         builder.Services.TryAddSingleton<AtomWorkflowGenerator>();
-        builder.Services.TryAddSingleton<AtomWorkflowBuilder>();
 
         builder.Services.TryAddSingleton<IFileSystem, FileSystem>();
         builder.Services.TryAddSingleton<IParamService, ParamService>();

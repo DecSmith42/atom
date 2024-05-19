@@ -43,10 +43,22 @@ public class AtomWorkflowGenerator(
             unorderedSteps.Remove(matchingStep);
         }
         
+        if (unorderedSteps.Any())
+            throw new(
+                $"The following steps are not defined in the build definition: {string.Join(", ", unorderedSteps.Select(s => s.Name))}");
+        
         var jobs = orderedSteps
             .Select(step => new WorkflowJob(step.Name, [step]))
             .ToList();
         
-        return new(definition.Name, jobs);
+        var jobMap = jobs.ToDictionary(x => x.Name);
+        
+        foreach (var job in jobs)
+        {
+            var target = executableBuild.Targets.Single(t => t.TargetDefinition.Name == job.Name);
+            job.JobRequirements.AddRange(target.Dependencies.Select(x => jobMap[x.TargetDefinition.Name]));
+        }
+        
+        return new(definition.Name, definition.Triggers, jobs);
     }
 }

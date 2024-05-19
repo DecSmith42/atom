@@ -1,8 +1,8 @@
-name: build
+name: validate
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - main
 
@@ -34,8 +34,7 @@ jobs:
       - name: PackAtomSourceGenerators
         run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip
   
-  PushToNuget:
-    needs: [ PackAtom, PackAtomSourceGenerators ]
+  Diagnostics:
     runs-on: ubuntu-latest
     steps:
       
@@ -45,5 +44,5 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
       
-      - name: PushToNuget
-        run: dotnet run --project _atom/_atom.csproj PushToNuget --skip
+      - name: Diagnostics
+        run: dotnet run --project _atom/_atom.csproj Diagnostics --skip
