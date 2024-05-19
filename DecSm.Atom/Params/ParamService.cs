@@ -45,8 +45,10 @@ public class ParamService(IAtomBuildDefinition buildDefinition, CommandLineArgs 
         if (paramDefinition.Attribute.SourceFromEnvironmentVariables)
         {
             var envVar = Environment.GetEnvironmentVariable(paramDefinition.Name) ??
+                         Environment.GetEnvironmentVariable(paramDefinition.Attribute.ArgName) ??
                          Environment.GetEnvironmentVariable(paramDefinition
-                             .Name
+                             .Attribute
+                             .ArgName
                              .ToUpperInvariant()
                              .Replace('-', '_'));
             
