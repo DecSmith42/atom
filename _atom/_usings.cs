@@ -9,6 +9,7 @@ global using DecSm.Atom;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.GithubWorkflows;
 global using DecSm.Atom.GithubWorkflows.Generation;
+global using DecSm.Atom.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.GithubWorkflows.Triggers;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Util;

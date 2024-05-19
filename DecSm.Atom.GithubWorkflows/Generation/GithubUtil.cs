@@ -1,7 +1,14 @@
-﻿namespace DecSm.Atom.GithubWorkflows;
+﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public static class GithubUtil
 {
+    public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
+        new("dependabot")
+        {
+            Options = [dependabotOptions],
+            WorkflowTypes = [new DependabotWorkflowType()],
+        };
+    
     public static string PipelinePublishDirectory => "${{ github.workspace }}/.github/publish";
     
     public static string PipelineArtifactDirectory => "${{ github.workspace }}/.github/artifacts";

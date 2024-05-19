@@ -5,6 +5,24 @@ internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSou
 {
     public override WorkflowDefinition[] Workflows =>
     [
+        GithubUtil.DependabotWorkflow(new()
+        {
+            Registries = [new("nuget", DependabotValues.NugetType, DependabotValues.NugetUrl)],
+            Updates =
+            [
+                new(DependabotValues.NugetEcosystem)
+                {
+                    Registries = ["nuget"],
+                    Groups =
+                    [
+                        new("nuget-deps")
+                        {
+                            Patterns = ["*"],
+                        },
+                    ],
+                },
+            ],
+        }),
         new("Validate")
         {
             Triggers = [new GithubManualTrigger(), new GithubPullRequestTrigger(["main"])],

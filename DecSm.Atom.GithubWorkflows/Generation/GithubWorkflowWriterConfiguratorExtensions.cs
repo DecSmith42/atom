@@ -8,6 +8,10 @@ public static class GithubWorkflowWriterConfiguratorExtensions
             typeof(GithubWorkflowWriter),
             ServiceLifetime.Singleton));
         
+        configurator.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IAtomWorkflowWriter),
+            typeof(DependabotWorkflowWriter),
+            ServiceLifetime.Singleton));
+        
         return configurator;
     }
 }

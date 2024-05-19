@@ -1,0 +1,21 @@
+version: 2
+
+registries:
+  nuget:
+    type: nuget-feed
+    url: https://api.nuget.org/v3/index.json
+
+updates:
+  - package-ecosystem: "nuget"
+    target-branch: "main"
+    directory: "/"
+    registries:
+      - nuget
+    groups:
+      nuget-deps:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 10
+    schedule:
+      interval:
+        weekly
