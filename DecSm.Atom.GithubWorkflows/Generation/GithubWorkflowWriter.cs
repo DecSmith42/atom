@@ -1,8 +1,6 @@
-﻿using DecSm.Atom.GithubWorkflows.Triggers;
+﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
-namespace DecSm.Atom.GithubWorkflows.Generation;
-
-public class GithubWorkflowWriter(IFileSystem fileSystem, ILogger<GithubWorkflowWriter> logger)
+public class GithubWorkflowWriter(IFileSystem fileSystem, ExecutableBuild build, ILogger<GithubWorkflowWriter> logger)
     : AtomWorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
 {
     private readonly IFileSystem _fileSystem = fileSystem;
@@ -11,7 +9,7 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ILogger<GithubWorkflow
     
     protected override int TabSize => 2;
     
-    protected override AbsolutePath FileLocation => _fileSystem.AtomRoot() / ".github" / "workflows";
+    protected override AbsolutePath FileLocation => _fileSystem.SolutionRoot() / ".github" / "workflows";
     
     protected override void WriteWorkflow(Workflow workflow)
     {
@@ -158,11 +156,45 @@ public class GithubWorkflowWriter(IFileSystem fileSystem, ILogger<GithubWorkflow
                 WriteLine("  uses: actions/setup-dotnet@v4");
                 WriteLine();
                 
+                var target = build.Targets.Single(t => t.TargetDefinition.Name == commandStep.Name);
+                
                 var assemblyName = Assembly.GetEntryAssembly()!.GetName()
                     .Name!;
                 
+                foreach (var artifact in target.TargetDefinition.ConsumedArtifacts)
+                {
+                    using (WriteSection($"- name: Download {artifact.ArtifactName}"))
+                    {
+                        WriteLine("uses: actions/download-artifact@v4");
+                        
+                        using (WriteSection("with:"))
+                        {
+                            WriteLine($"name: {artifact.ArtifactName}");
+                            WriteLine($"path: \"{GithubUtil.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                        }
+                    }
+                    
+                    WriteLine();
+                }
+                
                 WriteLine($"- name: {commandStep.Name}");
                 WriteLine($"  run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
+                
+                foreach (var artifact in target.TargetDefinition.ProducedArtifacts)
+                {
+                    WriteLine();
+                    
+                    using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
+                    {
+                        WriteLine("uses: actions/upload-artifact@v4");
+                        
+                        using (WriteSection("with:"))
+                        {
+                            WriteLine($"name: {artifact.ArtifactName}");
+                            WriteLine($"path: \"{GithubUtil.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                        }
+                    }
+                }
                 
                 break;
         }

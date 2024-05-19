@@ -8,6 +8,25 @@ on:
 
 jobs:
   
+  PackAtomGithubWorkflows:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+      
+      - name: PackAtomGithubWorkflows
+        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip
+      
+      - name: Upload DecSm.Atom.GithubWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.GithubWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.GithubWorkflows"
+  
   PackAtom:
     runs-on: ubuntu-latest
     steps:
@@ -20,6 +39,12 @@ jobs:
       
       - name: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip
+      
+      - name: Upload DecSm.Atom
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
   
   PackAtomSourceGenerators:
     runs-on: ubuntu-latest
@@ -33,6 +58,12 @@ jobs:
       
       - name: PackAtomSourceGenerators
         run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip
+      
+      - name: Upload DecSm.Atom.SourceGenerators
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.SourceGenerators
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators"
   
   PushToNuget:
     needs: [ PackAtom, PackAtomSourceGenerators ]
@@ -45,5 +76,30 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
       
+      - name: Download DecSm.Atom
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      
+      - name: Download DecSm.Atom.SourceGenerators
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.SourceGenerators
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.SourceGenerators"
+      
       - name: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip
+  
+  Diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+      
+      - name: Diagnostics
+        run: dotnet run --project _atom/_atom.csproj Diagnostics --skip

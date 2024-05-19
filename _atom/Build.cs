@@ -1,7 +1,7 @@
 ﻿namespace Atom;
 
 [BuildDefinition]
-internal partial class Build : IPackAtom, IPackAtomSourceGenerators, IPushToNuget, IDiagnostics
+internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSourceGenerators, IPushToNuget, IDiagnostics
 {
     public override WorkflowDefinition[] Workflows =>
     [
@@ -12,6 +12,7 @@ internal partial class Build : IPackAtom, IPackAtomSourceGenerators, IPushToNuge
             [
                 new CommandDefinition(nameof(IDiagnostics.Diagnostics)),
                 new CommandDefinition(nameof(IPackAtom.PackAtom)),
+                new CommandDefinition(nameof(IPackAtomGithubWorkflows.PackAtomGithubWorkflows)),
                 new CommandDefinition(nameof(IPackAtomSourceGenerators.PackAtomSourceGenerators)),
             ],
             WorkflowTypes = [new GithubWorkflowType()],
@@ -21,7 +22,9 @@ internal partial class Build : IPackAtom, IPackAtomSourceGenerators, IPushToNuge
             Triggers = [new GithubManualTrigger(), new GithubPushTrigger(["main"])],
             StepDefinitions =
             [
+                new CommandDefinition(nameof(IDiagnostics.Diagnostics)),
                 new CommandDefinition(nameof(IPackAtom.PackAtom)),
+                new CommandDefinition(nameof(IPackAtomGithubWorkflows.PackAtomGithubWorkflows)),
                 new CommandDefinition(nameof(IPackAtomSourceGenerators.PackAtomSourceGenerators)),
                 new CommandDefinition(nameof(IPushToNuget.PushToNuget)),
             ],

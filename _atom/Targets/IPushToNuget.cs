@@ -11,8 +11,8 @@ public partial interface IPushToNuget : INugetHelper
     
     Target PushToNuget =>
         d => d
-            .DependsOn<IPackAtom>()
-            .DependsOn<IPackAtomSourceGenerators>()
+            .Consumes<IPackAtom>(IPackAtom.AtomProjectName)
+            .Consumes<IPackAtomSourceGenerators>(IPackAtomSourceGenerators.AtomSourceGeneratorsProjectName)
             .Requires(() => NugetFeed)
             .Requires(() => NugetApiKey)
             .Executes(async () =>
@@ -23,9 +23,9 @@ public partial interface IPushToNuget : INugetHelper
     
     private async Task PushProject(string projectName)
     {
-        var packageBuildDir = FileSystem.AtomRoot() / projectName / "bin" / "Release";
+        var packageBuildDir = FileSystem.SolutionRoot() / projectName / "bin" / "Release";
         var packages = FileSystem.Directory.GetFiles(packageBuildDir, "*.nupkg");
-        var version = GetProjectPackageVersion(FileSystem.AtomRoot() / projectName / $"{projectName}.csproj");
+        var version = GetProjectPackageVersion(FileSystem.SolutionRoot() / projectName / $"{projectName}.csproj");
         var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{version}.nupkg");
         
         await PushPackageToNuget(packageBuildDir / matchingPackage, NugetFeed!, NugetApiKey!);
@@ -44,7 +44,7 @@ public partial interface IPushToNuget : INugetHelper
                 .GetFiles(path, "Directory.Build.props")
                 .Select(x => path / x));
             
-            if (path == FileSystem.AtomRoot())
+            if (path == FileSystem.SolutionRoot())
                 break;
             
             path = path.Parent;

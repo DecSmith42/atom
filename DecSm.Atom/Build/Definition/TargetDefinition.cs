@@ -10,7 +10,9 @@ public sealed class TargetDefinition
     
     public List<string> Requirements { get; } = [];
     
-    public List<(string Name, string? Path)> ProducedArtifacts { get; } = [];
+    public List<(string TargetName, string ArtifactName)> ConsumedArtifacts { get; } = [];
+    
+    public List<(string ArtifactName, string? ArtifactPath)> ProducedArtifacts { get; } = [];
     
     public TargetDefinition Executes(Func<Task> task)
     {
@@ -50,6 +52,19 @@ public sealed class TargetDefinition
     public TargetDefinition Produces(string artifactName, string? artifactPath = null)
     {
         ProducedArtifacts.Add((artifactName, artifactPath));
+        
+        return this;
+    }
+    
+    public TargetDefinition Consumes<T>(string artifactName)
+        where T : IAtomBuildDefinition
+    {
+        var name = typeof(T).Name;
+        
+        if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
+            name = name[1..];
+        
+        ConsumedArtifacts.Add((name, artifactName));
         
         return this;
     }

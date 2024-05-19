@@ -2,6 +2,8 @@
 
 global using System.IO.Abstractions;
 global using System.Reflection;
+global using DecSm.Atom.Build.Model;
+global using DecSm.Atom.GithubWorkflows.Triggers;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Generation;

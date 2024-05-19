@@ -105,14 +105,18 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
             .ToList();
         
         foreach (var target in executableTargets)
-        foreach (var dependency in target.TargetDefinition.Dependencies)
         {
-            var dependencyTarget = executableTargets.FirstOrDefault(t => t.TargetDefinition.Name == dependency);
+            target.TargetDefinition.Dependencies.AddRange(target.TargetDefinition.ConsumedArtifacts.Select(x => x.TargetName));
             
-            if (dependencyTarget is null)
-                throw new InvalidOperationException($"Dependency target '{dependency}' not found.");
-            
-            target.Dependencies.Add(dependencyTarget);
+            foreach (var dependency in target.TargetDefinition.Dependencies)
+            {
+                var dependencyTarget = executableTargets.FirstOrDefault(t => t.TargetDefinition.Name == dependency);
+                
+                if (dependencyTarget is null)
+                    throw new InvalidOperationException($"Dependency target '{dependency}' not found.");
+                
+                target.Dependencies.Add(dependencyTarget);
+            }
         }
         
         foreach (var target in executableTargets)

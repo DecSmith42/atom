@@ -8,7 +8,7 @@ public partial interface IDotnetPackHelper : IProcessHelper
         Logger.LogInformation("Packing Atom project {AtomProjectName}", projectName);
         
         var fs = Services.GetRequiredService<IFileSystem>();
-        var project = fs.FileInfo.New(fs.AtomRoot() / projectName / $"{projectName}.csproj");
+        var project = fs.FileInfo.New(fs.SolutionRoot() / projectName / $"{projectName}.csproj");
         
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
