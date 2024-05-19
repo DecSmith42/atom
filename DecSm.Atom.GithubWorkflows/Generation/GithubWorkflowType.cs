@@ -1,6 +1,3 @@
 ﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
-public record struct GithubWorkflowType() : IWorkflowType
-{
-    public Type WriterType { get; } = typeof(GithubWorkflowWriter);
-}
+public record struct GithubWorkflowType : IWorkflowType;

@@ -3,4 +3,4 @@
 public interface IWorkflowStepDefinition
 {
     IWorkflowStep CreateStep(IAtomBuildDefinition buildDefinition);
-};
+}

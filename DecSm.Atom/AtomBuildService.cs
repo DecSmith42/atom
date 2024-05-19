@@ -6,48 +6,58 @@ public class AtomBuildService(
     ExecutableBuild executableBuild,
     IHostApplicationLifetime lifetime,
     ILogger<AtomBuildService> logger,
+    IAnsiConsole console,
     ICheatsheetService cheatsheetService,
     AtomWorkflowGenerator workflowGenerator
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        logger.LogInformation("Atom Build");
+        console.WriteLine();
+        logger.LogInformation("Started");
         
-        try
+        using (logger.BeginScope(new Dictionary<string, object>
+               {
+                   ["$HideDate"] = true,
+               }))
         {
-            executableBuild.Init();
-            
-            if (args.Args is { Length: 0 })
+            try
             {
-                cheatsheetService.ShowCheatsheet();
+                executableBuild.Init();
                 
-                return;
+                if (args.Args is { Length: 0 })
+                {
+                    cheatsheetService.ShowCheatsheet();
+                    
+                    return;
+                }
+                
+                if (args.HasHelp)
+                    cheatsheetService.ShowCheatsheet();
+                
+                if (args.HasGen)
+                {
+                    logger.LogInformation("Generating workflows");
+                    workflowGenerator.GenerateWorkflows();
+                    logger.LogInformation("Workflows generated");
+                    
+                    return;
+                }
+                
+                await executor.Execute();
+                
+                if (executableBuild.Targets.Any(x => executableBuild.TargetStates[x] is TargetRunState.Failed))
+                    Environment.ExitCode = 1;
             }
-            
-            if (args.HasHelp)
-                cheatsheetService.ShowCheatsheet();
-            
-            if (args.HasGen)
+            catch (Exception ex)
             {
-                logger.LogInformation("Generating workflows");
-                workflowGenerator.GenerateWorkflows();
-                logger.LogInformation("Workflows generated");
-                
-                return;
+                logger.LogError(ex, "Stopped");
+                Environment.ExitCode = 1;
             }
-            
-            await executor.Execute();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while executing the build");
-            Environment.ExitCode = 1;
-        }
-        finally
-        {
-            logger.LogInformation("Atom Build stopped");
-            lifetime.StopApplication();
+            finally
+            {
+                lifetime.StopApplication();
+            }
         }
     }
 }

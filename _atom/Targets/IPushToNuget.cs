@@ -14,12 +14,15 @@ public partial interface IPushToNuget : INugetHelper, IVersionHelper
             .Consumes<IPackAtom>(IPackAtom.AtomProjectName)
             .Consumes<IPackAtomGithubWorkflows>(IPackAtomGithubWorkflows.AtomGithubWorkflowsProjectName)
             .Consumes<IPackAtomSourceGenerators>(IPackAtomSourceGenerators.AtomSourceGeneratorsProjectName)
+            .Consumes<IPackAtomTool>(IPackAtomTool.AtomToolProjectName)
             .Requires(() => NugetFeed)
             .Requires(() => NugetApiKey)
             .Executes(async () =>
             {
                 await PushProject(IPackAtom.AtomProjectName);
                 await PushProject(IPackAtomSourceGenerators.AtomSourceGeneratorsProjectName);
+                await PushProject(IPackAtomGithubWorkflows.AtomGithubWorkflowsProjectName);
+                await PushProject(IPackAtomTool.AtomToolProjectName);
             });
     
     private async Task PushProject(string projectName)

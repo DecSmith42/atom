@@ -6,15 +6,24 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
     
     public Dictionary<ExecutableTarget, TargetRunState> TargetStates { get; } = [];
     
+    public Dictionary<ExecutableTarget, TimeSpan> TargetDurations { get; } = [];
+    
     public ExecutableTarget GetTarget(string name) =>
         Targets.FirstOrDefault(t => t.TargetDefinition.Name == name) ?? throw new ArgumentException($"Target '{name}' not found.");
     
     public void Init()
     {
-        var targetList = GetExecutableTargets(buildDefinition.TargetDefinitions);
+        AddOrderedTargets();
+        InitTargetStates();
+        InitTargetDurations();
+    }
+    
+    private void AddOrderedTargets()
+    {
+        var allTargets = GetExecutableTargets(buildDefinition.TargetDefinitions);
         var targetDependencies = new List<TargetDependency>();
         
-        foreach (var target in targetList)
+        foreach (var target in allTargets)
         {
             targetDependencies.AddRange(target
                 .Dependencies
@@ -28,11 +37,11 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
         }
         
         // Initial targets are those that have no dependencies
-        Targets.AddRange(targetList.Where(target => targetDependencies.All(dependency => dependency.To != target)));
+        Targets.AddRange(allTargets.Where(target => targetDependencies.All(dependency => dependency.To != target)));
         
         var targetCount = Targets.Count;
         
-        var remainingTargets = targetList
+        var remainingTargets = allTargets
             .Where(x => !Targets.Contains(x))
             .ToList();
         
@@ -55,12 +64,24 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
             }
             
             if (targetCount == Targets.Count)
+            {
+                var orderedTargetsDisplay = string.Join("\n", Targets.Select(x => $"- {x.TargetDefinition.Name}"));
+                
+                var remainingTargetsDisplay = string.Join(", ",
+                    allTargets
+                        .Where(x => !Targets.Contains(x))
+                        .Select(x => $"- {x.TargetDefinition.Name}"));
+                
                 throw new InvalidOperationException(
-                    $"Circular dependency detected. Ordered targets: [{string.Join(", ", Targets.Select(x => x.TargetDefinition.Name))}], remaining targets: [{string.Join(", ", targetList.Where(x => !Targets.Contains(x)).Select(x => x.TargetDefinition.Name))}]");
+                    $"Circular dependency detected. Ordered targets:[\n{orderedTargetsDisplay}]\nRemaining targets:\n[{remainingTargetsDisplay}]");
+            }
             
             targetCount = Targets.Count;
         }
-        
+    }
+    
+    private void InitTargetStates()
+    {
         TargetStates.Clear();
         
         foreach (var target in Targets)
@@ -70,7 +91,12 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
             TargetStates[GetTarget(command.Name)] = TargetRunState.PendingRun;
         
         if (args.HasSkip)
+        {
+            foreach (var target in Targets.Where(x => TargetStates[x] is TargetRunState.Uninitialized))
+                TargetStates[target] = TargetRunState.PendingSkip;
+            
             return;
+        }
         
         var uninitializedCount = Targets.Count(x => TargetStates[x] is TargetRunState.Uninitialized);
         
@@ -126,19 +152,14 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
         
         return executableTargets;
     }
-}
-
-public enum TargetRunState
-{
-    Uninitialized,
-    PendingRun,
-    PendingSkip,
-    Running,
-    Succeeded,
-    Failed,
-    Skipped,
+    
+    private void InitTargetDurations()
+    {
+        TargetDurations.Clear();
+        
+        foreach (var target in Targets)
+            TargetDurations[target] = TimeSpan.Zero;
+    }
 }
 
 public sealed record TargetDependency(ExecutableTarget From, ExecutableTarget To);
-
-public readonly record struct ExecutableTargetState(bool Planned, bool Executed, bool Failed, bool Skipped);

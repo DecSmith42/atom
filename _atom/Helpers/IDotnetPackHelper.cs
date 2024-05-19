@@ -24,6 +24,12 @@ public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
         if (!FileSystem.Directory.Exists(publishDir))
             FileSystem.Directory.CreateDirectory(publishDir);
         
+        if (FileSystem.File.Exists(publishDir / packagePath.FileName!))
+        {
+            Logger.LogDebug("Deleting existing package {PackagePath}", publishDir / packagePath.FileName!);
+            FileSystem.File.Delete(publishDir / packagePath.FileName!);
+        }
+        
         FileSystem.File.Move(packagePath, publishDir / packagePath.FileName!);
         
         Logger.LogInformation("Packed Atom project {AtomProjectName}", projectName);

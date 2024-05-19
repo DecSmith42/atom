@@ -28,7 +28,7 @@ public abstract class AtomWorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<
         }
     }
     
-    public IDisposable WriteSection(string header)
+    protected IDisposable WriteSection(string header)
     {
         WriteLine(header);
         IndentLevel += TabSize;

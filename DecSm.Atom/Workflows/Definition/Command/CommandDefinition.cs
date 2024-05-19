@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Workflows.Implementation.Step.Command;
+﻿namespace DecSm.Atom.Workflows.Definition.Command;
 
 public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
 {

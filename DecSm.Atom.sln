@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom", "DecSm.Atom\DecSm.Atom.csproj", "{9FBBA0C3-97AA-45F2-9502-EE6BF9588BB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Sample", "DecSm.Atom.Sample\DecSm.Atom.Sample.csproj", "{C35021AE-0500-4E5E-9EF0-CC52279A28AF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.SourceGenerators", "DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj", "{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.SourceGenerators.Tests", "DecSm.Atom.SourceGenerators.Tests\DecSm.Atom.SourceGenerators.Tests.csproj", "{88376B30-0010-4834-945B-6ACA544FFFED}"
@@ -18,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_atom", "_atom\_atom.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.GithubWorkflows", "DecSm.Atom.GithubWorkflows\DecSm.Atom.GithubWorkflows.csproj", "{68D0132E-7F70-4E6F-BACC-9178070D16CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Tool", "DecSm.Atom.Tool\DecSm.Atom.Tool.csproj", "{AF9EA7BE-41C1-453B-854A-D691BE103D4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +30,6 @@ Global
 		{9FBBA0C3-97AA-45F2-9502-EE6BF9588BB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FBBA0C3-97AA-45F2-9502-EE6BF9588BB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FBBA0C3-97AA-45F2-9502-EE6BF9588BB2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C35021AE-0500-4E5E-9EF0-CC52279A28AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C35021AE-0500-4E5E-9EF0-CC52279A28AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C35021AE-0500-4E5E-9EF0-CC52279A28AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C35021AE-0500-4E5E-9EF0-CC52279A28AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,10 +50,15 @@ Global
 		{68D0132E-7F70-4E6F-BACC-9178070D16CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68D0132E-7F70-4E6F-BACC-9178070D16CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68D0132E-7F70-4E6F-BACC-9178070D16CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF9EA7BE-41C1-453B-854A-D691BE103D4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF9EA7BE-41C1-453B-854A-D691BE103D4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF9EA7BE-41C1-453B-854A-D691BE103D4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF9EA7BE-41C1-453B-854A-D691BE103D4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E} = {7F9DC0A4-12AC-48C1-B17F-B656EDFE5AFD}
 		{88376B30-0010-4834-945B-6ACA544FFFED} = {7F9DC0A4-12AC-48C1-B17F-B656EDFE5AFD}
 		{F6FFD343-5FDC-404E-996F-D76F8F29402F} = {5AD016BB-9A1F-4D16-AD1F-083184D7689E}
+		{68D0132E-7F70-4E6F-BACC-9178070D16CF} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
 	EndGlobalSection
 EndGlobal

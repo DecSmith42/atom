@@ -8,7 +8,7 @@ public sealed class TargetDefinition
     
     public List<string> Dependencies { get; } = [];
     
-    public List<string> Requirements { get; } = [];
+    public List<Expression<Func<string?>>> Requirements { get; } = [];
     
     public List<(string TargetName, string ArtifactName)> ConsumedArtifacts { get; } = [];
     
@@ -39,12 +39,12 @@ public sealed class TargetDefinition
         return this;
     }
     
-    public TargetDefinition Requires<T>(Expression<Func<T>> requirement)
+    public TargetDefinition Requires(Expression<Func<string?>> requirement)
     {
-        if (requirement.Body is not MemberExpression memberExpression)
+        if (requirement.Body is not MemberExpression)
             throw new ArgumentException("Invalid expression type.");
         
-        Requirements.Add(memberExpression.Member.Name);
+        Requirements.Add(requirement);
         
         return this;
     }
