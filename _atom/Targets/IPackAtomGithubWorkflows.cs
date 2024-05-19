@@ -1,7 +1,7 @@
 namespace Atom.Targets;
 
 [TargetDefinition]
-internal interface IPackAtomGithubWorkflows : IDotnetPackHelper
+internal partial interface IPackAtomGithubWorkflows : IDotnetPackHelper
 {
     public const string AtomGithubWorkflowsProjectName = "DecSm.Atom.GithubWorkflows";
     
