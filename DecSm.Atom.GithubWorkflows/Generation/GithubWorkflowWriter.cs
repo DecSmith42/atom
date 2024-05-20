@@ -131,9 +131,9 @@ public sealed class GithubWorkflowWriter(
     {
         using (WriteSection($"{job.Name}:"))
         {
-            if (job.JobRequirements is { Count: > 0 })
+            if (job.JobDependencies is { Count: > 0 })
             {
-                var jobRequirementNames = job.JobRequirements.Select(x => x.Name);
+                var jobRequirementNames = job.JobDependencies;
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
             }
             
@@ -159,9 +159,10 @@ public sealed class GithubWorkflowWriter(
                 WriteLine("- name: Checkout");
                 WriteLine("  uses: actions/checkout@v2");
                 WriteLine();
-                WriteLine("- name: Setup .NET");
-                WriteLine("  uses: actions/setup-dotnet@v4");
-                WriteLine();
+                
+                // WriteLine("- name: Setup .NET");
+                // WriteLine("  uses: actions/setup-dotnet@v4");
+                // WriteLine();
                 
                 var target = build.Targets.Single(t => t.TargetDefinition.Name == commandStep.Name);
                 
@@ -177,7 +178,7 @@ public sealed class GithubWorkflowWriter(
                         using (WriteSection("with:"))
                         {
                             WriteLine($"name: {artifact.ArtifactName}");
-                            WriteLine($"path: \"{GithubUtil.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                            WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
                         }
                     }
                     
@@ -198,13 +199,18 @@ public sealed class GithubWorkflowWriter(
                             .Any(injection => injection.Name == paramDef.Name))
                         .ToArray();
                     
-                    if (injectedSecrets.Length > 0)
+                    var env = new Dictionary<string, string>();
+                    
+                    foreach (var secret in injectedSecrets)
+                        env[$"{secret.Attribute.ArgName}"] = $"${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    
+                    foreach (var consumedVariable in target.TargetDefinition.ConsumedVariables)
+                        env[consumedVariable.VariableName] = $"${{{{ needs.{commandStep.Name}.outputs.{consumedVariable.VariableName} }}}}";
+                    
+                    if (env.Count > 0)
                         using (WriteSection("env:"))
-                        {
-                            foreach (var secret in injectedSecrets)
-                                WriteLine(
-                                    $"{secret.Attribute.ArgName}: ${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}");
-                        }
+                            foreach (var (key, value) in env)
+                                WriteLine($"{key}: {value}");
                 }
                 
                 foreach (var artifact in target.TargetDefinition.ProducedArtifacts)
@@ -218,7 +224,7 @@ public sealed class GithubWorkflowWriter(
                         using (WriteSection("with:"))
                         {
                             WriteLine($"name: {artifact.ArtifactName}");
-                            WriteLine($"path: \"{GithubUtil.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                            WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
                         }
                     }
                 }

@@ -11,6 +11,8 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
     public ExecutableTarget GetTarget(string name) =>
         Targets.FirstOrDefault(t => t.TargetDefinition.Name == name) ?? throw new ArgumentException($"Target '{name}' not found.");
     
+    public ExecutableTarget? CurrentTarget => Targets.FirstOrDefault(t => TargetStates[t] is TargetRunState.Running);
+    
     public void Init()
     {
         AddOrderedTargets();
@@ -36,13 +38,15 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
                 .Where(dep => !targetDependencies.Contains(dep)));
         }
         
-        // Initial targets are those that have no dependencies
-        Targets.AddRange(allTargets.Where(target => targetDependencies.All(dependency => dependency.To != target)));
+        var targetsToAdd = new List<ExecutableTarget>();
         
-        var targetCount = Targets.Count;
+        // Initial targets are those that have no dependencies
+        targetsToAdd.AddRange(allTargets.Where(target => targetDependencies.All(dependency => dependency.To != target)));
+        
+        var targetCount = targetsToAdd.Count;
         
         var remainingTargets = allTargets
-            .Where(x => !Targets.Contains(x))
+            .Where(x => !targetsToAdd.Contains(x))
             .ToList();
         
         while (remainingTargets.Count > 0)
@@ -50,34 +54,48 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
             // Insert a target's deps before it. Remove before insert if moving forward
             foreach (var remainingTarget in remainingTargets)
             {
-                var firstDependentTarget = Targets.FirstOrDefault(t => t.Dependencies.Contains(remainingTarget));
+                var firstDependentTarget = targetsToAdd.FirstOrDefault(t => t.Dependencies.Contains(remainingTarget));
                 
                 if (firstDependentTarget is null)
                     continue;
                 
-                var firstDependentTargetIndex = Targets.IndexOf(firstDependentTarget);
+                var firstDependentTargetIndex = targetsToAdd.IndexOf(firstDependentTarget);
                 
-                Targets.Insert(firstDependentTargetIndex, remainingTarget);
+                targetsToAdd.Insert(firstDependentTargetIndex, remainingTarget);
                 remainingTargets.Remove(remainingTarget);
                 
                 break;
             }
             
-            if (targetCount == Targets.Count)
+            if (targetCount == targetsToAdd.Count)
             {
-                var orderedTargetsDisplay = string.Join("\n", Targets.Select(x => $"- {x.TargetDefinition.Name}"));
+                var orderedTargetsDisplay = string.Join("\n", targetsToAdd.Select(x => $"- {x.TargetDefinition.Name}"));
                 
                 var remainingTargetsDisplay = string.Join(", ",
                     allTargets
-                        .Where(x => !Targets.Contains(x))
+                        .Where(x => !targetsToAdd.Contains(x))
                         .Select(x => $"- {x.TargetDefinition.Name}"));
                 
                 throw new InvalidOperationException(
                     $"Circular dependency detected. Ordered targets:[\n{orderedTargetsDisplay}]\nRemaining targets:\n[{remainingTargetsDisplay}]");
             }
             
-            targetCount = Targets.Count;
+            targetCount = targetsToAdd.Count;
         }
+        
+        foreach (var target in targetsToAdd)
+            AddTarget(target);
+    }
+    
+    private void AddTarget(ExecutableTarget target)
+    {
+        foreach (var targetDep in target.Dependencies)
+            AddTarget(targetDep);
+        
+        if (Targets.Contains(target))
+            return;
+        
+        Targets.Add(target);
     }
     
     private void InitTargetStates()
@@ -123,17 +141,26 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
     
     private static List<ExecutableTarget> GetExecutableTargets(Dictionary<string, Target> targets)
     {
-        var executableTargets = targets
-            .Select(target => new ExecutableTarget(target.Value(new()
+        var targetDefinitions = targets
+            .Select(x => x.Value(new()
             {
-                Name = target.Key,
-            })))
+                Name = x.Key,
+            }))
+            .ToList();
+        
+        // Add deps from consumed artifacts and variables
+        foreach (var targetDefinition in targetDefinitions)
+        {
+            targetDefinition.Dependencies.AddRange(targetDefinition.ConsumedArtifacts.Select(x => x.TargetName));
+            targetDefinition.Dependencies.AddRange(targetDefinition.ConsumedVariables.Select(x => x.TargetName));
+        }
+        
+        var executableTargets = targetDefinitions
+            .Select(target => new ExecutableTarget(target))
             .ToList();
         
         foreach (var target in executableTargets)
         {
-            target.TargetDefinition.Dependencies.AddRange(target.TargetDefinition.ConsumedArtifacts.Select(x => x.TargetName));
-            
             foreach (var dependency in target.TargetDefinition.Dependencies)
             {
                 var dependencyTarget = executableTargets.FirstOrDefault(t => t.TargetDefinition.Name == dependency);
@@ -144,11 +171,6 @@ public sealed class ExecutableBuild(IAtomBuildDefinition buildDefinition, Comman
                 target.Dependencies.Add(dependencyTarget);
             }
         }
-        
-        foreach (var target in executableTargets)
-            target.Dependents.AddRange(executableTargets
-                .Where(x => x != target)
-                .Where(x => x.TargetDefinition.Dependencies.Contains(target.TargetDefinition.Name)));
         
         return executableTargets;
     }

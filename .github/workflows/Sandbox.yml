@@ -1,0 +1,39 @@
+name: Sandbox
+
+on:
+  workflow_dispatch:
+
+jobs:
+  
+  Diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Diagnostics
+        run: dotnet run --project _atom/_atom.csproj Diagnostics --skip
+  
+  OutputValue:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: OutputValue
+        run: dotnet run --project _atom/_atom.csproj OutputValue --skip
+  
+  InputValue:
+    needs: [ OutputValue ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: InputValue
+        run: dotnet run --project _atom/_atom.csproj InputValue --skip
+        env:
+          TestValue1: ${{ needs.InputValue.outputs.TestValue1 }}

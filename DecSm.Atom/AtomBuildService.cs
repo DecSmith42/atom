@@ -14,7 +14,6 @@ public class AtomBuildService(
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         console.WriteLine();
-        logger.LogInformation("Started");
         
         using (logger.BeginScope(new Dictionary<string, object>
                {

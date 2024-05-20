@@ -7,6 +7,6 @@ internal partial interface IPackAtom : IDotnetPackHelper
     
     Target PackAtom =>
         d => d
-            .Produces(AtomProjectName)
+            .ProducesArtifact(AtomProjectName)
             .Executes(() => DotnetPackProject(AtomProjectName));
 }

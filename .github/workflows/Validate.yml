@@ -2,7 +2,7 @@ name: Validate
 
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -15,9 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-      
       - name: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip
       
@@ -27,15 +24,28 @@ jobs:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
   
-  PackAtomGithubWorkflows:
+  PackAtomTool:
     runs-on: ubuntu-latest
     steps:
       
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: PackAtomTool
+        run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip
+      
+      - name: Upload DecSm.Atom.Tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
+  
+  PackAtomGithubWorkflows:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
       
       - name: PackAtomGithubWorkflows
         run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip
@@ -53,9 +63,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-      
       - name: PackAtomSourceGenerators
         run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip
       
@@ -64,16 +71,3 @@ jobs:
         with:
           name: DecSm.Atom.SourceGenerators
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators"
-  
-  Diagnostics:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-      
-      - name: Diagnostics
-        run: dotnet run --project _atom/_atom.csproj Diagnostics --skip

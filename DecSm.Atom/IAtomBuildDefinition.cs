@@ -9,4 +9,6 @@ public interface IAtomBuildDefinition
     IServiceProvider Services { get; }
     
     string? GetParam(Expression<Func<string?>> parameterExpression);
+    
+    Task WriteVariable(string name, string value);
 }
