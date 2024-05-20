@@ -9,5 +9,5 @@ public partial interface IOutputValue
     Target OutputValue =>
         d => d
             .ProducesVariable(Build.Params.TestValue1)
-            .Executes(() => { return Task.CompletedTask; });
+            .Executes(() => WriteVariable(Build.Params.TestValue1, "WOLOLO"));
 }
