@@ -19,5 +19,5 @@ public abstract class AtomBuildDefinition(IServiceProvider services) : IAtomBuil
     public Task WriteVariable(string name, string value) =>
         Services
             .GetRequiredService<IWorkflowVariableProvider>()
-            .WriteVariable(name, value);
+            .WriteVariable(ParamDefinitions[name].Attribute.ArgName, value);
 }

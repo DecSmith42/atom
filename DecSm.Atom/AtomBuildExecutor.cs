@@ -93,11 +93,16 @@ public class AtomBuildExecutor(
             return;
         }
         
-        foreach (var requirement in target.TargetDefinition.Requirements.Where(requirement =>
-                     paramService.GetParam(requirement) is null or ""))
+        foreach (var variable in target.TargetDefinition.ConsumedVariables)
         {
-            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
-                requirement,
+            await variableProvider.ReadVariable(variable.TargetName, variable.VariableName);
+            
+            if (paramService.GetParam(variable.VariableName) is not (null or ""))
+                continue;
+            
+            logger.LogError("Missing required variable '{VariableName}' from target {FromTarget} for target {Target}",
+                variable,
+                variable.TargetName,
                 target.TargetDefinition.Name);
             
             executableBuild.TargetStates[target] = TargetRunState.Failed;
@@ -105,16 +110,11 @@ public class AtomBuildExecutor(
             return;
         }
         
-        foreach (var variable in target.TargetDefinition.ConsumedVariables)
+        foreach (var requirement in target.TargetDefinition.Requirements.Where(requirement =>
+                     paramService.GetParam(requirement) is null or ""))
         {
-            await variableProvider.ReadVariable(variable.TargetName, variable.VariableName);
-            
-            if (paramService.GetParam(variable.VariableName) is not null)
-                continue;
-            
-            logger.LogError("Missing required variable '{VariableName}' from target {FromTarget} for target {Target}",
-                variable,
-                variable.TargetName,
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
+                requirement,
                 target.TargetDefinition.Name);
             
             executableBuild.TargetStates[target] = TargetRunState.Failed;

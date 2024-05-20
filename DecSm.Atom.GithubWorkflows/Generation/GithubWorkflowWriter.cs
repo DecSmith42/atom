@@ -149,7 +149,8 @@ public sealed class GithubWorkflowWriter(
                 using (WriteSection("outputs:"))
                 {
                     foreach (var output in outputs)
-                        WriteLine($"{output}: ${{{{ steps.{job.Name}.outputs.{output} }}}}");
+                        WriteLine(
+                            $"{buildDefinition.ParamDefinitions[output].Attribute.ArgName}: ${{{{ steps.{job.Name}.outputs.{buildDefinition.ParamDefinitions[output].Attribute.ArgName} }}}}");
                 }
             
             using (WriteSection("steps:"))
@@ -218,8 +219,8 @@ public sealed class GithubWorkflowWriter(
                         env[$"{secret.Attribute.ArgName}"] = $"${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
                     
                     foreach (var consumedVariable in target.TargetDefinition.ConsumedVariables)
-                        env[consumedVariable.VariableName] =
-                            $"${{{{ needs.{consumedVariable.TargetName}.outputs.{consumedVariable.VariableName} }}}}";
+                        env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
+                            $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
                     
                     if (env.Count > 0)
                         using (WriteSection("env:"))
