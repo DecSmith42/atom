@@ -139,6 +139,19 @@ public sealed class GithubWorkflowWriter(
             
             WriteLine("runs-on: ubuntu-latest");
             
+            var outputs = new List<string>();
+            
+            foreach (var step in job.Steps.OfType<CommandWorkflowStep>())
+                outputs.AddRange(build.Targets.Single(t => t.TargetDefinition.Name == step.Name)
+                    .TargetDefinition.ProducedVariables);
+            
+            if (outputs.Count > 0)
+                using (WriteSection("outputs:"))
+                {
+                    foreach (var output in outputs)
+                        WriteLine($"{output}: ${{{{ steps.{job.Name}.outputs.{output} }}}}");
+                }
+            
             using (WriteSection("steps:"))
             {
                 foreach (var step in job.Steps)

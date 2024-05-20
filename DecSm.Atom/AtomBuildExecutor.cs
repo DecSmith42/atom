@@ -4,6 +4,7 @@ public class AtomBuildExecutor(
     CommandLineArgs args,
     ExecutableBuild executableBuild,
     IParamService paramService,
+    IWorkflowVariableProvider variableProvider,
     IAnsiConsole console,
     ILogger<AtomBuildExecutor> logger
 )
@@ -97,6 +98,23 @@ public class AtomBuildExecutor(
         {
             logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
                 requirement,
+                target.TargetDefinition.Name);
+            
+            executableBuild.TargetStates[target] = TargetRunState.Failed;
+            
+            return;
+        }
+        
+        foreach (var variable in target.TargetDefinition.ConsumedVariables)
+        {
+            await variableProvider.ReadVariable(variable.TargetName, variable.VariableName);
+            
+            if (paramService.GetParam(variable.VariableName) is not null)
+                continue;
+            
+            logger.LogError("Missing required variable '{VariableName}' from target {FromTarget} for target {Target}",
+                variable,
+                variable.TargetName,
                 target.TargetDefinition.Name);
             
             executableBuild.TargetStates[target] = TargetRunState.Failed;

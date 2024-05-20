@@ -17,6 +17,8 @@ jobs:
   
   OutputValue:
     runs-on: ubuntu-latest
+    outputs:
+      TestValue1: ${{ steps.OutputValue.outputs.TestValue1 }}
     steps:
       
       - name: Checkout
