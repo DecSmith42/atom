@@ -201,6 +201,8 @@ public sealed class GithubWorkflowWriter(
                 
                 using (WriteSection($"- name: {commandStep.Name}"))
                 {
+                    WriteLine($"id: {commandStep.Name}");
+                    
                     WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
                     
                     var injectedSecrets = target
