@@ -218,7 +218,8 @@ public sealed class GithubWorkflowWriter(
                         env[$"{secret.Attribute.ArgName}"] = $"${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
                     
                     foreach (var consumedVariable in target.TargetDefinition.ConsumedVariables)
-                        env[consumedVariable.VariableName] = $"${{{{ needs.{commandStep.Name}.outputs.{consumedVariable.VariableName} }}}}";
+                        env[consumedVariable.VariableName] =
+                            $"${{{{ needs.{consumedVariable.TargetName}.outputs.{consumedVariable.VariableName} }}}}";
                     
                     if (env.Count > 0)
                         using (WriteSection("env:"))
