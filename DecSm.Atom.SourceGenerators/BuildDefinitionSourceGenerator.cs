@@ -97,6 +97,14 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Select(p => (p.Interface, p.Property))
                 .ToList();
             
+            // Generate a static accessor for each target
+            var targetsPropertiesBodies = interfaceTargets.Select(p =>
+                $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
+            
+            // Generate a static accessor for each CommandDefinition
+            var commandDefsPropertyBodies = interfaceTargets.Select(p =>
+                $"        public static CommandDefinition {p.Property.Name} = new(nameof({p.Interface}.{p.Property.Name}));");
+            
             // Generate the source code for the Targets property.
             var targetDefinitionsPropertyBody = interfaceTargets.Select(p =>
                 $$"""        { "{{p.Property.Name}}", (({{p.Interface}})this).{{p.Property.Name}} },""");
@@ -119,6 +127,10 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .First(a => a.AttributeClass?.Name == "ParamAttribute")))
                 .ToList();
             
+            // Generate a static accessor for each param
+            var paramsPropertiesBodies = interfaceParams.Select(p =>
+                $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
+            
             var interfaceSecretParams = classSymbol
                 .AllInterfaces
                 .SelectMany(i => i
@@ -134,6 +146,10 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .GetAttributes()
                     .First(a => a.AttributeClass?.Name == "SecretParamAttribute")))
                 .ToList();
+            
+            // Generate a static accessor for each secret param
+            var secretParamsPropertiesBodies = interfaceSecretParams.Select(p =>
+                $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
             
             // For each param, we want to get the attribute so we can pull out the info
             var paramDefinitionsPropertyBody = interfaceParams
@@ -199,6 +215,26 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          {{string.Join("\n", paramDefinitionsPropertyBody)}}
                          {{string.Join("\n", secretParamDefinitionsPropertyBody)}}
                              };
+                             
+                             public static class Targets
+                             {
+                         {{string.Join("\n\n", targetsPropertiesBodies)}}
+                             }
+                             
+                             public static class Commands
+                             {
+                         {{string.Join("\n\n", commandDefsPropertyBodies)}}
+                             }
+                             
+                             public static class Params
+                             {
+                         {{string.Join("\n\n", paramsPropertiesBodies)}}
+                             }
+                             
+                             public static class Secrets
+                             {
+                         {{string.Join("\n\n", secretParamsPropertiesBodies)}}
+                             }
                          }
                          
                          """;

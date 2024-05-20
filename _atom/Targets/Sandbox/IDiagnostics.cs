@@ -1,4 +1,4 @@
-﻿namespace Atom.Targets;
+﻿namespace Atom.Targets.Sandbox;
 
 [TargetDefinition]
 internal partial interface IDiagnostics
@@ -11,7 +11,7 @@ internal partial interface IDiagnostics
             var vars = Environment.GetEnvironmentVariables();
             var varsDisplay = (from DictionaryEntry entry in vars select $"{entry.Key}={entry.Value}").ToList();
             
-            Logger.LogInformation("Environment Variables: {@GithubUtil}", string.Join(", ", varsDisplay));
+            Logger.LogInformation("Environment Variables: {@Github}", string.Join(", ", varsDisplay));
             
             Logger.LogInformation("Diagnostics complete");
             

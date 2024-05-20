@@ -55,7 +55,7 @@ public abstract class AtomWorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<
         
         if (existingText == newText)
         {
-            logger.LogInformation("Workflow file is up to date: {FilePath}", filePath);
+            logger.LogDebug("Workflow file is up to date: {FilePath}", filePath);
             
             return;
         }

@@ -1,6 +1,6 @@
-﻿namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿namespace DecSm.Atom.GithubWorkflows;
 
-public static class GithubUtil
+public static class Github
 {
     public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
         new("dependabot")
@@ -59,6 +59,17 @@ public static class GithubUtil
         public const string RunnerTrackingId = "RUNNER_TRACKING_ID";
         public const string RunnerUser = "RUNNER_USER";
         public const string RunnerWorkspace = "RUNNER_WORKSPACE";
+    }
+    
+    public static GithubWorkflowType WorkflowType { get; } = new();
+    
+    public static class Triggers
+    {
+        public static GithubManualTrigger Manual { get; } = new();
+        
+        public static GithubPushTrigger PushToMain { get; } = new(["main"]);
+        
+        public static GithubPullRequestTrigger PullIntoMain { get; } = new(["main"]);
     }
     
     public static class Variables

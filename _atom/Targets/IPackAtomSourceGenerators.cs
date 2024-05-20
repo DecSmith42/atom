@@ -7,6 +7,6 @@ internal partial interface IPackAtomSourceGenerators : IDotnetPackHelper
     
     Target PackAtomSourceGenerators =>
         d => d
-            .Produces(AtomSourceGeneratorsProjectName)
+            .ProducesArtifact(AtomSourceGeneratorsProjectName)
             .Executes(() => DotnetPackProject(AtomSourceGeneratorsProjectName));
 }

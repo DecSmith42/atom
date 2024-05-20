@@ -1,4 +1,4 @@
-﻿var builder = AtomHost.CreateAtomBuilder<Build>(args, atom => atom.AddGithubWorkflows());
+﻿var builder = AtomHost.CreateAtomBuilder<Build>(args, atom => atom.AddGithub());
 
 var app = builder.Build();
 

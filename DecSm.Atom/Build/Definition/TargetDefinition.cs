@@ -14,6 +14,10 @@ public sealed class TargetDefinition
     
     public List<(string ArtifactName, string? ArtifactPath)> ProducedArtifacts { get; } = [];
     
+    public List<(string TargetName, string VariableName)> ConsumedVariables { get; } = [];
+    
+    public List<string> ProducedVariables { get; } = [];
+    
     public TargetDefinition Executes(Func<Task> task)
     {
         if (Tasks.Contains(task))
@@ -39,7 +43,7 @@ public sealed class TargetDefinition
         return this;
     }
     
-    public TargetDefinition Requires(Expression<Func<string?>> requirement)
+    public TargetDefinition RequiresParam(Expression<Func<string?>> requirement)
     {
         if (requirement.Body is not MemberExpression)
             throw new ArgumentException("Invalid expression type.");
@@ -49,14 +53,14 @@ public sealed class TargetDefinition
         return this;
     }
     
-    public TargetDefinition Produces(string artifactName, string? artifactPath = null)
+    public TargetDefinition ProducesArtifact(string artifactName, string? artifactPath = null)
     {
         ProducedArtifacts.Add((artifactName, artifactPath));
         
         return this;
     }
     
-    public TargetDefinition Consumes<T>(string artifactName)
+    public TargetDefinition ConsumesArtifact<T>(string artifactName)
         where T : IAtomBuildDefinition
     {
         var name = typeof(T).Name;
@@ -65,6 +69,26 @@ public sealed class TargetDefinition
             name = name[1..];
         
         ConsumedArtifacts.Add((name, artifactName));
+        
+        return this;
+    }
+    
+    public TargetDefinition ProducesVariable(string variableName)
+    {
+        ProducedVariables.Add(variableName);
+        
+        return this;
+    }
+    
+    public TargetDefinition ConsumesVariable<T>(string outputName)
+        where T : IAtomBuildDefinition
+    {
+        var name = typeof(T).Name;
+        
+        if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
+            name = name[1..];
+        
+        ConsumedVariables.Add((name, outputName));
         
         return this;
     }

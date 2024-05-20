@@ -1,11 +1,17 @@
 ﻿namespace Atom;
 
 [BuildDefinition]
-internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSourceGenerators, IPushToNuget, IDiagnostics, IPackAtomTool
+internal partial class Build : IPackAtom,
+    IPackAtomGithubWorkflows,
+    IPackAtomSourceGenerators,
+    IPushToNuget,
+    IDiagnostics,
+    IPackAtomTool,
+    IInputValue
 {
     public override WorkflowDefinition[] Workflows =>
     [
-        GithubUtil.DependabotWorkflow(new()
+        Github.DependabotWorkflow(new()
         {
             Registries = [new("nuget", DependabotValues.NugetType, DependabotValues.NugetUrl)],
             Updates =
@@ -25,29 +31,32 @@ internal partial class Build : IPackAtom, IPackAtomGithubWorkflows, IPackAtomSou
         }),
         new("Validate")
         {
-            Triggers = [new GithubManualTrigger(), new GithubPullRequestTrigger(["main"])],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
             StepDefinitions =
             [
-                new CommandDefinition(nameof(IDiagnostics.Diagnostics)),
-                new CommandDefinition(nameof(IPackAtom.PackAtom)),
-                new CommandDefinition(nameof(IPackAtomGithubWorkflows.PackAtomGithubWorkflows)),
-                new CommandDefinition(nameof(IPackAtomSourceGenerators.PackAtomSourceGenerators)),
+                Commands.PackAtom, Commands.PackAtomTool, Commands.PackAtomGithubWorkflows, Commands.PackAtomSourceGenerators,
             ],
-            WorkflowTypes = [new GithubWorkflowType()],
+            WorkflowTypes = [Github.WorkflowType],
         },
         new("Build")
         {
-            Triggers = [new GithubManualTrigger(), new GithubPushTrigger(["main"])],
-            Options = [new InjectGithubSecret(nameof(IPushToNuget.NugetApiKey))],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            Options = [new InjectGithubSecret(Secrets.NugetApiKey)],
             StepDefinitions =
             [
-                new CommandDefinition(nameof(IDiagnostics.Diagnostics)),
-                new CommandDefinition(nameof(IPackAtom.PackAtom)),
-                new CommandDefinition(nameof(IPackAtomGithubWorkflows.PackAtomGithubWorkflows)),
-                new CommandDefinition(nameof(IPackAtomSourceGenerators.PackAtomSourceGenerators)),
-                new CommandDefinition(nameof(IPushToNuget.PushToNuget)),
+                Commands.PackAtom,
+                Commands.PackAtomTool,
+                Commands.PackAtomGithubWorkflows,
+                Commands.PackAtomSourceGenerators,
+                Commands.PushToNuget,
             ],
-            WorkflowTypes = [new GithubWorkflowType()],
+            WorkflowTypes = [Github.WorkflowType],
+        },
+        new("Sandbox")
+        {
+            Triggers = [Github.Triggers.Manual],
+            StepDefinitions = [Commands.Diagnostics, Commands.InputValue],
+            WorkflowTypes = [Github.WorkflowType],
         },
     ];
 }
