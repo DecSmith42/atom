@@ -88,6 +88,9 @@ public static class BuildResolver
             var modified = true;
             
             while (modified)
+            {
+                modified = false;
+                
                 foreach (var target in depthFirstTargets
                              .Where(dependency => targetStates[dependency].Status is not TargetRunState.PendingRun)
                              .ToArray())
@@ -103,6 +106,7 @@ public static class BuildResolver
                     
                     modified = true;
                 }
+            }
         }
         
         // Mark all targets that are not pending run as pending skip
