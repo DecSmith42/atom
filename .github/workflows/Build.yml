@@ -17,7 +17,7 @@ jobs:
       
       - name: PackAtom
         id: PackAtom
-        run: dotnet run --project _atom/_atom.csproj PackAtom --skip
+        run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
       
       - name: Upload DecSm.Atom
         uses: actions/upload-artifact@v4
@@ -34,7 +34,7 @@ jobs:
       
       - name: PackAtomTool
         id: PackAtomTool
-        run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip
+        run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
       
       - name: Upload DecSm.Atom.Tool
         uses: actions/upload-artifact@v4
@@ -51,7 +51,7 @@ jobs:
       
       - name: PackAtomGithubWorkflows
         id: PackAtomGithubWorkflows
-        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip
+        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip --headless
       
       - name: Upload DecSm.Atom.GithubWorkflows
         uses: actions/upload-artifact@v4
@@ -68,7 +68,7 @@ jobs:
       
       - name: PackAtomSourceGenerators
         id: PackAtomSourceGenerators
-        run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip
+        run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip --headless
       
       - name: Upload DecSm.Atom.SourceGenerators
         uses: actions/upload-artifact@v4
@@ -110,7 +110,7 @@ jobs:
       
       - name: PushToNuget
         id: PushToNuget
-        run: dotnet run --project _atom/_atom.csproj PushToNuget --skip
+        run: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         env:
           nuget-api-key: ${{ secrets.NUGET_API_KEY }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}

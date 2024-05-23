@@ -204,7 +204,7 @@ public sealed class GithubWorkflowWriter(
                 {
                     WriteLine($"id: {commandStep.Name}");
                     
-                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
+                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
                     
                     var env = new Dictionary<string, string>();
                     
