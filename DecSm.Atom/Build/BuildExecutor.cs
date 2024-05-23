@@ -22,14 +22,18 @@ public class BuildExecutor(
         
         logger.LogInformation("Executing build");
         
-        await console
-            .Status()
-            .StartAsync("Executing build...",
-                async context =>
-                {
-                    foreach (var command in commands)
-                        await ExecuteTarget(buildModel.GetTarget(command.Name), context);
-                });
+        if (!args.HasHeadless)
+            await console
+                .Status()
+                .StartAsync("Executing build...",
+                    async context =>
+                    {
+                        foreach (var command in commands)
+                            await ExecuteTarget(buildModel.GetTarget(command.Name), context);
+                    });
+        else
+            foreach (var command in commands)
+                await ExecuteTarget(buildModel.GetTarget(command.Name));
         
         var table = new Table()
             .Title("Build Summary")
@@ -69,7 +73,7 @@ public class BuildExecutor(
         console.WriteLine();
     }
     
-    private async Task ExecuteTarget(TargetModel target, StatusContext context)
+    private async Task ExecuteTarget(TargetModel target, StatusContext? context = null)
     {
         if (buildModel.TargetStates[target].Status is not TargetRunState.PendingRun)
             return;
@@ -102,12 +106,9 @@ public class BuildExecutor(
             return;
         }
         
-        foreach (var requirement in target.RequiredParams.Where(requirement =>
-                     paramService.GetParam(requirement) is null or ""))
+        foreach (var requirement in target.RequiredParams.Where(requirement => paramService.GetParam(requirement) is null or ""))
         {
-            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
-                requirement,
-                target.Name);
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
             
             buildModel.TargetStates[target].Status = TargetRunState.Failed;
             
@@ -117,9 +118,18 @@ public class BuildExecutor(
         buildModel.TargetStates[target].Status = TargetRunState.Running;
         
         var startTime = Stopwatch.GetTimestamp();
-        context.Status($"Executing [bold]{target.Name}[/]...");
-        context.Spinner(Spinner.Known.Star);
-        context.SpinnerStyle(Style.Parse("green"));
+        
+        if (context is not null)
+        {
+            context.Status($"Executing [bold]{target.Name}[/]...");
+            context.Spinner(Spinner.Known.Star);
+            context.SpinnerStyle(Style.Parse("green"));
+        }
+        else
+        {
+            logger.LogInformation("Executing target {TargetDefinitionName}", target.Name);
+        }
+        
         
         using (logger.BeginScope(new Dictionary<string, object>
                {
