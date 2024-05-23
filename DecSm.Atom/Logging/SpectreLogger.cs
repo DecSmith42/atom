@@ -134,7 +134,7 @@ public sealed class SpectreLogger(string categoryName, IExternalScopeProvider? s
     
     private string FormatCategoryName(string name, string? command)
     {
-        if (name == typeof(AtomBuildService).FullName)
+        if (name == typeof(AtomService).FullName)
             return "Atom";
         
         if (command is not null)

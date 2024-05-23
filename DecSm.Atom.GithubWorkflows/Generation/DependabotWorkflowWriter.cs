@@ -1,7 +1,9 @@
-﻿namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿using DecSm.Atom.Workflows.Writer;
+
+namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class DependabotWorkflowWriter(IFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
-    : AtomWorkflowFileWriter<DependabotWorkflowType>(fileSystem, logger)
+    : WorkflowFileWriter<DependabotWorkflowType>(fileSystem, logger)
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     
@@ -11,7 +13,7 @@ public sealed class DependabotWorkflowWriter(IFileSystem fileSystem, ILogger<Dep
     
     protected override AbsolutePath FileLocation => _fileSystem.SolutionRoot() / ".github";
     
-    protected override void WriteWorkflow(Workflow workflow)
+    protected override void WriteWorkflow(WorkflowModel workflow)
     {
         var dependabot = workflow
             .Options

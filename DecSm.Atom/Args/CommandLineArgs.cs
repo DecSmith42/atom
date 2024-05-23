@@ -8,6 +8,8 @@ public sealed record CommandLineArgs(IArg[] Args)
     
     public bool HasSkip => Args.Any(arg => arg is SkipArg);
     
+    public bool HasHeadless => Args.Any(arg => arg is HeadlessArg);
+    
     public ParamArg[] Params =>
         Args
             .OfType<ParamArg>()

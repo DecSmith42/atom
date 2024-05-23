@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IOutputValue
 {
-    [Param("test-value-1", "Test value to be passed between jobs")]
+    [ParamDefinition("test-value-1", "Test value to be passed between jobs")]
     string TestValue1 => GetParam(() => TestValue1)!;
     
     Target OutputValue =>

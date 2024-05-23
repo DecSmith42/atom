@@ -2,7 +2,7 @@
 
 public static class CommandLineArgsParser
 {
-    public static CommandLineArgs Parse(string[] rawArgs, IAtomBuildDefinition buildDefinition)
+    public static CommandLineArgs Parse(string[] rawArgs, IBuildDefinition buildDefinition)
     {
         List<IArg> args = [];
         
@@ -37,6 +37,15 @@ public static class CommandLineArgsParser
                 continue;
             }
             
+            //Headless
+            if (string.Equals(rawArg, "-hl", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(rawArg, "--headless", StringComparison.OrdinalIgnoreCase))
+            {
+                args.Add(new HeadlessArg());
+                
+                continue;
+            }
+            
             // Params
             if (rawArg.StartsWith("--"))
             {
@@ -51,7 +60,7 @@ public static class CommandLineArgsParser
                     
                     var nextArg = rawArgs[i + 1];
                     
-                    if (nextArg.StartsWith("--") || nextArg.StartsWith("-"))
+                    if (nextArg.StartsWith("--"))
                         throw new ArgumentException($"Missing value for parameter '{argParam}'");
                     
                     args.Add(new ParamArg(buildParam.Value.Attribute.ArgName, buildParam.Key, nextArg));
@@ -87,4 +96,10 @@ public static class CommandLineArgsParser
         
         return new(args.ToArray());
     }
+    
+    public static (string[] specifiedTargets, bool includeDependencies) ParseSpecifiedBuildTargets(CommandLineArgs args) =>
+        (args
+            .Commands
+            .Select(x => x.Name)
+            .ToArray(), !args.HasSkip);
 }

@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.GithubWorkflows;
+﻿using DecSm.Atom.Variables;
+
+namespace DecSm.Atom.GithubWorkflows;
 
 public class GithubVariableProvider(IFileSystem fileSystem, ILogger<GithubVariableProvider> logger)
     : IWorkflowVariableProvider<GithubWorkflowType>

@@ -1,8 +1,12 @@
-﻿namespace DecSm.Atom.GithubWorkflows;
+﻿using DecSm.Atom.Setup;
+using DecSm.Atom.Variables;
+using DecSm.Atom.Workflows.Writer;
+
+namespace DecSm.Atom.GithubWorkflows;
 
 public static class GithubWorkflowWriterConfiguratorExtensions
 {
-    public static IAtomConfigurator AddGithub(this IAtomConfigurator configurator)
+    public static IAtomConfigurator AddGithubWorkflows(this IAtomConfigurator configurator)
     {
         configurator.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IAtomWorkflowWriter),
             typeof(GithubWorkflowWriter),

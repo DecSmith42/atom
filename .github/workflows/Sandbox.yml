@@ -42,3 +42,19 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj InputValue --skip
         env:
           test-value-1: ${{ needs.OutputValue.outputs.test-value-1 }}
+  
+  GetVaultSecret:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: GetVaultSecret
+        id: GetVaultSecret
+        run: dotnet run --project _atom/_atom.csproj GetVaultSecret --skip
+        env:
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
