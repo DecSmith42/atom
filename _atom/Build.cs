@@ -17,7 +17,7 @@ internal partial class Build : IAzureKeyVault,
     [
         new("Validate")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.PackAtom, Commands.PackAtomTool, Commands.PackAtomGithubWorkflows, Commands.PackAtomSourceGenerators,
@@ -26,7 +26,7 @@ internal partial class Build : IAzureKeyVault,
         },
         new("Build")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
             Options = [new WorkflowSecretInjection(Secrets.NugetApiKey)],
             StepDefinitions =
             [
