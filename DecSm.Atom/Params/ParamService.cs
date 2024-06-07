@@ -9,7 +9,7 @@ internal sealed class ParamService(
 {
     private readonly Dictionary<ParamDefinition, string?> _cache = [];
     private readonly IVaultProvider[] _vaultProviders = vaultProviders.ToArray();
-    private readonly string[] _knownSecrets = [];
+    private readonly List<string> _knownSecrets = [];
     
     public string MaskSecrets(string text) =>
         _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
@@ -82,8 +82,12 @@ internal sealed class ParamService(
         {
             var vaultValue = vaultProvider.GetSecret(paramDefinition.Attribute.ArgName);
             
-            if (vaultValue is not null)
-                return _cache[paramDefinition] = vaultValue;
+            if (vaultValue is null)
+                continue;
+            
+            _knownSecrets.Add(vaultValue);
+            
+            return _cache[paramDefinition] = vaultValue;
         }
         
         return _cache[paramDefinition] = null;
