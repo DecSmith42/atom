@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Logging;
 
-public sealed class SpectreLogger(string categoryName, IExternalScopeProvider? scopeProvider) : ILogger
+internal sealed class SpectreLogger(string categoryName, IExternalScopeProvider? scopeProvider) : ILogger
 {
     public bool IsEnabled(LogLevel logLevel) =>
         logLevel != LogLevel.None;
@@ -98,6 +98,9 @@ public sealed class SpectreLogger(string categoryName, IExternalScopeProvider? s
             
             message = message.EscapeMarkup();
             
+            // If the text contains any secrets, we don't want to log it
+            message = ParamServiceAccessor.Service?.MaskSecrets(message) ?? message;
+            
             messageStyle = Regex.IsMatch(message, "error|exception|fail", RegexOptions.IgnoreCase)
                 ? "red"
                 : "dim";
@@ -134,7 +137,7 @@ public sealed class SpectreLogger(string categoryName, IExternalScopeProvider? s
     
     private string FormatCategoryName(string name, string? command)
     {
-        if (name == typeof(AtomBuildService).FullName)
+        if (name == typeof(AtomService).FullName)
             return "Atom";
         
         if (command is not null)

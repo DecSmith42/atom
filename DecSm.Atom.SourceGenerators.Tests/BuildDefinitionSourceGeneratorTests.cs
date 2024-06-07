@@ -51,7 +51,7 @@ partial class Vector3
             new[]
             {
                 // To support 'System.Attribute' inheritance, add reference to 'System.Private.CoreLib'.
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location)
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
             });
 
         // Run generators and retrieve all results.

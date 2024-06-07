@@ -1,26 +1,21 @@
 ﻿namespace DecSm.Atom.Cheatsheet;
 
-public class CheatsheetService(IAnsiConsole console, ExecutableBuild executableBuild) : ICheatsheetService
+internal class CheatsheetService(IAnsiConsole console, BuildModel buildModel) : ICheatsheetService
 {
     public void ShowCheatsheet()
     {
-        var plan = executableBuild;
-        
         console.WriteLine("Cheatsheet:");
         console.WriteLine();
         
-        foreach (var target in plan.Targets)
+        foreach (var target in buildModel.Targets)
         {
-            console.WriteLine($"Target: {target.TargetDefinition.Name}");
+            console.WriteLine($"Target: {target.Name}");
             
             if (target.Dependencies.Count != 0)
-                console.WriteLine($"  Dependencies: {string.Join(", ", target.Dependencies.Select(x => x.TargetDefinition.Name))}");
+                console.WriteLine($"  Dependencies: {string.Join(", ", target.Dependencies.Select(x => x.Name))}");
             
-            if (target.Dependents.Count != 0)
-                console.WriteLine($"  Dependents: {string.Join(", ", target.Dependents.Select(x => x.TargetDefinition.Name))}");
-            
-            if (target.TargetDefinition.Requirements.Count != 0)
-                console.WriteLine($"  Requirements: {string.Join(", ", target.TargetDefinition.Requirements)}");
+            if (target.RequiredParams.Count != 0)
+                console.WriteLine($"  RequiredParams: {string.Join(", ", target.RequiredParams)}");
             
             console.WriteLine();
         }

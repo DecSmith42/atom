@@ -8,13 +8,13 @@ public sealed class TargetDefinition
     
     public List<string> Dependencies { get; } = [];
     
-    public List<Expression<Func<string?>>> Requirements { get; } = [];
+    public List<string> RequiredParams { get; } = [];
     
-    public List<(string TargetName, string ArtifactName)> ConsumedArtifacts { get; } = [];
+    public List<ConsumedArtifact> ConsumedArtifacts { get; } = [];
     
-    public List<(string ArtifactName, string? ArtifactPath)> ProducedArtifacts { get; } = [];
+    public List<ProducedArtifact> ProducedArtifacts { get; } = [];
     
-    public List<(string TargetName, string VariableName)> ConsumedVariables { get; } = [];
+    public List<ConsumedVariable> ConsumedVariables { get; } = [];
     
     public List<string> ProducedVariables { get; } = [];
     
@@ -43,32 +43,31 @@ public sealed class TargetDefinition
         return this;
     }
     
-    public TargetDefinition RequiresParam(Expression<Func<string?>> requirement)
+    public TargetDefinition RequiresParam(string? param, [CallerArgumentExpression("param")] string _ = null!)
     {
-        if (requirement.Body is not MemberExpression)
-            throw new ArgumentException("Invalid expression type.");
-        
-        Requirements.Add(requirement);
+        RequiredParams.Add(_
+            .Split('.')
+            .Last());
         
         return this;
     }
     
     public TargetDefinition ProducesArtifact(string artifactName, string? artifactPath = null)
     {
-        ProducedArtifacts.Add((artifactName, artifactPath));
+        ProducedArtifacts.Add(new(artifactName, artifactPath));
         
         return this;
     }
     
     public TargetDefinition ConsumesArtifact<T>(string artifactName)
-        where T : IAtomBuildDefinition
+        where T : IBuildDefinition
     {
         var name = typeof(T).Name;
         
         if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
             name = name[1..];
         
-        ConsumedArtifacts.Add((name, artifactName));
+        ConsumedArtifacts.Add(new(name, artifactName));
         
         return this;
     }
@@ -81,14 +80,14 @@ public sealed class TargetDefinition
     }
     
     public TargetDefinition ConsumesVariable<T>(string outputName)
-        where T : IAtomBuildDefinition
+        where T : IBuildDefinition
     {
         var name = typeof(T).Name;
         
         if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
             name = name[1..];
         
-        ConsumedVariables.Add((name, outputName));
+        ConsumedVariables.Add(new(name, outputName));
         
         return this;
     }

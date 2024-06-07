@@ -48,4 +48,9 @@ public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
         FileExists
             ? FileSystem.Path.GetExtension(Path)
             : null;
+    
+    public string? DirectoryName =>
+        DirectoryExists
+            ? FileSystem.Path.GetDirectoryName(Path)!
+            : null;
 }

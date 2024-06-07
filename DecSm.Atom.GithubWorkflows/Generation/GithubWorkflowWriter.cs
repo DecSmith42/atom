@@ -1,14 +1,15 @@
-﻿using System.Linq.Expressions;
+﻿using DecSm.Atom.Build.Definition;
 using DecSm.Atom.Workflows.Definition.Command;
+using DecSm.Atom.Workflows.Writer;
 
 namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
     IFileSystem fileSystem,
-    IAtomBuildDefinition buildDefinition,
-    ExecutableBuild build,
+    IBuildDefinition buildDefinition,
+    BuildModel buildModel,
     ILogger<GithubWorkflowWriter> logger
-) : AtomWorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
+) : WorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     
@@ -18,7 +19,7 @@ public sealed class GithubWorkflowWriter(
     
     protected override AbsolutePath FileLocation => _fileSystem.SolutionRoot() / ".github" / "workflows";
     
-    protected override void WriteWorkflow(Workflow workflow)
+    protected override void WriteWorkflow(WorkflowModel workflow)
     {
         WriteLine($"name: {workflow.Name}");
         WriteLine();
@@ -127,7 +128,7 @@ public sealed class GithubWorkflowWriter(
         }
     }
     
-    private void WriteJob(Workflow workflow, WorkflowJob job)
+    private void WriteJob(WorkflowModel workflow, WorkflowJobModel job)
     {
         using (WriteSection($"{job.Name}:"))
         {
@@ -138,6 +139,20 @@ public sealed class GithubWorkflowWriter(
             }
             
             WriteLine("runs-on: ubuntu-latest");
+            
+            var outputs = new List<string>();
+            
+            foreach (var step in job.Steps.OfType<CommandWorkflowStep>())
+                outputs.AddRange(buildModel.Targets.Single(t => t.Name == step.Name)
+                    .ProducedVariables);
+            
+            if (outputs.Count > 0)
+                using (WriteSection("outputs:"))
+                {
+                    foreach (var output in outputs)
+                        WriteLine(
+                            $"{buildDefinition.ParamDefinitions[output].Attribute.ArgName}: ${{{{ steps.{job.Name}.outputs.{buildDefinition.ParamDefinitions[output].Attribute.ArgName} }}}}");
+                }
             
             using (WriteSection("steps:"))
             {
@@ -150,7 +165,7 @@ public sealed class GithubWorkflowWriter(
         }
     }
     
-    private void WriteStep(Workflow workflow, WorkflowJob job, IWorkflowStep step)
+    private void WriteStep(WorkflowModel workflow, WorkflowJobModel job, IWorkflowStepModel step)
     {
         switch (step)
         {
@@ -164,12 +179,12 @@ public sealed class GithubWorkflowWriter(
                 // WriteLine("  uses: actions/setup-dotnet@v4");
                 // WriteLine();
                 
-                var target = build.Targets.Single(t => t.TargetDefinition.Name == commandStep.Name);
+                var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
                 
                 var assemblyName = Assembly.GetEntryAssembly()!.GetName()
                     .Name!;
                 
-                foreach (var artifact in target.TargetDefinition.ConsumedArtifacts)
+                foreach (var artifact in target.ConsumedArtifacts)
                 {
                     using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                     {
@@ -187,25 +202,28 @@ public sealed class GithubWorkflowWriter(
                 
                 using (WriteSection($"- name: {commandStep.Name}"))
                 {
-                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip");
+                    WriteLine($"id: {commandStep.Name}");
                     
-                    var injectedSecrets = target
-                        .TargetDefinition
-                        .Requirements
-                        .Select(x => buildDefinition.ParamDefinitions[(x.Body as MemberExpression)!.Member.Name])
-                        .Where(paramDef => workflow
-                            .Options
-                            .OfType<InjectGithubSecret>()
-                            .Any(injection => injection.Name == paramDef.Name))
-                        .ToArray();
+                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
                     
                     var env = new Dictionary<string, string>();
                     
-                    foreach (var secret in injectedSecrets)
-                        env[$"{secret.Attribute.ArgName}"] = $"${{{{ secrets.{secret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    foreach (var consumedVariable in target.ConsumedVariables)
+                        env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
+                            $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
                     
-                    foreach (var consumedVariable in target.TargetDefinition.ConsumedVariables)
-                        env[consumedVariable.VariableName] = $"${{{{ needs.{commandStep.Name}.outputs.{consumedVariable.VariableName} }}}}";
+                    if (target
+                        .RequiredParams
+                        .Select(x => buildDefinition.ParamDefinitions[x].Attribute.IsSecret)
+                        .Any())
+                        foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretInjection>())
+                        {
+                            var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
+                            
+                            if (paramDefinition is not null)
+                                env[paramDefinition.Attribute.ArgName] =
+                                    $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        }
                     
                     if (env.Count > 0)
                         using (WriteSection("env:"))
@@ -213,7 +231,7 @@ public sealed class GithubWorkflowWriter(
                                 WriteLine($"{key}: {value}");
                 }
                 
-                foreach (var artifact in target.TargetDefinition.ProducedArtifacts)
+                foreach (var artifact in target.ProducedArtifacts)
                 {
                     WriteLine();
                     

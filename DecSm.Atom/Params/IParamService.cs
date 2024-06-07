@@ -5,5 +5,6 @@ public interface IParamService
     string? GetParam(Expression<Func<string?>> paramExpression);
     
     string? GetParam(string paramName);
-    string? GetParam(ParamDefinition paramDefinition);
+    
+    string MaskSecrets(string text);
 }
