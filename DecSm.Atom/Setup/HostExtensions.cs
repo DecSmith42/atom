@@ -2,11 +2,11 @@
 
 public static class HostExtensions
 {
-    public static IAtomConfigurator AddAtom<T>(this IHostApplicationBuilder builder, string[] args)
+    public static IAtomConfiguration AddAtom<T>(this IHostApplicationBuilder builder, string[] args)
         where T : BuildDefinition
     {
-        var configurator = new AtomConfigurator(builder);
-        builder.Services.AddSingleton<IAtomConfigurator>(configurator);
+        var configurator = new AtomConfiguration(builder);
+        builder.Services.AddSingleton<IAtomConfiguration>(configurator);
         
         builder.Services.TryAddSingleton<IBuildDefinition, T>();
         builder.Services.AddHostedService<AtomService>();
@@ -15,7 +15,11 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<WorkflowGenerator>();
         
         builder.Services.TryAddSingleton<IFileSystem, FileSystem>();
-        builder.Services.TryAddSingleton<IParamService, ParamService>();
+        builder.Services.TryAddSingleton<ParamService>();
+        
+        builder.Services.TryAddSingleton<IParamService>(services =>
+            ParamServiceAccessor.Service = services.GetRequiredService<ParamService>());
+        
         builder.Services.TryAddSingleton(new RawCommandLineArgs(args));
         
         builder.Services.TryAddSingleton<CommandLineArgs>(services =>

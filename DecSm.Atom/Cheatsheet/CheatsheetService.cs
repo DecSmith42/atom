@@ -1,15 +1,13 @@
 ﻿namespace DecSm.Atom.Cheatsheet;
 
-public class CheatsheetService(IAnsiConsole console, BuildModel buildModel) : ICheatsheetService
+internal class CheatsheetService(IAnsiConsole console, BuildModel buildModel) : ICheatsheetService
 {
     public void ShowCheatsheet()
     {
-        var plan = buildModel;
-        
         console.WriteLine("Cheatsheet:");
         console.WriteLine();
         
-        foreach (var target in plan.Targets)
+        foreach (var target in buildModel.Targets)
         {
             console.WriteLine($"Target: {target.Name}");
             

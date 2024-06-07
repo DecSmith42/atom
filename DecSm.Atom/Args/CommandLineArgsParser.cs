@@ -96,10 +96,4 @@ public static class CommandLineArgsParser
         
         return new(args.ToArray());
     }
-    
-    public static (string[] specifiedTargets, bool includeDependencies) ParseSpecifiedBuildTargets(CommandLineArgs args) =>
-        (args
-            .Commands
-            .Select(x => x.Name)
-            .ToArray(), !args.HasSkip);
 }

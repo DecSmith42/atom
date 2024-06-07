@@ -1,6 +1,6 @@
 namespace DecSm.Atom.Setup;
 
-public class AtomConfigurator(IHostApplicationBuilder builder) : IAtomConfigurator
+public class AtomConfiguration(IHostApplicationBuilder builder) : IAtomConfiguration
 {
     public IHostApplicationBuilder Builder => builder;
 }

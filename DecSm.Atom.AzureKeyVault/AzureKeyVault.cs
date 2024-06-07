@@ -2,13 +2,13 @@ namespace DecSm.Atom.AzureKeyVault;
 
 public static class AzureKeyVault
 {
-    public static IAtomConfigurator AddAzureKeyVault(this IAtomConfigurator configurator)
+    public static IAtomConfiguration AddAzureKeyVault(this IAtomConfiguration configuration)
     {
-        configurator.Builder.Services.AddSingleton<AzureKeyVaultProvider>();
-        configurator.Builder.Services.AddSingleton<IVaultProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
-        configurator.Builder.Services.AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
+        configuration.Builder.Services.AddSingleton<AzureKeyVaultProvider>();
+        configuration.Builder.Services.AddSingleton<IVaultProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
+        configuration.Builder.Services.AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
         
-        return configurator;
+        return configuration;
     }
     
     public static UseAzureKeyVault UseAzureKeyVault => new();

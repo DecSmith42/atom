@@ -2,7 +2,7 @@
 
 public static class AtomHost
 {
-    public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args, Action<IAtomConfigurator>? configureAtom = null)
+    public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args, Action<IAtomConfiguration>? configureAtom = null)
         where T : BuildDefinition
     {
         var builder = Host.CreateEmptyApplicationBuilder(new()

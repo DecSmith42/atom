@@ -15,6 +15,7 @@ global using DecSm.Atom.Logging;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;
+global using DecSm.Atom.Vault;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;

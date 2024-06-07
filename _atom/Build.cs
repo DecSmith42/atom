@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.AzureKeyVault;
-
-namespace Atom;
+﻿namespace Atom;
 
 [BuildDefinition]
 internal partial class Build : IAzureKeyVault,

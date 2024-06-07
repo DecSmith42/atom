@@ -1,8 +1,6 @@
-﻿using DecSm.Atom.Vault;
+﻿namespace DecSm.Atom.Params;
 
-namespace DecSm.Atom.Params;
-
-public class ParamService(
+internal sealed class ParamService(
     IBuildDefinition buildDefinition,
     CommandLineArgs args,
     IConfiguration config,
@@ -11,6 +9,10 @@ public class ParamService(
 {
     private readonly Dictionary<ParamDefinition, string?> _cache = [];
     private readonly IVaultProvider[] _vaultProviders = vaultProviders.ToArray();
+    private readonly string[] _knownSecrets = [];
+    
+    public string MaskSecrets(string text) =>
+        _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
     
     public string? GetParam(Expression<Func<string?>> paramExpression)
     {

@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IProcessHelper
 {
-    async Task RunProcess(string name, string args, string? workingDirectory = null)
+    async Task RunProcess(string name, string args, string? workingDirectory = null, bool logInvocation = true)
     {
         var process = new Process
         {
@@ -20,6 +20,9 @@ public partial interface IProcessHelper
         {
             process.OutputDataReceived += LogOutput;
             process.ErrorDataReceived += LogError;
+            
+            if (logInvocation)
+                Logger.LogInformation("Invoking process {Name} {Args}", name, args);
             
             using (Logger.BeginScope(new Dictionary<string, object>
                    {

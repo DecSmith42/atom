@@ -1,6 +1,6 @@
 namespace DecSm.Atom.Setup;
 
-public interface IAtomConfigurator
+public interface IAtomConfiguration
 {
     IHostApplicationBuilder Builder { get; }
 }
