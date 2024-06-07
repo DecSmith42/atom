@@ -2,10 +2,15 @@
     <PropertyGroup>
         <Product>Atom</Product>
         <Authors>Declan Smith</Authors>
+        
         <Version>1.0.0</Version>
+        <Suffix>alpha</Suffix>
+        <Build>3</Build>
+
+        <PackageVersion Condition="'$(Suffix)' != ''">$(Version)-$(Suffix).$(Build)</PackageVersion>
+        <PackageVersion Condition="'$(Suffix)' == ''">$(Version)</PackageVersion>        
         <AssemblyVersion>$(Version)</AssemblyVersion>
-        <PackageVersion>1.0.0-alpha.2</PackageVersion>
-        <FileVersion>1.0.0.2</FileVersion>
+        <FileVersion>1.0.0.$(Build)</FileVersion>
         <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
 </Project>
