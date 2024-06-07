@@ -26,20 +26,62 @@ public partial interface IVersionHelper
         {
             var text = FileSystem.File.ReadAllText(projectPropertyFile);
             
-            // First, look for PackageVersion
-            var match = Regex.Match(text, "<PackageVersion>(.*)</PackageVersion>");
+            var packageVersion = GetPackageVersionComponent(text);
             
-            if (match is { Success: true, Groups.Count: > 1 } && match.Groups[1].Value != "$(Version)")
-                return match.Groups[1].Value;
-            
-            // If not found, look for Version
-            match = Regex.Match(text, "<Version>(.*)</Version>");
-            
-            if (match is { Success: true, Groups.Count: > 1 })
-                return match.Groups[1].Value;
+            if (packageVersion != null)
+                return packageVersion;
         }
         
         throw new InvalidOperationException("Could not find PackageVersion in .csproj or any Directory.Build.props file");
+    }
+    
+    string? GetPackageVersionComponent(string text)
+    {
+        var packageVersionMatch = Regex.Match(text, "<PackageVersion>(.*)</PackageVersion>");
+        
+        if (packageVersionMatch is { Success: true, Groups.Count: > 1 })
+            return packageVersionMatch
+                .Groups[1]
+                .Value
+                .Replace("$(Version)", GetVersionComponent(text))
+                .Replace("$(VersionPrefix)", GetVersionPrefixComponent(text))
+                .Replace("$(VersionSuffix)", GetVersionSuffixComponent(text));
+        
+        return null;
+    }
+    
+    string? GetVersionComponent(string text)
+    {
+        var versionMatch = Regex.Match(text, "<Version>(.*)</Version>");
+        
+        if (versionMatch is { Success: true, Groups.Count: > 1 })
+            return versionMatch
+                .Groups[1]
+                .Value
+                .Replace("$(VersionPrefix)", GetVersionPrefixComponent(text))
+                .Replace("$(VersionSuffix)", GetVersionSuffixComponent(text));
+        
+        return null;
+    }
+    
+    string GetVersionPrefixComponent(string text)
+    {
+        var versionMatch = Regex.Match(text, "<VersionPrefix>(.*)</VersionPrefix>");
+        
+        if (versionMatch is { Success: true, Groups.Count: > 1 })
+            return versionMatch.Groups[1].Value;
+        
+        return string.Empty;
+    }
+    
+    string GetVersionSuffixComponent(string text)
+    {
+        var versionMatch = Regex.Match(text, "<VersionSuffix>(.*)</VersionSuffix>");
+        
+        if (versionMatch is { Success: true, Groups.Count: > 1 })
+            return versionMatch.Groups[1].Value;
+        
+        return string.Empty;
     }
     
     string GetProjectBaseVersion(AbsolutePath project)
@@ -66,10 +108,10 @@ public partial interface IVersionHelper
             var text = FileSystem.File.ReadAllText(projectPropertyFile);
             
             // Look for Version
-            var match = Regex.Match(text, "<Version>(.*)</Version>");
+            var versionMatch = Regex.Match(text, "<Version>(.*)</Version>");
             
-            if (match is { Success: true, Groups.Count: > 1 })
-                return match.Groups[1].Value;
+            if (versionMatch is { Success: true, Groups.Count: > 1 })
+                return versionMatch.Groups[1].Value;
         }
         
         throw new InvalidOperationException("Could not find Version in .csproj or any Directory.Build.props file");
