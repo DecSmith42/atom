@@ -11,7 +11,7 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     outputs:
-      build-manifest: ${{ steps.Setup.outputs.build-manifest }}
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
     steps:
       
       - name: Checkout
@@ -37,7 +37,7 @@ jobs:
         id: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
-          build-manifest: ${{ needs.Setup.outputs.build-manifest }}
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           --upload-artifact-name: DecSm.Atom
   
   PackAtomTool:
@@ -56,7 +56,7 @@ jobs:
         id: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
-          build-manifest: ${{ needs.Setup.outputs.build-manifest }}
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           --upload-artifact-name: DecSm.Atom.Tool
   
   PackAtomGithubWorkflows:
@@ -75,7 +75,7 @@ jobs:
         id: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
-          build-manifest: ${{ needs.Setup.outputs.build-manifest }}
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           --upload-artifact-name: DecSm.Atom.GithubWorkflows
   
   PackAtomSourceGenerators:
@@ -94,5 +94,5 @@ jobs:
         id: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
-          build-manifest: ${{ needs.Setup.outputs.build-manifest }}
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           --upload-artifact-name: DecSm.Atom.SourceGenerators

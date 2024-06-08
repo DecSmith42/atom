@@ -8,7 +8,7 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     outputs:
-      build-manifest: ${{ steps.Setup.outputs.build-manifest }}
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
     steps:
       
       - name: Checkout
