@@ -1,9 +1,8 @@
 ﻿var builder = AtomHost.CreateAtomBuilder<Build>(args,
     atom => atom
         .AddGithubWorkflows()
-        .AddAzureKeyVault());
-
-builder.Services.AddSingleton<IArtifactProvider, FileArtifactProvider>();
+        .AddAzureKeyVault()
+        .AddAzureArtifacts());
 
 var app = builder.Build();
 
