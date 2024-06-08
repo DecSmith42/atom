@@ -187,7 +187,7 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("--download-artifact-name", artifact.ArtifactName)]);
+                            [("download-artifact-name", artifact.ArtifactName)]);
                     else
                         using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                         {
@@ -216,7 +216,7 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("--upload-artifact-name", artifact.ArtifactName)]);
+                            [("upload-artifact-name", artifact.ArtifactName)]);
                     else
                         using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                         {

@@ -38,7 +38,7 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          --upload-artifact-name: DecSm.Atom
+          upload-artifact-name: DecSm.Atom
   
   PackAtomTool:
     needs: [ Setup ]
@@ -57,7 +57,7 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          --upload-artifact-name: DecSm.Atom.Tool
+          upload-artifact-name: DecSm.Atom.Tool
   
   PackAtomGithubWorkflows:
     needs: [ Setup ]
@@ -76,7 +76,7 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          --upload-artifact-name: DecSm.Atom.GithubWorkflows
+          upload-artifact-name: DecSm.Atom.GithubWorkflows
   
   PackAtomSourceGenerators:
     needs: [ Setup ]
@@ -95,4 +95,4 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          --upload-artifact-name: DecSm.Atom.SourceGenerators
+          upload-artifact-name: DecSm.Atom.SourceGenerators
