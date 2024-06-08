@@ -30,7 +30,7 @@ public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
             FileSystem.File.Delete(publishDir / packagePath.FileName!);
         }
         
-        FileSystem.File.Move(packagePath, publishDir / packagePath.FileName!);
+        FileSystem.File.Move(packagePath, publishDir / projectName / packagePath.FileName!);
         
         Logger.LogInformation("Packed Atom project {AtomProjectName}", projectName);
     }
