@@ -11,6 +11,8 @@ public interface IDownloadArtifact : IBuildDefinition
         {
             var artifactProvider = Services.GetRequiredService<IArtifactProvider>();
             
+            d.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
+            
             d.RequiredParams.Add(nameof(DownloadArtifactName));
             d.RequiredParams.AddRange(artifactProvider.RequiredParams);
             

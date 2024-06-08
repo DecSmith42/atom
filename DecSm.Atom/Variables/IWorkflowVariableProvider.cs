@@ -2,14 +2,7 @@
 
 public interface IWorkflowVariableProvider
 {
-    public Type WorkflowType { get; }
+    public Task<bool> WriteVariable(string variableName, string variableValue);
     
-    public Task WriteVariable(string variableName, string variableValue);
-    
-    public Task ReadVariable(string jobName, string variableName);
-}
-
-public interface IWorkflowVariableProvider<T> : IWorkflowVariableProvider
-{
-    Type IWorkflowVariableProvider.WorkflowType => typeof(T);
+    public Task<bool> ReadVariable(string jobName, string variableName);
 }

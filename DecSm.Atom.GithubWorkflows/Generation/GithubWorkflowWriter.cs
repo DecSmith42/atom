@@ -1,9 +1,4 @@
-﻿using DecSm.Atom.Artifacts;
-using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Workflows.Definition.Command;
-using DecSm.Atom.Workflows.Writer;
-
-namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
     IFileSystem fileSystem,

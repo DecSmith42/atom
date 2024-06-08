@@ -9,59 +9,95 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
     
     public async Task UploadArtifact(string artifactName)
     {
-        var artifact = fileSystem.ArtifactDirectory() / artifactName;
-        var cleanZip = false;
-        
-        if (artifact.DirectoryExists)
-        {
-            if (artifact.FileExists)
-                fileSystem.File.Delete(artifact);
-            
-            var zipPath = fileSystem.TempDirectory() / $"{artifactName}.zip";
-            ZipFile.CreateFromDirectory(artifact, zipPath);
-            artifact = zipPath;
-            cleanZip = true;
-        }
-        
-        if (!artifact.FileExists)
-            throw new FileNotFoundException("Artifact file does not exist", artifact);
+        var artifactDir = fileSystem.ArtifactDirectory() / artifactName;
         
         var buildId = paramService.GetParam(nameof(ISetup.AtomBuildId));
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         
-        var containerClient = new BlobContainerClient(connectionString, container);
-        
-        var repoName = fileSystem.RepoRoot()
+        var repoName = fileSystem.SolutionRoot()
             .DirectoryName;
         
-        await using var fileStream = fileSystem.File.OpenRead(artifact);
-        await containerClient.UploadBlobAsync($"{repoName}/{buildId}/{artifactName}", fileStream);
+        var artifactBlobDir = $"{repoName}/{buildId}/{artifactName}";
+        var containerClient = new BlobContainerClient(connectionString, container);
         
-        if (cleanZip)
-            fileSystem.File.Delete(artifact);
+        foreach (var file in fileSystem.Directory.EnumerateFiles(artifactDir, "*", SearchOption.AllDirectories))
+        {
+            var relativePath = fileSystem.Path.GetRelativePath(artifactDir, file);
+            var blobPath = $"{artifactBlobDir}/{relativePath}";
+            
+            var blobClient = containerClient.GetBlobClient(blobPath);
+            
+            await blobClient.UploadAsync(file, true);
+        }
     }
     
     public async Task DownloadArtifact(string artifactName)
     {
+        var artifactDir = fileSystem.ArtifactDirectory() / artifactName;
+        
         var buildId = paramService.GetParam(nameof(ISetup.AtomBuildId));
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         
-        var containerClient = new BlobContainerClient(connectionString, container);
-        
-        var repoName = fileSystem.RepoRoot()
+        var repoName = fileSystem.SolutionRoot()
             .DirectoryName;
         
-        var archive = await containerClient
-            .GetBlobClient($"{repoName}/{buildId}/{artifactName}")
-            .DownloadAsync();
+        var containerClient = new BlobContainerClient(connectionString, container);
         
-        await using var archiveStream = archive.Value.Content;
+        if (artifactDir.DirectoryExists)
+            fileSystem.Directory.Delete(artifactDir, true);
         
-        var artifact = fileSystem.ArtifactDirectory() / artifactName;
+        fileSystem.Directory.CreateDirectory(artifactDir);
         
-        await using var fileStream = fileSystem.File.OpenWrite(artifact);
-        await archiveStream.CopyToAsync(fileStream);
+        foreach (var blobItem in containerClient.GetBlobsByHierarchy())
+        {
+            var blobClient = containerClient.GetBlobClient(blobItem.Blob.Name);
+            
+            var blobDownloadInfo = await blobClient.DownloadAsync();
+            
+            var blobName = blobItem.Blob.Name;
+            
+            if (blobName.StartsWith($"{repoName}/"))
+                blobName = blobName.Substring($"{repoName}/".Length);
+            
+            if (blobName.StartsWith($"{buildId}/"))
+                blobName = blobName.Substring($"{buildId}/".Length);
+            
+            if (blobName.StartsWith($"{artifactName}/"))
+                blobName = blobName.Substring($"{artifactName}/".Length);
+            
+            var blobPath = fileSystem.Path.Combine(artifactDir, blobName);
+            
+            var blobPathParts = blobPath
+                .Replace("/",
+                    fileSystem
+                        .Path
+                        .DirectorySeparatorChar
+                        .ToString()
+                        .Replace("\\", ""))
+                .Split(fileSystem.Path.DirectorySeparatorChar)
+                .ToArray();
+            
+            if (!artifactDir.DirectoryExists)
+                fileSystem.Directory.CreateDirectory(artifactDir);
+            
+            var blobPathParent = artifactDir.Path;
+            
+            for (var i = 0; i < blobPathParts.Length - 1; i++)
+            {
+                var blobPathPart = blobPathParts[i];
+                blobPathParent = fileSystem.Path.Combine(blobPathParent, blobPathPart);
+                
+                if (artifactDir.Path.StartsWith(blobPathParent))
+                    continue;
+                
+                if (!fileSystem.Directory.Exists(blobPathParent))
+                    fileSystem.Directory.CreateDirectory(blobPathParent);
+            }
+            
+            await using var fileStream = fileSystem.File.Create(blobPath);
+            await blobDownloadInfo.Value.Content.CopyToAsync(fileStream);
+        }
     }
 }

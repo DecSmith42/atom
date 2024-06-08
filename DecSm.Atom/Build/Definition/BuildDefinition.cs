@@ -22,6 +22,6 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup
     
     public Task WriteVariable(string name, string value) =>
         Services
-            .GetRequiredService<IWorkflowVariableProvider>()
-            .WriteVariable(ParamDefinitions[name].Attribute.ArgName, value);
+            .GetRequiredService<IWorkflowVariableService>()
+            .WriteVariable(name, value);
 }
