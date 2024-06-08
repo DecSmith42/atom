@@ -1,7 +1,9 @@
 ﻿namespace Atom;
 
 [BuildDefinition]
-internal partial class Build : IAzureKeyVault,
+internal partial class Build : BuildDefinition,
+    IAzureKeyVault,
+    IAzureArtifactStorage,
     IPackAtom,
     IPackAtomGithubWorkflows,
     IPackAtomSourceGenerators,
@@ -11,7 +13,8 @@ internal partial class Build : IAzureKeyVault,
     IInputValue,
     IGetVaultSecret
 {
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [AzureKeyVault.UseAzureKeyVault];
+    public override IReadOnlyList<IWorkflowOption>
+        DefaultWorkflowOptions => [AzureKeyVault.UseAzureKeyVault, Artifacts.UseArtifactProvider];
     
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

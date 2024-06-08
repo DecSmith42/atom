@@ -214,7 +214,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          {{namespaceLine}}
                          
                          [PublicAPI]
-                         partial class {{className}} : BuildDefinition
+                         partial class {{className}}
                          {
                              public {{className}}(IServiceProvider services) : base(services) { }
                              

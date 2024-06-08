@@ -14,6 +14,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DecSm.Atom.AzureKeyVault\DecSm.Atom.AzureKeyVault.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.AzureStorage\DecSm.Atom.AzureStorage.csproj" />
         <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.GithubWorkflows\DecSm.Atom.GithubWorkflows.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>

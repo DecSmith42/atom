@@ -5,7 +5,7 @@ global using DecSm.Atom.Args;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Setup;
-global using DecSm.Atom.Vault;
+global using DecSm.Atom.Vaults;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition;
 global using Microsoft.Extensions.DependencyInjection;

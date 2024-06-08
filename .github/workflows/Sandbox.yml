@@ -5,7 +5,21 @@ on:
 
 jobs:
   
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      build-manifest: ${{ steps.Setup.outputs.build-manifest }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+  
   Diagnostics:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -17,6 +31,7 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj Diagnostics --skip --headless
   
   OutputValue:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     outputs:
       test-value-1: ${{ steps.OutputValue.outputs.test-value-1 }}
@@ -30,7 +45,7 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj OutputValue --skip --headless
   
   InputValue:
-    needs: [ OutputValue ]
+    needs: [ Setup, OutputValue ]
     runs-on: ubuntu-latest
     steps:
       
@@ -44,6 +59,7 @@ jobs:
           test-value-1: ${{ needs.OutputValue.outputs.test-value-1 }}
   
   GetVaultSecret:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       

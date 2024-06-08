@@ -3,6 +3,8 @@
         .AddGithubWorkflows()
         .AddAzureKeyVault());
 
+builder.Services.AddSingleton<IArtifactProvider, FileArtifactProvider>();
+
 var app = builder.Build();
 
 await app.RunAsync();

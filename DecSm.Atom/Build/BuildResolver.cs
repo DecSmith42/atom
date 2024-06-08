@@ -36,10 +36,15 @@ public static class BuildResolver
             })
             .ToArray();
         
+        var setupDefinition = targetDefinitions.Single(x => x.Name == "Setup");
+        
         // Copy target definition dependencies to their respective target models
         foreach (var targetDefinition in targetDefinitions)
         {
             var targetModel = targetModels.First(x => x.Name == targetDefinition.Name);
+            
+            if (targetDefinition != setupDefinition)
+                targetDefinition.Dependencies.Add(setupDefinition.Name);
             
             var dependencyNames = targetDefinition
                 .Dependencies
