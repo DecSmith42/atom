@@ -14,12 +14,12 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         
         if (artifact.DirectoryExists)
         {
-            artifact = fileSystem.TempDirectory() / "artifact.zip";
-            
             if (artifact.FileExists)
                 fileSystem.File.Delete(artifact);
             
-            ZipFile.CreateFromDirectory(artifact, artifact);
+            var zipPath = fileSystem.TempDirectory() / $"{artifactName}.zip";
+            ZipFile.CreateFromDirectory(artifact, zipPath);
+            artifact = zipPath;
             cleanZip = true;
         }
         
