@@ -9,7 +9,7 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
     
     public async Task UploadArtifact(string artifactName)
     {
-        var artifactDir = fileSystem.ArtifactDirectory() / artifactName;
+        var publishDir = fileSystem.PublishDirectory() / artifactName;
         
         var buildId = paramService.GetParam(nameof(ISetup.AtomBuildId));
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
@@ -21,9 +21,9 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         var artifactBlobDir = $"{repoName}/{buildId}/{artifactName}";
         var containerClient = new BlobContainerClient(connectionString, container);
         
-        foreach (var file in fileSystem.Directory.EnumerateFiles(artifactDir, "*", SearchOption.AllDirectories))
+        foreach (var file in fileSystem.Directory.EnumerateFiles(publishDir, "*", SearchOption.AllDirectories))
         {
-            var relativePath = fileSystem.Path.GetRelativePath(artifactDir, file);
+            var relativePath = fileSystem.Path.GetRelativePath(publishDir, file);
             var blobPath = $"{artifactBlobDir}/{relativePath}";
             
             var blobClient = containerClient.GetBlobClient(blobPath);
