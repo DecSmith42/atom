@@ -52,5 +52,9 @@ public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
     public string? DirectoryName =>
         DirectoryExists
             ? FileSystem.Path.GetDirectoryName(Path)!
+                .Split("/")
+                .Last()
+                .Split("\\")
+                .Last()
             : null;
 }

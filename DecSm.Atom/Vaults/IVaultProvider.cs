@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Vault;
+﻿namespace DecSm.Atom.Vaults;
 
 public interface IVaultProvider
 {

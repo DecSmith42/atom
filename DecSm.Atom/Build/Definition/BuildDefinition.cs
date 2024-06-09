@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
-public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinition
+public abstract class BuildDefinition(IServiceProvider services) : ISetup
 {
     public abstract IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
     
@@ -22,6 +22,6 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinit
     
     public Task WriteVariable(string name, string value) =>
         Services
-            .GetRequiredService<IWorkflowVariableProvider>()
-            .WriteVariable(ParamDefinitions[name].Attribute.ArgName, value);
+            .GetRequiredService<IWorkflowVariableService>()
+            .WriteVariable(name, value);
 }

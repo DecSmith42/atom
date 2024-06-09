@@ -2,6 +2,8 @@
 
 public static class Github
 {
+    public static bool IsGithubActions => Variables.Actions.ToLower() == "true";
+    
     public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
         new("dependabot")
         {

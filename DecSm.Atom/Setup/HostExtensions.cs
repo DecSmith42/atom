@@ -20,6 +20,9 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IParamService>(services =>
             ParamServiceAccessor.Service = services.GetRequiredService<ParamService>());
         
+        builder.Services.TryAddSingleton<IWorkflowVariableProvider, BaseWorkflowVariableProvider>();
+        builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
+        
         builder.Services.TryAddSingleton(new RawCommandLineArgs(args));
         
         builder.Services.TryAddSingleton<CommandLineArgs>(services =>
@@ -39,7 +42,7 @@ public static class HostExtensions
                     .Commands
                     .Select(x => x.Name)
                     .ToArray(),
-                commandLineArgs.HasSkip);
+                !commandLineArgs.HasSkip);
         });
         
         builder.Services.TryAddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);

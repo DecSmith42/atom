@@ -1,3 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Definition;
 
-public interface IWorkflowType;
+public interface IWorkflowType
+{
+    bool IsRunning { get; }
+}

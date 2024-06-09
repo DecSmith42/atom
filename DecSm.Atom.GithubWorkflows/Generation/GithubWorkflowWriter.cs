@@ -1,8 +1,4 @@
-﻿using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Workflows.Definition.Command;
-using DecSm.Atom.Workflows.Writer;
-
-namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
     IFileSystem fileSystem,
@@ -175,79 +171,107 @@ public sealed class GithubWorkflowWriter(
                 WriteLine("  uses: actions/checkout@v2");
                 WriteLine();
                 
-                // WriteLine("- name: Setup .NET");
-                // WriteLine("  uses: actions/setup-dotnet@v4");
-                // WriteLine();
-                
                 var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
-                
-                var assemblyName = Assembly.GetEntryAssembly()!.GetName()
-                    .Name!;
                 
                 foreach (var artifact in target.ConsumedArtifacts)
                 {
-                    using (WriteSection($"- name: Download {artifact.ArtifactName}"))
-                    {
-                        WriteLine("uses: actions/download-artifact@v4");
-                        
-                        using (WriteSection("with:"))
+                    if (workflow
+                        .Options
+                        .OfType<UseArtifactProvider>()
+                        .Any())
+                        WriteCommandStep(workflow,
+                            new(nameof(IDownloadArtifact.DownloadArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
+                            [("download-artifact-name", artifact.ArtifactName)]);
+                    else
+                        using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                         {
-                            WriteLine($"name: {artifact.ArtifactName}");
-                            WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                            WriteLine("uses: actions/download-artifact@v4");
+                            
+                            using (WriteSection("with:"))
+                            {
+                                WriteLine($"name: {artifact.ArtifactName}");
+                                WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                            }
                         }
-                    }
                     
                     WriteLine();
                 }
                 
-                using (WriteSection($"- name: {commandStep.Name}"))
-                {
-                    WriteLine($"id: {commandStep.Name}");
-                    
-                    WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
-                    
-                    var env = new Dictionary<string, string>();
-                    
-                    foreach (var consumedVariable in target.ConsumedVariables)
-                        env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
-                            $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
-                    
-                    if (target
-                        .RequiredParams
-                        .Select(x => buildDefinition.ParamDefinitions[x].Attribute.IsSecret)
-                        .Any())
-                        foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretInjection>())
-                        {
-                            var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
-                            
-                            if (paramDefinition is not null)
-                                env[paramDefinition.Attribute.ArgName] =
-                                    $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
-                        }
-                    
-                    if (env.Count > 0)
-                        using (WriteSection("env:"))
-                            foreach (var (key, value) in env)
-                                WriteLine($"{key}: {value}");
-                }
+                WriteCommandStep(workflow, commandStep, target, []);
                 
                 foreach (var artifact in target.ProducedArtifacts)
                 {
                     WriteLine();
                     
-                    using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
-                    {
-                        WriteLine("uses: actions/upload-artifact@v4");
-                        
-                        using (WriteSection("with:"))
+                    if (workflow
+                        .Options
+                        .OfType<UseArtifactProvider>()
+                        .Any())
+                        WriteCommandStep(workflow,
+                            new(nameof(IUploadArtifact.UploadArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
+                            [("upload-artifact-name", artifact.ArtifactName)]);
+                    else
+                        using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                         {
-                            WriteLine($"name: {artifact.ArtifactName}");
-                            WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                            WriteLine("uses: actions/upload-artifact@v4");
+                            
+                            using (WriteSection("with:"))
+                            {
+                                WriteLine($"name: {artifact.ArtifactName}");
+                                WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                            }
                         }
-                    }
                 }
                 
                 break;
+        }
+    }
+    
+    private void WriteCommandStep(
+        WorkflowModel workflow,
+        CommandWorkflowStep commandStep,
+        TargetModel target,
+        (string name, string value)[] extraParams)
+    {
+        var assemblyName = Assembly.GetEntryAssembly()!.GetName()
+            .Name!;
+        
+        using (WriteSection($"- name: {commandStep.Name}"))
+        {
+            WriteLine($"id: {commandStep.Name}");
+            
+            WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
+            
+            var env = new Dictionary<string, string>();
+            
+            foreach (var consumedVariable in target.ConsumedVariables)
+                env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
+                    $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
+            
+            if (target
+                .RequiredParams
+                .Select(x => buildDefinition.ParamDefinitions[x])
+                .Any(x => x.Attribute.IsSecret))
+                foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretInjection>())
+                {
+                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
+                    
+                    if (paramDefinition is not null)
+                        env[paramDefinition.Attribute.ArgName] =
+                            $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                }
+            
+            if (env.Count > 0)
+                using (WriteSection("env:"))
+                {
+                    foreach (var (key, value) in env)
+                        WriteLine($"{key}: {value}");
+                    
+                    foreach (var (key, value) in extraParams)
+                        WriteLine($"{key}: {value}");
+                }
         }
     }
 }

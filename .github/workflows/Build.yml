@@ -8,7 +8,21 @@ on:
 
 jobs:
   
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+  
   PackAtom:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -19,13 +33,20 @@ jobs:
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
       
-      - name: Upload DecSm.Atom
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
+      - name: UploadArtifact
+        id: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          upload-artifact-name: DecSm.Atom
   
   PackAtomTool:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -36,13 +57,20 @@ jobs:
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
       
-      - name: Upload DecSm.Atom.Tool
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Tool
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
+      - name: UploadArtifact
+        id: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          upload-artifact-name: DecSm.Atom.Tool
   
   PackAtomGithubWorkflows:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -53,13 +81,20 @@ jobs:
         id: PackAtomGithubWorkflows
         run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip --headless
       
-      - name: Upload DecSm.Atom.GithubWorkflows
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.GithubWorkflows
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.GithubWorkflows"
+      - name: UploadArtifact
+        id: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          upload-artifact-name: DecSm.Atom.GithubWorkflows
   
   PackAtomSourceGenerators:
+    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -70,43 +105,69 @@ jobs:
         id: PackAtomSourceGenerators
         run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip --headless
       
-      - name: Upload DecSm.Atom.SourceGenerators
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.SourceGenerators
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators"
+      - name: UploadArtifact
+        id: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          upload-artifact-name: DecSm.Atom.SourceGenerators
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomGithubWorkflows, PackAtomSourceGenerators, PackAtomTool ]
+    needs: [ Setup, PackAtom, PackAtomGithubWorkflows, PackAtomSourceGenerators, PackAtomTool ]
     runs-on: ubuntu-latest
     steps:
       
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Download DecSm.Atom
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      - name: DownloadArtifact
+        id: DownloadArtifact
+        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+        env:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          download-artifact-name: DecSm.Atom
       
-      - name: Download DecSm.Atom.GithubWorkflows
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.GithubWorkflows
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.GithubWorkflows"
+      - name: DownloadArtifact
+        id: DownloadArtifact
+        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+        env:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          download-artifact-name: DecSm.Atom.GithubWorkflows
       
-      - name: Download DecSm.Atom.SourceGenerators
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.SourceGenerators
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.SourceGenerators"
+      - name: DownloadArtifact
+        id: DownloadArtifact
+        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+        env:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          download-artifact-name: DecSm.Atom.SourceGenerators
       
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      - name: DownloadArtifact
+        id: DownloadArtifact
+        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+        env:
+          nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          download-artifact-name: DecSm.Atom.Tool
       
       - name: PushToNuget
         id: PushToNuget

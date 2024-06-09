@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Workflows.Writer;
-
-namespace DecSm.Atom.GithubWorkflows.Generation;
+﻿namespace DecSm.Atom.GithubWorkflows.Generation;
 
 public sealed class DependabotWorkflowWriter(IFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
     : WorkflowFileWriter<DependabotWorkflowType>(fileSystem, logger)

@@ -21,8 +21,10 @@ public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
         var publishDir = FileSystem.PublishDirectory() / projectName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
         
-        if (!FileSystem.Directory.Exists(publishDir))
-            FileSystem.Directory.CreateDirectory(publishDir);
+        if (FileSystem.Directory.Exists(publishDir))
+            FileSystem.Directory.Delete(publishDir, true);
+        
+        FileSystem.Directory.CreateDirectory(publishDir);
         
         if (FileSystem.File.Exists(publishDir / packagePath.FileName!))
         {

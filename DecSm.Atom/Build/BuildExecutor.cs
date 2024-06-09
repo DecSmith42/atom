@@ -4,7 +4,7 @@ public class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
     IParamService paramService,
-    IWorkflowVariableProvider variableProvider,
+    IWorkflowVariableService variableService,
     IAnsiConsole console,
     ILogger<BuildExecutor> logger
 )
@@ -87,7 +87,7 @@ public class BuildExecutor(
         
         foreach (var variable in target.ConsumedVariables)
         {
-            await variableProvider.ReadVariable(variable.TargetName, variable.VariableName);
+            await variableService.ReadVariable(variable.TargetName, variable.VariableName);
             
             if (paramService.GetParam(variable.VariableName) is not (null or ""))
                 continue;
@@ -102,12 +102,9 @@ public class BuildExecutor(
             return;
         }
         
-        foreach (var requirement in target.RequiredParams.Where(requirement =>
-                     paramService.GetParam(requirement) is null or ""))
+        foreach (var requirement in target.RequiredParams.Where(requirement => paramService.GetParam(requirement) is null or ""))
         {
-            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
-                requirement,
-                target.Name);
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
             
             buildModel.TargetStates[target].Status = TargetRunState.Failed;
             

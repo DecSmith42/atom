@@ -1,8 +1,4 @@
-﻿using DecSm.Atom.Setup;
-using DecSm.Atom.Variables;
-using DecSm.Atom.Workflows.Writer;
-
-namespace DecSm.Atom.GithubWorkflows;
+﻿namespace DecSm.Atom.GithubWorkflows;
 
 public static class GithubWorkflowWriterConfiguratorExtensions
 {
@@ -16,7 +12,7 @@ public static class GithubWorkflowWriterConfiguratorExtensions
             typeof(DependabotWorkflowWriter),
             ServiceLifetime.Singleton));
         
-        configuration.Builder.Services.TryAdd(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
+        configuration.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
             typeof(GithubVariableProvider),
             ServiceLifetime.Singleton));
         

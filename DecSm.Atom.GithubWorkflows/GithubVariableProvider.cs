@@ -1,12 +1,12 @@
-﻿using DecSm.Atom.Variables;
+﻿namespace DecSm.Atom.GithubWorkflows;
 
-namespace DecSm.Atom.GithubWorkflows;
-
-public class GithubVariableProvider(IFileSystem fileSystem, ILogger<GithubVariableProvider> logger)
-    : IWorkflowVariableProvider<GithubWorkflowType>
+public class GithubVariableProvider(IFileSystem fileSystem, ILogger<GithubVariableProvider> logger) : IWorkflowVariableProvider
 {
-    public async Task WriteVariable(string variableName, string variableValue)
+    public async Task<bool> WriteVariable(string variableName, string variableValue)
     {
+        if (!Github.IsGithubActions)
+            return false;
+        
         var githubOutputPath = Github.Variables.Output;
         
         if (githubOutputPath is null)
@@ -19,8 +19,10 @@ public class GithubVariableProvider(IFileSystem fileSystem, ILogger<GithubVariab
             githubOutputPath);
         
         await fileSystem.File.AppendAllTextAsync(githubOutputPath, $"{variableName}={variableValue}");
+        
+        return true;
     }
     
-    public Task ReadVariable(string jobName, string variableName) =>
-        Task.CompletedTask;
+    public Task<bool> ReadVariable(string jobName, string variableName) =>
+        Task.FromResult(Github.IsGithubActions);
 }
