@@ -182,7 +182,8 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("download-artifact-name", artifact.ArtifactName)]);
+                            [("download-artifact-name", artifact.ArtifactName)],
+                            false);
                     else
                         using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                         {
@@ -198,7 +199,7 @@ public sealed class GithubWorkflowWriter(
                     WriteLine();
                 }
                 
-                WriteCommandStep(workflow, commandStep, target, []);
+                WriteCommandStep(workflow, commandStep, target, [], true);
                 
                 foreach (var artifact in target.ProducedArtifacts)
                 {
@@ -211,7 +212,8 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("upload-artifact-name", artifact.ArtifactName)]);
+                            [("upload-artifact-name", artifact.ArtifactName)],
+                            false);
                     else
                         using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                         {
@@ -233,14 +235,16 @@ public sealed class GithubWorkflowWriter(
         WorkflowModel workflow,
         CommandWorkflowStep commandStep,
         TargetModel target,
-        (string name, string value)[] extraParams)
+        (string name, string value)[] extraParams,
+        bool includeId)
     {
         var assemblyName = Assembly.GetEntryAssembly()!.GetName()
             .Name!;
         
         using (WriteSection($"- name: {commandStep.Name}"))
         {
-            WriteLine($"id: {commandStep.Name}");
+            if (includeId)
+                WriteLine($"id: {commandStep.Name}");
             
             WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
             
