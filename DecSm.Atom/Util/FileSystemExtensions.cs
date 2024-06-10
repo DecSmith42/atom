@@ -79,12 +79,12 @@ public static class FileSystemExtensions
     
     public static AbsolutePath ArtifactDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
-            ? new AbsolutePath(fileSystem, Environment.GetEnvironmentVariable("RUNNER_TEMP")!) / "atom-artifacts"
+            ? fileSystem.RepoRoot() / ".github" / "artifacts"
             : fileSystem.SolutionRoot() / "atom-publish";
     
     public static AbsolutePath PublishDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
-            ? new AbsolutePath(fileSystem, Environment.GetEnvironmentVariable("RUNNER_TEMP")!) / "atom-publish"
+            ? fileSystem.RepoRoot() / ".github" / "publish"
             : fileSystem.SolutionRoot() / "atom-publish";
     
     public static AbsolutePath TempDirectory(this IFileSystem fileSystem) =>

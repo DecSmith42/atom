@@ -58,7 +58,7 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         fileSystem.Directory.CreateDirectory(artifactDir);
         
         var blobs = containerClient
-            .GetBlobsByHierarchy(prefix: $"{solutionName}/{buildId}/{artifactName}")
+            .GetBlobsByHierarchy(prefix: $"{solutionName}/{buildId}/{artifactName}/")
             .ToArray();
         
         foreach (var blob in blobs)
