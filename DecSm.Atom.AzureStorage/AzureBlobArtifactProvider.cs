@@ -73,46 +73,21 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
             var blobClient = containerClient.GetBlobClient(blobItem.Blob.Name);
             
             var blobDownloadInfo = await blobClient.DownloadAsync();
-            
             var blobName = blobItem.Blob.Name;
             
-            if (blobName.StartsWith($"{solutionName}/"))
-                blobName = blobName[$"{solutionName}/".Length..];
+            if (blobName.StartsWith($"{solutionName}/{buildId}/"))
+                blobName = blobName.Substring($"{solutionName}/{buildId}/".Length);
+            else
+                throw new InvalidOperationException($"Blob name {blobName} does not start with {solutionName}/{buildId}");
             
-            if (blobName.StartsWith($"{buildId}/"))
-                blobName = blobName[$"{buildId}/".Length..];
+            var blobPath = artifactDir / blobName;
+            var blobDir = fileSystem.Path.GetDirectoryName(blobPath);
             
-            if (blobName.StartsWith($"{artifactName}/"))
-                blobName = blobName[$"{artifactName}/".Length..];
+            if (blobDir is null)
+                throw new InvalidOperationException($"Could not get directory name for blob path {blobPath}");
             
-            var blobPath = fileSystem.Path.Combine(artifactDir, blobName);
-            
-            var blobPathParts = blobPath
-                .Replace("/",
-                    fileSystem
-                        .Path
-                        .DirectorySeparatorChar
-                        .ToString()
-                        .Replace("\\", fileSystem.Path.DirectorySeparatorChar.ToString()))
-                .Split(fileSystem.Path.DirectorySeparatorChar)
-                .ToArray();
-            
-            if (!artifactDir.DirectoryExists)
-                fileSystem.Directory.CreateDirectory(artifactDir);
-            
-            var blobPathParent = artifactDir.Path;
-            
-            for (var i = 0; i < blobPathParts.Length - 1; i++)
-            {
-                var blobPathPart = blobPathParts[i];
-                blobPathParent = fileSystem.Path.Combine(blobPathParent, blobPathPart);
-                
-                if (artifactDir.Path.StartsWith(blobPathParent))
-                    continue;
-                
-                if (!fileSystem.Directory.Exists(blobPathParent))
-                    fileSystem.Directory.CreateDirectory(blobPathParent);
-            }
+            if (!fileSystem.Directory.Exists(blobDir))
+                fileSystem.Directory.CreateDirectory(blobDir);
             
             await using var fileStream = fileSystem.File.Create(blobPath);
             await blobDownloadInfo.Value.Content.CopyToAsync(fileStream);

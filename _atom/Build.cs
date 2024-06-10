@@ -11,7 +11,8 @@ internal partial class Build : BuildDefinition,
     IDiagnostics,
     IPackAtomTool,
     IInputValue,
-    IGetVaultSecret
+    IGetVaultSecret,
+    ITestDownloadArtifacts
 {
     public override IReadOnlyList<IWorkflowOption>
         DefaultWorkflowOptions => [AzureKeyVault.UseAzureKeyVault, Artifacts.UseArtifactProvider];
@@ -23,7 +24,11 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.PackAtom, Commands.PackAtomTool, Commands.PackAtomGithubWorkflows, Commands.PackAtomSourceGenerators,
+                Commands.PackAtom,
+                Commands.PackAtomTool,
+                Commands.PackAtomGithubWorkflows,
+                Commands.PackAtomSourceGenerators,
+                Commands.TestDownloadArtifacts,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
