@@ -1,6 +1,7 @@
 ﻿namespace DecSm.Atom.AzureStorage;
 
-public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileSystem fileSystem) : IArtifactProvider
+public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileSystem fileSystem, ILogger<AzureBlobArtifactProvider> logger)
+    : IArtifactProvider
 {
     public IReadOnlyList<string> RequiredParams =>
     [
@@ -15,13 +16,20 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         
-        var repoName = fileSystem.SolutionRoot()
-            .DirectoryName;
+        var solutionName = fileSystem.SolutionName();
         
-        var artifactBlobDir = $"{repoName}/{buildId}/{artifactName}";
+        var artifactBlobDir = $"{solutionName}/{buildId}/{artifactName}";
         var containerClient = new BlobContainerClient(connectionString, container);
         
-        foreach (var file in fileSystem.Directory.EnumerateFiles(publishDir, "*", SearchOption.AllDirectories))
+        var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
+        
+        foreach (var file in files)
+            logger.LogInformation("Uploading file {File}", file);
+        
+        if (files.Length == 0)
+            throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
+        
+        foreach (var file in files)
         {
             var relativePath = fileSystem.Path.GetRelativePath(publishDir, file);
             var blobPath = $"{artifactBlobDir}/{relativePath}";
@@ -40,8 +48,7 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         
-        var repoName = fileSystem.SolutionRoot()
-            .DirectoryName;
+        var solutionName = fileSystem.SolutionName();
         
         var containerClient = new BlobContainerClient(connectionString, container);
         
@@ -50,7 +57,18 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
         
         fileSystem.Directory.CreateDirectory(artifactDir);
         
-        foreach (var blobItem in containerClient.GetBlobsByHierarchy())
+        var blobs = containerClient
+            .GetBlobsByHierarchy(prefix: $"{solutionName}/{buildId}/{artifactName}")
+            .ToArray();
+        
+        foreach (var blob in blobs)
+            logger.LogInformation("Downloading blob {Blob}", blob.Blob.Name);
+        
+        if (blobs.Length == 0)
+            throw new InvalidOperationException(
+                $"Could not find any blobs in the container {container} with the prefix {solutionName}/{buildId}/{artifactName}");
+        
+        foreach (var blobItem in blobs)
         {
             var blobClient = containerClient.GetBlobClient(blobItem.Blob.Name);
             
@@ -58,14 +76,14 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
             
             var blobName = blobItem.Blob.Name;
             
-            if (blobName.StartsWith($"{repoName}/"))
-                blobName = blobName.Substring($"{repoName}/".Length);
+            if (blobName.StartsWith($"{solutionName}/"))
+                blobName = blobName[$"{solutionName}/".Length..];
             
             if (blobName.StartsWith($"{buildId}/"))
-                blobName = blobName.Substring($"{buildId}/".Length);
+                blobName = blobName[$"{buildId}/".Length..];
             
             if (blobName.StartsWith($"{artifactName}/"))
-                blobName = blobName.Substring($"{artifactName}/".Length);
+                blobName = blobName[$"{artifactName}/".Length..];
             
             var blobPath = fileSystem.Path.Combine(artifactDir, blobName);
             
@@ -75,7 +93,7 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
                         .Path
                         .DirectorySeparatorChar
                         .ToString()
-                        .Replace("\\", ""))
+                        .Replace("\\", fileSystem.Path.DirectorySeparatorChar.ToString()))
                 .Split(fileSystem.Path.DirectorySeparatorChar)
                 .ToArray();
             

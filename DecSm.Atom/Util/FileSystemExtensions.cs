@@ -3,6 +3,7 @@
 public static class FileSystemExtensions
 {
     private static AbsolutePath? _solutionRoot;
+    private static AbsolutePath? _solutionFile;
     private static AbsolutePath? _repoRoot;
     
     public static AbsolutePath SolutionRoot(this IFileSystem fileSystem)
@@ -29,6 +30,25 @@ public static class FileSystemExtensions
                 "Could not find the root of the Atom repository. Ensure that a .sln file exists in the root directory.");
         
         return _solutionRoot = new(fileSystem, topmostSolutionDirectory);
+    }
+    
+    public static AbsolutePath SolutionFile(this IFileSystem fileSystem)
+    {
+        if (_solutionFile is not null)
+            return _solutionFile;
+        
+        return _solutionFile = new(fileSystem,
+            fileSystem
+                .Directory
+                .GetFiles(fileSystem.SolutionRoot(), "*.sln")
+                .Single());
+    }
+    
+    public static string SolutionName(this IFileSystem fileSystem)
+    {
+        var solutionFileInfo = fileSystem.FileInfo.New(fileSystem.SolutionFile());
+        
+        return solutionFileInfo.Name.Replace(solutionFileInfo.Extension, string.Empty);
     }
     
     public static AbsolutePath RepoRoot(this IFileSystem fileSystem)
