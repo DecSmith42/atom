@@ -16,6 +16,10 @@ public interface IDownloadArtifact : IBuildDefinition
             d.RequiredParams.Add(nameof(DownloadArtifactName));
             d.RequiredParams.AddRange(artifactProvider.RequiredParams);
             
-            return d.Executes(() => artifactProvider.DownloadArtifact(DownloadArtifactName));
+            return d.Executes(async () =>
+            {
+                var artifactNames = DownloadArtifactName.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                await artifactProvider.DownloadArtifacts(artifactNames);
+            });
         };
 }
