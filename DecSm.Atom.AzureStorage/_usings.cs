@@ -7,3 +7,4 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.Setup;
 global using DecSm.Atom.Util;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
