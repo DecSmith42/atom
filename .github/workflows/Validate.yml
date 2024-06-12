@@ -17,6 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
@@ -28,6 +33,11 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
       
       - name: PackAtom
         id: PackAtom
@@ -50,6 +60,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
@@ -71,6 +86,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      
       - name: PackAtomGithubWorkflows
         id: PackAtomGithubWorkflows
         run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip --headless
@@ -91,6 +111,11 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
       
       - name: PackAtomSourceGenerators
         id: PackAtomSourceGenerators
