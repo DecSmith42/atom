@@ -16,6 +16,10 @@ public interface IUploadArtifact : IBuildDefinition
             d.RequiredParams.Add(nameof(UploadArtifactName));
             d.RequiredParams.AddRange(artifactProvider.RequiredParams);
             
-            return d.Executes(() => artifactProvider.UploadArtifact(UploadArtifactName));
+            return d.Executes(async () =>
+            {
+                var artifactNames = UploadArtifactName.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                await artifactProvider.UploadArtifacts(artifactNames);
+            });
         };
 }

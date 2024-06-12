@@ -2,9 +2,9 @@
 
 public interface IArtifactProvider
 {
-    Task UploadArtifact(string artifactName);
+    Task UploadArtifacts(string[] artifactNames);
     
-    Task DownloadArtifact(string artifactName);
+    Task DownloadArtifacts(string[] artifactNames);
     
     IReadOnlyList<string> RequiredParams => [];
 }

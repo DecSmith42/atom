@@ -173,38 +173,45 @@ public sealed class GithubWorkflowWriter(
                 
                 var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
                 
-                foreach (var artifact in target.ConsumedArtifacts)
+                if (target.ConsumedArtifacts.Count > 0)
                 {
                     if (workflow
                         .Options
                         .OfType<UseArtifactProvider>()
                         .Any())
+                    {
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("download-artifact-name", artifact.ArtifactName)],
+                            [("download-artifact-name", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
                             false);
+                        
+                        WriteLine();
+                    }
                     else
-                        using (WriteSection($"- name: Download {artifact.ArtifactName}"))
+                    {
+                        foreach (var artifact in target.ConsumedArtifacts)
                         {
-                            WriteLine("uses: actions/download-artifact@v4");
-                            
-                            using (WriteSection("with:"))
+                            using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                             {
-                                WriteLine($"name: {artifact.ArtifactName}");
-                                WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                                WriteLine("uses: actions/download-artifact@v4");
+                                
+                                using (WriteSection("with:"))
+                                {
+                                    WriteLine($"name: {artifact.ArtifactName}");
+                                    WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
+                                }
                             }
+                            
+                            WriteLine();
                         }
-                    
-                    WriteLine();
+                    }
                 }
                 
                 WriteCommandStep(workflow, commandStep, target, [], true);
                 
-                foreach (var artifact in target.ProducedArtifacts)
+                if (target.ProducedArtifacts.Count > 0)
                 {
-                    WriteLine();
-                    
                     if (workflow
                         .Options
                         .OfType<UseArtifactProvider>()
@@ -212,18 +219,23 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("upload-artifact-name", artifact.ArtifactName)],
+                            [("upload-artifact-name", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
                             false);
                     else
-                        using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
+                        foreach (var artifact in target.ProducedArtifacts)
                         {
-                            WriteLine("uses: actions/upload-artifact@v4");
-                            
-                            using (WriteSection("with:"))
+                            using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                             {
-                                WriteLine($"name: {artifact.ArtifactName}");
-                                WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                                WriteLine("uses: actions/upload-artifact@v4");
+                                
+                                using (WriteSection("with:"))
+                                {
+                                    WriteLine($"name: {artifact.ArtifactName}");
+                                    WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
+                                }
                             }
+                            
+                            WriteLine();
                         }
                 }
                 

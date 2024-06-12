@@ -23,7 +23,10 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.PackAtom, Commands.PackAtomTool, Commands.PackAtomGithubWorkflows, Commands.PackAtomSourceGenerators,
+                Commands.PackAtom,
+                Commands.PackAtomTool,
+                Commands.PackAtomGithubWorkflows,
+                Commands.PackAtomSourceGenerators,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },

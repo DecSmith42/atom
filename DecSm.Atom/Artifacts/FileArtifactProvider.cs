@@ -5,45 +5,55 @@ public class FileArtifactProvider(IFileSystem fileSystem) : IArtifactProvider
     private readonly AbsolutePath _artifactStoreDirectory =
         new(fileSystem, $@"%TEMP%\DecSm\Artifacts\{fileSystem.RepoRoot().DirectoryName}");
     
-    public Task UploadArtifact(string artifactName)
+    public Task UploadArtifacts(string[] artifactNames)
     {
-        var artifact = fileSystem.ArtifactDirectory() / artifactName;
-        
-        if (artifact.FileExists)
+        foreach (var artifactName in artifactNames)
         {
-            fileSystem.File.Copy(artifact, _artifactStoreDirectory / artifactName);
+            var artifact = fileSystem.ArtifactDirectory() / artifactName;
             
-            return Task.CompletedTask;
+            if (artifact.FileExists)
+            {
+                fileSystem.File.Copy(artifact, _artifactStoreDirectory / artifactName);
+                
+                continue;
+            }
+            
+            if (artifact.DirectoryExists)
+            {
+                fileSystem.Directory.Copy(artifact, _artifactStoreDirectory / artifactName);
+                
+                continue;
+            }
+            
+            throw new InvalidOperationException($"Artifact '{artifactName}' does not exist.");
         }
         
-        if (artifact.DirectoryExists)
-        {
-            fileSystem.Directory.Copy(artifact, _artifactStoreDirectory / artifactName);
-            
-            return Task.CompletedTask;
-        }
-        
-        throw new InvalidOperationException($"Artifact '{artifactName}' does not exist.");
+        return Task.CompletedTask;
     }
     
-    public Task DownloadArtifact(string artifactName)
+    public Task DownloadArtifacts(string[] artifactNames)
     {
-        var artifact = _artifactStoreDirectory / artifactName;
-        
-        if (artifact.FileExists)
+        foreach (var artifactName in artifactNames)
         {
-            fileSystem.File.Copy(artifact, fileSystem.ArtifactDirectory() / artifactName);
+            var artifact = _artifactStoreDirectory / artifactName;
             
-            return Task.CompletedTask;
+            if (artifact.FileExists)
+            {
+                fileSystem.File.Copy(artifact, fileSystem.ArtifactDirectory() / artifactName);
+                
+                continue;
+            }
+            
+            if (artifact.DirectoryExists)
+            {
+                fileSystem.Directory.Copy(artifact, fileSystem.ArtifactDirectory() / artifactName);
+                
+                continue;
+            }
+            
+            throw new InvalidOperationException($"Artifact '{artifactName}' does not exist.");
         }
         
-        if (artifact.DirectoryExists)
-        {
-            fileSystem.Directory.Copy(artifact, fileSystem.ArtifactDirectory() / artifactName);
-            
-            return Task.CompletedTask;
-        }
-        
-        throw new InvalidOperationException($"Artifact '{artifactName}' does not exist.");
+        return Task.CompletedTask;
     }
 }

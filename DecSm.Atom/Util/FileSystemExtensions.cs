@@ -80,12 +80,12 @@ public static class FileSystemExtensions
     public static AbsolutePath ArtifactDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
             ? fileSystem.RepoRoot() / ".github" / "artifacts"
-            : fileSystem.SolutionRoot() / "publish";
+            : fileSystem.SolutionRoot() / "atom-publish";
     
     public static AbsolutePath PublishDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
             ? fileSystem.RepoRoot() / ".github" / "publish"
-            : fileSystem.SolutionRoot() / "publish";
+            : fileSystem.SolutionRoot() / "atom-publish";
     
     public static AbsolutePath TempDirectory(this IFileSystem fileSystem) =>
         new(fileSystem, fileSystem.Path.GetTempPath());

@@ -1,7 +1,7 @@
 ﻿namespace Atom.Targets;
 
 [TargetDefinition]
-public partial interface IPushToNuget : INugetHelper, IVersionHelper
+public partial interface IPushToNuget : INugetHelper, IDotnetVersionHelper
 {
     [ParamDefinition("nuget-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
     string NugetFeed => GetParam(() => NugetFeed) ?? "https://api.nuget.org/v3/index.json";
