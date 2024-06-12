@@ -7,7 +7,6 @@
         <VersionSuffix>alpha.5</VersionSuffix>
 
         <PackageVersion>$(Version)-$(VersionSuffix)</PackageVersion>
-        <FileVersion>$([System.Text.RegularExpressions.Regex]::Match($(Version), `^[0-9.]*`))</FileVersion>
         <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
 </Project>
