@@ -104,25 +104,3 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           upload-artifact-name: DecSm.Atom.SourceGenerators
-  
-  TestDownloadArtifacts:
-    needs: [ Setup, PackAtom, PackAtomGithubWorkflows, PackAtomSourceGenerators, PackAtomTool ]
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: DownloadArtifact
-        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          download-artifact-name: DecSm.Atom;DecSm.Atom.GithubWorkflows;DecSm.Atom.SourceGenerators;DecSm.Atom.Tool
-      
-      - name: TestDownloadArtifacts
-        id: TestDownloadArtifacts
-        run: dotnet run --project _atom/_atom.csproj TestDownloadArtifacts --skip --headless

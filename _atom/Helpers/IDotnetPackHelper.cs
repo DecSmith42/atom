@@ -1,7 +1,7 @@
 ﻿namespace Atom.Helpers;
 
 [TargetDefinition]
-public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
+public partial interface IDotnetPackHelper : IProcessHelper, IDotnetVersionHelper
 {
     async Task DotnetPackProject(string projectName)
     {
