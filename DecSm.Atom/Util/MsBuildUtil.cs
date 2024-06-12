@@ -4,6 +4,25 @@ public static class MsBuildUtil
 {
     public static VersionInfo ParseVersionInfo(string msBuildFilePath)
     {
+        var sdkVersion = GetDotnetSdkVersion();
+        Console.WriteLine($"Using .NET SDK version: {sdkVersion}");
+        var sdkLocations = GetDotnetSdkLocations();
+        Console.WriteLine($"Found .NET SDK locations: {string.Join(", ", sdkLocations)}");
+        var currentSdk = sdkLocations.FirstOrDefault(s => s.Contains(sdkVersion));
+        Console.WriteLine($"Using .NET SDK location: {currentSdk}");
+
+        var currentSdkPath = currentSdk
+            ?.Split('[', ']')[1];
+
+        Console.WriteLine($"Using .NET SDK path: {currentSdkPath}");
+        Environment.SetEnvironmentVariable("MSBuildSDKsPath", currentSdkPath);
+        Console.WriteLine($"Set MSBuildSDKsPath to: {Environment.GetEnvironmentVariable("MSBuildSDKsPath")}");
+
+        return ParseVersionInfoInternal(msBuildFilePath);
+    }
+
+    private static VersionInfo ParseVersionInfoInternal(string msBuildFilePath)
+    {
         var project = Project.FromFile(msBuildFilePath, new());
 
         var versionPrefix = ParseVersionSem(project.GetPropertyValue("VersionPrefix"));
@@ -15,6 +34,63 @@ public static class MsBuildUtil
         var informationalVersion = ParseVersionFreetext(project.GetPropertyValue("InformationalVersion"));
 
         return new(versionPrefix, versionSuffix, version, packageVersion, assemblyVersion, fileVersion, informationalVersion);
+    }
+
+
+    private static string? GetDotnetSdkVersion()
+    {
+        var sdkVersion = string.Empty;
+
+        try
+        {
+            using var process = new Process();
+
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = "--version";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+
+            sdkVersion = process.StandardOutput.ReadLine();
+            process.WaitForExit();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving .NET SDK version: {ex.Message}");
+        }
+
+        return sdkVersion;
+    }
+
+    private static string[] GetDotnetSdkLocations()
+    {
+        var sdkLocations = new List<string>();
+
+        try
+        {
+            using var process = new Process();
+
+            process.StartInfo.FileName = "dotnet";
+            process.StartInfo.Arguments = "--list-sdks";
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+
+            process.Start();
+
+            while (process.StandardOutput.ReadLine() is { } line)
+                sdkLocations.Add(line);
+
+            process.WaitForExit();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving .NET SDK locations: {ex.Message}");
+        }
+
+        return sdkLocations.ToArray();
     }
 
     private static VersionSem? ParseVersionSem(string? text)
