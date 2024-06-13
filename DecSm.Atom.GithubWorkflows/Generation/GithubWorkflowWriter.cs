@@ -172,17 +172,6 @@ public sealed class GithubWorkflowWriter(
 
                 WriteLine();
 
-                using (WriteSection("- name: Setup .NET"))
-                {
-                    WriteLine("uses: actions/setup-dotnet@v4");
-
-                    using (WriteSection("with:"))
-                        WriteLine("dotnet-version: 8.x");
-                }
-
-
-                WriteLine();
-
                 var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
 
                 if (target.ConsumedArtifacts.Count > 0)

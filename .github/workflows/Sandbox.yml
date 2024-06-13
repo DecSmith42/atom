@@ -14,11 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
-      
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
@@ -30,11 +25,6 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v2
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
       
       - name: Diagnostics
         id: Diagnostics
@@ -50,11 +40,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
-      
       - name: OutputValue
         id: OutputValue
         run: dotnet run --project _atom/_atom.csproj OutputValue --skip --headless
@@ -66,11 +51,6 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v2
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
       
       - name: InputValue
         id: InputValue
@@ -85,11 +65,6 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v2
-      
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
       
       - name: GetVaultSecret
         id: GetVaultSecret
