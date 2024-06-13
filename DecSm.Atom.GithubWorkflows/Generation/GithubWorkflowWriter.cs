@@ -267,11 +267,16 @@ public sealed class GithubWorkflowWriter(
                 env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
                     $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
 
-            if (target
+            var requiredSecrets = target
                 .RequiredParams
                 .Select(x => buildDefinition.ParamDefinitions[x])
+                .Where(x => x.Attribute.IsSecret)
+                .Select(x => x)
+                .ToArray();
+
+            if (requiredSecrets
                 .Any(x => x.Attribute.IsSecret))
-                foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretInjection>())
+                foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
 
@@ -279,6 +284,19 @@ public sealed class GithubWorkflowWriter(
                         env[paramDefinition.Attribute.ArgName] =
                             $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
+
+            foreach (var requiredSecret in requiredSecrets)
+            {
+                var injectedSecret = workflow
+                    .Options
+                    .OfType<WorkflowSecretInjection>()
+                    .FirstOrDefault(x => x.Param == requiredSecret.Name);
+
+                if (injectedSecret is not null)
+                    env[requiredSecret.Attribute.ArgName] =
+                        $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+            }
+            
 
             if (env.Count > 0)
                 using (WriteSection("env:"))

@@ -21,10 +21,10 @@ public sealed class AzureKeyVaultProvider(IBuildDefinition buildDefinition, Comm
             
             return
             [
-                new WorkflowSecretInjection(nameof(IAzureKeyVault.AzureVaultAddress)),
-                new WorkflowSecretInjection(nameof(IAzureKeyVault.AzureVaultTenantId)),
-                new WorkflowSecretInjection(nameof(IAzureKeyVault.AzureVaultAppId)),
-                new WorkflowSecretInjection(nameof(IAzureKeyVault.AzureVaultAppSecret)),
+                new WorkflowVaultSecretInjection(nameof(IAzureKeyVault.AzureVaultAddress)),
+                new WorkflowVaultSecretInjection(nameof(IAzureKeyVault.AzureVaultTenantId)),
+                new WorkflowVaultSecretInjection(nameof(IAzureKeyVault.AzureVaultAppId)),
+                new WorkflowVaultSecretInjection(nameof(IAzureKeyVault.AzureVaultAppSecret)),
             ];
         }
     }
