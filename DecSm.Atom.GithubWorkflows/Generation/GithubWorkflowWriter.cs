@@ -217,11 +217,15 @@ public sealed class GithubWorkflowWriter(
                         .Options
                         .OfType<UseArtifactProvider>()
                         .Any())
+                    {
+                        WriteLine();
+
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
                             [("upload-artifact-name", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
                             false);
+                    }
                     else
                         foreach (var artifact in target.ProducedArtifacts)
                         {
@@ -274,8 +278,7 @@ public sealed class GithubWorkflowWriter(
                 .Select(x => x)
                 .ToArray();
 
-            if (requiredSecrets
-                .Any(x => x.Attribute.IsSecret))
+            if (requiredSecrets.Any(x => x.Attribute.IsSecret))
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
@@ -296,7 +299,7 @@ public sealed class GithubWorkflowWriter(
                     env[requiredSecret.Attribute.ArgName] =
                         $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
-            
+
 
             if (env.Count > 0)
                 using (WriteSection("env:"))
