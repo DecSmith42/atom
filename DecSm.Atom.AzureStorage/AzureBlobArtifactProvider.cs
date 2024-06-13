@@ -76,8 +76,8 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
                 var blobDownloadInfo = await blobClient.DownloadAsync();
                 var blobName = blobItem.Blob.Name;
 
-                if (blobName.StartsWith($"{solutionName}/{buildId}/"))
-                    blobName = blobName.Substring($"{solutionName}/{buildId}/".Length);
+                if (blobName.StartsWith($"{solutionName}/{buildId}/{artifactName}/"))
+                    blobName = blobName.Substring($"{solutionName}/{buildId}/{artifactName}/".Length);
                 else
                     throw new InvalidOperationException($"Blob name {blobName} does not start with {solutionName}/{buildId}");
 
