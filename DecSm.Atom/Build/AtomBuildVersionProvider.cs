@@ -13,7 +13,7 @@ public class AtomBuildVersionProvider(IFileSystem fileSystem) : IBuildVersionPro
             if (!directoryBuildProps.FileExists)
                 throw new($"File required for {nameof(AtomBuildVersionProvider)} but not found: {directoryBuildProps}");
 
-            return MsBuildUtil.ParseVersionInfo(directoryBuildProps);
+            return MsBuildUtil.GetVersionInfo(directoryBuildProps);
         }
     }
 }

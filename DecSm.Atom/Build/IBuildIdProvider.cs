@@ -2,5 +2,5 @@
 
 public interface IBuildIdProvider
 {
-    int BuildId { get; }
+    long BuildId { get; }
 }
