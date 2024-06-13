@@ -15,8 +15,9 @@ public partial interface IPushToNuget : INugetHelper, IDotnetVersionHelper
             .ConsumesArtifact<IPackAtomGithubWorkflows>(IPackAtomGithubWorkflows.AtomGithubWorkflowsProjectName)
             .ConsumesArtifact<IPackAtomSourceGenerators>(IPackAtomSourceGenerators.AtomSourceGeneratorsProjectName)
             .ConsumesArtifact<IPackAtomTool>(IPackAtomTool.AtomToolProjectName)
-            .RequiresParam(Build.Params.NugetFeed)
-            .RequiresParam(Build.Secrets.NugetApiKey)
+
+            // .RequiresParam(Build.Params.NugetFeed)
+            // .RequiresParam(Build.Secrets.NugetApiKey)
             .Executes(async () =>
             {
                 await PushProject(IPackAtom.AtomProjectName);
