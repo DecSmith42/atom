@@ -33,7 +33,6 @@ internal partial class Build : BuildDefinition,
         new("Build")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
-            Options = [new WorkflowSecretInjection(Secrets.NugetApiKey)],
             StepDefinitions =
             [
                 Commands.PackAtom,
