@@ -5,31 +5,31 @@ public partial interface IDotnetVersionHelper
 {
     string GetProjectPackageVersion(AbsolutePath project) =>
         MsBuildUtil
-            .ParseVersionInfo(project)
+            .GetVersionInfo(project)
             .PackageVersion
             .ToString();
 
     string GetProjectVersion(AbsolutePath project) =>
         MsBuildUtil
-            .ParseVersionInfo(project)
+            .GetVersionInfo(project)
             .Version
             .ToString();
 
     string GetProjectAssemblyVersion(AbsolutePath project) =>
         MsBuildUtil
-            .ParseVersionInfo(project)
+            .GetVersionInfo(project)
             .AssemblyVersion
             .ToString();
 
     string GetProjectFileVersion(AbsolutePath project) =>
         MsBuildUtil
-            .ParseVersionInfo(project)
+            .GetVersionInfo(project)
             .FileVersion
             .ToString();
 
     string GetProjectInformationalVersion(AbsolutePath project) =>
         MsBuildUtil
-            .ParseVersionInfo(project)
+            .GetVersionInfo(project)
             .InformationalVersion
             .ToString();
 }

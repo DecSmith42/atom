@@ -2,95 +2,141 @@
 
 public static class MsBuildUtil
 {
-    public static VersionInfo ParseVersionInfo(string msBuildFilePath)
+    public static VersionInfo GetVersionInfo(AbsolutePath msBuildFile, bool includeDirectoryBuildProps = true)
     {
-        var sdkVersion = GetDotnetSdkVersion();
-        Console.WriteLine($"Using .NET SDK version: {sdkVersion}");
-        var sdkLocations = GetDotnetSdkLocations();
-        Console.WriteLine($"Found .NET SDK locations: {string.Join(", ", sdkLocations)}");
-        var currentSdk = sdkLocations.FirstOrDefault(s => s.Contains(sdkVersion));
-        Console.WriteLine($"Using .NET SDK location: {currentSdk}");
+        var properties = GetProperties(msBuildFile, includeDirectoryBuildProps);
 
-        var currentSdkPath = currentSdk
-            ?.Split('[', ']')[1];
-
-        Console.WriteLine($"Using .NET SDK path: {currentSdkPath}");
-        Environment.SetEnvironmentVariable("MSBuildSDKsPath", currentSdkPath);
-        Console.WriteLine($"Set MSBuildSDKsPath to: {Environment.GetEnvironmentVariable("MSBuildSDKsPath")}");
-
-        return ParseVersionInfoInternal(msBuildFilePath);
-    }
-
-    private static VersionInfo ParseVersionInfoInternal(string msBuildFilePath)
-    {
-        var project = Project.FromFile(msBuildFilePath, new());
-
-        var versionPrefix = ParseVersionSem(project.GetPropertyValue("VersionPrefix"));
-        var versionSuffix = ParseVersionFreetext(project.GetPropertyValue("VersionSuffix"));
-        var version = ParseVersionWithSuffix(project.GetPropertyValue("Version"));
-        var packageVersion = ParseVersionWithSuffix(project.GetPropertyValue("PackageVersion"));
-        var assemblyVersion = ParseVersionWithRevision(project.GetPropertyValue("AssemblyVersion"));
-        var fileVersion = ParseVersionWithRevision(project.GetPropertyValue("FileVersion"));
-        var informationalVersion = ParseVersionFreetext(project.GetPropertyValue("InformationalVersion"));
+        var versionPrefix = ParseVersionSem(properties.GetValueOrDefault("VersionPrefix"));
+        var versionSuffix = ParseVersionFreetext(properties.GetValueOrDefault("VersionSuffix"));
+        var version = ParseVersionWithSuffix(properties.GetValueOrDefault("Version"));
+        var packageVersion = ParseVersionWithSuffix(properties.GetValueOrDefault("PackageVersion"));
+        var assemblyVersion = ParseVersionWithRevision(properties.GetValueOrDefault("AssemblyVersion"));
+        var fileVersion = ParseVersionWithRevision(properties.GetValueOrDefault("FileVersion"));
+        var informationalVersion = ParseVersionFreetext(properties.GetValueOrDefault("InformationalVersion"));
 
         return new(versionPrefix, versionSuffix, version, packageVersion, assemblyVersion, fileVersion, informationalVersion);
     }
 
-
-    private static string? GetDotnetSdkVersion()
+    private static Dictionary<string, string> GetProperties(AbsolutePath msBuildFile, bool includeDirectoryBuildProps = true)
     {
-        var sdkVersion = string.Empty;
+        var msBuildFiles = ReadMsBuildFiles(msBuildFile, includeDirectoryBuildProps);
+        var unresolvedProperties = ParsePropertiesFromFiles(msBuildFiles);
 
-        try
-        {
-            using var process = new Process();
+        PopulateMissingVersionProperties(unresolvedProperties);
 
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = "--version";
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-
-            process.Start();
-
-            sdkVersion = process.StandardOutput.ReadLine();
-            process.WaitForExit();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving .NET SDK version: {ex.Message}");
-        }
-
-        return sdkVersion;
+        return ResolveProperties(unresolvedProperties);
     }
 
-    private static string[] GetDotnetSdkLocations()
+    private static List<AbsolutePath> ReadMsBuildFiles(AbsolutePath msBuildFile, bool includeDirectoryBuildProps)
     {
-        var sdkLocations = new List<string>();
+        List<AbsolutePath> msBuildFiles = [msBuildFile];
 
-        try
+        if (includeDirectoryBuildProps)
         {
-            using var process = new Process();
+            var currentDirectory = msBuildFile.Parent;
 
-            process.StartInfo.FileName = "dotnet";
-            process.StartInfo.Arguments = "--list-sdks";
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
+            while (currentDirectory?.Exists is true)
+            {
+                var directoryBuildProps = currentDirectory / "Directory.Build.props";
 
-            process.Start();
+                if (directoryBuildProps.FileExists)
+                    msBuildFiles.Add(directoryBuildProps);
 
-            while (process.StandardOutput.ReadLine() is { } line)
-                sdkLocations.Add(line);
+                if (string.Equals(currentDirectory, msBuildFile.FileSystem.SolutionRoot(), StringComparison.OrdinalIgnoreCase))
+                    break;
 
-            process.WaitForExit();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving .NET SDK locations: {ex.Message}");
+                currentDirectory = currentDirectory.Parent;
+            }
         }
 
-        return sdkLocations.ToArray();
+        msBuildFiles.Reverse();
+
+        return msBuildFiles;
+    }
+
+    private static Dictionary<string, string> ParsePropertiesFromFiles(List<AbsolutePath> msBuildFiles)
+    {
+        var unresolvedProperties = new Dictionary<string, string>();
+
+        foreach (var fileContents in msBuildFiles.Select(file => file.FileSystem.File.ReadAllText(file)))
+        {
+            if (fileContents is not { Length: > 0 })
+                continue;
+
+            var msBuildFileXml = XDocument.Parse(fileContents);
+
+            // Get all properties
+            var props = msBuildFileXml
+                .Root
+                ?.Elements("PropertyGroup")
+                .SelectMany(pg => pg.Elements())
+                .Select(x => new MsBuildProperty(x.Name.LocalName)
+                {
+                    Value = x.Value,
+                });
+
+            foreach (var prop in props ?? [])
+                unresolvedProperties[prop.Name] = prop.Value;
+        }
+
+        return unresolvedProperties;
+    }
+
+    private static void PopulateMissingVersionProperties(Dictionary<string, string> unresolvedProperties)
+    {
+        unresolvedProperties.TryAdd("VersionPrefix", "1.0.0");
+        unresolvedProperties.TryAdd("VersionSuffix", string.Empty);
+
+        unresolvedProperties.TryAdd("Version",
+            unresolvedProperties["VersionPrefix"] is { Length: > 0 }
+                ? $"{unresolvedProperties["VersionPrefix"]}-{unresolvedProperties["VersionSuffix"]}"
+                : unresolvedProperties["VersionPrefix"]);
+
+        unresolvedProperties.TryAdd("PackageVersion", unresolvedProperties["Version"]);
+        unresolvedProperties.TryAdd("AssemblyVersion", $"{unresolvedProperties["VersionPrefix"]}.0");
+        unresolvedProperties.TryAdd("FileVersion", $"{unresolvedProperties["VersionPrefix"]}.0");
+    }
+
+    private static Dictionary<string, string> ResolveProperties(Dictionary<string, string> unresolvedProperties)
+    {
+        var properties = unresolvedProperties
+            .Select(x => new MsBuildProperty(x.Key)
+            {
+                Value = x.Value,
+            })
+            .ToList();
+
+        foreach (var property in properties)
+            property.Resolved = properties.All(x => !property.Value.Contains(x.Name, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var property in properties)
+            ResolveProperty(properties, property, 0);
+
+        return properties
+            .Where(x => x.Value is { Length: > 0 })
+            .ToDictionary(x => x.Name, x => x.Value);
+    }
+
+    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local - used to prevent infinite recursion
+    private static void ResolveProperty(List<MsBuildProperty> properties, MsBuildProperty msBuildProperty, int depth)
+    {
+        if (depth > properties.Count * 2)
+            throw new InvalidOperationException("Circular reference detected");
+
+        if (msBuildProperty.Resolved)
+            return;
+
+        var value = msBuildProperty.Value;
+
+        foreach (var otherProperty in properties.Where(otherProperty => value.Contains(otherProperty.Name)))
+        {
+            if (!otherProperty.Resolved)
+                ResolveProperty(properties, otherProperty, depth + 1);
+
+            value = value.Replace($"$({otherProperty.Name})", otherProperty.Value);
+        }
+
+        msBuildProperty.Value = value;
     }
 
     private static VersionSem? ParseVersionSem(string? text)
@@ -187,6 +233,13 @@ public static class MsBuildUtil
 
         return new(new(major, minor, patch), revision);
     }
+}
+
+public sealed record MsBuildProperty(string Name)
+{
+    public required string Value { get; set; }
+
+    public bool Resolved { get; set; }
 }
 
 public sealed record VersionInfo
