@@ -16,6 +16,7 @@ internal sealed class AtomService(
         {
             if (args.Args is { Length: 0 })
             {
+                await workflowGenerator.GenerateWorkflows();
                 cheatsheetService.ShowCheatsheet();
 
                 return;
@@ -24,11 +25,15 @@ internal sealed class AtomService(
             if (args.HasHelp)
                 cheatsheetService.ShowCheatsheet();
 
-            if (args.HasGen)
+            if (args.HasGen || !args.HasHeadless)
             {
-                workflowGenerator.GenerateWorkflows();
+                await workflowGenerator.GenerateWorkflows();
 
                 return;
+            }
+            else if (await workflowGenerator.WorkflowsDirty())
+            {
+                throw new InvalidOperationException("One or more workflows are dirty. Run 'atom -g' to regenerate them");
             }
 
             await executor.Execute();

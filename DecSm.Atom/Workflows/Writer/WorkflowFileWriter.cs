@@ -13,7 +13,7 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
 
     protected abstract string FileExtension { get; }
 
-    public void Generate(WorkflowModel workflow)
+    public async Task Generate(WorkflowModel workflow)
     {
         var filePath = FileLocation / $"{workflow.Name}.{FileExtension}";
 
@@ -23,15 +23,11 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
         _stringBuilder.Clear();
 
         var existingText = fileSystem.File.Exists(filePath)
-            ? fileSystem.File.ReadAllText(filePath)
+            ? await fileSystem.File.ReadAllTextAsync(filePath)
             : string.Empty;
 
         if (existingText == newText)
-        {
-            logger.LogDebug("Workflow file is up to date: {FilePath}", filePath);
-
             return;
-        }
 
         if (existingText.Length > 0)
             logger.LogInformation("Updating workflow file: {FilePath}", filePath);
@@ -41,7 +37,28 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
         if (filePath.Parent?.Exists is false)
             fileSystem.Directory.CreateDirectory(filePath.Parent);
 
-        fileSystem.File.WriteAllText(filePath, newText);
+        await fileSystem.File.WriteAllTextAsync(filePath, newText);
+    }
+
+    public async Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow)
+    {
+        var filePath = FileLocation / $"{workflow.Name}.{FileExtension}";
+
+        WriteWorkflow(workflow);
+
+        var newText = _stringBuilder.ToString();
+        _stringBuilder.Clear();
+
+        var existingText = fileSystem.File.Exists(filePath)
+            ? await fileSystem.File.ReadAllTextAsync(filePath)
+            : string.Empty;
+
+        if (existingText == newText)
+            return false;
+
+        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}", filePath);
+
+        return true;
     }
 
     protected void WriteLine(string? value = null)
