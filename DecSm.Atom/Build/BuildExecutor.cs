@@ -1,13 +1,13 @@
 ﻿namespace DecSm.Atom.Build;
 
-public class BuildExecutor(
+internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
     IParamService paramService,
     IWorkflowVariableService variableService,
     IAnsiConsole console,
     ILogger<BuildExecutor> logger
-)
+) : IBuildExecutor
 {
     public async Task Execute()
     {
@@ -134,6 +134,12 @@ public class BuildExecutor(
                 {
                     console.Write(new Markup($"[underline]{target.Name}[/]"));
                     console.WriteLine();
+                    console.WriteLine();
+                }
+
+                if (target.Description is { Length: > 0 })
+                {
+                    console.WriteLine($"Description: {target.Description}");
                     console.WriteLine();
                 }
 

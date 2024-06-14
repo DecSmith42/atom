@@ -1,25 +1,20 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 [TargetDefinition]
-public interface IUploadArtifact : IBuildDefinition
+public interface IUploadArtifact : IArtifactHelper
 {
-    [ParamDefinition("upload-artifact-name", "The name of the artifact to upload.")]
-    string UploadArtifactName => GetParam(() => UploadArtifactName)!;
-
     Target UploadArtifact =>
-        d =>
+        targetDefinition =>
         {
             var artifactProvider = Services.GetRequiredService<IArtifactProvider>();
 
-            d.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
+            targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
 
-            d.RequiredParams.Add(nameof(UploadArtifactName));
-            d.RequiredParams.AddRange(artifactProvider.RequiredParams);
+            targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
+            targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
 
-            return d.Executes(async () =>
-            {
-                var artifactNames = UploadArtifactName.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                await artifactProvider.UploadArtifacts(artifactNames);
-            });
+            targetDefinition.Executes(() => artifactProvider.UploadArtifacts(AtomArtifactNames));
+
+            return targetDefinition;
         };
 }

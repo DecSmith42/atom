@@ -17,12 +17,9 @@ public interface ISetup : IBuildDefinition
 
                 WriteVariable(nameof(AtomBuildId), buildId.ToString());
 
-
                 Services
                     .GetRequiredService<ILogger<ISetup>>()
-                    .LogInformation("Build ID: {BuildId}, MSBuildSDKsPath: {SdksPath}",
-                        buildId,
-                        Environment.GetEnvironmentVariable("MSBuildSDKsPath"));
+                    .LogInformation("Build ID: {BuildId}", buildId);
 
                 return Task.CompletedTask;
             });

@@ -15,7 +15,7 @@ internal partial class Build : BuildDefinition,
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        AzureKeyVault.UseAzureKeyVault, Artifacts.UseArtifactProvider,
+        AzureKeyVault.UseAzureKeyVault, Artifacts.UseCustomArtifactProvider,
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>

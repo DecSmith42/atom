@@ -1,13 +1,13 @@
 ﻿namespace DecSm.Atom;
 
-public class AtomService(
+internal sealed class AtomService(
     CommandLineArgs args,
-    BuildExecutor executor,
+    IBuildExecutor executor,
     BuildModel buildModel,
     IHostApplicationLifetime lifetime,
     ILogger<AtomService> logger,
     ICheatsheetService cheatsheetService,
-    WorkflowGenerator workflowGenerator
+    IWorkflowGenerator workflowGenerator
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

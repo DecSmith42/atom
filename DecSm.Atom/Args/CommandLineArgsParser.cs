@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Args;
 
-public static class CommandLineArgsParser
+internal static class CommandLineArgsParser
 {
     public static CommandLineArgs Parse(string[] rawArgs, IBuildDefinition buildDefinition)
     {

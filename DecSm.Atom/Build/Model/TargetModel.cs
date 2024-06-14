@@ -1,18 +1,18 @@
 ﻿namespace DecSm.Atom.Build.Model;
 
-public sealed record TargetModel(string Name)
+public sealed record TargetModel(string Name, string? Description)
 {
-    public IReadOnlyList<Func<Task>> Tasks { get; init; } = [];
+    public required IReadOnlyList<Func<Task>> Tasks { get; init; }
 
-    public IReadOnlyList<string> RequiredParams { get; init; } = [];
+    public required IReadOnlyList<string> RequiredParams { get; init; }
 
-    public IReadOnlyList<ConsumedArtifact> ConsumedArtifacts { get; init; } = [];
+    public required IReadOnlyList<ConsumedArtifact> ConsumedArtifacts { get; init; }
 
-    public IReadOnlyList<ProducedArtifact> ProducedArtifacts { get; init; } = [];
+    public required IReadOnlyList<ProducedArtifact> ProducedArtifacts { get; init; }
 
-    public IReadOnlyList<ConsumedVariable> ConsumedVariables { get; init; } = [];
+    public required IReadOnlyList<ConsumedVariable> ConsumedVariables { get; init; }
 
-    public IReadOnlyList<string> ProducedVariables { get; init; } = [];
+    public required IReadOnlyList<string> ProducedVariables { get; init; }
 
-    public List<TargetModel> Dependencies { get; init; } = [];
+    public required List<TargetModel> Dependencies { get; init; }
 }

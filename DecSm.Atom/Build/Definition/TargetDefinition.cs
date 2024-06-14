@@ -4,6 +4,8 @@ public sealed class TargetDefinition
 {
     public string Name { get; init; } = string.Empty;
 
+    public string? Description { get; set; }
+
     public List<Func<Task>> Tasks { get; } = [];
 
     public List<string> Dependencies { get; } = [];
@@ -17,6 +19,13 @@ public sealed class TargetDefinition
     public List<ConsumedVariable> ConsumedVariables { get; } = [];
 
     public List<string> ProducedVariables { get; } = [];
+
+    public TargetDefinition WithDescription(string description)
+    {
+        Description = description;
+
+        return this;
+    }
 
     public TargetDefinition Executes(Func<Task> task)
     {
@@ -52,9 +61,9 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ProducesArtifact(string artifactName, string? artifactPath = null)
+    public TargetDefinition ProducesArtifact(string artifactName)
     {
-        ProducedArtifacts.Add(new(artifactName, artifactPath));
+        ProducedArtifacts.Add(new(artifactName));
 
         return this;
     }

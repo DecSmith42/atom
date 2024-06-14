@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Writer;
 
-public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger) : IAtomWorkflowWriter<T>
+public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger) : IWorkflowWriter<T>
     where T : IWorkflowType
 {
     private readonly StringBuilder _stringBuilder = new();

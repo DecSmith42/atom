@@ -1,16 +1,18 @@
 ﻿namespace DecSm.Atom.Variables;
 
-public class WorkflowVariableService(IEnumerable<IWorkflowVariableProvider> workflowVariableProviders, IBuildDefinition buildDefinition)
-    : IWorkflowVariableService
+internal sealed class WorkflowVariableService(
+    IEnumerable<IWorkflowVariableProvider> workflowVariableProviders,
+    IBuildDefinition buildDefinition
+) : IWorkflowVariableService
 {
     // ReSharper disable once PossibleMultipleEnumeration - Once-only operation
-    private readonly IWorkflowVariableProvider _baseProvider = workflowVariableProviders
-        .OfType<BaseWorkflowVariableProvider>()
+    private readonly AtomWorkflowVariableProvider _baseProvider = workflowVariableProviders
+        .OfType<AtomWorkflowVariableProvider>()
         .Single();
 
     // ReSharper disable once PossibleMultipleEnumeration - Once-only operation
     private readonly IWorkflowVariableProvider[] _customProviders = workflowVariableProviders
-        .Where(x => x is not BaseWorkflowVariableProvider)
+        .Where(x => x is not AtomWorkflowVariableProvider)
         .ToArray();
 
     public async Task WriteVariable(string variableName, string variableValue)

@@ -4,11 +4,11 @@ public static class GithubHostExtensions
 {
     public static IAtomConfiguration AddGithubWorkflows(this IAtomConfiguration configuration)
     {
-        configuration.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IAtomWorkflowWriter),
+        configuration.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
             typeof(GithubWorkflowWriter),
             ServiceLifetime.Singleton));
 
-        configuration.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IAtomWorkflowWriter),
+        configuration.Builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
             typeof(DependabotWorkflowWriter),
             ServiceLifetime.Singleton));
 

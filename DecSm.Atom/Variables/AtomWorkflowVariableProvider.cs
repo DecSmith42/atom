@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Variables;
 
-public sealed class BaseWorkflowVariableProvider(IFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
+internal sealed class AtomWorkflowVariableProvider(IFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
 {
     public async Task<bool> WriteVariable(string variableName, string variableValue)
     {

@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Build;
 
-public static class BuildResolver
+internal static class BuildResolver
 {
     public static BuildModel ResolveBuild(IBuildDefinition buildDefinition, IEnumerable<string> specifiedTargets, bool includeDependencies)
     {
@@ -25,7 +25,7 @@ public static class BuildResolver
 
         // Transform target definitions into target models
         var targetModels = targetDefinitions
-            .Select(x => new TargetModel(x.Name)
+            .Select(x => new TargetModel(x.Name, x.Description)
             {
                 Tasks = x.Tasks,
                 RequiredParams = x.RequiredParams,
@@ -33,6 +33,7 @@ public static class BuildResolver
                 ProducedArtifacts = x.ProducedArtifacts,
                 ConsumedVariables = x.ConsumedVariables,
                 ProducedVariables = x.ProducedVariables,
+                Dependencies = [],
             })
             .ToArray();
 

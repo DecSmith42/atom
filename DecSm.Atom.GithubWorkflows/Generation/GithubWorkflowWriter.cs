@@ -178,13 +178,13 @@ public sealed class GithubWorkflowWriter(
                 {
                     if (workflow
                         .Options
-                        .OfType<UseArtifactProvider>()
+                        .OfType<UseCustomArtifactProvider>()
                         .Any())
                     {
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("download-artifact-name", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
                             false);
 
                         WriteLine();
@@ -215,7 +215,7 @@ public sealed class GithubWorkflowWriter(
                 {
                     if (workflow
                         .Options
-                        .OfType<UseArtifactProvider>()
+                        .OfType<UseCustomArtifactProvider>()
                         .Any())
                     {
                         WriteLine();
@@ -223,7 +223,7 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("upload-artifact-name", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
                             false);
                     }
                     else

@@ -6,35 +6,28 @@ public static class HostExtensions
         where T : BuildDefinition
     {
         var configurator = new AtomConfiguration(builder);
+        builder.Services.AddHostedService<AtomService>();
+
         builder.Services.AddSingleton<IAtomConfiguration>(configurator);
 
-        builder.Services.TryAddSingleton<IBuildDefinition, T>();
-        builder.Services.AddHostedService<AtomService>();
-        builder.Services.TryAddSingleton<BuildExecutor>();
+        builder.Services.AddSingleton<IBuildDefinition, T>();
+        builder.Services.AddSingleton<IBuildExecutor, BuildExecutor>();
+        builder.Services.AddSingleton<IWorkflowGenerator, WorkflowGenerator>();
 
-        builder.Services.TryAddSingleton<WorkflowGenerator>();
+        builder.Services.AddSingleton<ParamService>();
 
-        builder.Services.TryAddSingleton<IFileSystem, FileSystem>();
-        builder.Services.TryAddSingleton<ParamService>();
-
-        builder.Services.TryAddSingleton<IParamService>(services =>
+        builder.Services.AddSingleton<IParamService>(services =>
             ParamServiceAccessor.Service = services.GetRequiredService<ParamService>());
 
-        builder.Services.TryAddSingleton<IWorkflowVariableProvider, BaseWorkflowVariableProvider>();
+        builder.Services.TryAddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
 
-        builder.Services.TryAddSingleton(new RawCommandLineArgs(args));
+        builder.Services.AddSingleton<CommandLineArgs>(services =>
+            CommandLineArgsParser.Parse(args, services.GetRequiredService<IBuildDefinition>()));
 
-        builder.Services.TryAddSingleton<CommandLineArgs>(services =>
-        {
-            var raw = services.GetRequiredService<RawCommandLineArgs>();
-
-            return CommandLineArgsParser.Parse(raw.Args, services.GetRequiredService<IBuildDefinition>());
-        });
-
-        builder.Services.TryAddSingleton<BuildModel>(services =>
+        builder.Services.AddSingleton<BuildModel>(services =>
         {
             var buildDefinition = services.GetRequiredService<IBuildDefinition>();
             var commandLineArgs = services.GetRequiredService<CommandLineArgs>();
@@ -47,7 +40,8 @@ public static class HostExtensions
                 !commandLineArgs.HasSkip);
         });
 
-        builder.Services.TryAddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
+        builder.Services.AddSingleton<IFileSystem, FileSystem>();
+        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
         builder.Services.TryAddSingleton<ICheatsheetService, CheatsheetService>();
 
         builder.Logging.ClearProviders();

@@ -1,10 +1,7 @@
-using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Params;
-
 namespace DecSm.Atom.Tests;
 
 [TestFixture]
-public class ComandLineArgParserTests
+public class CommandLineArgParserTests
 {
     [Test]
     public void Parse_No_Args()

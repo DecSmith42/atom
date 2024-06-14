@@ -1,14 +1,14 @@
 ﻿namespace DecSm.Atom.Workflows;
 
-public class WorkflowGenerator(
+internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
-    IEnumerable<IAtomWorkflowWriter> writers,
+    IEnumerable<IWorkflowWriter> writers,
     IEnumerable<IWorkflowOptionProvider> workflowOptionProviders,
     ILogger<WorkflowGenerator> logger
-)
+) : IWorkflowGenerator
 {
-    private readonly List<IAtomWorkflowWriter> _writers = writers.ToList();
+    private readonly List<IWorkflowWriter> _writers = writers.ToList();
 
     public void GenerateWorkflows()
     {

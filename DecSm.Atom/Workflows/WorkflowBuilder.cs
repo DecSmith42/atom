@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows;
 
-public static class WorkflowBuilder
+internal static class WorkflowBuilder
 {
     public static WorkflowModel BuildWorkflow(
         WorkflowDefinition definition,
@@ -9,7 +9,12 @@ public static class WorkflowBuilder
         IEnumerable<IWorkflowOptionProvider> workflowOptionProviders)
     {
         if (definition.StepDefinitions.Count == 0)
-            return new(definition.Name, definition.Triggers, definition.Options, []);
+            return new(definition.Name)
+            {
+                Triggers = definition.Triggers,
+                Options = definition.Options,
+                Jobs = [],
+            };
 
         var definedSteps = definition
             .StepDefinitions
@@ -39,8 +44,6 @@ public static class WorkflowBuilder
             var job = commandJobMap[jobName];
 
             job.JobDependencies.AddRange(target.Dependencies.Select(x => x.Name));
-
-            job.ParamRequirements.AddRange(target.RequiredParams.Select(x => buildDefinition.ParamDefinitions[x]));
 
             foreach (var consumedVariable in target.ConsumedVariables)
             {
@@ -88,7 +91,12 @@ public static class WorkflowBuilder
             .Distinct()
             .ToList();
 
-        return new(definition.Name, definition.Triggers, options, jobs);
+        return new(definition.Name)
+        {
+            Triggers = definition.Triggers,
+            Options = options,
+            Jobs = jobs,
+        };
     }
 
     private static List<WorkflowJobModel> OrderJobs(List<WorkflowJobModel> jobs, Dictionary<string, WorkflowJobModel> nameJobMap)
