@@ -302,6 +302,32 @@ public sealed class GithubWorkflowWriter(
                         $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
+            var paramInjections = workflow
+                .Options
+                .OfType<WorkflowParamInjection>()
+                .Where(x => x.Command is null);
+
+            // Later injections override earlier ones, we want the command specific ones to override the global ones
+            paramInjections = paramInjections.Concat(workflow
+                .Options
+                .OfType<WorkflowParamInjection>()
+                .Where(x => x.Command?.Name == commandStep.Name));
+
+            foreach (var paramInjection in paramInjections)
+            {
+                if (!buildDefinition.ParamDefinitions.TryGetValue(paramInjection.Name, out var paramDefinition))
+                {
+                    logger.LogWarning(
+                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that is not consumed by the command",
+                        workflow.Name,
+                        commandStep.Name,
+                        paramInjection.Name);
+
+                    continue;
+                }
+
+                env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
+            }
 
             if (env.Count > 0)
                 using (WriteSection("env:"))
