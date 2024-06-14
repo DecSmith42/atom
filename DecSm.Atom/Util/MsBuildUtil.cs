@@ -244,13 +244,13 @@ public sealed record MsBuildProperty(string Name)
 
 public sealed record VersionInfo
 {
-    private readonly VersionSem _prefix;
-    private readonly VersionFreetext? _suffix;
-    private readonly VersionWithSuffix? _version;
-    private readonly VersionWithSuffix? _packageVersion;
     private readonly VersionWithRevision? _assemblyVersion;
     private readonly VersionWithRevision? _fileVersion;
     private readonly VersionFreetext? _informationalVersion;
+    private readonly VersionWithSuffix? _packageVersion;
+    private readonly VersionSem _prefix;
+    private readonly VersionFreetext? _suffix;
+    private readonly VersionWithSuffix? _version;
 
     public VersionInfo(
         VersionSem? prefix,

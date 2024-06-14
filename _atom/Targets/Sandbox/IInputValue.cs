@@ -9,7 +9,7 @@ public partial interface IInputValue : IOutputValue
             .Executes(() =>
             {
                 Logger.LogInformation("TestValue1: {TestValue1}", TestValue1);
-                
+
                 return Task.CompletedTask;
             });
 }

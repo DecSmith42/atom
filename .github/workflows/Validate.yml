@@ -32,6 +32,7 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+      
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
@@ -40,7 +41,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          upload-artifact-name: DecSm.Atom
+          atom-artifacts: DecSm.Atom
   
   PackAtomTool:
     needs: [ Setup ]
@@ -53,6 +54,7 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+      
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
@@ -61,7 +63,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          upload-artifact-name: DecSm.Atom.Tool
+          atom-artifacts: DecSm.Atom.Tool
   
   PackAtomGithubWorkflows:
     needs: [ Setup ]
@@ -74,6 +76,7 @@ jobs:
       - name: PackAtomGithubWorkflows
         id: PackAtomGithubWorkflows
         run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip --headless
+      
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
@@ -82,7 +85,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          upload-artifact-name: DecSm.Atom.GithubWorkflows
+          atom-artifacts: DecSm.Atom.GithubWorkflows
   
   PackAtomSourceGenerators:
     needs: [ Setup ]
@@ -95,6 +98,7 @@ jobs:
       - name: PackAtomSourceGenerators
         id: PackAtomSourceGenerators
         run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip --headless
+      
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
         env:
@@ -103,4 +107,4 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          upload-artifact-name: DecSm.Atom.SourceGenerators
+          atom-artifacts: DecSm.Atom.SourceGenerators

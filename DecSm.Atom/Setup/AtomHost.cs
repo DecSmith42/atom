@@ -10,12 +10,12 @@ public static class AtomHost
             DisableDefaults = true,
             Args = args,
         });
-        
+
         builder.Configuration.AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddUserSecrets(Assembly.GetEntryAssembly()!);
-        
+
         configureAtom?.Invoke(builder.AddAtom<T>(args));
-        
+
         return builder;
     }
 }

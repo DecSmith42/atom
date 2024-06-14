@@ -3,7 +3,7 @@
 public sealed record DependabotOptions : IWorkflowOption
 {
     public required IReadOnlyList<DependabotRegistry> Registries { get; init; }
-    
+
     public required IReadOnlyList<DependabotUpdate> Updates { get; init; }
 }
 
@@ -18,7 +18,7 @@ public sealed record DependabotUpdate(
 )
 {
     public required IReadOnlyCollection<string> Registries { get; init; } = [];
-    
+
     public IReadOnlyCollection<DependabotUpdateGroup> Groups { get; init; } = [];
 }
 
@@ -37,8 +37,8 @@ public enum DependabotSchedule
 public static class DependabotValues
 {
     public static string NugetType => "nuget-feed";
-    
+
     public static string NugetEcosystem => "nuget";
-    
+
     public static string NugetUrl => "https://api.nuget.org/v3/index.json";
 }

@@ -1,25 +1,20 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 [TargetDefinition]
-public interface IDownloadArtifact : IBuildDefinition
+public interface IDownloadArtifact : IArtifactHelper
 {
-    [ParamDefinition("download-artifact-name", "The name of the artifact to download.")]
-    string DownloadArtifactName => GetParam(() => DownloadArtifactName)!;
-    
     Target DownloadArtifact =>
-        d =>
+        targetDefinition =>
         {
             var artifactProvider = Services.GetRequiredService<IArtifactProvider>();
-            
-            d.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
-            
-            d.RequiredParams.Add(nameof(DownloadArtifactName));
-            d.RequiredParams.AddRange(artifactProvider.RequiredParams);
-            
-            return d.Executes(async () =>
-            {
-                var artifactNames = DownloadArtifactName.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                await artifactProvider.DownloadArtifacts(artifactNames);
-            });
+
+            targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
+
+            targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
+            targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
+
+            targetDefinition.Executes(() => artifactProvider.DownloadArtifacts(AtomArtifactNames));
+
+            return targetDefinition;
         };
 }

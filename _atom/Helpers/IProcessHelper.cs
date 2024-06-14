@@ -15,15 +15,15 @@ public partial interface IProcessHelper
                 RedirectStandardError = true,
             },
         };
-        
+
         try
         {
             process.OutputDataReceived += LogOutput;
             process.ErrorDataReceived += LogError;
-            
+
             if (logInvocation)
                 Logger.LogInformation("Invoking process {Name} {Args}", name, args);
-            
+
             using (Logger.BeginScope(new Dictionary<string, object>
                    {
                        ["$ProcessOutput"] = true,
@@ -35,10 +35,10 @@ public partial interface IProcessHelper
                 await process.WaitForExitAsync();
                 Logger.LogInformation("");
             }
-            
+
             if (process.ExitCode != 0)
                 throw new InvalidOperationException($"Process '{name}' exited with code {process.ExitCode}");
-            
+
             Logger.LogInformation("Process '{Name}' completed successfully", name);
         }
         finally
@@ -47,10 +47,10 @@ public partial interface IProcessHelper
             process.ErrorDataReceived -= LogError;
         }
     }
-    
+
     private void LogOutput(object _, DataReceivedEventArgs e) =>
         Logger.LogInformation("{Log}", e.Data);
-    
+
     private void LogError(object _, DataReceivedEventArgs e) =>
         Logger.LogError("{Log}", e.Data);
 }

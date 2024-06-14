@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Build;
 
-public class AtomBuildVersionProvider(IFileSystem fileSystem) : IBuildVersionProvider
+internal sealed class AtomBuildVersionProvider(IFileSystem fileSystem) : IBuildVersionProvider
 {
     public VersionInfo Version
     {

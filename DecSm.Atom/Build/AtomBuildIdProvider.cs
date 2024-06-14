@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Build;
 
-public sealed class AtomBuildIdProvider : IBuildIdProvider
+internal sealed class AtomBuildIdProvider : IBuildIdProvider
 {
     private long? _buildId;
 

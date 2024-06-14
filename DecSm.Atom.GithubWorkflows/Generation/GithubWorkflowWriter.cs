@@ -178,13 +178,13 @@ public sealed class GithubWorkflowWriter(
                 {
                     if (workflow
                         .Options
-                        .OfType<UseArtifactProvider>()
+                        .OfType<UseCustomArtifactProvider>()
                         .Any())
                     {
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("download-artifact-name", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
                             false);
 
                         WriteLine();
@@ -215,14 +215,19 @@ public sealed class GithubWorkflowWriter(
                 {
                     if (workflow
                         .Options
-                        .OfType<UseArtifactProvider>()
+                        .OfType<UseCustomArtifactProvider>()
                         .Any())
+                    {
+                        WriteLine();
+
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("upload-artifact-name", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
                             false);
+                    }
                     else
+                    {
                         foreach (var artifact in target.ProducedArtifacts)
                         {
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
@@ -238,6 +243,7 @@ public sealed class GithubWorkflowWriter(
 
                             WriteLine();
                         }
+                    }
                 }
 
                 break;
@@ -274,8 +280,7 @@ public sealed class GithubWorkflowWriter(
                 .Select(x => x)
                 .ToArray();
 
-            if (requiredSecrets
-                .Any(x => x.Attribute.IsSecret))
+            if (requiredSecrets.Any(x => x.Attribute.IsSecret))
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
@@ -296,7 +301,33 @@ public sealed class GithubWorkflowWriter(
                     env[requiredSecret.Attribute.ArgName] =
                         $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
-            
+
+            var paramInjections = workflow
+                .Options
+                .OfType<WorkflowParamInjection>()
+                .Where(x => x.Command is null);
+
+            // Later injections override earlier ones, we want the command specific ones to override the global ones
+            paramInjections = paramInjections.Concat(workflow
+                .Options
+                .OfType<WorkflowParamInjection>()
+                .Where(x => x.Command?.Name == commandStep.Name));
+
+            foreach (var paramInjection in paramInjections)
+            {
+                if (!buildDefinition.ParamDefinitions.TryGetValue(paramInjection.Name, out var paramDefinition))
+                {
+                    logger.LogWarning(
+                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that is not consumed by the command",
+                        workflow.Name,
+                        commandStep.Name,
+                        paramInjection.Name);
+
+                    continue;
+                }
+
+                env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
+            }
 
             if (env.Count > 0)
                 using (WriteSection("env:"))

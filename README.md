@@ -2,4 +2,4 @@
 
 > A declarative build system in .NET
 
-`// TODO`
+`// TODO: Very early days`
