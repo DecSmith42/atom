@@ -4,7 +4,7 @@ namespace Atom.Targets;
 internal partial interface IPackAtomTool : IDotnetPackHelper
 {
     public const string AtomToolProjectName = "DecSm.Atom.Tool";
-    
+
     Target PackAtomTool =>
         d => d
             .ProducesArtifact(AtomToolProjectName)

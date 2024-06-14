@@ -227,6 +227,7 @@ public sealed class GithubWorkflowWriter(
                             false);
                     }
                     else
+                    {
                         foreach (var artifact in target.ProducedArtifacts)
                         {
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
@@ -242,6 +243,7 @@ public sealed class GithubWorkflowWriter(
 
                             WriteLine();
                         }
+                    }
                 }
 
                 break;

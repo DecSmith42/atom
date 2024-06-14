@@ -3,18 +3,20 @@
 public static class Github
 {
     public static bool IsGithubActions => Variables.Actions.ToLower() == "true";
-    
+
+    public static string PipelinePublishDirectory => "${{ github.workspace }}/.github/publish";
+
+    public static string PipelineArtifactDirectory => "${{ github.workspace }}/.github/artifacts";
+
+    public static GithubWorkflowType WorkflowType { get; } = new();
+
     public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
         new("dependabot")
         {
             Options = [dependabotOptions],
             WorkflowTypes = [new DependabotWorkflowType()],
         };
-    
-    public static string PipelinePublishDirectory => "${{ github.workspace }}/.github/publish";
-    
-    public static string PipelineArtifactDirectory => "${{ github.workspace }}/.github/artifacts";
-    
+
     public static class VariableNames
     {
         public const string Actions = "GITHUB_ACTIONS";
@@ -62,18 +64,16 @@ public static class Github
         public const string RunnerUser = "RUNNER_USER";
         public const string RunnerWorkspace = "RUNNER_WORKSPACE";
     }
-    
-    public static GithubWorkflowType WorkflowType { get; } = new();
-    
+
     public static class Triggers
     {
         public static GithubManualTrigger Manual { get; } = new();
-        
+
         public static GithubPushTrigger PushToMain { get; } = new(["main"]);
-        
+
         public static GithubPullRequestTrigger PullIntoMain { get; } = new(["main"]);
     }
-    
+
     public static class Variables
     {
         /// <summary>
@@ -83,7 +83,7 @@ public static class Github
         ///     true
         /// </example>
         public static string Actions { get; } = Environment.GetEnvironmentVariable(VariableNames.Actions) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_ACTOR_ID
         /// </summary>
@@ -91,7 +91,7 @@ public static class Github
         ///     1234567
         /// </example>
         public static string ActorId { get; } = Environment.GetEnvironmentVariable(VariableNames.ActorId) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_ACTOR
         /// </summary>
@@ -99,7 +99,7 @@ public static class Github
         ///     ArthurDent
         /// </example>
         public static string Actor { get; } = Environment.GetEnvironmentVariable(VariableNames.Actor) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_API_URL
         /// </summary>
@@ -107,7 +107,7 @@ public static class Github
         ///     https://api.github.com
         /// </example>
         public static string ApiUrl { get; } = Environment.GetEnvironmentVariable(VariableNames.ApiUrl) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_BASE_REF
         /// </summary>
@@ -115,7 +115,7 @@ public static class Github
         ///     main
         /// </example>
         public static string BaseRef { get; } = Environment.GetEnvironmentVariable(VariableNames.BaseRef) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_ENV
         /// </summary>
@@ -123,7 +123,7 @@ public static class Github
         ///     /home/runner/work/_temp/_runner_file_commands/set_env_[GUID]
         /// </example>
         public static string Env { get; } = Environment.GetEnvironmentVariable(VariableNames.Env) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_EVENT_NAME
         /// </summary>
@@ -131,7 +131,7 @@ public static class Github
         ///     pull_request
         /// </example>
         public static string EventName { get; } = Environment.GetEnvironmentVariable(VariableNames.EventName) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_EVENT_PATH
         /// </summary>
@@ -139,7 +139,7 @@ public static class Github
         ///     /home/runner/work/_temp/_github_workflow/event.json
         /// </example>
         public static string EventPath { get; } = Environment.GetEnvironmentVariable(VariableNames.EventPath) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_GRAPHQL_URL
         /// </summary>
@@ -147,7 +147,7 @@ public static class Github
         ///     https://api.github.com/graphql
         /// </example>
         public static string GraphqlUrl { get; } = Environment.GetEnvironmentVariable(VariableNames.GraphqlUrl) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_HEAD_REF
         /// </summary>
@@ -155,7 +155,7 @@ public static class Github
         ///     my-branch
         /// </example>
         public static string HeadRef { get; } = Environment.GetEnvironmentVariable(VariableNames.HeadRef) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_JOB
         /// </summary>
@@ -163,7 +163,7 @@ public static class Github
         ///     BuildApp
         /// </example>
         public static string Job { get; } = Environment.GetEnvironmentVariable(VariableNames.Job) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_OUTPUT
         /// </summary>
@@ -171,7 +171,7 @@ public static class Github
         ///     /home/runner/work/_temp/_runner_file_commands/set_output_[GUID]
         /// </example>
         public static string Output { get; } = Environment.GetEnvironmentVariable(VariableNames.Output) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_PATH
         /// </summary>
@@ -179,7 +179,7 @@ public static class Github
         ///     /home/runner/work/_temp/_runner_file_commands/add_path_[GUID]
         /// </example>
         public static string Path { get; } = Environment.GetEnvironmentVariable(VariableNames.Path) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REF_NAME
         /// </summary>
@@ -187,7 +187,7 @@ public static class Github
         ///     4/my-branch
         /// </example>
         public static string RefName { get; } = Environment.GetEnvironmentVariable(VariableNames.RefName) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REF_PROTECTED
         /// </summary>
@@ -195,7 +195,7 @@ public static class Github
         ///     false
         /// </example>
         public static string RefProtected { get; } = Environment.GetEnvironmentVariable(VariableNames.RefProtected) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REF_TYPE
         /// </summary>
@@ -203,7 +203,7 @@ public static class Github
         ///     branch
         /// </example>
         public static string RefType { get; } = Environment.GetEnvironmentVariable(VariableNames.RefType) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REF
         /// </summary>
@@ -211,7 +211,7 @@ public static class Github
         ///     refs/pull/4/merge
         /// </example>
         public static string Ref { get; } = Environment.GetEnvironmentVariable(VariableNames.Ref) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REPOSITORY_ID
         /// </summary>
@@ -219,7 +219,7 @@ public static class Github
         ///     123456789
         /// </example>
         public static string RepositoryId { get; } = Environment.GetEnvironmentVariable(VariableNames.RepositoryId) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REPOSITORY_OWNER_ID
         /// </summary>
@@ -228,7 +228,7 @@ public static class Github
         /// </example>
         public static string RepositoryOwnerId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.RepositoryOwnerId) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REPOSITORY_OWNER
         /// </summary>
@@ -236,7 +236,7 @@ public static class Github
         ///     ArthurDent
         /// </example>
         public static string RepositoryOwner { get; } = Environment.GetEnvironmentVariable(VariableNames.RepositoryOwner) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_REPOSITORY
         /// </summary>
@@ -244,7 +244,7 @@ public static class Github
         ///     ArthurDent/my-project
         /// </example>
         public static string Repository { get; } = Environment.GetEnvironmentVariable(VariableNames.Repository) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_RETENTION_DAYS
         /// </summary>
@@ -252,7 +252,7 @@ public static class Github
         ///     90
         /// </example>
         public static string RetentionDays { get; } = Environment.GetEnvironmentVariable(VariableNames.RetentionDays) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_RUN_ATTEMPT
         /// </summary>
@@ -260,7 +260,7 @@ public static class Github
         ///     1
         /// </example>
         public static string RunAttempt { get; } = Environment.GetEnvironmentVariable(VariableNames.RunAttempt) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_RUN_ID
         /// </summary>
@@ -268,7 +268,7 @@ public static class Github
         ///     9876543210
         /// </example>
         public static string RunId { get; } = Environment.GetEnvironmentVariable(VariableNames.RunId) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_RUN_NUMBER
         /// </summary>
@@ -276,7 +276,7 @@ public static class Github
         ///     1
         /// </example>
         public static string RunNumber { get; } = Environment.GetEnvironmentVariable(VariableNames.RunNumber) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_SERVER_URL
         /// </summary>
@@ -284,7 +284,7 @@ public static class Github
         ///     https://github.com
         /// </example>
         public static string ServerUrl { get; } = Environment.GetEnvironmentVariable(VariableNames.ServerUrl) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_SHA
         /// </summary>
@@ -292,7 +292,7 @@ public static class Github
         ///     [SHA]
         /// </example>
         public static string Sha { get; } = Environment.GetEnvironmentVariable(VariableNames.Sha) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_STATE
         /// </summary>
@@ -300,7 +300,7 @@ public static class Github
         ///     /home/runner/work/_temp/_runner_file_commands/save_state_[GUID]
         /// </example>
         public static string State { get; } = Environment.GetEnvironmentVariable(VariableNames.State) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_STEP_SUMMARY
         /// </summary>
@@ -308,7 +308,7 @@ public static class Github
         ///     /home/runner/work/_temp/_runner_file_commands/step_summary_[GUID]
         /// </example>
         public static string StepSummary { get; } = Environment.GetEnvironmentVariable(VariableNames.StepSummary) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_TRIGGERING_ACTOR
         /// </summary>
@@ -316,7 +316,7 @@ public static class Github
         ///     ArthurDent
         /// </example>
         public static string TriggeringActor { get; } = Environment.GetEnvironmentVariable(VariableNames.TriggeringActor) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_WORKFLOW_REF
         /// </summary>
@@ -324,7 +324,7 @@ public static class Github
         ///     ArthurDent/my-project/.github/workflows/BuildApp.yml@refs/pull/4/merge
         /// </example>
         public static string WorkflowRef { get; } = Environment.GetEnvironmentVariable(VariableNames.WorkflowRef) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_WORKFLOW_SHA
         /// </summary>
@@ -332,7 +332,7 @@ public static class Github
         ///     [SHA]
         /// </example>
         public static string WorkflowSha { get; } = Environment.GetEnvironmentVariable(VariableNames.WorkflowSha) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_WORKFLOW
         /// </summary>
@@ -340,7 +340,7 @@ public static class Github
         ///     build
         /// </example>
         public static string Workflow { get; } = Environment.GetEnvironmentVariable(VariableNames.Workflow) ?? string.Empty;
-        
+
         /// <summary>
         ///     GITHUB_WORKSPACE
         /// </summary>
@@ -348,7 +348,7 @@ public static class Github
         ///     /home/runner/work/my-project/my-project
         /// </example>
         public static string Workspace { get; } = Environment.GetEnvironmentVariable(VariableNames.Workspace) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_ARCH
         /// </summary>
@@ -356,7 +356,7 @@ public static class Github
         ///     X64
         /// </example>
         public static string RunnerArch { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerArch) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_ENVIRONMENT
         /// </summary>
@@ -365,7 +365,7 @@ public static class Github
         /// </example>
         public static string RunnerEnvironment { get; } =
             Environment.GetEnvironmentVariable(VariableNames.RunnerEnvironment) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_NAME
         /// </summary>
@@ -373,7 +373,7 @@ public static class Github
         ///     GitHubActions 6
         /// </example>
         public static string RunnerName { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerName) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_OS
         /// </summary>
@@ -381,7 +381,7 @@ public static class Github
         ///     Linux
         /// </example>
         public static string RunnerOs { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerOs) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_PERFLOG
         /// </summary>
@@ -389,7 +389,7 @@ public static class Github
         ///     /home/runner/perflog
         /// </example>
         public static string RunnerPerfLog { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerPerfLog) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_TEMP
         /// </summary>
@@ -397,7 +397,7 @@ public static class Github
         ///     /home/runner/work/_temp
         /// </example>
         public static string RunnerTemp { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerTemp) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_TOOL_CACHE
         /// </summary>
@@ -405,7 +405,7 @@ public static class Github
         ///     /opt/hostedtoolcache
         /// </example>
         public static string RunnerToolCache { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerToolCache) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_TRACKING_ID
         /// </summary>
@@ -413,7 +413,7 @@ public static class Github
         ///     github_3cf77bfa-2ce5-4b4c-b736-d6a7b5c16537
         /// </example>
         public static string RunnerTrackingId { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerTrackingId) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_USER
         /// </summary>
@@ -421,7 +421,7 @@ public static class Github
         ///     runner
         /// </example>
         public static string RunnerUser { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerUser) ?? string.Empty;
-        
+
         /// <summary>
         ///     RUNNER_WORKSPACE
         /// </summary>

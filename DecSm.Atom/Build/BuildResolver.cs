@@ -12,17 +12,17 @@ public static class BuildResolver
                 Name = x.Key,
             }))
             .ToArray();
-        
+
         var duplicateTargetNames = targetDefinitions
             .GroupBy(x => x.Name)
             .Where(x => x.Count() > 1)
             .Select(x => x.Key)
             .ToArray();
-        
+
         if (duplicateTargetNames.Length > 0)
             throw new(
                 $"One or more targets are defined multiple times, which is not allowed: {string.Join(", ", $"'{duplicateTargetNames}'")}.");
-        
+
         // Transform target definitions into target models
         var targetModels = targetDefinitions
             .Select(x => new TargetModel(x.Name)
@@ -35,67 +35,67 @@ public static class BuildResolver
                 ProducedVariables = x.ProducedVariables,
             })
             .ToArray();
-        
+
         var setupDefinition = targetDefinitions.Single(x => x.Name == "Setup");
-        
+
         // Copy target definition dependencies to their respective target models
         foreach (var targetDefinition in targetDefinitions)
         {
             var targetModel = targetModels.First(x => x.Name == targetDefinition.Name);
-            
+
             if (targetDefinition != setupDefinition)
                 targetDefinition.Dependencies.Add(setupDefinition.Name);
-            
+
             var dependencyNames = targetDefinition
                 .Dependencies
                 .Concat(targetDefinition.ConsumedArtifacts.Select(x => x.TargetName))
                 .Concat(targetDefinition.ConsumedVariables.Select(x => x.TargetName))
                 .Distinct();
-            
+
             foreach (var dependencyName in dependencyNames)
             {
                 var dependencyTargetDefinition = targetDefinitions.FirstOrDefault(x => x.Name == dependencyName);
-                
+
                 if (dependencyTargetDefinition is null)
                     throw new($"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
-                
+
                 targetModel.Dependencies.Add(targetModels.First(x => x.Name == dependencyName));
             }
         }
-        
+
         // Sort targets and find circular dependencies
         var depthFirstTargets = new List<TargetModel>();
         var targetMarks = targetModels.ToDictionary(x => x, _ => (Temporary: false, Permenant: false));
-        
+
         for (var target = targetModels.FirstOrDefault(x => !targetMarks[x].Permenant);
              target is not null;
              target = targetModels.FirstOrDefault(x => !targetMarks[x].Permenant))
             Visit(target);
-        
+
         depthFirstTargets.Reverse();
-        
+
         // Initialize target states
         var targetStates = depthFirstTargets.ToDictionary(x => x, _ => new TargetState());
-        
+
         foreach (var specifiedTarget in specifiedTargets)
         {
             var target = depthFirstTargets.First(x => x.Name == specifiedTarget);
-            
+
             targetStates[target] = targetStates[target] with
             {
                 Status = TargetRunState.PendingRun,
             };
         }
-        
+
         // If we're including dependencies, mark specified targets and their dependencies as pending run
         if (includeDependencies)
         {
             var modified = true;
-            
+
             while (modified)
             {
                 modified = false;
-                
+
                 foreach (var target in depthFirstTargets
                              .Where(dependency => targetStates[dependency].Status is not TargetRunState.PendingRun)
                              .ToArray())
@@ -108,39 +108,39 @@ public static class BuildResolver
                     {
                         Status = TargetRunState.PendingRun,
                     };
-                    
+
                     modified = true;
                 }
             }
         }
-        
+
         // Mark all targets that are not pending run as pending skip
         foreach (var state in depthFirstTargets
                      .Select(target => targetStates[target])
                      .Where(state => state.Status is not TargetRunState.PendingRun))
             state.Status = TargetRunState.PendingSkip;
-        
+
         return new()
         {
             Targets = depthFirstTargets,
             TargetStates = targetStates,
         };
-        
+
         void Visit(TargetModel target)
         {
             var marks = targetMarks[target];
-            
+
             if (marks.Permenant)
                 return;
-            
+
             if (marks.Temporary)
                 throw new($"Circular dependency detected: {string.Join(" -> ", depthFirstTargets.Select(x => x.Name))}.");
-            
+
             targetMarks[target] = (true, marks.Permenant);
-            
+
             foreach (var dependency in target.Dependencies)
                 Visit(dependency);
-            
+
             targetMarks[target] = (false, true);
             depthFirstTargets.Insert(0, target);
         }

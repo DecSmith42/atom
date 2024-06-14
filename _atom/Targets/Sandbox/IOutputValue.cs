@@ -5,7 +5,7 @@ public partial interface IOutputValue
 {
     [ParamDefinition("test-value-1", "Test value to be passed between jobs")]
     string TestValue1 => GetParam(() => TestValue1)!;
-    
+
     Target OutputValue =>
         d => d
             .ProducesVariable(Build.Params.TestValue1)

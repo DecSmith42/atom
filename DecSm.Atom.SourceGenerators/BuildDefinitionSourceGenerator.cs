@@ -18,16 +18,16 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclarationForSourceGen(ctx))
             .Where(t => t.reportAttributeFound)
             .Select((t, _) => t.Item1);
-        
+
         // Generate the source code.
         context.RegisterSourceOutput(context.CompilationProvider.Combine(provider.Collect()),
-            ((ctx, t) => GenerateCode(ctx, t.Left, t.Right)));
+            (ctx, t) => GenerateCode(ctx, t.Left, t.Right));
     }
-    
+
     private static (ClassDeclarationSyntax, bool reportAttributeFound) GetClassDeclarationForSourceGen(GeneratorSyntaxContext context)
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
-        
+
         // Go through all attributes of the class.
         foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
@@ -35,17 +35,17 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             if (context.SemanticModel.GetSymbolInfo(attributeSyntax)
                     .Symbol is not IMethodSymbol attributeSymbol)
                 continue; // if we can't get the symbol, ignore it
-            
+
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
-            
+
             // Check the full name of the BuildDefinition attribute.
             if (attributeName == "DecSm.Atom.Build.Definition.BuildDefinitionAttribute")
                 return (classDeclarationSyntax, true);
         }
-        
+
         return (classDeclarationSyntax, false);
     }
-    
+
     private void GenerateCode(
         SourceProductionContext context,
         Compilation compilation,
@@ -56,17 +56,17 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
         {
             // We need to get semantic model of the class to retrieve metadata.
             var semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
-            
+
             // Symbols allow us to get the compile-time information.
             if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
                 continue;
-            
+
             var namespaceLine = classSymbol.ContainingNamespace.ToDisplayString() is "<global namespace>"
                 ? string.Empty
                 : $"namespace {classSymbol.ContainingNamespace.ToDisplayString()};";
-            
+
             var className = classDeclarationSyntax.Identifier.Text;
-            
+
             // Get all defined targets (property that returns Target) in all inherited interfaces
             var interfaceTargets = classSymbol
                 .AllInterfaces
@@ -77,7 +77,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Where(p => p.Property.Type.Name == "Target")
                 .Select(p => (p.Interface, p.Property))
                 .ToList();
-            
+
             // Get all defined Params (Property with ParamDefinitionAttribute) in all inherited interfaces,
             // along with the ParamDefinitionAttribute.Name value
             var interfaceParams = classSymbol
@@ -95,7 +95,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .GetAttributes()
                     .First(a => a.AttributeClass?.Name == "ParamDefinitionAttribute")))
                 .ToList();
-            
+
             // Get all defined Secrets (Property with SecretDefinitionAttribute) in all inherited interfaces,
             // along with the SecretDefinitionAttribute.Name value
             var interfaceSecretParams = classSymbol
@@ -113,33 +113,33 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .GetAttributes()
                     .First(a => a.AttributeClass?.Name == "SecretDefinitionAttribute")))
                 .ToList();
-            
+
             // Generate a static accessor for each target
             var targetsPropertiesBodies = interfaceTargets.Select(p =>
                 $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
-            
+
             // Generate a static accessor for each CommandDefinition
             var commandDefsPropertyBodies = interfaceTargets.Select(p =>
                 $"        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition {p.Property.Name} = new(nameof({p.Interface}.{p.Property.Name}));");
-            
+
             // Generate the Targets property
             var targetDefinitionsPropertyBody = interfaceTargets.Select(p =>
                 $$"""        { "{{p.Property.Name}}", (({{p.Interface}})this).{{p.Property.Name}} },""");
-            
+
             // Generate a static accessor for each param
             var paramsPropertiesBodies = interfaceParams.Select(p =>
                 $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
-            
+
             // Generate a static accessor for each secret param
             var secretParamsPropertiesBodies = interfaceSecretParams.Select(p =>
                 $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
-            
+
             // Generate the ParamDefinitions property
             var paramDefinitionsPropertyBody = interfaceParams
                 .Select(x =>
                 {
                     var interfaceName = $"{x.Interface.ContainingNamespace.ToDisplayString()}.{x.Interface.Name}";
-                    
+
                     return new
                     {
                         x.Property.Name,
@@ -157,13 +157,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 })
                 .Select(p =>
                     $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{string.Join(", ", p.AttributeArgs)}})) },""");
-            
+
             // Generate the SecretParamDefinitions property
             var secretParamDefinitionsPropertyBody = interfaceSecretParams
                 .Select(x =>
                 {
                     var interfaceName = $"{x.Interface.ContainingNamespace.ToDisplayString()}.{x.Interface.Name}";
-                    
+
                     return new
                     {
                         x.Property.Name,
@@ -181,13 +181,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 })
                 .Select(p =>
                     $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{string.Join(", ", p.AttributeArgs)}})) },""");
-            
+
             // Generate the ParamAccessors property
             var paramAccessorsPropertyBody = interfaceParams
                 .Select(x =>
                 {
                     var interfaceName = $"{x.Interface.ContainingNamespace.ToDisplayString()}.{x.Interface.Name}";
-                    
+
                     return new
                     {
                         x.Property.Name,
@@ -196,13 +196,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     };
                 })
                 .Select(p => $$"""        { "{{p.Name}}", {{p.Accessor}} },""");
-            
+
             // Build up the source code
             var code = $$"""
                          // <auto-generated/>
-                         
+
                          #nullable enable
-                         
+
                          using System;
                          using System.Collections.Generic;
                          using System.Reflection;
@@ -210,9 +210,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          using DecSm.Atom.Build.Definition;
                          using DecSm.Atom.Params;
                          using JetBrains.Annotations;
-                         
+
                          {{namespaceLine}}
-                         
+
                          [PublicAPI]
                          partial class {{className}}
                          {
@@ -258,9 +258,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          {{string.Join("\n\n", secretParamsPropertiesBodies)}}
                              }
                          }
-                         
+
                          """;
-            
+
             // Add the source code to the compilation.
             context.AddSource($"{className}.g.cs", SourceText.From(code, Encoding.UTF8));
         }

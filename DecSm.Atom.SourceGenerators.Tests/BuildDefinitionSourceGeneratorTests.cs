@@ -55,13 +55,18 @@ partial class Vector3
             });
 
         // Run generators and retrieve all results.
-        var runResult = driver.RunGenerators(compilation).GetRunResult();
+        var runResult = driver
+            .RunGenerators(compilation)
+            .GetRunResult();
 
         // All generated files can be found in 'RunResults.GeneratedTrees'.
         var generatedFileSyntax = runResult.GeneratedTrees.Single(t => t.FilePath.EndsWith("Vector3.g.cs"));
 
         // Complex generators should be tested using text comparison.
-        Assert.Equal(ExpectedGeneratedClassText, generatedFileSyntax.GetText().ToString(),
+        Assert.Equal(ExpectedGeneratedClassText,
+            generatedFileSyntax
+                .GetText()
+                .ToString(),
             ignoreLineEndingDifferences: true);
     }
 }

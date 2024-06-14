@@ -9,10 +9,10 @@ while (currentDirectory?.Exists is true)
         var atomProjectPath = Path.Combine(currentDirectory.FullName, "_atom", "_atom.csproj");
         var atomProcess = Process.Start("dotnet", $"run --project \"{atomProjectPath}\" {string.Join(" ", args)}");
         atomProcess.WaitForExit();
-        
+
         return atomProcess.ExitCode;
     }
-    
+
     currentDirectory = currentDirectory.Parent;
 }
 

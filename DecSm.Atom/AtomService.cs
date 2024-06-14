@@ -17,22 +17,22 @@ public class AtomService(
             if (args.Args is { Length: 0 })
             {
                 cheatsheetService.ShowCheatsheet();
-                
+
                 return;
             }
-            
+
             if (args.HasHelp)
                 cheatsheetService.ShowCheatsheet();
-            
+
             if (args.HasGen)
             {
                 workflowGenerator.GenerateWorkflows();
-                
+
                 return;
             }
-            
+
             await executor.Execute();
-            
+
             if (buildModel.Targets.Any(x => buildModel.TargetStates[x].Status is TargetRunState.Failed))
                 Environment.ExitCode = 1;
         }
