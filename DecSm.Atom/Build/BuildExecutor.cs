@@ -49,11 +49,8 @@ internal sealed class BuildExecutor(
                 TargetRunState.Succeeded => "[green]Succeeded[/]",
                 TargetRunState.Failed => "[red]Failed[/]",
                 TargetRunState.Skipped => "[yellow]Skipped[/]",
-                _ => null,
+                var runState => $"[red]Unexpected state: {runState}[/]",
             };
-
-            if (outcome is null)
-                continue;
 
             var targetDuration = buildModel.TargetStates[target].RunDuration;
 

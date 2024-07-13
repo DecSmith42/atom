@@ -32,3 +32,4 @@ global using Microsoft.Extensions.Logging;
 global using Spectre.Console;
 
 [assembly: InternalsVisibleTo("DecSm.Atom.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

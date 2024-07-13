@@ -1,4 +1,4 @@
-namespace DecSm.Atom.Tests;
+namespace DecSm.Atom.Tests.Args;
 
 [TestFixture]
 public class CommandLineArgParserTests
@@ -7,7 +7,7 @@ public class CommandLineArgParserTests
     public void Parse_No_Args()
     {
         string[] rawArgs = [];
-        var build = A.Fake<IBuildDefinition>();
+        var build = Mock.Of<IBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -21,7 +21,7 @@ public class CommandLineArgParserTests
     public void Parse_Help_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IBuildDefinition>();
+        var build = Mock.Of<IBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -39,7 +39,7 @@ public class CommandLineArgParserTests
     public void Parse_Gen_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IBuildDefinition>();
+        var build = Mock.Of<IBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -57,7 +57,7 @@ public class CommandLineArgParserTests
     public void Parse_Skip_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IBuildDefinition>();
+        var build = Mock.Of<IBuildDefinition>();
 
         var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
 
@@ -75,10 +75,10 @@ public class CommandLineArgParserTests
     public void Parse_Params_Arg(string arg, string argName, string paramName)
     {
         string[] rawArgs = [arg, "value"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -86,7 +86,7 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -102,10 +102,10 @@ public class CommandLineArgParserTests
     public void Parse_Param_Without_Value()
     {
         string[] rawArgs = ["--param1", "--param2"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -113,17 +113,17 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build));
+        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
     }
 
     [Test]
     public void Parse_Param_At_End()
     {
         string[] rawArgs = ["--param1"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -131,7 +131,7 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build));
+        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
     }
 
     [TestCase("Command1", "Command1")]
@@ -141,10 +141,10 @@ public class CommandLineArgParserTests
     public void Parse_Command_Arg(string arg, string commandName)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.TargetDefinitions)
+        build
+            .Setup(x => x.TargetDefinitions)
             .Returns(new Dictionary<string, Target>
             {
                 ["Command1"] = definition => definition,
@@ -152,7 +152,7 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -168,10 +168,10 @@ public class CommandLineArgParserTests
     public void Parse_Unknown_Command_Arg(string arg)
     {
         string[] rawArgs = [arg];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.TargetDefinitions)
+        build
+            .Setup(x => x.TargetDefinitions)
             .Returns(new Dictionary<string, Target>
             {
                 ["Command1"] = definition => definition,
@@ -179,17 +179,17 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build));
+        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
     }
 
     [Test]
     public void Parse_Complex_1()
     {
         string[] rawArgs = ["-h", "--param1", "value1", "--param2", "value2", "Command1"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -197,8 +197,8 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        A
-            .CallTo(() => build.TargetDefinitions)
+        build
+            .Setup(x => x.TargetDefinitions)
             .Returns(new Dictionary<string, Target>
             {
                 ["Command1"] = definition => definition,
@@ -206,7 +206,7 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
 
         parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(4),
             args => args[0]
@@ -230,10 +230,10 @@ public class CommandLineArgParserTests
     public void Parse_Complex_2()
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "--skip"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -241,8 +241,8 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        A
-            .CallTo(() => build.TargetDefinitions)
+        build
+            .Setup(x => x.TargetDefinitions)
             .Returns(new Dictionary<string, Target>
             {
                 ["Command1"] = definition => definition,
@@ -250,7 +250,7 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
 
         parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(4),
             args => args[0]
@@ -274,10 +274,10 @@ public class CommandLineArgParserTests
     public void Parse_Complex_3()
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "-s", "--param3", "value3"];
-        var build = A.Fake<IBuildDefinition>();
+        var build = new Mock<IBuildDefinition>();
 
-        A
-            .CallTo(() => build.ParamDefinitions)
+        build
+            .Setup(x => x.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
                 ["Param1"] = new("Param1", new("param1", "Param 1")),
@@ -285,8 +285,8 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        A
-            .CallTo(() => build.TargetDefinitions)
+        build
+            .Setup(x => x.TargetDefinitions)
             .Returns(new Dictionary<string, Target>
             {
                 ["Command1"] = definition => definition,
@@ -294,7 +294,7 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
 
         parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(5),
             args => args[0]
