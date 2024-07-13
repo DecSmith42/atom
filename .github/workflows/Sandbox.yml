@@ -12,7 +12,7 @@ jobs:
     steps:
       
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Setup
         id: Setup
@@ -24,7 +24,7 @@ jobs:
     steps:
       
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Diagnostics
         id: Diagnostics
@@ -38,7 +38,7 @@ jobs:
     steps:
       
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: OutputValue
         id: OutputValue
@@ -50,7 +50,7 @@ jobs:
     steps:
       
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: InputValue
         id: InputValue
@@ -64,7 +64,7 @@ jobs:
     steps:
       
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: GetVaultSecret
         id: GetVaultSecret

@@ -4,7 +4,9 @@ public interface IWorkflowWriter
 {
     Type WorkflowType { get; }
 
-    void Generate(WorkflowModel workflow);
+    Task Generate(WorkflowModel workflow);
+
+    Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow);
 }
 
 public interface IWorkflowWriter<T> : IWorkflowWriter
@@ -12,5 +14,7 @@ public interface IWorkflowWriter<T> : IWorkflowWriter
 {
     Type IWorkflowWriter.WorkflowType => typeof(T);
 
-    abstract void IWorkflowWriter.Generate(WorkflowModel workflow);
+    abstract Task IWorkflowWriter.Generate(WorkflowModel workflow);
+
+    abstract Task<bool> IWorkflowWriter.CheckForDirtyWorkflow(WorkflowModel workflow);
 }

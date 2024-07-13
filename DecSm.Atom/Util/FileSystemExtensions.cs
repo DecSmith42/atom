@@ -6,6 +6,9 @@ public static class FileSystemExtensions
     private static AbsolutePath? _solutionFile;
     private static AbsolutePath? _repoRoot;
 
+    internal static void ClearCachedPaths() =>
+        (_solutionRoot, _solutionFile, _repoRoot) = (null, null, null);
+
     public static AbsolutePath SolutionRoot(this IFileSystem fileSystem)
     {
         if (_solutionRoot is not null)

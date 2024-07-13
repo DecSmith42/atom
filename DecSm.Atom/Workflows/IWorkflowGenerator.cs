@@ -2,5 +2,7 @@
 
 internal interface IWorkflowGenerator
 {
-    void GenerateWorkflows();
+    Task GenerateWorkflows();
+
+    Task<bool> WorkflowsDirty();
 }

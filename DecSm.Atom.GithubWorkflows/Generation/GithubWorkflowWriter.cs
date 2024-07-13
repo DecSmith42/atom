@@ -155,20 +155,20 @@ public sealed class GithubWorkflowWriter(
                 foreach (var step in job.Steps)
                 {
                     WriteLine();
-                    WriteStep(workflow, job, step);
+                    WriteStep(workflow, step);
                 }
             }
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, WorkflowJobModel job, IWorkflowStepModel step)
+    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step)
     {
         switch (step)
         {
             case CommandWorkflowStep commandStep:
 
                 using (WriteSection("- name: Checkout"))
-                    WriteLine("uses: actions/checkout@v2");
+                    WriteLine("uses: actions/checkout@v4");
 
                 WriteLine();
 

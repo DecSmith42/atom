@@ -11,7 +11,8 @@ internal sealed class AtomBuildVersionProvider(IFileSystem fileSystem) : IBuildV
             var directoryBuildProps = solutionRoot / "Directory.Build.props";
 
             if (!directoryBuildProps.FileExists)
-                throw new($"File required for {nameof(AtomBuildVersionProvider)} but not found: {directoryBuildProps}");
+                throw new InvalidOperationException(
+                    $"File required for {nameof(AtomBuildVersionProvider)} but not found: {directoryBuildProps}");
 
             return MsBuildUtil.GetVersionInfo(directoryBuildProps);
         }

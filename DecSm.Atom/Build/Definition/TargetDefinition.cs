@@ -29,7 +29,7 @@ public sealed class TargetDefinition
 
     public TargetDefinition Executes(Func<Task> task)
     {
-        if (Tasks.Contains(task))
+        if (Tasks.Any(x => x() == task()))
             return this;
 
         Tasks.Add(task);

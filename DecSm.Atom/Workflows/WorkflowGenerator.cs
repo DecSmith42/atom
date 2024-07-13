@@ -4,24 +4,56 @@ internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
     IEnumerable<IWorkflowWriter> writers,
-    IEnumerable<IWorkflowOptionProvider> workflowOptionProviders,
-    ILogger<WorkflowGenerator> logger
+    IEnumerable<IWorkflowOptionProvider> workflowOptionProviders
 ) : IWorkflowGenerator
 {
     private readonly List<IWorkflowWriter> _writers = writers.ToList();
 
-    public void GenerateWorkflows()
+    public async Task GenerateWorkflows()
     {
-        logger.LogInformation("Generating workflows");
-
         var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
+
+        var generationTasks = new List<Task>();
 
         foreach (var workflowDefinition in workflowDefinitions)
         foreach (var workflowType in workflowDefinition.WorkflowTypes)
-            _writers
-                .FirstOrDefault(w => w.WorkflowType == workflowType.GetType())
-                ?.Generate(WorkflowBuilder.BuildWorkflow(workflowDefinition, buildDefinition, buildModel, workflowOptionProviders));
+        {
+            var writer = _writers.FirstOrDefault(w => w.WorkflowType == workflowType.GetType());
 
-        logger.LogInformation("Workflows generated");
+            if (writer is null)
+                continue;
+
+            var workflow = WorkflowBuilder.BuildWorkflow(workflowDefinition, buildDefinition, buildModel, workflowOptionProviders);
+            var generateTask = writer.Generate(workflow);
+
+            generationTasks.Add(generateTask);
+        }
+
+        await Task.WhenAll(generationTasks);
+    }
+
+    public async Task<bool> WorkflowsDirty()
+    {
+        var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
+
+        var checkTasks = new List<Task<bool>>();
+
+        foreach (var workflowDefinition in workflowDefinitions)
+        foreach (var workflowType in workflowDefinition.WorkflowTypes)
+        {
+            var writer = _writers.FirstOrDefault(w => w.WorkflowType == workflowType.GetType());
+
+            if (writer is null)
+                continue;
+
+            var workflow = WorkflowBuilder.BuildWorkflow(workflowDefinition, buildDefinition, buildModel, workflowOptionProviders);
+            var checkTask = writer.CheckForDirtyWorkflow(workflow);
+
+            checkTasks.Add(checkTask);
+        }
+
+        var result = await Task.WhenAll(checkTasks);
+
+        return result.Any(x => x);
     }
 }
