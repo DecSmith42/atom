@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Setup;
+﻿using DecSm.Atom.Reporter;
+
+namespace DecSm.Atom.Setup;
 
 public static class HostExtensions
 {
@@ -23,6 +25,8 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
+
+        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
 
         builder.Services.AddSingleton<CommandLineArgs>(services =>
             CommandLineArgsParser.Parse(args, services.GetRequiredService<IBuildDefinition>()));

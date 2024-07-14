@@ -17,4 +17,6 @@ public interface IBuildDefinition
     string? GetParam(Expression<Func<string?>> parameterExpression);
 
     Task WriteVariable(string name, string value);
+
+    void AddOutcomeData(string key, string value);
 }

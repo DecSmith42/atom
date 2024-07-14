@@ -13,3 +13,5 @@ public sealed record ParamArg(string ArgName, string ParamName, string ParamValu
 public sealed record SkipArg : IArg;
 
 public sealed record HeadlessArg : IArg;
+
+public sealed record VerboseArg : IArg;

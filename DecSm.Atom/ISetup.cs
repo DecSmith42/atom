@@ -16,6 +16,7 @@ public interface ISetup : IBuildDefinition
                 var buildId = BuildIdProvider.BuildId;
 
                 WriteVariable(nameof(AtomBuildId), buildId.ToString());
+                AddOutcomeData("Build ID", buildId.ToString());
 
                 Services
                     .GetRequiredService<ILogger<ISetup>>()

@@ -76,7 +76,7 @@ internal static class BuildResolver
         depthFirstTargets.Reverse();
 
         // Initialize target states
-        var targetStates = depthFirstTargets.ToDictionary(x => x, _ => new TargetState());
+        var targetStates = depthFirstTargets.ToDictionary(x => x, x => new TargetState(x.Name));
 
         foreach (var specifiedTarget in specifiedTargets)
         {
@@ -88,7 +88,7 @@ internal static class BuildResolver
             };
         }
 
-        // If we're including dependencies, mark specified targets and their dependencies as pending run
+        // If we're including dependencies, mark specified targets' dependencies as pending run
         if (includeDependencies)
         {
             var modified = true;
@@ -98,7 +98,7 @@ internal static class BuildResolver
                 modified = false;
 
                 foreach (var target in depthFirstTargets
-                             .Where(dependency => targetStates[dependency].Status is not TargetRunState.PendingRun)
+                             .Where(target => targetStates[target].Status is TargetRunState.PendingRun)
                              .ToArray())
                 foreach (var dependentTarget in target
                              .Dependencies
@@ -119,7 +119,7 @@ internal static class BuildResolver
         foreach (var state in depthFirstTargets
                      .Select(target => targetStates[target])
                      .Where(state => state.Status is not TargetRunState.PendingRun))
-            state.Status = TargetRunState.PendingSkip;
+            state.Status = TargetRunState.Skipped;
 
         return new()
         {

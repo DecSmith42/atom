@@ -47,7 +47,7 @@ public class BuildModelTests
             TargetStates = new Dictionary<TargetModel, TargetState>
             {
                 {
-                    targetModel, new TargetState
+                    targetModel, new TargetState(targetModel.Name)
                     {
                         Status = TargetRunState.Uninitialized,
                     }
@@ -77,7 +77,7 @@ public class BuildModelTests
             TargetStates = new Dictionary<TargetModel, TargetState>
             {
                 {
-                    targetModel, new TargetState
+                    targetModel, new TargetState(targetModel.Name)
                     {
                         Status = TargetRunState.Running,
                     }
@@ -113,13 +113,13 @@ public class BuildModelTests
             TargetStates = new Dictionary<TargetModel, TargetState>
             {
                 {
-                    targetModel1, new TargetState
+                    targetModel1, new TargetState(targetModel1.Name)
                     {
                         Status = TargetRunState.Running,
                     }
                 },
                 {
-                    targetModel2, new TargetState
+                    targetModel2, new TargetState(targetModel2.Name)
                     {
                         Status = TargetRunState.Running,
                     }
