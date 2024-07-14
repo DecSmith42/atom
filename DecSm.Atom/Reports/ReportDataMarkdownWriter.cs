@@ -107,11 +107,8 @@ public static class ReportDataMarkdownWriter
         builder.AppendLine("### Output Artifacts");
         builder.AppendLine();
 
-        builder.AppendLine("| Name | Path |");
-        builder.AppendLine("| ---- | ---- |");
-
         foreach (var artifactReportData in reportData)
-            builder.AppendLine($"| {artifactReportData.Name} | [{artifactReportData.Path}]({artifactReportData.Path}) |");
+            builder.AppendLine($"- [{artifactReportData.Name}]({artifactReportData.Path})");
 
         builder.AppendLine();
     }
