@@ -1,6 +1,6 @@
-﻿namespace DecSm.Atom.Reporter;
+﻿namespace DecSm.Atom.Reports;
 
-public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console) : IOutcomeReporter
+public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, IReportService reportService) : IOutcomeReporter
 {
     public Task ReportRunOutcome(IReadOnlyList<TargetState> states)
     {
@@ -38,6 +38,8 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console) 
         console.WriteLine();
         console.Write(table);
         console.WriteLine();
+
+        console.Write(ReportDataMarkdownWriter.Write(reportService.GetReportData()));
 
         return Task.CompletedTask;
     }

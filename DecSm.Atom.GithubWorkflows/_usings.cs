@@ -8,7 +8,7 @@ global using DecSm.Atom.Build.Model;
 global using DecSm.Atom.GithubWorkflows.Generation;
 global using DecSm.Atom.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.GithubWorkflows.Triggers;
-global using DecSm.Atom.Reporter;
+global using DecSm.Atom.Reports;
 global using DecSm.Atom.Setup;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;

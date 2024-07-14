@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Reporter;
+﻿namespace DecSm.Atom.Reports;
 
 public interface IOutcomeReporter
 {

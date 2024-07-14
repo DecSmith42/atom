@@ -25,8 +25,8 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup
             .GetRequiredService<IWorkflowVariableService>()
             .WriteVariable(name, value);
 
-    public void AddOutcomeData(string key, string? value) =>
+    public void AddReportData(IReportData reportData) =>
         Services
-            .GetRequiredService<BuildModel>()
-            .AddOutcomeData(key, value);
+            .GetRequiredService<IReportService>()
+            .AddReportData(reportData);
 }

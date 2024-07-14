@@ -16,7 +16,19 @@ public interface ISetup : IBuildDefinition
                 var buildId = BuildIdProvider.BuildId;
 
                 WriteVariable(nameof(AtomBuildId), buildId.ToString());
-                AddOutcomeData("Build ID", buildId.ToString());
+
+                var atomVersion = typeof(ISetup).Assembly.GetName()
+                    .Version!;
+
+                AddReportData(new TableReportData([
+                    ["Workflow Name", "TODO"],
+                    ["Atom Version", $"{atomVersion.Major}.{atomVersion.Minor}.{atomVersion.Build}"],
+                    ["Build ID", buildId.ToString()],
+                ])
+                {
+                    Title = "Run Information",
+                    BeforeStandardData = true,
+                });
 
                 Services
                     .GetRequiredService<ILogger<ISetup>>()

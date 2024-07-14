@@ -15,6 +15,7 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Cheatsheet;
 global using DecSm.Atom.Logging;
 global using DecSm.Atom.Params;
+global using DecSm.Atom.Reports;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;
 global using DecSm.Atom.Vaults;

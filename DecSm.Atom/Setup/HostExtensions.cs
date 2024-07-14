@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Reporter;
-
-namespace DecSm.Atom.Setup;
+﻿namespace DecSm.Atom.Setup;
 
 public static class HostExtensions
 {
@@ -20,6 +18,11 @@ public static class HostExtensions
 
         builder.Services.AddSingleton<IParamService>(services =>
             ParamServiceAccessor.Service = services.GetRequiredService<ParamService>());
+
+        builder.Services.AddSingleton<ReportService>();
+
+        builder.Services.AddSingleton<IReportService>(services =>
+            ReportServiceAccessor.Service = services.GetRequiredService<ReportService>());
 
         builder.Services.TryAddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
@@ -51,6 +54,7 @@ public static class HostExtensions
         builder.Logging.ClearProviders();
 
         builder.Logging.AddProvider(new SpectreLoggerProvider());
+        builder.Logging.AddProvider(new ReportLoggerProvider());
 
         builder.Logging.AddFilter((context, level) => (context, level) switch
         {

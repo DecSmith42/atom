@@ -1,7 +1,13 @@
-﻿namespace DecSm.Atom.AzureStorage;
+﻿using DecSm.Atom.Reports;
 
-public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileSystem fileSystem, ILogger<AzureBlobArtifactProvider> logger)
-    : IArtifactProvider
+namespace DecSm.Atom.AzureStorage;
+
+public sealed class AzureBlobArtifactProvider(
+    IParamService paramService,
+    IReportService reportService,
+    IFileSystem fileSystem,
+    ILogger<AzureBlobArtifactProvider> logger
+) : IArtifactProvider
 {
     public IReadOnlyList<string> RequiredParams =>
     [
@@ -38,6 +44,9 @@ public sealed class AzureBlobArtifactProvider(IParamService paramService, IFileS
 
                 await blobClient.UploadAsync(file, true);
             }
+
+            // Add report data for the artifact - name and url
+            reportService.AddReportData(new ArtifactReportData(artifactName, $"{containerClient.Uri}/{artifactBlobDir}"));
         }
     }
 

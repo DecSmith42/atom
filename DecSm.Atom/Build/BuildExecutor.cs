@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Reporter;
-
-namespace DecSm.Atom.Build;
+﻿namespace DecSm.Atom.Build;
 
 internal sealed class BuildExecutor(
     CommandLineArgs args,

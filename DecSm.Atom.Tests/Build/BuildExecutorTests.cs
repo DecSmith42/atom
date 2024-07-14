@@ -1,4 +1,4 @@
-﻿using DecSm.Atom.Reporter;
+﻿using DecSm.Atom.Reports;
 
 namespace DecSm.Atom.Tests.Build;
 

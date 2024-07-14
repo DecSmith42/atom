@@ -18,5 +18,5 @@ public interface IBuildDefinition
 
     Task WriteVariable(string name, string value);
 
-    void AddOutcomeData(string key, string value);
+    void AddReportData(IReportData reportData);
 }
