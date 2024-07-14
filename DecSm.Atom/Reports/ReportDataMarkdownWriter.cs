@@ -27,11 +27,9 @@ public static class ReportDataMarkdownWriter
         foreach (var data in customPreReportData)
             Write(builder, data);
 
-        if (logReportData.Count != 0)
-            Write(builder, logReportData);
+        Write(builder, logReportData);
 
-        if (artifactReportData.Count != 0)
-            Write(builder, artifactReportData);
+        Write(builder, artifactReportData);
 
         foreach (var data in customReportData)
             Write(builder, data);
@@ -41,6 +39,9 @@ public static class ReportDataMarkdownWriter
 
     public static void Write(StringBuilder builder, List<LogReportData> reportData)
     {
+        if (reportData.Count == 0)
+            return;
+
         var groups = reportData
             .GroupBy(x => x.Level)
             .OrderByDescending(x => x.Key)
@@ -82,7 +83,6 @@ public static class ReportDataMarkdownWriter
         foreach (var log in reportData)
         {
             builder.AppendLine($"> [!{infoType}]");
-            builder.AppendLine($"> {log.Timestamp:h:mm:ss tt zz}");
             builder.AppendLine($"> {log.Message}");
 
             if (log.Exception is not null)
@@ -99,8 +99,11 @@ public static class ReportDataMarkdownWriter
         }
     }
 
-    public static void Write(StringBuilder builder, IEnumerable<ArtifactReportData> reportData)
+    public static void Write(StringBuilder builder, List<ArtifactReportData> reportData)
     {
+        if (reportData.Count == 0)
+            return;
+
         builder.AppendLine("## Output Artifacts");
         builder.AppendLine();
 
