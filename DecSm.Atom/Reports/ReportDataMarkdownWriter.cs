@@ -77,7 +77,7 @@ public static class ReportDataMarkdownWriter
         if (reportData.Count == 0)
             return;
 
-        builder.AppendLine($"## {header}");
+        builder.AppendLine($"### {header}");
         builder.AppendLine();
 
         foreach (var log in reportData)
@@ -104,7 +104,7 @@ public static class ReportDataMarkdownWriter
         if (reportData.Count == 0)
             return;
 
-        builder.AppendLine("## Output Artifacts");
+        builder.AppendLine("### Output Artifacts");
         builder.AppendLine();
 
         builder.AppendLine("| Name | Path |");
@@ -147,7 +147,7 @@ public static class ReportDataMarkdownWriter
     {
         if (reportData.Title is not null)
         {
-            builder.AppendLine($"## {reportData.Title}");
+            builder.AppendLine($"### {reportData.Title}");
             builder.AppendLine();
         }
 
@@ -178,7 +178,7 @@ public static class ReportDataMarkdownWriter
     {
         if (reportData.Title is not null)
         {
-            builder.AppendLine($@"## {reportData.Title}");
+            builder.AppendLine($"### {reportData.Title}");
             builder.AppendLine();
         }
 
@@ -192,7 +192,7 @@ public static class ReportDataMarkdownWriter
     {
         if (reportData.Title is not null)
         {
-            builder.AppendLine($@"## {reportData.Title}");
+            builder.AppendLine($"### {reportData.Title}");
             builder.AppendLine();
         }
 
