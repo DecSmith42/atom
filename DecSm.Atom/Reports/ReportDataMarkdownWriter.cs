@@ -81,7 +81,7 @@ public static class ReportDataMarkdownWriter
 
         foreach (var log in reportData)
         {
-            builder.AppendLine($"> [!{infoType}]{log.Message}");
+            builder.AppendLine($"> [!{infoType}] {log.Message}");
             builder.AppendLine("> ");
             builder.AppendLine($"> {log.Timestamp:h:mm:ss tt zz}");
 
