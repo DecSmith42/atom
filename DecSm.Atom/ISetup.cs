@@ -17,14 +17,11 @@ public interface ISetup : IBuildDefinition
 
                 WriteVariable(nameof(AtomBuildId), buildId.ToString());
 
-                var atomVersion = typeof(ISetup).Assembly.GetName()
-                    .Version!;
+                var solutionName = Services
+                    .GetRequiredService<IFileSystem>()
+                    .SolutionName();
 
-                AddReportData(new TableReportData([
-                    ["Workflow Name", "TODO"],
-                    ["Atom Version", $"{atomVersion.Major}.{atomVersion.Minor}.{atomVersion.Build}"],
-                    ["Build ID", buildId.ToString()],
-                ])
+                AddReportData(new TextReportData($"{solutionName} | {buildId}")
                 {
                     Title = "Run Information",
                     BeforeStandardData = true,

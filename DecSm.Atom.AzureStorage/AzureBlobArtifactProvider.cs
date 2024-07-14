@@ -46,7 +46,8 @@ public sealed class AzureBlobArtifactProvider(
             }
 
             // Add report data for the artifact - name and url
-            reportService.AddReportData(new ArtifactReportData(artifactName, $"{containerClient.Uri}/{artifactBlobDir}"));
+            reportService.AddReportData(new ArtifactReportData($"{artifactName} - {artifactName}",
+                $"{containerClient.Uri}/{artifactBlobDir}"));
         }
     }
 

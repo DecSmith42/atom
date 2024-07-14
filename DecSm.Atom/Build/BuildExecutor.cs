@@ -32,12 +32,10 @@ internal sealed class BuildExecutor(
                         await ExecuteTarget(buildModel.GetTarget(command.Name), context);
                 });
 
-        var runOutcome = buildModel.TargetStates.Values.ToList();
-
         foreach (var outcomeReporter in outcomeReporters)
             try
             {
-                await outcomeReporter.ReportRunOutcome(runOutcome);
+                await outcomeReporter.ReportRunOutcome();
             }
             catch (Exception ex)
             {

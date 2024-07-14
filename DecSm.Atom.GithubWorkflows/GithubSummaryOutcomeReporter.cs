@@ -2,7 +2,7 @@
 
 internal sealed class GithubSummaryOutcomeReporter(IFileSystem fileSystem, IReportService reportService) : IOutcomeReporter
 {
-    public async Task ReportRunOutcome(IReadOnlyList<TargetState> states)
+    public async Task ReportRunOutcome()
     {
         await using var writer = fileSystem.File.OpenWrite(Github.Variables.StepSummary);
 

@@ -2,5 +2,5 @@
 
 public interface IOutcomeReporter
 {
-    Task ReportRunOutcome(IReadOnlyList<TargetState> states);
+    Task ReportRunOutcome();
 }
