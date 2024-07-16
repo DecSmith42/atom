@@ -58,10 +58,6 @@ public partial class ConsoleOutcomeReporter(
         if (!args.HasHeadless)
             Write(reportService.GetReportData());
 
-        var markdown = ReportDataMarkdownWriter.Write(reportService.GetReportData());
-
-        fileSystem.File.WriteAllText(fileSystem.PublishDirectory() / "test.md", markdown);
-
         return Task.CompletedTask;
     }
 
