@@ -28,8 +28,6 @@ internal sealed class AtomService(
             if (args.HasGen || !args.HasHeadless)
             {
                 await workflowGenerator.GenerateWorkflows();
-
-                return;
             }
             else if (await workflowGenerator.WorkflowsDirty())
             {

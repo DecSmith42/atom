@@ -37,11 +37,21 @@ internal static class CommandLineArgsParser
                 continue;
             }
 
-            //Headless
+            // Headless
             if (string.Equals(rawArg, "-hl", StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(rawArg, "--headless", StringComparison.OrdinalIgnoreCase))
             {
                 args.Add(new HeadlessArg());
+
+                continue;
+            }
+
+            // Verbose
+            if (string.Equals(rawArg, "-v", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(rawArg, "--verbose", StringComparison.OrdinalIgnoreCase))
+            {
+                args.Add(new VerboseArg());
+                LogOptions.IsVerboseEnabled = true;
 
                 continue;
             }

@@ -4,9 +4,9 @@ public enum TargetRunState
 {
     Uninitialized,
     PendingRun,
-    PendingSkip,
     Running,
     Succeeded,
     Failed,
+    NotRun,
     Skipped,
 }

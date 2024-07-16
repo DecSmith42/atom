@@ -10,6 +10,8 @@ public sealed record CommandLineArgs(IArg[] Args)
 
     public bool HasHeadless => Args.Any(arg => arg is HeadlessArg);
 
+    public bool HasVerbose => Args.Any(arg => arg is VerboseArg);
+
     public ParamArg[] Params =>
         Args
             .OfType<ParamArg>()

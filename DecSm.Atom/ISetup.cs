@@ -17,6 +17,16 @@ public interface ISetup : IBuildDefinition
 
                 WriteVariable(nameof(AtomBuildId), buildId.ToString());
 
+                var solutionName = Services
+                    .GetRequiredService<IFileSystem>()
+                    .SolutionName();
+
+                AddReportData(new TextReportData($"{solutionName} | {buildId}")
+                {
+                    Title = "Run Information",
+                    BeforeStandardData = true,
+                });
+
                 Services
                     .GetRequiredService<ILogger<ISetup>>()
                     .LogInformation("Build ID: {BuildId}", buildId);

@@ -6,6 +6,7 @@ global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Build.Model;
 global using DecSm.Atom.Params;
+global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

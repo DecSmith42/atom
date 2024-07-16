@@ -19,6 +19,9 @@ internal sealed class SpectreLogger(string categoryName, IExternalScopeProvider?
         if (!IsEnabled(logLevel))
             return;
 
+        if (logLevel is LogLevel.Debug or LogLevel.Trace && !LogOptions.IsVerboseEnabled)
+            return;
+
         var levelText = string.Empty;
         var levelColour = string.Empty;
         var levelBackground = string.Empty;
