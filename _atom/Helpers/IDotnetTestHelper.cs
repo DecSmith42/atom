@@ -48,6 +48,9 @@ public partial interface IDotnetTestHelper : IProcessHelper, IDotnetVersionHelpe
 
         GenerateTestReport(projectName, testOutputDirectory / $"{projectName}.trx");
 
+        // Install/update reportgenerator
+        await RunProcess("dotnet", ["tool", "install", "dotnet-reportgenerator-globaltool", "--global"]);
+
         // Run coverage report generator
         await RunProcess("reportgenerator",
         [
