@@ -5,6 +5,7 @@ internal sealed class BuildExecutor(
     BuildModel buildModel,
     IParamService paramService,
     IWorkflowVariableService variableService,
+    IEnumerable<IOutcomeReporter> outcomeReporters,
     IAnsiConsole console,
     ILogger<BuildExecutor> logger
 ) : IBuildExecutor
@@ -31,52 +32,40 @@ internal sealed class BuildExecutor(
                         await ExecuteTarget(buildModel.GetTarget(command.Name), context);
                 });
 
-        var table = new Table()
-            .Title("Build Summary")
-            .Alignment(Justify.Left)
-            .HideHeaders()
-            .NoBorder()
-            .AddColumn("Target")
-            .AddColumn("Outcome")
-            .AddColumn("Duration");
-
-        foreach (var target in buildModel.Targets)
-        {
-            var targetState = buildModel.TargetStates[target];
-
-            var outcome = targetState.Status switch
+        foreach (var outcomeReporter in outcomeReporters)
+            try
             {
-                TargetRunState.Succeeded => "[green]Succeeded[/]",
-                TargetRunState.Failed => "[red]Failed[/]",
-                TargetRunState.Skipped => "[yellow]Skipped[/]",
-                var runState => $"[red]Unexpected state: {runState}[/]",
-            };
-
-            var targetDuration = buildModel.TargetStates[target].RunDuration;
-
-            var durationText = targetState.Status is TargetRunState.Succeeded or TargetRunState.Failed
-                ? $"{targetDuration?.TotalSeconds:0.00}s"
-                : "N/A";
-
-            table.AddRow(target.Name, outcome, durationText);
-        }
-
-        console.WriteLine();
-        console.Write(table);
-        console.WriteLine();
+                await outcomeReporter.ReportRunOutcome();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while reporting run outcome");
+            }
     }
 
     private async Task ExecuteTarget(TargetModel target, StatusContext context)
     {
-        if (buildModel.TargetStates[target].Status is not TargetRunState.PendingRun)
+        if (buildModel.TargetStates[target].Status is TargetRunState.NotRun
+            or TargetRunState.Skipped
+            or TargetRunState.Succeeded
+            or TargetRunState.Failed)
             return;
+
+        if (buildModel.TargetStates[target].Status is not TargetRunState.PendingRun)
+        {
+            logger.LogWarning("Skipping target {TargetDefinitionName} due to unexpected state {TargetState}",
+                target.Name,
+                buildModel.TargetStates[target].Status);
+
+            return;
+        }
 
         foreach (var dependency in target.Dependencies)
             await ExecuteTarget(dependency, context);
 
         if (target.Dependencies.Any(depTarget => buildModel.TargetStates[depTarget].Status is TargetRunState.Failed))
         {
-            buildModel.TargetStates[target].Status = TargetRunState.Skipped;
+            buildModel.TargetStates[target].Status = TargetRunState.NotRun;
             logger.LogWarning("Skipping target {TargetDefinitionName} due to failed dependencies", target.Name);
 
             return;
@@ -122,8 +111,7 @@ internal sealed class BuildExecutor(
         {
             try
             {
-                if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null ||
-                    Environment.GetEnvironmentVariable("AZURE_PIPELINES") is not null)
+                if (args.HasHeadless)
                 {
                     console.WriteLine($"##[group]{target.Name}");
                 }
@@ -152,7 +140,8 @@ internal sealed class BuildExecutor(
             }
             finally
             {
-                buildModel.TargetStates[target].RunDuration = new(Stopwatch.GetTimestamp() - startTime);
+                buildModel.TargetStates[target].RunDuration =
+                    TimeSpan.FromSeconds((Stopwatch.GetTimestamp() - startTime) / (double)Stopwatch.Frequency);
 
                 if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null ||
                     Environment.GetEnvironmentVariable("AZURE_PIPELINES") is not null)

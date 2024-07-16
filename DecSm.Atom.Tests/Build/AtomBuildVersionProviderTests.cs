@@ -1,10 +1,14 @@
-﻿using DecSm.Atom.Util;
-
-namespace DecSm.Atom.Tests.Build;
+﻿namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class AtomBuildVersionProviderTests
 {
+    private static readonly string OsAgnosticRoot = OperatingSystem.IsWindows()
+        ? @"C:\Solution"
+        : "/Solution";
+
+    private static readonly char Ps = Path.DirectorySeparatorChar;
+
     [Test]
     public void Version_Returns_VersionInfo()
     {
@@ -19,11 +23,11 @@ public class AtomBuildVersionProviderTests
         // Arrange
         var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { @"C:\Solution\Solution.sln", new MockFileData("<!-- -->") },
-                { @"C:\Solution\Project", new MockDirectoryData() },
-                { @"C:\Solution\Directory.Build.props", new MockFileData(directoryBuildProps) },
+                { $"{OsAgnosticRoot}{Ps}Solution.sln", new MockFileData("<!-- -->") },
+                { $"{OsAgnosticRoot}{Ps}Project", new MockDirectoryData() },
+                { $"{OsAgnosticRoot}{Ps}Directory.Build.props", new MockFileData(directoryBuildProps) },
             },
-            @"C:\Solution");
+            OsAgnosticRoot);
 
         var provider = new AtomBuildVersionProvider(fileSystem);
 
@@ -47,10 +51,10 @@ public class AtomBuildVersionProviderTests
 
         var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { @"C:\Solution\Solution.sln", new MockFileData("<!-- -->") },
-                { @"C:\Solution\Project", new MockDirectoryData() },
+                { $"{OsAgnosticRoot}{Ps}Solution.sln", new MockFileData("<!-- -->") },
+                { $"{OsAgnosticRoot}{Ps}Project", new MockDirectoryData() },
             },
-            @"C:\Solution");
+            OsAgnosticRoot);
 
         var provider = new AtomBuildVersionProvider(fileSystem);
 

@@ -17,7 +17,11 @@ public static class GithubHostExtensions
             ServiceLifetime.Singleton));
 
         if (Github.IsGithubActions)
-            configuration.Builder.Services.AddSingleton<IBuildIdProvider, GithubBuildIdProvider>();
+            configuration
+                .Builder
+                .Services
+                .AddSingleton<IBuildIdProvider, GithubBuildIdProvider>()
+                .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>();
 
         return configuration;
     }

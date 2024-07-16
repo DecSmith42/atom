@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Tests.Build;
+﻿using DecSm.Atom.Reports;
+
+namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class BuildExecutorTests
@@ -7,6 +9,7 @@ public class BuildExecutorTests
     private BuildModel _buildModel;
     private Mock<IParamService> _paramService;
     private Mock<IWorkflowVariableService> _workflowVariableService;
+    private IReadOnlyList<Mock<IOutcomeReporter>> _outcomeReporters; 
     private TestConsole _console;
     private Mock<ILogger<BuildExecutor>> _logger;
 
@@ -23,6 +26,7 @@ public class BuildExecutorTests
 
         _paramService = new();
         _workflowVariableService = new();
+        _outcomeReporters = [];
         _console = new();
         _logger = new();
     }
@@ -39,6 +43,7 @@ public class BuildExecutorTests
             _buildModel,
             _paramService.Object,
             _workflowVariableService.Object,
+            _outcomeReporters.Select(x => x.Object),
             _console,
             _logger.Object);
 
@@ -87,7 +92,7 @@ public class BuildExecutorTests
             TargetStates = new Dictionary<TargetModel, TargetState>
             {
                 {
-                    target, new()
+                    target, new(target.Name)
                     {
                         Status = TargetRunState.PendingRun,
                         RunDuration = null,
@@ -100,6 +105,7 @@ public class BuildExecutorTests
             _buildModel,
             _paramService.Object,
             _workflowVariableService.Object,
+            _outcomeReporters.Select(x => x.Object),
             _console,
             _logger.Object);
 

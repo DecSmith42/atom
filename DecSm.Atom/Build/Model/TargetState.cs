@@ -1,6 +1,6 @@
 namespace DecSm.Atom.Build.Model;
 
-public sealed record TargetState
+public sealed record TargetState(string Name)
 {
     public TargetRunState Status { get; set; } = TargetRunState.Uninitialized;
 

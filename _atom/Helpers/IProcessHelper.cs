@@ -3,7 +3,10 @@
 [TargetDefinition]
 public partial interface IProcessHelper
 {
-    async Task RunProcess(string name, string args, string? workingDirectory = null, bool logInvocation = true)
+    Task RunProcess(string name, string[] args, string? workingDirectory = null, bool logInvocation = true, bool suppressError = false) =>
+        RunProcess(name, string.Join(" ", args), workingDirectory, logInvocation, suppressError);
+
+    async Task RunProcess(string name, string args, string? workingDirectory = null, bool logInvocation = true, bool suppressError = false)
     {
         var process = new Process
         {
@@ -36,7 +39,7 @@ public partial interface IProcessHelper
                 Logger.LogInformation("");
             }
 
-            if (process.ExitCode != 0)
+            if (process.ExitCode != 0 && !suppressError)
                 throw new InvalidOperationException($"Process '{name}' exited with code {process.ExitCode}");
 
             Logger.LogInformation("Process '{Name}' completed successfully", name);
