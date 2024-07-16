@@ -23,6 +23,8 @@ public sealed record ListReportData(IReadOnlyList<string> Items) : ICustomReport
     public string? Title { get; init; }
 
     public bool BeforeStandardData { get; init; }
+
+    public string Prefix { get; init; } = "- ";
 }
 
 public sealed record TableReportData(IReadOnlyList<IReadOnlyList<string>> Rows) : ICustomReportData
@@ -31,5 +33,14 @@ public sealed record TableReportData(IReadOnlyList<IReadOnlyList<string>> Rows) 
 
     public IReadOnlyList<string>? Header { get; init; }
 
+    public IReadOnlyList<ColumnAlignment> ColumnAlignments { get; init; } = [];
+
     public bool BeforeStandardData { get; init; }
+}
+
+public enum ColumnAlignment
+{
+    Left,
+    Center,
+    Right,
 }

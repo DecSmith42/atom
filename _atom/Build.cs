@@ -11,7 +11,9 @@ internal partial class Build : BuildDefinition,
     IDiagnostics,
     IPackAtomTool,
     IInputValue,
-    IGetVaultSecret
+    IGetVaultSecret,
+    ITestAtom,
+    IReport
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -25,7 +27,11 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.PackAtom, Commands.PackAtomTool, Commands.PackAtomGithubWorkflows, Commands.PackAtomSourceGenerators,
+                Commands.PackAtom,
+                Commands.PackAtomTool,
+                Commands.PackAtomGithubWorkflows,
+                Commands.PackAtomSourceGenerators,
+                Commands.TestAtom,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
@@ -38,6 +44,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackAtomTool,
                 Commands.PackAtomGithubWorkflows,
                 Commands.PackAtomSourceGenerators,
+                Commands.TestAtom,
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType],

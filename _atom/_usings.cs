@@ -1,6 +1,8 @@
 ﻿global using System.Collections;
 global using System.Diagnostics;
+global using System.Text.Json;
 global using System.Text.RegularExpressions;
+global using System.Xml.Serialization;
 global using Atom;
 global using Atom.Helpers;
 global using Atom.Targets;
@@ -12,6 +14,7 @@ global using DecSm.Atom.AzureStorage;
 global using DecSm.Atom.GithubWorkflows;
 global using DecSm.Atom.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.Params;
+global using DecSm.Atom.Reports;
 global using DecSm.Atom.Setup;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Workflows.Definition;

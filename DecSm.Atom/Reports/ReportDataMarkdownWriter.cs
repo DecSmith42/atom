@@ -97,6 +97,8 @@ public static class ReportDataMarkdownWriter
 
             builder.AppendLine();
         }
+
+        builder.AppendLine();
     }
 
     public static void Write(StringBuilder builder, List<ArtifactReportData> reportData)
@@ -110,6 +112,7 @@ public static class ReportDataMarkdownWriter
         foreach (var artifactReportData in reportData)
             builder.AppendLine($"- [{artifactReportData.Name}]({artifactReportData.Path})");
 
+        builder.AppendLine();
         builder.AppendLine();
     }
 
@@ -142,11 +145,8 @@ public static class ReportDataMarkdownWriter
 
     public static void Write(StringBuilder builder, TableReportData reportData)
     {
-        if (reportData.Title is not null)
-        {
-            builder.AppendLine($"### {reportData.Title}");
-            builder.AppendLine();
-        }
+        builder.AppendLine($"### {reportData.Title}");
+        builder.AppendLine();
 
         var columnCount = reportData
             .Rows
@@ -169,31 +169,28 @@ public static class ReportDataMarkdownWriter
             builder.AppendLine(row);
 
         builder.AppendLine();
+        builder.AppendLine();
     }
 
     public static void Write(StringBuilder builder, ListReportData reportData)
     {
-        if (reportData.Title is not null)
-        {
-            builder.AppendLine($"### {reportData.Title}");
-            builder.AppendLine();
-        }
+        builder.AppendLine($"### {reportData.Title}");
+        builder.AppendLine();
 
         foreach (var item in reportData.Items)
-            builder.AppendLine($"- {item}");
+            builder.AppendLine($"{reportData.Prefix}{item}");
 
+        builder.AppendLine();
         builder.AppendLine();
     }
 
     public static void Write(StringBuilder builder, TextReportData reportData)
     {
-        if (reportData.Title is not null)
-        {
-            builder.AppendLine($"### {reportData.Title}");
-            builder.AppendLine();
-        }
+        builder.AppendLine($"### {reportData.Title}");
+        builder.AppendLine();
 
         builder.AppendLine(reportData.Text);
+        builder.AppendLine();
         builder.AppendLine();
     }
 }

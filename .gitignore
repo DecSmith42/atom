@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # Atom
 !DecSm.Atom/Artifacts
 !DecSm.Atom.Tests/Artifacts
+atom-publish

@@ -1,16 +1,26 @@
-﻿using Spectre.Console.Rendering;
+﻿namespace DecSm.Atom.Reports;
 
-namespace DecSm.Atom.Reports;
-
-public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, BuildModel buildModel, IReportService reportService)
-    : IOutcomeReporter
+public partial class ConsoleOutcomeReporter(
+    CommandLineArgs args,
+    IAnsiConsole console,
+    BuildModel buildModel,
+    IReportService reportService,
+    IFileSystem fileSystem
+) : IOutcomeReporter
 {
+    [return: NotNullIfNotNull("input")]
+    private static string? StripEmojis(string? input) =>
+        input is not null
+            ? EmojiRegex()
+                .Replace(input, string.Empty)
+            : null;
+
     public Task ReportRunOutcome()
     {
         var table = new Table()
             .LeftAligned()
-            .Title("Build Summary", new(decoration: Decoration.Bold))
             .HideHeaders()
+            .Border(TableBorder.Minimal)
             .AddColumn("Target")
             .AddColumn("Outcome")
             .AddColumn("Duration");
@@ -40,10 +50,17 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
             table.AddRow(state.Name, outcome, durationText);
         }
 
+        console.Write(new Text("Build Summary", new(decoration: Decoration.Underline)));
+        console.WriteLine();
         console.Write(table);
+        console.WriteLine();
 
         if (!args.HasHeadless)
             Write(reportService.GetReportData());
+
+        var markdown = ReportDataMarkdownWriter.Write(reportService.GetReportData());
+
+        fileSystem.File.WriteAllText(fileSystem.PublishDirectory() / "test.md", markdown);
 
         return Task.CompletedTask;
     }
@@ -116,7 +133,7 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
         if (reportData.Count == 0)
             return;
 
-        var tree = new Tree(string.Empty);
+        var tree = new Tree(new Text(header + "\n", new(decoration: Decoration.Underline)));
 
         foreach (var log in reportData)
         {
@@ -124,7 +141,7 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
 
             var rows = new List<IRenderable>
             {
-                new Markup($"[{styleTag}]{messageLines[0]}[/]"),
+                new Markup($"[{styleTag}]{messageLines.FirstOrDefault().EscapeMarkup()}[/]"),
             };
 
             if (messageLines.Length > 1)
@@ -135,14 +152,17 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
             if (log.Exception is not null)
                 rows.Add(new Text(log.Exception.ToString()));
 
+            if (rows.Count > 1 && log != reportData.Last())
+                rows.Add(new Text(string.Empty));
+
             var node = new TreeNode(new Rows(rows));
 
             tree.AddNode(node);
         }
 
-        console.Write(new Panel(tree)
-            .Header(header)
-            .Padding(new(2, 1)));
+        console.Write(tree);
+        console.WriteLine();
+        console.WriteLine();
     }
 
     private void Write(List<ArtifactReportData> reportData)
@@ -151,13 +171,18 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
             return;
 
         var table = new Table()
-            .Title(new("Artifacts", new(decoration: Decoration.Bold)))
             .Alignment(Justify.Left)
             .AddColumn("Name")
-            .AddColumn("Path");
+            .AddColumn("Path")
+            .Border(TableBorder.Minimal);
 
         foreach (var artifact in reportData)
-            table.AddRow(artifact.Name, artifact.Path);
+            table.AddRow(StripEmojis(artifact.Name), artifact.Path);
+
+        console.Write(new Text("Output Artifacts", new(decoration: Decoration.Underline)));
+        console.WriteLine();
+        console.Write(table);
+        console.WriteLine();
     }
 
     private void Write(ICustomReportData reportData)
@@ -181,6 +206,7 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
 
             default:
                 console.Write(new Text(reportData.ToString() ?? string.Empty));
+                console.WriteLine();
 
                 break;
         }
@@ -197,49 +223,84 @@ public class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, 
             .Append(reportData.Header ?? [])
             .Max(row => row.Count);
 
-        if (reportData.Header is not null)
-            foreach (var headerColumn in reportData.Header.Concat(Enumerable.Repeat(string.Empty, columnCount - reportData.Header.Count)))
-                table.AddColumn(headerColumn);
-        else
-            table
-                .AddColumns(Enumerable
-                    .Repeat(new TableColumn(string.Empty), columnCount)
-                    .ToArray())
-                .HideHeaders();
+        var columnAlignments = reportData
+            .ColumnAlignments
+            .Concat(Enumerable.Repeat(ColumnAlignment.Left, columnCount - reportData.ColumnAlignments.Count))
+            .ToArray();
+
+        var headers = reportData
+                          .Header
+                          ?.Concat(Enumerable.Repeat(string.Empty, columnCount - reportData.Header.Count))
+                          .ToArray() ??
+                      Enumerable
+                          .Repeat(string.Empty, columnCount)
+                          .ToArray();
+
+        for (var i = 0; i < columnCount; i++)
+        {
+            var column = new TableColumn(headers[i])
+            {
+                Alignment = columnAlignments[i] switch
+                {
+                    ColumnAlignment.Left => Justify.Left,
+                    ColumnAlignment.Center => Justify.Center,
+                    ColumnAlignment.Right => Justify.Right,
+                    _ => throw new UnreachableException(),
+                },
+            };
+
+            table.AddColumn(column);
+        }
+
+        if (reportData.Header is null)
+            table.HideHeaders();
 
         foreach (var row in reportData.Rows)
-            table.AddRow(row.Select(x => new Text(x)));
-
-        var panel = new Panel(table);
+            table.AddRow(row.Select(x => new Text(StripEmojis(x))));
 
         if (reportData.Title is not null)
-            panel.Header(reportData.Title);
+        {
+            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            console.WriteLine();
+        }
 
-        console.Write(panel);
+        console.Write(table);
+        console.WriteLine();
     }
 
     private void Write(ListReportData reportData)
     {
         var rows = reportData
             .Items
-            .Select(x => new Text(x))
+            .Select(x => new Text($"{reportData.Prefix}{StripEmojis(x)}"))
             .ToList();
 
-        var panel = new Panel(new Rows(rows));
-
         if (reportData.Title is not null)
-            panel.Header(reportData.Title, Justify.Left);
+        {
+            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            console.WriteLine();
+            console.WriteLine();
+        }
 
-        console.Write(panel.Padding(new(2, 1)));
+        console.Write(new Rows(rows));
+        console.WriteLine();
+        console.WriteLine();
     }
 
     private void Write(TextReportData reportData)
     {
-        var panel = new Panel(reportData.Text);
-
         if (reportData.Title is not null)
-            panel.Header = new(reportData.Title);
+        {
+            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            console.WriteLine();
+            console.WriteLine();
+        }
 
-        console.Write(panel.Padding(new(2, 1)));
+        console.WriteLine(StripEmojis(reportData.Text));
+        console.WriteLine();
+        console.WriteLine();
     }
+
+    [GeneratedRegex(@"([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])")]
+    private static partial Regex EmojiRegex();
 }

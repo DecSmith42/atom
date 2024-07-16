@@ -1,5 +1,6 @@
 global using System.Collections.Concurrent;
 global using System.Diagnostics;
+global using System.Diagnostics.CodeAnalysis;
 global using System.IO.Abstractions;
 global using System.Linq.Expressions;
 global using System.Reflection;
@@ -31,6 +32,7 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Spectre.Console;
+global using Spectre.Console.Rendering;
 
 [assembly: InternalsVisibleTo("DecSm.Atom.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
