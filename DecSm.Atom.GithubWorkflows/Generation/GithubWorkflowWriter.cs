@@ -168,7 +168,12 @@ public sealed class GithubWorkflowWriter(
             case CommandWorkflowStep commandStep:
 
                 using (WriteSection("- name: Checkout"))
+                {
                     WriteLine("uses: actions/checkout@v4");
+
+                    using (WriteSection("with:"))
+                        WriteLine("fetch-depth: 0");
+                }
 
                 WriteLine();
 

@@ -16,6 +16,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Setup
         id: Setup
@@ -28,6 +30,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: NotMyName
         id: NotMyName
@@ -40,6 +44,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: AlsoNotMyName
         id: AlsoNotMyName
@@ -52,6 +58,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: PackAtom
         id: PackAtom
@@ -74,6 +82,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: PackAtomTool
         id: PackAtomTool
@@ -96,6 +106,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: PackAtomGithubWorkflows
         id: PackAtomGithubWorkflows
@@ -118,6 +130,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: PackAtomSourceGenerators
         id: PackAtomSourceGenerators
@@ -140,6 +154,8 @@ jobs:
       
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: TestAtom
         id: TestAtom
