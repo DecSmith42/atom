@@ -13,6 +13,8 @@ public sealed class GitVersionBuildIdProvider(IProcessRunner processRunner) : IB
             if (_buildId is not null)
                 return _buildId;
 
+            processRunner.RunProcess("dotnet", "tool install --global GitVersion.Tool");
+            
             var output = processRunner.RunProcess("dotnet", "gitversion");
             var jsonOutput = JsonSerializer.Deserialize<JsonElement>(output);
 

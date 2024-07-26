@@ -13,6 +13,8 @@ public class GitVersionBuildVersionProvider(IProcessRunner processRunner) : IBui
             if (_version is not null)
                 return _version;
 
+            processRunner.RunProcess("dotnet", "tool install --global GitVersion.Tool");
+
             var output = processRunner.RunProcess("dotnet", "gitversion");
             var jsonOutput = JsonSerializer.Deserialize<JsonElement>(output);
 
