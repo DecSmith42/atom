@@ -8,6 +8,7 @@ var builder = AtomHost.CreateAtomBuilder<Build>(args,
 
 builder.Services.AddSingleton<IProcessRunner, ProcessRunner>();
 builder.Services.AddSingleton<IBuildIdProvider, GitVersionBuildIdProvider>();
+builder.Services.AddSingleton<IBuildVersionProvider, GitVersionBuildVersionProvider>();
 
 var app = builder.Build();
 
