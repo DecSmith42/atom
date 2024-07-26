@@ -15,7 +15,7 @@ public interface ISetup : IBuildDefinition
             {
                 var buildId = BuildIdProvider.BuildId;
 
-                await WriteVariable(nameof(AtomBuildId), buildId.ToString());
+                await WriteVariable(nameof(AtomBuildId), buildId);
 
                 var solutionName = Services
                     .GetRequiredService<IFileSystem>()

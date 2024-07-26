@@ -2,8 +2,5 @@
     <PropertyGroup>
         <Product>Atom</Product>
         <Authors>Declan Smith</Authors>
-
-        <Version>1.0.0</Version>
-        <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
 </Project>

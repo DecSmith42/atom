@@ -2,5 +2,5 @@
 
 public sealed class GithubBuildIdProvider : IBuildIdProvider
 {
-    public long BuildId => long.Parse(Github.Variables.RunId);
+    public string BuildId => Github.Variables.RunId;
 }
