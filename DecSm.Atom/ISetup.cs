@@ -11,11 +11,11 @@ public interface ISetup : IBuildDefinition
     Target Setup =>
         d => d
             .ProducesVariable(nameof(AtomBuildId))
-            .Executes(() =>
+            .Executes(async () =>
             {
                 var buildId = BuildIdProvider.BuildId;
 
-                WriteVariable(nameof(AtomBuildId), buildId.ToString());
+                await WriteVariable(nameof(AtomBuildId), buildId.ToString());
 
                 var solutionName = Services
                     .GetRequiredService<IFileSystem>()
@@ -30,7 +30,5 @@ public interface ISetup : IBuildDefinition
                 Services
                     .GetRequiredService<ILogger<ISetup>>()
                     .LogInformation("Build ID: {BuildId}", buildId);
-
-                return Task.CompletedTask;
             });
 }

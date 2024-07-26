@@ -13,7 +13,11 @@ internal partial class Build : BuildDefinition,
     IInputValue,
     IGetVaultSecret,
     ITestAtom,
-    IReport
+    IReport,
+    IEnsureAtomVersionNotPublished,
+    INameMismatch,
+    IInheritedSetup,
+    IOtherThing
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -27,6 +31,8 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
+                Commands.NotMyName,
+                Commands.AlsoNotMyName,
                 Commands.PackAtom,
                 Commands.PackAtomTool,
                 Commands.PackAtomGithubWorkflows,

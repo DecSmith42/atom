@@ -11,9 +11,4 @@
         <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.12.0" />
-        <PackageReference Include="Azure.Storage.Blobs" Version="12.21.0"/>
-    </ItemGroup>
-
 </Project>

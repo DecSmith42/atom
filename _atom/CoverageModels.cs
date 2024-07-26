@@ -1,11 +1,9 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Atom;
+﻿namespace Atom;
 
 public sealed record CoverageModel
 {
     [JsonPropertyName("summary")]
-    public CoverageSummary Summary { get; init; }
+    public CoverageSummary Summary { get; init; } = new();
 }
 
 public sealed record CoverageSummary
@@ -14,7 +12,7 @@ public sealed record CoverageSummary
     public DateTime GeneratedOn { get; init; }
 
     [JsonPropertyName("parser")]
-    public string Parser { get; init; }
+    public string Parser { get; init; } = string.Empty;
 
     [JsonPropertyName("assemblies")]
     public int Assemblies { get; init; }

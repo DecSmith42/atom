@@ -4,38 +4,38 @@
 public sealed record TestRun
 {
     [XmlAttribute(AttributeName = "id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "name")]
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "runUser")]
-    public string RunUser { get; init; }
+    public string RunUser { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "Times")]
-    public Times Times { get; init; }
+    public Times Times { get; init; } = new();
 
     [XmlElement(ElementName = "TestSettings")]
-    public TestSettings TestSettings { get; init; }
+    public TestSettings TestSettings { get; init; } = new();
 
     [XmlArray(ElementName = "Results")]
     [XmlArrayItem(ElementName = "UnitTestResult")]
-    public List<UnitTestResult> Results { get; init; }
+    public List<UnitTestResult> Results { get; init; } = [];
 
     [XmlArray(ElementName = "TestDefinitions")]
     [XmlArrayItem(ElementName = "UnitTest")]
-    public List<UnitTest> TestDefinitions { get; init; }
+    public List<UnitTest> TestDefinitions { get; init; } = [];
 
     [XmlArray(ElementName = "TestEntries")]
     [XmlArrayItem(ElementName = "TestEntry")]
-    public List<TestEntry> TestEntries { get; init; }
+    public List<TestEntry> TestEntries { get; init; } = [];
 
     [XmlArray(ElementName = "TestLists")]
     [XmlArrayItem(ElementName = "TestList")]
-    public List<TestList> TestLists { get; init; }
+    public List<TestList> TestLists { get; init; } = [];
 
     [XmlElement(ElementName = "ResultSummary")]
-    public ResultSummary ResultSummary { get; init; }
+    public ResultSummary ResultSummary { get; init; } = new();
 }
 
 public sealed record Times
@@ -56,51 +56,37 @@ public sealed record Times
 public sealed record TestSettings
 {
     [XmlAttribute(AttributeName = "name")]
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "Deployment")]
-    public Deployment Deployment { get; init; }
+    public Deployment Deployment { get; init; } = new();
 }
 
 public sealed record Deployment
 {
     [XmlAttribute(AttributeName = "runDeploymentRoot")]
-    public string RunDeploymentRoot { get; init; }
+    public string RunDeploymentRoot { get; init; } = string.Empty;
 }
-
-// Need to add an output model to the Result:
-// <UnitTestResult executionId="9850d38b-048c-4680-90d1-5fbb51cf6e70" testId="dbd4de17-ae73-87b4-5efb-67309565b603" testName="ShouldFail" computerName="DEC-PC" duration="00:00:00.0150750" startTime="2024-07-15T22:25:38.7151239+10:00" endTime="2024-07-15T22:25:38.7301990+10:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9850d38b-048c-4680-90d1-5fbb51cf6e70">
-//     <Output>
-//     <ErrorInfo>
-//     <Message>This test should fail.</Message>
-//     <StackTrace>   at DecSm.Atom.Tests.TestFailure.ShouldFail() in L:\DecSm\Atom\DecSm.Atom.Tests\TestFailure.cs:line 9&#xD;
-//
-// 1)    at DecSm.Atom.Tests.TestFailure.ShouldFail() in L:\DecSm\Atom\DecSm.Atom.Tests\TestFailure.cs:line 9&#xD;
-//
-//     </StackTrace>
-//     </ErrorInfo>
-//     </Output>
-//     </UnitTestResult>
 
 public sealed record UnitTestResult
 {
     [XmlAttribute(AttributeName = "executionId")]
-    public string ExecutionId { get; init; }
+    public string ExecutionId { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "testId")]
-    public string TestId { get; init; }
+    public string TestId { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "testName")]
-    public string TestName { get; init; }
+    public string TestName { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "computerName")]
-    public string ComputerName { get; init; }
+    public string ComputerName { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "duration")]
-    public string Duration { get; init; }
+    public string Duration { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "startTime")]
     public DateTime StartTime { get; init; }
@@ -109,116 +95,116 @@ public sealed record UnitTestResult
     public DateTime EndTime { get; init; }
 
     [XmlAttribute(AttributeName = "testType")]
-    public string TestType { get; init; }
+    public string TestType { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "outcome")]
-    public string Outcome { get; init; }
+    public string Outcome { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "testListId")]
-    public string TestListId { get; init; }
+    public string TestListId { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "relativeResultsDirectory")]
-    public string RelativeResultsDirectory { get; init; }
+    public string RelativeResultsDirectory { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "Output")]
-    public ResultOutput Output { get; init; }
+    public ResultOutput Output { get; init; } = new();
 }
 
 public sealed record ResultOutput
 {
     [XmlElement(ElementName = "ErrorInfo")]
-    public ErrorInfo ErrorInfo { get; init; }
+    public ErrorInfo ErrorInfo { get; init; } = new();
 }
 
 public sealed record ErrorInfo
 {
     [XmlElement(ElementName = "Message")]
-    public string Message { get; init; }
+    public string Message { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "StackTrace")]
-    public string StackTrace { get; init; }
+    public string StackTrace { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "StdOut")]
-    public string StdOut { get; init; }
+    public string StdOut { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "StdErr")]
-    public string StdErr { get; init; }
+    public string StdErr { get; init; } = string.Empty;
 }
 
 public sealed record UnitTest
 {
     [XmlAttribute(AttributeName = "name")]
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "storage")]
-    public string Storage { get; init; }
+    public string Storage { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "Execution")]
-    public Execution Execution { get; init; }
+    public Execution Execution { get; init; } = new();
 
     [XmlElement(ElementName = "TestMethod")]
-    public TestMethod TestMethod { get; init; }
+    public TestMethod TestMethod { get; init; } = new();
 }
 
 public sealed record Execution
 {
     [XmlAttribute(AttributeName = "id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 }
 
 public sealed record TestMethod
 {
     [XmlAttribute(AttributeName = "codeBase")]
-    public string CodeBase { get; init; }
+    public string CodeBase { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "adapterTypeName")]
-    public string AdapterTypeName { get; init; }
+    public string AdapterTypeName { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "className")]
-    public string ClassName { get; init; }
+    public string ClassName { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "name")]
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 }
 
 public sealed record TestEntry
 {
     [XmlAttribute(AttributeName = "testId")]
-    public string TestId { get; init; }
+    public string TestId { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "executionId")]
-    public string ExecutionId { get; init; }
+    public string ExecutionId { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "testListId")]
-    public string TestListId { get; init; }
+    public string TestListId { get; init; } = string.Empty;
 }
 
 public sealed record TestList
 {
     [XmlAttribute(AttributeName = "name")]
-    public string Name { get; init; }
+    public string Name { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "id")]
-    public string Id { get; init; }
+    public string Id { get; init; } = string.Empty;
 }
 
 public sealed record ResultSummary
 {
     [XmlAttribute(AttributeName = "outcome")]
-    public string Outcome { get; init; }
+    public string Outcome { get; init; } = string.Empty;
 
     [XmlElement(ElementName = "Counters")]
-    public Counters Counters { get; init; }
+    public Counters Counters { get; init; } = new();
 
     [XmlElement(ElementName = "Output")]
-    public Output Output { get; init; }
+    public Output Output { get; init; } = new();
 
     [XmlArray(ElementName = "CollectorDataEntries")]
     [XmlArrayItem(ElementName = "Collector")]
-    public List<Collector> CollectorDataEntries { get; init; }
+    public List<Collector> CollectorDataEntries { get; init; } = [];
 }
 
 public sealed record Counters
@@ -275,33 +261,33 @@ public sealed record Counters
 public sealed record Output
 {
     [XmlElement(ElementName = "StdOut")]
-    public string StdOut { get; init; }
+    public string StdOut { get; init; } = string.Empty;
 }
 
 public sealed record Collector
 {
     [XmlAttribute(AttributeName = "agentName")]
-    public string AgentName { get; init; }
+    public string AgentName { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "uri")]
-    public string Uri { get; init; }
+    public string Uri { get; init; } = string.Empty;
 
     [XmlAttribute(AttributeName = "collectorDisplayName")]
-    public string CollectorDisplayName { get; init; }
+    public string CollectorDisplayName { get; init; } = string.Empty;
 
     [XmlArray(ElementName = "UriAttachments")]
     [XmlArrayItem(ElementName = "UriAttachment")]
-    public List<UriAttachment> UriAttachments { get; init; }
+    public List<UriAttachment> UriAttachments { get; init; } = [];
 }
 
 public sealed record UriAttachment
 {
     [XmlElement(ElementName = "A")]
-    public A A { get; init; }
+    public A A { get; init; } = new();
 }
 
 public sealed record A
 {
     [XmlAttribute(AttributeName = "href")]
-    public string Href { get; init; }
+    public string Href { get; init; } = string.Empty;
 }

@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Setup;
+﻿namespace DecSm.Atom.Hosting;
 
 public static class HostExtensions
 {
