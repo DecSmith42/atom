@@ -85,8 +85,45 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .OfType<IPropertySymbol>()
                 .Select(x => (Interface: i, Property: x)))
             .Where(p => p.Property.Type.Name == "Target")
+
+            // .Where(p => p.Interface.Name != "IInheritedSetup")
             .Select(p => (p.Interface, p.Property))
             .ToList();
+
+        bool RemoveOverridden()
+        {
+            foreach (var interfaceTarget in interfaceTargets)
+            {
+                var duplicateInterfaceTarget = interfaceTargets.FirstOrDefault(p => p
+                                                                                        .Property
+                                                                                        .Name
+                                                                                        .Split('.')
+                                                                                        .Last() ==
+                                                                                    interfaceTarget
+                                                                                        .Property
+                                                                                        .Name
+                                                                                        .Split('.')
+                                                                                        .Last() &&
+                                                                                    !p.Interface.Equals(interfaceTarget.Interface,
+                                                                                        SymbolEqualityComparer.IncludeNullability));
+
+                if (duplicateInterfaceTarget == default)
+                    continue;
+
+                var interfaceTargetInheritsFromDuplicate =
+                    interfaceTarget.Interface.AllInterfaces.Contains(duplicateInterfaceTarget.Interface);
+
+                interfaceTargets.Remove(interfaceTargetInheritsFromDuplicate
+                    ? duplicateInterfaceTarget
+                    : interfaceTarget);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        while (RemoveOverridden()) { }
 
         // Get all defined Params (Property with ParamDefinitionAttribute) in all inherited interfaces,
         // along with the ParamDefinitionAttribute.Name value
@@ -126,15 +163,15 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         // Generate a static accessor for each target
         var targetsPropertiesBodies = interfaceTargets.Select(p =>
-            $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
+            $"        public static string {p.Property.Name.Split('.').Last()} = nameof({p.Interface}.{p.Property.Name.Split('.').Last()});");
 
         // Generate a static accessor for each CommandDefinition
         var commandDefsPropertyBodies = interfaceTargets.Select(p =>
-            $"        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition {p.Property.Name} = new(nameof({p.Interface}.{p.Property.Name}));");
+            $"        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition {p.Property.Name.Split('.').Last()} = new(nameof({p.Interface}.{p.Property.Name.Split('.').Last()}));");
 
         // Generate the Targets property
         var targetDefinitionsPropertyBody = interfaceTargets.Select(p =>
-            $$"""        { "{{p.Property.Name}}", (({{p.Interface}})this).{{p.Property.Name}} },""");
+            $$"""        { "{{p.Property.Name.Split('.').Last()}}", (({{p.Interface}})this).{{p.Property.Name.Split('.').Last()}} },""");
 
         // Generate a static accessor for each param
         var paramsPropertiesBodies = interfaceParams.Select(p =>

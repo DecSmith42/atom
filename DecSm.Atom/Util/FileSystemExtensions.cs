@@ -80,6 +80,20 @@ public static class FileSystemExtensions
         return _repoRoot = new(fileSystem, topmostGitDirectory);
     }
 
+    public static AbsolutePath? ProjectFilePath(this IFileSystem fileSystem, string projectName, bool deepSearch = false)
+    {
+        var projectPath = !deepSearch
+            ? fileSystem.SolutionRoot() / projectName / $"{projectName}.csproj"
+            : fileSystem
+                .Directory
+                .GetFiles(fileSystem.SolutionRoot(), $"{projectName}.csproj")
+                .FirstOrDefault();
+
+        return projectPath is not null
+            ? new(fileSystem, projectPath)
+            : null;
+    }
+
     public static AbsolutePath ArtifactDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
             ? fileSystem.RepoRoot() / ".github" / "artifacts"

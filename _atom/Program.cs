@@ -4,6 +4,7 @@
         .AddAzureKeyVault()
         .AddAzureArtifacts());
 
+
 var app = builder.Build();
 
 await app.RunAsync();

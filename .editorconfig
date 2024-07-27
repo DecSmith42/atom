@@ -73,3 +73,6 @@ resharper_wrap_chained_binary_expressions = chop_if_long
 resharper_wrap_chained_binary_patterns = chop_if_long
 resharper_wrap_chained_method_calls = chop_always
 resharper_wrap_list_pattern = chop_if_long
+
+[version.json]
+indent_size = 2

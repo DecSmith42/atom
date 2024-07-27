@@ -13,7 +13,7 @@ public class AtomBuildIdProviderTests
         var buildId = provider.BuildId;
 
         // Assert
-        buildId.ShouldBePositive();
+        buildId.ShouldNotBeEmpty();
     }
 
     [Test]

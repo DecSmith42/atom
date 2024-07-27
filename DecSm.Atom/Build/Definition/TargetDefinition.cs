@@ -4,21 +4,94 @@ public sealed class TargetDefinition
 {
     public string Name { get; init; } = string.Empty;
 
-    public string? Description { get; set; }
+    public string? Description { get; private set; }
 
-    public List<Func<Task>> Tasks { get; } = [];
+    public List<Func<Task>> Tasks { get; private set; } = [];
 
-    public List<string> Dependencies { get; } = [];
+    public List<string> Dependencies { get; private set; } = [];
 
-    public List<string> RequiredParams { get; } = [];
+    public List<string> RequiredParams { get; private set; } = [];
 
-    public List<ConsumedArtifact> ConsumedArtifacts { get; } = [];
+    public List<ConsumedArtifact> ConsumedArtifacts { get; private set; } = [];
 
-    public List<ProducedArtifact> ProducedArtifacts { get; } = [];
+    public List<ProducedArtifact> ProducedArtifacts { get; private set; } = [];
 
-    public List<ConsumedVariable> ConsumedVariables { get; } = [];
+    public List<ConsumedVariable> ConsumedVariables { get; private set; } = [];
 
-    public List<string> ProducedVariables { get; } = [];
+    public List<string> ProducedVariables { get; private set; } = [];
+
+    private List<(Func<IBuildDefinition, Target> GetExtension, bool RunExtensionAfter)> Extensions { get; } = [];
+
+    public TargetDefinition Extends<T>(Func<T, Target> x, bool runExtensionAfter = false)
+        where T : IBuildDefinition
+    {
+        Extensions.Insert(0, (d => x((T)d), runExtensionAfter));
+
+        return this;
+    }
+
+    internal TargetDefinition ApplyExtensions(IBuildDefinition buildDefinition)
+    {
+        foreach (var extension in Extensions)
+        {
+            var targetToExtend = extension
+                .GetExtension(buildDefinition)(new()
+                {
+                    Name = Name,
+                })
+                .ApplyExtensions(buildDefinition);
+
+            if (extension.RunExtensionAfter)
+            {
+                Tasks.AddRange(targetToExtend.Tasks);
+                Dependencies.AddRange(targetToExtend.Dependencies);
+                RequiredParams.AddRange(targetToExtend.RequiredParams);
+                ConsumedArtifacts.AddRange(targetToExtend.ConsumedArtifacts);
+                ProducedArtifacts.AddRange(targetToExtend.ProducedArtifacts);
+                ConsumedVariables.AddRange(targetToExtend.ConsumedVariables);
+                ProducedVariables.AddRange(targetToExtend.ProducedVariables);
+            }
+            else
+            {
+                Tasks = targetToExtend
+                    .Tasks
+                    .Concat(Tasks)
+                    .ToList();
+
+                Dependencies = targetToExtend
+                    .Dependencies
+                    .Concat(Dependencies)
+                    .ToList();
+
+                RequiredParams = targetToExtend
+                    .RequiredParams
+                    .Concat(RequiredParams)
+                    .ToList();
+
+                ConsumedArtifacts = targetToExtend
+                    .ConsumedArtifacts
+                    .Concat(ConsumedArtifacts)
+                    .ToList();
+
+                ProducedArtifacts = targetToExtend
+                    .ProducedArtifacts
+                    .Concat(ProducedArtifacts)
+                    .ToList();
+
+                ConsumedVariables = targetToExtend
+                    .ConsumedVariables
+                    .Concat(ConsumedVariables)
+                    .ToList();
+
+                ProducedVariables = targetToExtend
+                    .ProducedVariables
+                    .Concat(ProducedVariables)
+                    .ToList();
+            }
+        }
+
+        return this;
+    }
 
     public TargetDefinition WithDescription(string description)
     {

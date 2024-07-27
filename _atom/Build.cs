@@ -5,15 +5,15 @@ internal partial class Build : BuildDefinition,
     IAzureKeyVault,
     IAzureArtifactStorage,
     IPackAtom,
-    IPackAtomGithubWorkflows,
-    IPackAtomSourceGenerators,
-    IPushToNuget,
-    IDiagnostics,
     IPackAtomTool,
-    IInputValue,
-    IGetVaultSecret,
+    IPackAzureKeyVaultExtension,
+    IPackAzureStorageExtension,
+    IPackDotnetExtension,
+    IPackGithubWorkflowsExtension,
+    IPackGitVersioningExtension,
+    IPushToNuget,
     ITestAtom,
-    IReport
+    IPrepareRelease
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -29,8 +29,11 @@ internal partial class Build : BuildDefinition,
             [
                 Commands.PackAtom,
                 Commands.PackAtomTool,
-                Commands.PackAtomGithubWorkflows,
-                Commands.PackAtomSourceGenerators,
+                Commands.PackAzureKeyVaultExtension,
+                Commands.PackAzureStorageExtension,
+                Commands.PackDotnetExtension,
+                Commands.PackGithubWorkflowsExtension,
+                Commands.PackGitVersioningExtension,
                 Commands.TestAtom,
             ],
             WorkflowTypes = [Github.WorkflowType],
@@ -42,17 +45,25 @@ internal partial class Build : BuildDefinition,
             [
                 Commands.PackAtom,
                 Commands.PackAtomTool,
-                Commands.PackAtomGithubWorkflows,
-                Commands.PackAtomSourceGenerators,
+                Commands.PackAzureKeyVaultExtension,
+                Commands.PackAzureStorageExtension,
+                Commands.PackDotnetExtension,
+                Commands.PackGithubWorkflowsExtension,
+                Commands.PackGitVersioningExtension,
                 Commands.TestAtom,
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
-        new("Sandbox")
+        new("Prepare Release")
         {
-            Triggers = [Github.Triggers.Manual],
-            StepDefinitions = [Commands.Diagnostics, Commands.InputValue, Commands.GetVaultSecret],
+            Triggers =
+            [
+                new GithubManualTrigger([
+                    GithubManualChoiceInput.ForParam(ParamDefinitions[Params.PrereleaseTag], false, ["alpha", "beta", "rc"]),
+                ]),
+            ],
+            StepDefinitions = [Commands.PrepareRelease],
             WorkflowTypes = [Github.WorkflowType],
         },
         Github.DependabotWorkflow(new()

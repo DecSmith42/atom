@@ -14,15 +14,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5AD016BB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_atom", "_atom\_atom.csproj", "{A26DBCF8-6379-4445-8D71-F72D724A7DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.GithubWorkflows", "DecSm.Atom.GithubWorkflows\DecSm.Atom.GithubWorkflows.csproj", "{68D0132E-7F70-4E6F-BACC-9178070D16CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.GithubWorkflows", "DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj", "{68D0132E-7F70-4E6F-BACC-9178070D16CF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Tool", "DecSm.Atom.Tool\DecSm.Atom.Tool.csproj", "{AF9EA7BE-41C1-453B-854A-D691BE103D4F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.AzureKeyVault", "DecSm.Atom.AzureKeyVault\DecSm.Atom.AzureKeyVault.csproj", "{2D93A955-60F6-4BEC-8BBA-92CFB4E5088C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.AzureKeyVault", "DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj", "{2D93A955-60F6-4BEC-8BBA-92CFB4E5088C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.AzureStorage", "DecSm.Atom.AzureStorage\DecSm.Atom.AzureStorage.csproj", "{576958CF-DDF1-48D2-A578-7399449A679B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.AzureStorage", "DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj", "{576958CF-DDF1-48D2-A578-7399449A679B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.Dotnet", "DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj", "{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.GitVersioning", "DecSm.Atom.Extensions.GitVersioning\DecSm.Atom.Extensions.GitVersioning.csproj", "{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,6 +70,14 @@ Global
 		{576958CF-DDF1-48D2-A578-7399449A679B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{576958CF-DDF1-48D2-A578-7399449A679B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{576958CF-DDF1-48D2-A578-7399449A679B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7EF9BD7C-C876-4FBC-BCD0-C02BA0F55C8E} = {7F9DC0A4-12AC-48C1-B17F-B656EDFE5AFD}
@@ -74,5 +86,7 @@ Global
 		{68D0132E-7F70-4E6F-BACC-9178070D16CF} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
 		{2D93A955-60F6-4BEC-8BBA-92CFB4E5088C} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
 		{576958CF-DDF1-48D2-A578-7399449A679B} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
+		{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
+		{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2} = {5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}
 	EndGlobalSection
 EndGlobal

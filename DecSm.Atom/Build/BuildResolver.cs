@@ -7,10 +7,12 @@ internal static class BuildResolver
         // Extract target definitions from build definition
         var targetDefinitions = buildDefinition
             .TargetDefinitions
-            .Select(x => x.Value(new()
-            {
-                Name = x.Key,
-            }))
+            .Select(x => x
+                .Value(new()
+                {
+                    Name = x.Key,
+                })
+                .ApplyExtensions(buildDefinition))
             .ToArray();
 
         var duplicateTargetNames = targetDefinitions

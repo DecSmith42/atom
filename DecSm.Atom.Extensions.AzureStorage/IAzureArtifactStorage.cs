@@ -1,0 +1,11 @@
+﻿namespace DecSm.Atom.Extensions.AzureStorage;
+
+[TargetDefinition]
+public partial interface IAzureArtifactStorage : IUploadArtifact, IDownloadArtifact
+{
+    [SecretDefinition("azurestorage-artifact-connectionstring", "Connection string for Azure storage container")]
+    string AzureArtifactStorageConnectionString => GetParam(() => AzureArtifactStorageConnectionString)!;
+
+    [ParamDefinition("azurestorage-artifact-container", "Azure storage container")]
+    string AzureArtifactStorageContainer => GetParam(() => AzureArtifactStorageContainer)!;
+}

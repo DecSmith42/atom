@@ -4,8 +4,7 @@ public partial class ConsoleOutcomeReporter(
     CommandLineArgs args,
     IAnsiConsole console,
     BuildModel buildModel,
-    IReportService reportService,
-    IFileSystem fileSystem
+    IReportService reportService
 ) : IOutcomeReporter
 {
     [return: NotNullIfNotNull("input")]
