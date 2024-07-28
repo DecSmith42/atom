@@ -23,34 +23,6 @@ jobs:
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
   
-  NotMyName:
-    needs: [ Setup ]
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: NotMyName
-        id: NotMyName
-        run: dotnet run --project _atom/_atom.csproj NotMyName --skip --headless
-  
-  AlsoNotMyName:
-    needs: [ Setup ]
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: AlsoNotMyName
-        id: AlsoNotMyName
-        run: dotnet run --project _atom/_atom.csproj AlsoNotMyName --skip --headless
-  
   PackAtom:
     needs: [ Setup ]
     runs-on: ubuntu-latest
@@ -99,7 +71,7 @@ jobs:
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Tool
   
-  PackAtomGithubWorkflows:
+  PackAzureKeyVaultExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
@@ -109,9 +81,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackAtomGithubWorkflows
-        id: PackAtomGithubWorkflows
-        run: dotnet run --project _atom/_atom.csproj PackAtomGithubWorkflows --skip --headless
+      - name: PackAzureKeyVaultExtension
+        id: PackAzureKeyVaultExtension
+        run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -121,9 +93,9 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.GithubWorkflows
+          atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
   
-  PackAtomSourceGenerators:
+  PackAzureStorageExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
@@ -133,9 +105,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackAtomSourceGenerators
-        id: PackAtomSourceGenerators
-        run: dotnet run --project _atom/_atom.csproj PackAtomSourceGenerators --skip --headless
+      - name: PackAzureStorageExtension
+        id: PackAzureStorageExtension
+        run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -145,7 +117,79 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.SourceGenerators
+          atom-artifacts: DecSm.Atom.Extensions.AzureStorage
+  
+  PackDotnetExtension:
+    needs: [ Setup ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackDotnetExtension
+        id: PackDotnetExtension
+        run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+      
+      - name: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          atom-artifacts: DecSm.Atom.Extensions.Dotnet
+  
+  PackGithubWorkflowsExtension:
+    needs: [ Setup ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackGithubWorkflowsExtension
+        id: PackGithubWorkflowsExtension
+        run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+      
+      - name: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
+  
+  PackGitVersioningExtension:
+    needs: [ Setup ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackGitVersioningExtension
+        id: PackGitVersioningExtension
+        run: dotnet run --project _atom/_atom.csproj PackGitVersioningExtension --skip --headless
+      
+      - name: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          atom-artifacts: DecSm.Atom.Extensions.GitVersioning
   
   TestAtom:
     needs: [ Setup ]

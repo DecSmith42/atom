@@ -9,4 +9,5 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Reports;
 global using DecSm.Atom.Util;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
