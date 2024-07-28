@@ -10,6 +10,7 @@ global using DecSm.Atom.Extensions.Dotnet.Helpers;
 global using DecSm.Atom.Extensions.GithubWorkflows;
 global using DecSm.Atom.Extensions.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.Extensions.GithubWorkflows.Triggers;
+global using DecSm.Atom.Extensions.GitVersioning;
 global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Process;

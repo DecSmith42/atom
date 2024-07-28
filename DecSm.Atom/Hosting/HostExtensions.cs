@@ -29,6 +29,8 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
 
+        builder.Services.TryAddSingleton<IProcessRunner, ProcessRunner>();
+
         builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
 
         builder.Services.AddSingleton<CommandLineArgs>(services =>

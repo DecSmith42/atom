@@ -2,8 +2,8 @@
     atom => atom
         .AddGithubWorkflows()
         .AddAzureKeyVault()
-        .AddAzureArtifacts());
-
+        .AddAzureArtifacts()
+        .AddGitVersioning());
 
 var app = builder.Build();
 

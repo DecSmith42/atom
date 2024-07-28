@@ -16,6 +16,7 @@
         <ProjectReference Include="..\DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj"/>
+        <ProjectReference Include="..\DecSm.Atom.Extensions.GitVersioning\DecSm.Atom.Extensions.GitVersioning.csproj"/>
         <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj"/>
         <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
