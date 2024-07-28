@@ -204,6 +204,16 @@ jobs:
       - name: TestAtom
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+      
+      - name: UploadArtifact
+        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          atom-artifacts: DecSm.Atom.Tests
   
   PushToNuget:
     needs: [ Setup, PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersioningExtension ]
