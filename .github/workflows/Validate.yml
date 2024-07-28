@@ -36,16 +36,6 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom
   
   PackAtomTool:
     needs: [ Setup ]
@@ -60,16 +50,6 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Tool
   
   PackAzureKeyVaultExtension:
     needs: [ Setup ]
@@ -84,16 +64,6 @@ jobs:
       - name: PackAzureKeyVaultExtension
         id: PackAzureKeyVaultExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
   
   PackAzureStorageExtension:
     needs: [ Setup ]
@@ -108,16 +78,6 @@ jobs:
       - name: PackAzureStorageExtension
         id: PackAzureStorageExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.AzureStorage
   
   PackDotnetExtension:
     needs: [ Setup ]
@@ -132,16 +92,6 @@ jobs:
       - name: PackDotnetExtension
         id: PackDotnetExtension
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.Dotnet
   
   PackGithubWorkflowsExtension:
     needs: [ Setup ]
@@ -156,16 +106,6 @@ jobs:
       - name: PackGithubWorkflowsExtension
         id: PackGithubWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
   
   PackGitVersioningExtension:
     needs: [ Setup ]
@@ -180,16 +120,6 @@ jobs:
       - name: PackGitVersioningExtension
         id: PackGitVersioningExtension
         run: dotnet run --project _atom/_atom.csproj PackGitVersioningExtension --skip --headless
-      
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.GitVersioning
   
   TestAtom:
     needs: [ Setup ]

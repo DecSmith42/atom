@@ -141,6 +141,19 @@ public sealed class GithubWorkflowWriter(
 
             WriteLine("runs-on: ubuntu-latest");
 
+            if (job.MatrixDimensions.Count > 0)
+            {
+                using (WriteSection("strategy:"))
+                using (WriteSection("matrix:"))
+                {
+                    foreach (var dimension in job.MatrixDimensions)
+                        WriteLine(
+                            $"{buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName}: [{string.Join(", ", dimension.Values)}]");
+                }
+
+                WriteLine();
+            }
+
             var outputs = new List<string>();
 
             foreach (var step in job.Steps.OfType<CommandWorkflowStep>())
@@ -160,13 +173,13 @@ public sealed class GithubWorkflowWriter(
                 foreach (var step in job.Steps)
                 {
                     WriteLine();
-                    WriteStep(workflow, step);
+                    WriteStep(workflow, step, job);
                 }
             }
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step)
+    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
     {
         switch (step)
         {
@@ -182,10 +195,24 @@ public sealed class GithubWorkflowWriter(
 
                 WriteLine();
 
-                var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
+                var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
 
-                if (target.ConsumedArtifacts.Count > 0)
+                if (commandStepTarget.ConsumedArtifacts.Count > 0)
                 {
+                    foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)
+                        if (workflow
+                            .Jobs
+                            .SelectMany(x => x.Steps)
+                            .OfType<CommandWorkflowStep>()
+                            .Single(x => x.Name == consumedArtifact.TargetName)
+                            .SuppressArtifactPublishing)
+                            logger.LogWarning(
+                                "Workflow {WorkflowName} command {CommandName} consumes artifact {ArtifactName} from target {SourceTargetName}, which has artifact publishing suppressed; this may cause the workflow to fail",
+                                workflow.Name,
+                                commandStep.Name,
+                                consumedArtifact.ArtifactName,
+                                consumedArtifact.TargetName);
+
                     if (workflow
                         .Options
                         .OfType<UseCustomArtifactProvider>()
@@ -194,14 +221,14 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("atom-artifacts", string.Join(";", target.ConsumedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName)))],
                             false);
 
                         WriteLine();
                     }
                     else
                     {
-                        foreach (var artifact in target.ConsumedArtifacts)
+                        foreach (var artifact in commandStepTarget.ConsumedArtifacts)
                         {
                             using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                             {
@@ -219,9 +246,15 @@ public sealed class GithubWorkflowWriter(
                     }
                 }
 
-                WriteCommandStep(workflow, commandStep, target, [], true);
+                var extraParams = job
+                    .MatrixDimensions
+                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
+                    .Select(name => (name, $"${{{{ matrix.{name} }}}}"))
+                    .ToArray();
 
-                if (target.ProducedArtifacts.Count > 0)
+                WriteCommandStep(workflow, commandStep, commandStepTarget, extraParams, true);
+
+                if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
                     if (workflow
                         .Options
@@ -233,12 +266,12 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("atom-artifacts", string.Join(";", target.ProducedArtifacts.Select(x => x.ArtifactName)))],
+                            [("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName)))],
                             false);
                     }
                     else
                     {
-                        foreach (var artifact in target.ProducedArtifacts)
+                        foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                             {
@@ -339,7 +372,7 @@ public sealed class GithubWorkflowWriter(
                 env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
             }
 
-            if (env.Count > 0)
+            if (env.Count > 0 || extraParams.Length > 0)
                 using (WriteSection("env:"))
                 {
                     foreach (var (key, value) in env)

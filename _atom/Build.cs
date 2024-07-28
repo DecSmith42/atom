@@ -1,4 +1,6 @@
-﻿namespace Atom;
+﻿using Atom.Targets.Sandbox;
+
+namespace Atom;
 
 [BuildDefinition]
 internal partial class Build : BuildDefinition,
@@ -13,7 +15,8 @@ internal partial class Build : BuildDefinition,
     IPackGitVersioningExtension,
     IPushToNuget,
     ITestAtom,
-    IPrepareRelease
+    IPrepareRelease,
+    IRunMatrix
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -22,18 +25,29 @@ internal partial class Build : BuildDefinition,
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
+        new("Sandbox")
+        {
+            Triggers = [Github.Triggers.Manual],
+            StepDefinitions =
+            [
+                Commands.RunMatrix.WithMatrixDimensions([
+                    new(Params.MatrixVal1, ["a", "b", "c"]), new(Params.MatrixVal2, ["1", "2", "3"]),
+                ]),
+            ],
+            WorkflowTypes = [Github.WorkflowType],
+        },
         new("Validate")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.PackAtom,
-                Commands.PackAtomTool,
-                Commands.PackAzureKeyVaultExtension,
-                Commands.PackAzureStorageExtension,
-                Commands.PackDotnetExtension,
-                Commands.PackGithubWorkflowsExtension,
-                Commands.PackGitVersioningExtension,
+                Commands.PackAtom.WithSuppressedArtifactPublishing,
+                Commands.PackAtomTool.WithSuppressedArtifactPublishing,
+                Commands.PackAzureKeyVaultExtension.WithSuppressedArtifactPublishing,
+                Commands.PackAzureStorageExtension.WithSuppressedArtifactPublishing,
+                Commands.PackDotnetExtension.WithSuppressedArtifactPublishing,
+                Commands.PackGithubWorkflowsExtension.WithSuppressedArtifactPublishing,
+                Commands.PackGitVersioningExtension.WithSuppressedArtifactPublishing,
                 Commands.TestAtom,
             ],
             WorkflowTypes = [Github.WorkflowType],

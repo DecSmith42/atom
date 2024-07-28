@@ -1,7 +1,6 @@
 ﻿global using Atom;
 global using Atom.Targets;
 global using Atom.Targets.Build;
-global using DecSm.Atom;
 global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Extensions.AzureKeyVault;
 global using DecSm.Atom.Build.Definition;

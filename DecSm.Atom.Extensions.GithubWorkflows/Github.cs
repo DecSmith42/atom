@@ -71,7 +71,13 @@ public static class Github
 
         public static GithubPushTrigger PushToMain { get; } = new(["main"]);
 
+        public static GithubPushTrigger PushTo(params string[] branches) =>
+            new(branches);
+
         public static GithubPullRequestTrigger PullIntoMain { get; } = new(["main"]);
+
+        public static GithubPullRequestTrigger PullInto(params string[] branches) =>
+            new(branches);
     }
 
     public static class Variables
