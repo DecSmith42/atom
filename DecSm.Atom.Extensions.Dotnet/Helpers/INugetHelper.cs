@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Extensions.Dotnet.Helpers;
 
 [TargetDefinition]
-public partial interface INugetHelper : IProcessHelper, IDotnetVersionHelper
+public partial interface INugetHelper : IProcessHelper, IVersionHelper
 {
     async Task PushProject(string projectName, string feed, string apiKey)
     {
@@ -15,10 +15,9 @@ public partial interface INugetHelper : IProcessHelper, IDotnetVersionHelper
             return;
         }
 
-        var version = GetProjectPackageVersion(FileSystem.SolutionRoot() / projectName / $"{projectName}.csproj");
-        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{version}.nupkg");
+        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{Version.PackageVersion}.nupkg");
 
-        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey!);
+        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
     }
 
     async Task PushPackageToNuget(AbsolutePath packagePath, string feed, string apiKey)

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Extensions.Dotnet.Helpers;
 
 [TargetDefinition]
-public partial interface IDotnetTestHelper : IProcessHelper, IDotnetVersionHelper
+public partial interface IDotnetTestHelper : IProcessHelper
 {
     async Task RunDotnetUnitTests(string projectName)
     {

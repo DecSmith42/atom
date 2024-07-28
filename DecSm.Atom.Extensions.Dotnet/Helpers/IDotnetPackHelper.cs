@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Extensions.Dotnet.Helpers;
 
 [TargetDefinition]
-public partial interface IDotnetPackHelper : IProcessHelper, IDotnetVersionHelper
+public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
 {
     async Task DotnetPackProject(string projectName)
     {
@@ -17,12 +17,10 @@ public partial interface IDotnetPackHelper : IProcessHelper, IDotnetVersionHelpe
             Services.GetRequiredService<IBuildVersionProvider>()
                 .Version);
 
-        var packageVersion = GetProjectPackageVersion(AbsolutePath.FromFileInfo(project));
-
         await RunProcessAsync("dotnet", $"pack {project.FullName}");
 
         // Move package to publish directory
-        var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{projectName}.{packageVersion}.nupkg";
+        var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{projectName}.{Version.PackageVersion}.nupkg";
         var publishDir = FileSystem.PublishDirectory() / projectName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
 
