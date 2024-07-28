@@ -17,10 +17,25 @@ public partial interface IDotnetPackHelper : IProcessHelper, IVersionHelper
             Services.GetRequiredService<IBuildVersionProvider>()
                 .Version);
 
+        var packDirectory = FileSystem.SolutionRoot() / projectName / "bin" / "Release";
+
+        if (FileSystem.Directory.Exists(packDirectory))
+            FileSystem.Directory.Delete(packDirectory, true);
+
         await RunProcessAsync("dotnet", $"pack {project.FullName}");
 
+        var packageName = FileSystem
+            .Directory
+            .GetFiles(FileSystem.SolutionRoot() / projectName / "bin" / "Release", $"{projectName}.*.nupkg")
+            .OrderByDescending(x => x)
+            .First();
+
         // Move package to publish directory
-        var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{projectName}.{Version.PackageVersion}.nupkg";
+        var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{packageName}";
+
+        if (!packagePath.FileExists)
+            throw new InvalidOperationException($"Package {packagePath} does not exist.");
+
         var publishDir = FileSystem.PublishDirectory() / projectName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
 
