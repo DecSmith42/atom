@@ -1,5 +1,10 @@
 ﻿namespace DecSm.Atom.Build;
 
+internal interface IBuildExecutor
+{
+    Task Execute();
+}
+
 internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,

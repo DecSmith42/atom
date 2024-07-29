@@ -1,5 +1,10 @@
 ﻿namespace DecSm.Atom.Cheatsheet;
 
+public interface ICheatsheetService
+{
+    public void ShowCheatsheet();
+}
+
 internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition buildDefinition, BuildModel buildModel) : ICheatsheetService
 {
     public void ShowCheatsheet()

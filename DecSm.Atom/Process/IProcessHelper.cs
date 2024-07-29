@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Process;
 
+[PublicAPI]
 [TargetDefinition]
 public interface IProcessHelper : IBuildDefinition
 {

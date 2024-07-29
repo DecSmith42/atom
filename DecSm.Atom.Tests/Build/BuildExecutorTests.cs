@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Reports;
-
-namespace DecSm.Atom.Tests.Build;
+﻿namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class BuildExecutorTests
