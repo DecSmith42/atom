@@ -1,17 +1,22 @@
 ﻿namespace DecSm.Atom.Cheatsheet;
 
+public interface ICheatsheetService
+{
+    public void ShowCheatsheet();
+}
+
 internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition buildDefinition, BuildModel buildModel) : ICheatsheetService
 {
     public void ShowCheatsheet()
     {
         console.WriteLine();
-        console.Write(new Markup("[bold]Usage:[/]\n"));
+        console.Write(new Markup("[bold]Usage[/]\n"));
         console.WriteLine();
         console.Write(new Markup("atom [teal][[options]][/]\n"));
         console.Write(new Markup("atom [blue][[command/s]][/] [fuchsia][[parameters]][/] [teal][[options]][/]\n"));
         console.WriteLine();
 
-        console.Write(new Markup("[bold]Options:[/]\n"));
+        console.Write(new Markup("[bold]Options[/]\n"));
         console.WriteLine();
 
         console.Write(new Markup("  [dim]-h,  --help[/]      [dim]Show help[/]\n"));
@@ -20,7 +25,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
         console.Write(new Markup("  [dim]-hl, --headless[/]  [dim]Run in headless mode[/]\n"));
         console.WriteLine();
 
-        console.Write(new Markup("[bold]Commands:[/]\n"));
+        console.Write(new Markup("[bold]Commands[/]\n"));
         console.WriteLine();
 
         foreach (var target in buildModel.Targets)
@@ -39,7 +44,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         if (dependencies.Count > 0)
         {
-            var depTree = tree.AddNode("[dim bold yellow]Depends on:[/]");
+            var depTree = tree.AddNode("[dim bold yellow]Depends on[/]");
 
             foreach (var dependency in dependencies)
                 depTree.AddNode($"[dim]{dependency.Name}[/]");
@@ -66,7 +71,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         if (requiredParams.Count > 0)
         {
-            var reqTree = tree.AddNode("[dim bold red]Required parameters:[/]");
+            var reqTree = tree.AddNode("[dim bold red]Requires[/]");
 
             foreach (var requiredParam in requiredParams)
                 reqTree.AddNode($"--{requiredParam.Attribute.ArgName} [dim][[{requiredParam.Attribute.Description}]][/]");
@@ -74,7 +79,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         if (optionalParams.Count > 0)
         {
-            var optTree = tree.AddNode("[dim bold green]Optional parameters:[/]");
+            var optTree = tree.AddNode("[dim bold green]Options[/]");
 
             foreach (var optionalParam in optionalParams)
                 optTree.AddNode($"--{optionalParam.Attribute.ArgName} [dim][[Default: {optionalParam.Attribute.DefaultValue}]][/]");
@@ -82,7 +87,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         if (secrets.Count > 0)
         {
-            var secTree = tree.AddNode("[dim bold purple]Secrets:[/]");
+            var secTree = tree.AddNode("[dim bold purple]Secrets[/]");
 
             foreach (var secret in secrets)
                 secTree.AddNode($"--{secret.Attribute.ArgName}");

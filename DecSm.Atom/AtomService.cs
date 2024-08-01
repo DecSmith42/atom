@@ -26,13 +26,9 @@ internal sealed class AtomService(
                 cheatsheetService.ShowCheatsheet();
 
             if (args.HasGen || !args.HasHeadless)
-            {
                 await workflowGenerator.GenerateWorkflows();
-            }
             else if (await workflowGenerator.WorkflowsDirty())
-            {
                 throw new InvalidOperationException("One or more workflows are dirty. Run 'atom -g' to regenerate them");
-            }
 
             await executor.Execute();
 

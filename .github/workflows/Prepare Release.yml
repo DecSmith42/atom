@@ -1,0 +1,44 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease-tag:
+        description: Optional prerelease tag
+        required: False
+        type: string
+        options:
+          - alpha
+          - beta
+          - rc
+
+jobs:
+  
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+  
+  PrepareRelease:
+    needs: [ Setup ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PrepareRelease
+        id: PrepareRelease
+        run: dotnet run --project _atom/_atom.csproj PrepareRelease --skip --headless

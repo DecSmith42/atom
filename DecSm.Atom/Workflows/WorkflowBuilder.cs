@@ -28,13 +28,17 @@ internal static class WorkflowBuilder
 
         var definedTargetJobs = definedSteps
             .OfType<CommandWorkflowStep>()
-            .Select(step => new WorkflowJobModel(step.Name, [step]))
+            .Select(step => new WorkflowJobModel(step.Name, [step])
+            {
+                MatrixDimensions = step.MatrixDimensions,
+            })
             .ToList();
 
         var commandJobMap = definedTargetJobs.ToDictionary(job => job.Name);
 
         foreach (var targetName in buildModel.Targets.Select(x => x.Name))
             if (!commandJobMap.ContainsKey(targetName))
+
                 commandJobMap[targetName] = new(targetName, [new CommandWorkflowStep(targetName)]);
 
         foreach (var jobName in commandJobMap.Keys)

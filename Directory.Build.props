@@ -2,9 +2,5 @@
     <PropertyGroup>
         <Product>Atom</Product>
         <Authors>Declan Smith</Authors>
-
-        <VersionPrefix>1.0.0</VersionPrefix>
-        <VersionSuffix>alpha.8</VersionSuffix>
-        <InformationalVersion>$(PackageVersion)</InformationalVersion>
     </PropertyGroup>
 </Project>

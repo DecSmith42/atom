@@ -29,4 +29,7 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup
         Services
             .GetRequiredService<IReportService>()
             .AddReportData(reportData);
+
+    public static void RegisterTargets(IServiceCollection services) =>
+        throw new InvalidOperationException("RegisterTargets must be implemented in a derived class.");
 }

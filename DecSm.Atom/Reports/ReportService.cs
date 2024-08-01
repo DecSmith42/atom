@@ -1,5 +1,12 @@
 ﻿namespace DecSm.Atom.Reports;
 
+public interface IReportService
+{
+    void AddReportData(IReportData reportData, string? targetName = null);
+
+    List<IReportData> GetReportData();
+}
+
 internal sealed class ReportService : IReportService
 {
     private readonly Dictionary<string, List<IReportData>> _reportData = [];

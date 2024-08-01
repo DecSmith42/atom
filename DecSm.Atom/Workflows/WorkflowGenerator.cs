@@ -1,5 +1,12 @@
 ﻿namespace DecSm.Atom.Workflows;
 
+internal interface IWorkflowGenerator
+{
+    Task GenerateWorkflows();
+
+    Task<bool> WorkflowsDirty();
+}
+
 internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
     BuildModel buildModel,

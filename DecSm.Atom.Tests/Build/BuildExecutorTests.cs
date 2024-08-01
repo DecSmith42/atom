@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Reports;
-
-namespace DecSm.Atom.Tests.Build;
+﻿namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class BuildExecutorTests
@@ -11,6 +9,7 @@ public class BuildExecutorTests
     private Mock<IWorkflowVariableService> _workflowVariableService;
     private IReadOnlyList<Mock<IOutcomeReporter>> _outcomeReporters; 
     private TestConsole _console;
+    private Mock<IReportService> _reportService;
     private Mock<ILogger<BuildExecutor>> _logger;
 
     [SetUp]
@@ -28,6 +27,7 @@ public class BuildExecutorTests
         _workflowVariableService = new();
         _outcomeReporters = [];
         _console = new();
+        _reportService = new();
         _logger = new();
     }
 
@@ -45,6 +45,7 @@ public class BuildExecutorTests
             _workflowVariableService.Object,
             _outcomeReporters.Select(x => x.Object),
             _console,
+            _reportService.Object,
             _logger.Object);
 
         // Act
@@ -107,6 +108,7 @@ public class BuildExecutorTests
             _workflowVariableService.Object,
             _outcomeReporters.Select(x => x.Object),
             _console,
+            _reportService.Object,
             _logger.Object);
 
         // Act

@@ -80,11 +80,27 @@ public static class FileSystemExtensions
         return _repoRoot = new(fileSystem, topmostGitDirectory);
     }
 
+    public static AbsolutePath? ProjectFilePath(this IFileSystem fileSystem, string projectName, bool deepSearch = false)
+    {
+        var projectPath = !deepSearch
+            ? fileSystem.SolutionRoot() / projectName / $"{projectName}.csproj"
+            : fileSystem
+                .Directory
+                .GetFiles(fileSystem.SolutionRoot(), $"{projectName}.csproj")
+                .FirstOrDefault();
+
+        return projectPath is not null
+            ? new(fileSystem, projectPath)
+            : null;
+    }
+
+    // TODO: Delegate vendor-specific paths to the respective extension packages
     public static AbsolutePath ArtifactDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
             ? fileSystem.RepoRoot() / ".github" / "artifacts"
             : fileSystem.SolutionRoot() / "atom-publish";
 
+    // TODO: Delegate vendor-specific paths to the respective extension packages
     public static AbsolutePath PublishDirectory(this IFileSystem fileSystem) =>
         Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null
             ? fileSystem.RepoRoot() / ".github" / "publish"
@@ -92,6 +108,9 @@ public static class FileSystemExtensions
 
     public static AbsolutePath TempDirectory(this IFileSystem fileSystem) =>
         new(fileSystem, fileSystem.Path.GetTempPath());
+
+    public static AbsolutePath CurrentDir(this IFileSystem fileSystem) =>
+        new(fileSystem, fileSystem.Directory.GetCurrentDirectory());
 
     public static void Copy(this IDirectory directory, AbsolutePath source, AbsolutePath destination)
     {

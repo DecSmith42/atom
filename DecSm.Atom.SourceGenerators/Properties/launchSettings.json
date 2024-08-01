@@ -1,9 +1,13 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "DebugRoslynSourceGenerator": {
+    "DebugSourceGen - _atom": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../DecSm.Atom.Gen.Sample/DecSm.Atom.Gen.Sample.csproj"
+      "targetProject": "../_atom/_atom.csproj"
+    },
+    "DebugSourceGen - Process": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "../DecSm.Atom.Extensions.Process/DecSm.Atom.Extensions.Process.csproj"
     }
   }
 }
