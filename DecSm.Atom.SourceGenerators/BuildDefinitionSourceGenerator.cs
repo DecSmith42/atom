@@ -250,14 +250,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Where(x => x.AllInterfaces.Any(i => i.Name == "IBuildDefinition"))
             .Select(x => x);
 
-        var registerTargetsMethodBody = string.Join("\n",
+        var registerTargetsMethodBody = string.Join("\n\n",
             registerTargets.Select(x => x
                 .GetMembers("DecSm.Atom.Build.Definition.IBuildDefinition.Register")
                 .Any()
                 ? $"""
                            services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());
-                           IBuildDefinition.RegisterTarget<{x}>(services);
-
+                           BuildDefinition.RegisterTarget<{x}>(services);
                    """
                 : $"        services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());"));
 

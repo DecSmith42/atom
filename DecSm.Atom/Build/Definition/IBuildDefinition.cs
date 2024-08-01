@@ -29,8 +29,4 @@ public interface IBuildDefinition
 
     static virtual void Register(IServiceCollection services) =>
         throw new InvalidOperationException("Register must be implemented in a derived type.");
-
-    public static void RegisterTarget<T>(IServiceCollection services)
-        where T : IBuildDefinition =>
-        Register(services);
 }
