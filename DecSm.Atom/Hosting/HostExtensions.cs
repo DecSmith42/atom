@@ -12,7 +12,17 @@ public static class HostExtensions
 
         T.RegisterTargets(builder.Services);
 
-        builder.Services.TryAddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
+        builder.Services.AddAccessedSingleton<IParamService, ParamService>();
+        builder.Services.AddAccessedSingleton<IReportService, ReportService>();
+
+        builder.Services.AddSingleton<IFileSystem, FileSystem>();
+        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
+        builder.Services.AddSingleton<IBuildExecutor, BuildExecutor>();
+        builder.Services.AddSingleton<IWorkflowGenerator, WorkflowGenerator>();
+        builder.Services.AddSingleton<IProcessRunner, ProcessRunner>();
+        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
+        builder.Services.AddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
+
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
@@ -33,16 +43,6 @@ public static class HostExtensions
                     .ToArray(),
                 !commandLineArgs.HasSkip);
         });
-
-        builder.Services.AddSingleton<IFileSystem, FileSystem>();
-        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
-        builder.Services.AddSingleton<IBuildExecutor, BuildExecutor>();
-        builder.Services.AddSingleton<IWorkflowGenerator, WorkflowGenerator>();
-        builder.Services.AddSingleton<IProcessRunner, ProcessRunner>();
-        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
-
-        builder.Services.AddAccessedSingleton<IParamService, ParamService>();
-        builder.Services.AddAccessedSingleton<IReportService, ReportService>();
 
         builder.Logging.ClearProviders();
 
