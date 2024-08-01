@@ -8,5 +8,6 @@ internal partial interface ITestAtom : IDotnetTestHelper
     Target TestAtom =>
         d => d
             .WithDescription("Runs all unit tests")
+            .ProducesArtifact(AtomUnitTestsProjectName)
             .Executes(() => RunDotnetUnitTests(AtomUnitTestsProjectName));
 }

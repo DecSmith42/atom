@@ -6,20 +6,20 @@ public interface ISetup : IBuildDefinition
     [ParamDefinition("atom-build-id", "Unique build ID")]
     string AtomBuildId => GetParam(() => AtomBuildId)!;
 
-    IBuildIdProvider BuildIdProvider => Services.GetRequiredService<IBuildIdProvider>();
+    IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
+
+    IFileSystem FileSystem => GetService<IFileSystem>();
 
     Target Setup =>
         d => d
             .ProducesVariable(nameof(AtomBuildId))
-            .Executes(() =>
+            .Executes(async () =>
             {
                 var buildId = BuildIdProvider.BuildId;
 
-                WriteVariable(nameof(AtomBuildId), buildId.ToString());
+                await WriteVariable(nameof(AtomBuildId), buildId);
 
-                var solutionName = Services
-                    .GetRequiredService<IFileSystem>()
-                    .SolutionName();
+                var solutionName = FileSystem.SolutionName();
 
                 AddReportData(new TextReportData($"{solutionName} | {buildId}")
                 {
@@ -30,7 +30,5 @@ public interface ISetup : IBuildDefinition
                 Services
                     .GetRequiredService<ILogger<ISetup>>()
                     .LogInformation("Build ID: {BuildId}", buildId);
-
-                return Task.CompletedTask;
             });
 }

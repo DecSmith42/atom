@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Args;
 
+[PublicAPI]
 public sealed record CommandLineArgs(IArg[] Args)
 {
     public bool HasHelp => Args.Any(arg => arg is HelpArg);

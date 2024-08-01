@@ -84,8 +84,8 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                          [PublicAPI]
                          partial interface {{interfaceName}} : IBuildDefinition
                          {
-                             private ILogger<{{interfaceName}}> Logger => Services.GetRequiredService<ILogger<{{interfaceName}}>>();
-                             private System.IO.Abstractions.IFileSystem FileSystem => Services.GetRequiredService<System.IO.Abstractions.IFileSystem>();
+                             private ILogger<{{interfaceName}}> Logger => GetService<ILogger<{{interfaceName}}>>();
+                             private System.IO.Abstractions.IFileSystem FileSystem => GetService<System.IO.Abstractions.IFileSystem>();
                          }
 
                          """;

@@ -19,4 +19,11 @@ public interface IBuildDefinition
     Task WriteVariable(string name, string value);
 
     void AddReportData(IReportData reportData);
+
+    T GetService<T>()
+        where T : notnull =>
+        Services.GetRequiredService<T>();
+
+    static virtual void RegisterTargets(IServiceCollection services) =>
+        throw new InvalidOperationException("RegisterTargets must be implemented in a derived class.");
 }

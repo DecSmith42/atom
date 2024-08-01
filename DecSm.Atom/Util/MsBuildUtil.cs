@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Util;
+﻿using System.Xml;
+
+namespace DecSm.Atom.Util;
 
 public static class MsBuildUtil
 {
@@ -232,6 +234,65 @@ public static class MsBuildUtil
             throw new InvalidOperationException("Revision version must be a number");
 
         return new(new(major, minor, patch), revision);
+    }
+
+    public static void SetVersionInfo(AbsolutePath project, VersionInfo version)
+    {
+        var xmlDocument = new XmlDocument();
+        xmlDocument.Load(project);
+
+        var propertyGroup = xmlDocument.SelectSingleNode("/Project/PropertyGroup");
+
+        if (propertyGroup == null)
+        {
+            propertyGroup = xmlDocument.CreateElement("PropertyGroup");
+            xmlDocument.DocumentElement!.AppendChild(propertyGroup);
+        }
+
+        var versionPrefixElement = propertyGroup.SelectSingleNode("Version");
+
+        if (versionPrefixElement == null)
+        {
+            versionPrefixElement = xmlDocument.CreateElement("VersionPrefix");
+            propertyGroup.AppendChild(versionPrefixElement);
+        }
+
+        versionPrefixElement.InnerText = version.Version.Prefix.ToString();
+
+        if (version.Version.Suffix is not null)
+        {
+            var versionSuffixElement = propertyGroup.SelectSingleNode("VersionSuffix");
+
+            if (versionSuffixElement == null)
+            {
+                versionSuffixElement = xmlDocument.CreateElement("VersionSuffix");
+                propertyGroup.AppendChild(versionSuffixElement);
+            }
+
+            versionSuffixElement.InnerText = version.Version.Suffix.ToString();
+        }
+
+        var packageVersionElement = propertyGroup.SelectSingleNode("PackageVersion");
+
+        if (packageVersionElement == null)
+        {
+            packageVersionElement = xmlDocument.CreateElement("PackageVersion");
+            propertyGroup.AppendChild(packageVersionElement);
+        }
+
+        packageVersionElement.InnerText = version.PackageVersion.ToString();
+
+        var informationalVersionElement = propertyGroup.SelectSingleNode("InformationalVersion");
+
+        if (informationalVersionElement == null)
+        {
+            informationalVersionElement = xmlDocument.CreateElement("InformationalVersion");
+            propertyGroup.AppendChild(informationalVersionElement);
+        }
+
+        informationalVersionElement.InnerText = version.InformationalVersion.ToString();
+
+        xmlDocument.Save(project);
     }
 }
 

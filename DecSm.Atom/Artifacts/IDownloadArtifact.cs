@@ -6,7 +6,7 @@ public interface IDownloadArtifact : IArtifactHelper
     Target DownloadArtifact =>
         targetDefinition =>
         {
-            var artifactProvider = Services.GetRequiredService<IArtifactProvider>();
+            var artifactProvider = GetService<IArtifactProvider>();
 
             targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
 

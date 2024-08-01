@@ -1,5 +1,10 @@
 ﻿namespace DecSm.Atom.Build;
 
+internal interface IBuildExecutor
+{
+    Task Execute();
+}
+
 internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
@@ -7,6 +12,7 @@ internal sealed class BuildExecutor(
     IWorkflowVariableService variableService,
     IEnumerable<IOutcomeReporter> outcomeReporters,
     IAnsiConsole console,
+    IReportService reportService,
     ILogger<BuildExecutor> logger
 ) : IBuildExecutor
 {
@@ -109,44 +115,54 @@ internal sealed class BuildExecutor(
                    ["Command"] = target.Name,
                }))
         {
+            if (args.HasHeadless)
+            {
+                console.WriteLine($"##[group]{target.Name}");
+            }
+            else
+            {
+                console.Write(new Markup($"[underline]{target.Name}[/]"));
+                console.WriteLine();
+                console.WriteLine();
+            }
+
+            if (target.Description is { Length: > 0 })
+            {
+                console.WriteLine($"Description: {target.Description}");
+                console.WriteLine();
+            }
+
             try
             {
-                if (args.HasHeadless)
-                {
-                    console.WriteLine($"##[group]{target.Name}");
-                }
-                else
-                {
-                    console.Write(new Markup($"[underline]{target.Name}[/]"));
-                    console.WriteLine();
-                    console.WriteLine();
-                }
-
-                if (target.Description is { Length: > 0 })
-                {
-                    console.WriteLine($"Description: {target.Description}");
-                    console.WriteLine();
-                }
-
                 foreach (var task in target.Tasks)
                     await task();
 
                 buildModel.TargetStates[target].Status = TargetRunState.Succeeded;
+            }
+            catch (StepFailedException failedCheckException)
+            {
+                logger.LogInformation(failedCheckException, "A check failed for target {TargetDefinitionName}", target.Name);
+                buildModel.TargetStates[target].Status = TargetRunState.Failed;
+
+                reportService.AddReportData(new TextReportData(failedCheckException.Message)
+                {
+                    Title = $"Check failed in {target.Name}",
+                });
+
+                if (failedCheckException.ReportData is not null)
+                    reportService.AddReportData(failedCheckException.ReportData);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while executing target {TargetDefinitionName}", target.Name);
                 buildModel.TargetStates[target].Status = TargetRunState.Failed;
             }
-            finally
-            {
-                buildModel.TargetStates[target].RunDuration =
-                    TimeSpan.FromSeconds((Stopwatch.GetTimestamp() - startTime) / (double)Stopwatch.Frequency);
 
-                if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") is not null ||
-                    Environment.GetEnvironmentVariable("AZURE_PIPELINES") is not null)
-                    console.WriteLine("##[endgroup]");
-            }
+            buildModel.TargetStates[target].RunDuration =
+                TimeSpan.FromSeconds((Stopwatch.GetTimestamp() - startTime) / (double)Stopwatch.Frequency);
+
+            if (args.HasHeadless)
+                console.WriteLine("##[endgroup]");
         }
     }
 }
