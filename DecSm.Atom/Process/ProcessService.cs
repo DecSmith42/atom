@@ -144,7 +144,7 @@ internal sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRun
 
         if (options.AllowFailedResult)
         {
-            logger.LogError("Process {Name} {Args} failed with exit code {ExitCode}", options.Name, options.Args, result.ExitCode);
+            logger.LogError("Process {Name} {Args} finished with exit code {ExitCode}", options.Name, options.Args, result.ExitCode);
 
             return result;
         }
