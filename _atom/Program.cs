@@ -19,9 +19,9 @@ internal partial class Build : BuildDefinition,
     IPackDotnetExtension,
     IPackGithubWorkflowsExtension,
     IPackGitVersionExtension,
+    IPackAtomSourceGenerators,
     IPushToNuget,
-    ITestAtom,
-    IRunMatrix
+    ITestAtom
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -30,17 +30,6 @@ internal partial class Build : BuildDefinition,
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
-        new("Sandbox")
-        {
-            Triggers = [Github.Triggers.Manual],
-            StepDefinitions =
-            [
-                Commands.RunMatrix.WithMatrixDimensions([
-                    new(Params.MatrixVal1, ["a", "b", "c"]), new(Params.MatrixVal2, ["1", "2", "3"]),
-                ]),
-            ],
-            WorkflowTypes = [Github.WorkflowType],
-        },
         new("Validate")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
@@ -53,6 +42,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetExtension.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsExtension.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionExtension.WithSuppressedArtifactPublishing,
+                Commands.PackAtomSourceGenerators.WithSuppressedArtifactPublishing,
                 Commands.TestAtom,
             ],
             WorkflowTypes = [Github.WorkflowType],
@@ -69,6 +59,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetExtension,
                 Commands.PackGithubWorkflowsExtension,
                 Commands.PackGitVersionExtension,
+                Commands.PackAtomSourceGenerators,
                 Commands.TestAtom,
                 Commands.PushToNuget,
             ],

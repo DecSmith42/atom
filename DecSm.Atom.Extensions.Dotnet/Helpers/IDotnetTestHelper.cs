@@ -62,7 +62,10 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
                 $"-targetdir:{coverageResultsPublishDirectory}",
                 "-reporttypes:HtmlInline;JsonSummary",
                 "-sourcedirs:" + FileSystem.SolutionRoot(),
-            ]));
+            ])
+            {
+                AllowFailedResult = true,
+            });
 
         GenerateCoverageReport(projectName, coverageResultsPublishDirectory / "Summary.json");
 
