@@ -7,7 +7,7 @@ internal partial interface IPackAtomTool : IDotnetPackHelper
 
     Target PackAtomTool =>
         d => d
-            .WithDescription("Builds the Atom.Tool project into a nuget package")
+            .WithDescription("Builds the DecSm.Atom.Tool project into a nuget package")
             .ProducesArtifact(AtomToolProjectName)
             .Executes(() => DotnetPackProject(AtomToolProjectName));
 }
