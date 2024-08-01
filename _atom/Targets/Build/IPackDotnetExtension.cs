@@ -9,5 +9,5 @@ internal partial interface IPackDotnetExtension : IDotnetPackHelper
         d => d
             .WithDescription("Builds the Dotnet extension project into a nuget package")
             .ProducesArtifact(DotnetExtensionProjectName)
-            .Executes(() => DotnetPackProject(DotnetExtensionProjectName));
+            .Executes(() => DotnetPackProject(new(DotnetExtensionProjectName)));
 }

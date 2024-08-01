@@ -41,8 +41,8 @@ public class ReportLogger(IExternalScopeProvider? scopeProvider) : ILogger
             return;
 
         // If the message contains any secrets, we don't want to log it
-        message = ParamServiceAccessor.Service?.MaskSecrets(message) ?? message;
+        message = ServiceAccessor<IParamService>.Service?.MaskSecrets(message) ?? message;
 
-        ReportServiceAccessor.Service?.AddReportData(new LogReportData(message, exception, logLevel, time), command);
+        ServiceAccessor<IReportService>.Service?.AddReportData(new LogReportData(message, exception, logLevel, time), command);
     }
 }

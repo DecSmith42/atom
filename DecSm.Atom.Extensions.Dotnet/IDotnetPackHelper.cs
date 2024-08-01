@@ -1,23 +1,25 @@
-﻿namespace DecSm.Atom.Extensions.Dotnet.Helpers;
+﻿namespace DecSm.Atom.Extensions.Dotnet;
 
 [TargetDefinition]
 public partial interface IDotnetPackHelper : IVersionHelper
 {
-    async Task DotnetPackProject(string projectName)
+    async Task DotnetPackProject(DotnetPackOptions options)
     {
-        Logger.LogInformation("Packing Atom project {AtomProjectName}", projectName);
+        Logger.LogInformation("Packing Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.SolutionRoot() / projectName / $"{projectName}.csproj");
+        var project = FileSystem.FileInfo.New(FileSystem.SolutionRoot() / options.ProjectName / $"{options.ProjectName}.csproj");
         var projectPath = new AbsolutePath(FileSystem, project.FullName);
 
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
 
-        MsBuildUtil.SetVersionInfo(projectPath,
-            GetService<IBuildVersionProvider>()
-                .Version);
+        await using var setVersionScope = options.AutoSetVersion
+            ? TransformProjectVersionScope.Create(projectPath,
+                GetService<IBuildVersionProvider>()
+                    .Version)
+            : null;
 
-        var packDirectory = FileSystem.SolutionRoot() / projectName / "bin" / "Release";
+        var packDirectory = FileSystem.SolutionRoot() / options.ProjectName / "bin" / options.Configuration;
 
         if (FileSystem.Directory.Exists(packDirectory))
             FileSystem.Directory.Delete(packDirectory, true);
@@ -27,17 +29,17 @@ public partial interface IDotnetPackHelper : IVersionHelper
 
         var packageName = FileSystem
             .Directory
-            .GetFiles(FileSystem.SolutionRoot() / projectName / "bin" / "Release", $"{projectName}.*.nupkg")
+            .GetFiles(FileSystem.SolutionRoot() / options.ProjectName / "bin" / options.Configuration, $"{options.ProjectName}.*.nupkg")
             .OrderByDescending(x => x)
             .First();
 
         // Move package to publish directory
-        var packagePath = FileSystem.SolutionRoot() / projectName / "bin" / "Release" / $"{packageName}";
+        var packagePath = FileSystem.SolutionRoot() / options.ProjectName / "bin" / options.Configuration / $"{packageName}";
 
         if (!packagePath.FileExists)
             throw new InvalidOperationException($"Package {packagePath} does not exist.");
 
-        var publishDir = FileSystem.PublishDirectory() / projectName;
+        var publishDir = FileSystem.PublishDirectory() / options.ProjectName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
 
         if (FileSystem.Directory.Exists(publishDir))
@@ -53,6 +55,6 @@ public partial interface IDotnetPackHelper : IVersionHelper
 
         FileSystem.File.Move(packagePath, publishDir / packagePath.FileName!);
 
-        Logger.LogInformation("Packed Atom project {AtomProjectName}", projectName);
+        Logger.LogInformation("Packed Atom project {AtomProjectName}", options.ProjectName);
     }
 }

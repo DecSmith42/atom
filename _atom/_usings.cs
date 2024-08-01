@@ -4,7 +4,7 @@ global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Extensions.AzureKeyVault;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Extensions.AzureStorage;
-global using DecSm.Atom.Extensions.Dotnet.Helpers;
+global using DecSm.Atom.Extensions.Dotnet;
 global using DecSm.Atom.Extensions.GithubWorkflows;
 global using DecSm.Atom.Extensions.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.Extensions.GitVersion;

@@ -128,7 +128,8 @@ internal sealed class BuildExecutor(
 
             if (target.Description is { Length: > 0 })
             {
-                console.WriteLine($"Description: {target.Description}");
+                console.Write(new Markup($"[dim]{target.Description}[/]"));
+                console.WriteLine();
                 console.WriteLine();
             }
 

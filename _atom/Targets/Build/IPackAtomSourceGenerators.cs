@@ -9,5 +9,5 @@ internal partial interface IPackAtomSourceGenerators : IDotnetPackHelper
         d => d
             .WithDescription("Builds the DecSm.Atom.SourceGenerators project into a nuget package")
             .ProducesArtifact(AtomSourceGeneratorsProjectName)
-            .Executes(() => DotnetPackProject(AtomSourceGeneratorsProjectName));
+            .Executes(() => DotnetPackProject(new(AtomSourceGeneratorsProjectName)));
 }

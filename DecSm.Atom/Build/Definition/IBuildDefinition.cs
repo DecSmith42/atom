@@ -25,5 +25,12 @@ public interface IBuildDefinition
         Services.GetRequiredService<T>();
 
     static virtual void RegisterTargets(IServiceCollection services) =>
-        throw new InvalidOperationException("RegisterTargets must be implemented in a derived class.");
+        throw new InvalidOperationException("RegisterTargets must be implemented in a derived type.");
+
+    static virtual void Register(IServiceCollection services) =>
+        throw new InvalidOperationException("Register must be implemented in a derived type.");
+
+    public static void RegisterTarget<T>(IServiceCollection services)
+        where T : IBuildDefinition =>
+        Register(services);
 }

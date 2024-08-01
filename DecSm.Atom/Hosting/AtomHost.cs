@@ -18,4 +18,10 @@ public static class AtomHost
 
         return builder;
     }
+
+    public static void Run<T>(string[] args)
+        where T : BuildDefinition =>
+        CreateAtomBuilder<T>(args)
+            .Build()
+            .Run();
 }

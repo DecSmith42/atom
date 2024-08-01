@@ -1,17 +1,11 @@
-﻿AtomHost
-    .CreateAtomBuilder<Build>(args,
-        atom => atom
-            .AddGithubWorkflows()
-            .AddAzureKeyVault()
-            .AddAzureArtifacts()
-            .AddGitVersion())
-    .Build()
-    .Run();
+﻿AtomHost.Run<Build>(args);
 
 [BuildDefinition]
 internal partial class Build : BuildDefinition,
     IAzureKeyVault,
     IAzureArtifactStorage,
+    IGithubWorkflows,
+    IGitVersion,
     IPackAtom,
     IPackAtomTool,
     IPackAzureKeyVaultExtension,

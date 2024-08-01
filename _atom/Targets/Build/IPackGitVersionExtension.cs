@@ -9,5 +9,5 @@ internal partial interface IPackGitVersionExtension : IDotnetPackHelper
         d => d
             .WithDescription("Builds the GitVersion extension project into a nuget package")
             .ProducesArtifact(GitVersionExtensionProjectName)
-            .Executes(() => DotnetPackProject(GitVersionExtensionProjectName));
+            .Executes(() => DotnetPackProject(new(GitVersionExtensionProjectName)));
 }
