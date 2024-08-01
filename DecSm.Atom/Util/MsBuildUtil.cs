@@ -236,63 +236,51 @@ public static class MsBuildUtil
         return new(new(major, minor, patch), revision);
     }
 
-    public static void SetVersionInfo(AbsolutePath project, VersionInfo version)
+    public static string SetVersionInfo(string file, VersionInfo version)
     {
         var xmlDocument = new XmlDocument();
-        xmlDocument.Load(project);
+        xmlDocument.LoadXml(file);
 
-        var propertyGroup = xmlDocument.SelectSingleNode("/Project/PropertyGroup");
+        // First, remove all existing version properties
+        // This is to ensure that we don't have duplicate properties
+        var propertyGroups = xmlDocument.SelectNodes("//PropertyGroup");
 
-        if (propertyGroup == null)
-        {
-            propertyGroup = xmlDocument.CreateElement("PropertyGroup");
-            xmlDocument.DocumentElement!.AppendChild(propertyGroup);
-        }
+        if (propertyGroups is not null)
+            foreach (XmlNode propertyGroup in propertyGroups)
+            foreach (XmlNode property in propertyGroup.ChildNodes)
+                if (property is XmlElement
+                    {
+                        Name: "Version"
+                        or "VersionPrefix"
+                        or "VersionSuffix"
+                        or "PackageVersion"
+                        or "AssemblyVersion"
+                        or "FileVersion"
+                        or "InformationalVersion",
+                    })
+                    propertyGroup.RemoveChild(property);
 
-        var versionPrefixElement = propertyGroup.SelectSingleNode("Version");
+        // Create a new property group and populate it with the version properties
+        var propertyGroupNode = xmlDocument.CreateElement("PropertyGroup", xmlDocument.DocumentElement?.NamespaceURI);
 
-        if (versionPrefixElement == null)
-        {
-            versionPrefixElement = xmlDocument.CreateElement("VersionPrefix");
-            propertyGroup.AppendChild(versionPrefixElement);
-        }
+        AddProperty("VersionPrefix", version.Version.Prefix.ToString(), xmlDocument, propertyGroupNode);
+        AddProperty("VersionSuffix", version.Version.Suffix?.ToString() ?? string.Empty, xmlDocument, propertyGroupNode);
+        AddProperty("Version", version.Version.ToString(), xmlDocument, propertyGroupNode);
+        AddProperty("PackageVersion", version.PackageVersion.ToString(), xmlDocument, propertyGroupNode);
+        AddProperty("AssemblyVersion", version.AssemblyVersion.ToString(), xmlDocument, propertyGroupNode);
+        AddProperty("FileVersion", version.FileVersion.ToString(), xmlDocument, propertyGroupNode);
+        AddProperty("InformationalVersion", version.InformationalVersion.ToString(), xmlDocument, propertyGroupNode);
 
-        versionPrefixElement.InnerText = version.Version.Prefix.ToString();
+        xmlDocument.DocumentElement?.AppendChild(propertyGroupNode);
 
-        if (version.Version.Suffix is not null)
-        {
-            var versionSuffixElement = propertyGroup.SelectSingleNode("VersionSuffix");
+        return xmlDocument.OuterXml;
+    }
 
-            if (versionSuffixElement == null)
-            {
-                versionSuffixElement = xmlDocument.CreateElement("VersionSuffix");
-                propertyGroup.AppendChild(versionSuffixElement);
-            }
-
-            versionSuffixElement.InnerText = version.Version.Suffix.ToString();
-        }
-
-        var packageVersionElement = propertyGroup.SelectSingleNode("PackageVersion");
-
-        if (packageVersionElement == null)
-        {
-            packageVersionElement = xmlDocument.CreateElement("PackageVersion");
-            propertyGroup.AppendChild(packageVersionElement);
-        }
-
-        packageVersionElement.InnerText = version.PackageVersion.ToString();
-
-        var informationalVersionElement = propertyGroup.SelectSingleNode("InformationalVersion");
-
-        if (informationalVersionElement == null)
-        {
-            informationalVersionElement = xmlDocument.CreateElement("InformationalVersion");
-            propertyGroup.AppendChild(informationalVersionElement);
-        }
-
-        informationalVersionElement.InnerText = version.InformationalVersion.ToString();
-
-        xmlDocument.Save(project);
+    private static void AddProperty(string name, string value, XmlDocument xmlDocument, XmlElement propertyGroupNode)
+    {
+        var propertyNode = xmlDocument.CreateElement(name, xmlDocument.DocumentElement?.NamespaceURI);
+        propertyNode.InnerText = value;
+        propertyGroupNode.AppendChild(propertyNode);
     }
 }
 

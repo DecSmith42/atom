@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Extensions.Dotnet.Helpers;
+﻿namespace DecSm.Atom.Extensions.Dotnet;
 
 [TargetDefinition]
 public partial interface IDotnetTestHelper : IDotnetToolHelper

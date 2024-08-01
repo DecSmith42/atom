@@ -250,8 +250,15 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Where(x => x.AllInterfaces.Any(i => i.Name == "IBuildDefinition"))
             .Select(x => x);
 
-        var registerTargetsMethodBody = string.Join("\n",
-            registerTargets.Select(x => $"        services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());"));
+        var registerTargetsMethodBody = string.Join("\n\n",
+            registerTargets.Select(x => x
+                .GetMembers("DecSm.Atom.Build.Definition.IBuildDefinition.Register")
+                .Any()
+                ? $"""
+                           services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());
+                           BuildDefinition.RegisterTarget<{x}>(services);
+                   """
+                : $"        services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());"));
 
         // Build up the source code
         var code = $$"""
@@ -315,10 +322,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {{string.Join("\n\n", secretParamsPropertiesBodies)}}
                          }
                          
-                         new public static void RegisterTargets(IServiceCollection services)
+                         static void IBuildDefinition.RegisterTargets(IServiceCollection services)
                          {
                      {{registerTargetsMethodBody}}
                          }
+                         
+                         static void IBuildDefinition.Register(IServiceCollection services) =>
+                                throw new InvalidOperationException("This method should not be called directly. Use (inherits:IBuildDefinition).RegisterTargets instead.");
                      }
 
                      """;

@@ -9,5 +9,5 @@ internal partial interface IPackGithubWorkflowsExtension : IDotnetPackHelper
         d => d
             .WithDescription("Builds the GithubWorkflows extension project into a nuget package")
             .ProducesArtifact(AtomGithubWorkflowsExtensionProjectName)
-            .Executes(() => DotnetPackProject(AtomGithubWorkflowsExtensionProjectName));
+            .Executes(() => DotnetPackProject(new(AtomGithubWorkflowsExtensionProjectName)));
 }

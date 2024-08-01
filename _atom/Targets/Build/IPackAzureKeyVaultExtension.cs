@@ -9,5 +9,5 @@ internal partial interface IPackAzureKeyVaultExtension : IDotnetPackHelper
         d => d
             .WithDescription("Builds the AzureKeyVault extension project into a nuget package")
             .ProducesArtifact(AzureKeyVaultExtensionProjectName)
-            .Executes(() => DotnetPackProject(AzureKeyVaultExtensionProjectName));
+            .Executes(() => DotnetPackProject(new(AzureKeyVaultExtensionProjectName)));
 }

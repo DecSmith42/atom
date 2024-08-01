@@ -8,4 +8,7 @@ public partial interface IAzureArtifactStorage : IUploadArtifact, IDownloadArtif
 
     [ParamDefinition("azurestorage-artifact-container", "Azure storage container")]
     string AzureArtifactStorageContainer => GetParam(() => AzureArtifactStorageContainer)!;
+
+    static void IBuildDefinition.Register(IServiceCollection services) =>
+        services.AddSingleton<IArtifactProvider, AzureBlobArtifactProvider>();
 }

@@ -32,4 +32,8 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup
 
     public static void RegisterTargets(IServiceCollection services) =>
         throw new InvalidOperationException("RegisterTargets must be implemented in a derived class.");
+
+    protected static void RegisterTarget<T>(IServiceCollection services)
+        where T : IBuildDefinition =>
+        T.Register(services);
 }

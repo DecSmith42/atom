@@ -9,5 +9,5 @@ internal partial interface IPackAtom : IDotnetPackHelper
         d => d
             .WithDescription("Builds the Atom project into a nuget package")
             .ProducesArtifact(AtomProjectName)
-            .Executes(() => DotnetPackProject(AtomProjectName));
+            .Executes(() => DotnetPackProject(new(AtomProjectName)));
 }

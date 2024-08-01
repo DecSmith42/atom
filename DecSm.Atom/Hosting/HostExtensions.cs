@@ -8,33 +8,25 @@ public static class HostExtensions
         var configurator = new AtomConfiguration(builder);
         builder.Services.AddHostedService<AtomService>();
 
-        builder.Services.AddSingleton<IAtomConfiguration>(configurator);
-
         builder.Services.AddSingleton<IBuildDefinition, T>();
 
         T.RegisterTargets(builder.Services);
 
+        builder.Services.AddAccessedSingleton<IParamService, ParamService>();
+        builder.Services.AddAccessedSingleton<IReportService, ReportService>();
+
+        builder.Services.AddSingleton<IFileSystem, FileSystem>();
+        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
         builder.Services.AddSingleton<IBuildExecutor, BuildExecutor>();
         builder.Services.AddSingleton<IWorkflowGenerator, WorkflowGenerator>();
+        builder.Services.AddSingleton<IProcessRunner, ProcessRunner>();
+        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
+        builder.Services.AddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
 
-        builder.Services.AddSingleton<ParamService>();
-
-        builder.Services.AddSingleton<IParamService>(services =>
-            ParamServiceAccessor.Service = services.GetRequiredService<ParamService>());
-
-        builder.Services.AddSingleton<ReportService>();
-
-        builder.Services.AddSingleton<IReportService>(services =>
-            ReportServiceAccessor.Service = services.GetRequiredService<ReportService>());
-
-        builder.Services.TryAddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
-
-        builder.Services.TryAddSingleton<IProcessRunner, ProcessRunner>();
-
-        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
+        builder.Services.TryAddSingleton<ICheatsheetService, CheatsheetService>();
 
         builder.Services.AddSingleton<CommandLineArgs>(services =>
             CommandLineArgsParser.Parse(args, services.GetRequiredService<IBuildDefinition>()));
@@ -51,10 +43,6 @@ public static class HostExtensions
                     .ToArray(),
                 !commandLineArgs.HasSkip);
         });
-
-        builder.Services.AddSingleton<IFileSystem, FileSystem>();
-        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
-        builder.Services.TryAddSingleton<ICheatsheetService, CheatsheetService>();
 
         builder.Logging.ClearProviders();
 
