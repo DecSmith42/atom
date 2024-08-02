@@ -4,9 +4,7 @@
 public partial interface INugetHelper : IVersionHelper
 {
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
-    string NugetDryRun => GetParam(() => NugetDryRun) ?? "false";
-
-    bool IsNugetDryRun => bool.TryParse(NugetDryRun, out var result) && result;
+    bool NugetDryRun => GetParam(() => NugetDryRun);
 
     async Task PushProject(string projectName, string feed, string apiKey)
     {
@@ -29,7 +27,7 @@ public partial interface INugetHelper : IVersionHelper
     {
         Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
 
-        if (IsNugetDryRun)
+        if (NugetDryRun)
         {
             Logger.LogInformation("Dry run: skipping nuget push \"{PackagePath}\" --soure {Feed} --api-key ***", packagePath, feed);
 

@@ -8,13 +8,11 @@ public interface IBuildDefinition
 
     IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; }
 
-    IReadOnlyDictionary<string, Func<string?>> ParamAccessors { get; }
-
     IServiceProvider Services { get; }
 
     IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [];
 
-    string? GetParam(Expression<Func<string?>> parameterExpression);
+    T? GetParam<T>(Expression<Func<T?>> parameterExpression, Func<string?, T?>? converter = null);
 
     Task WriteVariable(string name, string value);
 
@@ -22,11 +20,9 @@ public interface IBuildDefinition
 
     T GetService<T>()
         where T : notnull =>
-        Services.GetRequiredService<T>();
+        typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+            ? (T)this
+            : Services.GetRequiredService<T>();
 
-    static virtual void RegisterTargets(IServiceCollection services) =>
-        throw new InvalidOperationException("RegisterTargets must be implemented in a derived type.");
-
-    static virtual void Register(IServiceCollection services) =>
-        throw new InvalidOperationException("Register must be implemented in a derived type.");
+    static virtual void Register(IServiceCollection services) { }
 }

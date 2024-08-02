@@ -17,4 +17,11 @@
         </PackageReference>
         <PackageReference Include="TestableIO.System.IO.Abstractions.Extensions" Version="2.2.5"/>
     </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false"/>
+        <None Include="..\DecSm.Atom.SourceGenerators\bin\$(Configuration)\netstandard2.0\DecSm.Atom.SourceGenerators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+    </ItemGroup>
 </Project>

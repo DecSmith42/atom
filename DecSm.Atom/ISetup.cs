@@ -1,14 +1,12 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public interface ISetup : IBuildDefinition
+public partial interface ISetup
 {
     [ParamDefinition("atom-build-id", "Unique build ID")]
     string AtomBuildId => GetParam(() => AtomBuildId)!;
 
     IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
-
-    IFileSystem FileSystem => GetService<IFileSystem>();
 
     Target Setup =>
         d => d

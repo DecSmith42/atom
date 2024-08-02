@@ -142,9 +142,15 @@ internal sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRun
         if (result.ExitCode is 0)
             return result;
 
+        if (options.OutputLogLevel < LogLevel.Information)
+            logger.LogInformation("{Output}", output);
+
+        if (options.ErrorLogLevel < LogLevel.Information)
+            logger.LogWarning("{Error}", error);
+
         if (options.AllowFailedResult)
         {
-            logger.LogError("Process {Name} {Args} finished with exit code {ExitCode}", options.Name, options.Args, result.ExitCode);
+            logger.Log(options.InvocationLogLevel, "Process finished with exit code {ExitCode}", result.ExitCode);
 
             return result;
         }

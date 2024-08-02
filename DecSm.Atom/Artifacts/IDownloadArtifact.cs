@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 [TargetDefinition]
-public interface IDownloadArtifact : IArtifactHelper
+public partial interface IDownloadArtifact : IArtifactHelper
 {
     Target DownloadArtifact =>
         targetDefinition =>
