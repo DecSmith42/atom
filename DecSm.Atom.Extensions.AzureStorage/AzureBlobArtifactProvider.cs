@@ -26,11 +26,11 @@ public sealed class AzureBlobArtifactProvider(
 
         foreach (var artifactName in artifactNames)
         {
-            var publishDir = matrixSlice is { Length: > 0 }
-                ? fileSystem.PublishDirectory() / artifactName / matrixSlice
-                : fileSystem.PublishDirectory() / artifactName;
+            var publishDir = fileSystem.PublishDirectory() / artifactName;
 
-            var artifactBlobDir = $"{solutionName}/{buildId}/{artifactName}";
+            var artifactBlobDir = matrixSlice is { Length: > 0 }
+                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
+                : $"{solutionName}/{buildId}/{artifactName}";
 
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
@@ -69,17 +69,19 @@ public sealed class AzureBlobArtifactProvider(
 
         foreach (var artifactName in artifactNames)
         {
-            var artifactDir = matrixSlice is { Length: > 0 }
-                ? fileSystem.ArtifactDirectory() / artifactName / matrixSlice
-                : fileSystem.ArtifactDirectory() / artifactName;
+            var artifactDir = fileSystem.ArtifactDirectory() / artifactName;
 
             if (artifactDir.DirectoryExists)
                 fileSystem.Directory.Delete(artifactDir, true);
 
             fileSystem.Directory.CreateDirectory(artifactDir);
 
+            var artifactBlobDir = matrixSlice is { Length: > 0 }
+                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
+                : $"{solutionName}/{buildId}/{artifactName}";
+
             var blobs = containerClient
-                .GetBlobsByHierarchy(prefix: $"{solutionName}/{buildId}/{artifactName}/")
+                .GetBlobsByHierarchy(prefix: artifactBlobDir)
                 .ToArray();
 
             foreach (var blob in blobs)
