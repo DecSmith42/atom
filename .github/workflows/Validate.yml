@@ -134,7 +134,7 @@ jobs:
     strategy:
       matrix:
         github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.github-runs-on }}
     
     steps:
       

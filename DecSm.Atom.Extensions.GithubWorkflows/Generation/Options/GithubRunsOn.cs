@@ -10,5 +10,5 @@ public sealed record GithubRunsOn(string[] Labels) : IWorkflowOption
 
     public static GithubRunsOn MacOsLatest { get; } = new(["macos-latest"]);
 
-    public static GithubRunsOn MatrixDefined { get; } = new(["${{ matrix.runs-on }}"]);
+    public static GithubRunsOn MatrixDefined { get; } = new(["${{ matrix.github-runs-on }}"]);
 }
