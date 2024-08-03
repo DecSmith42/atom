@@ -8,6 +8,6 @@ internal partial interface ITestAtom : IDotnetTestHelper
     Target TestAtom =>
         d => d
             .WithDescription("Runs the DecSm.Atom.Tests unit tests project")
-            .ProducesArtifact(AtomUnitTestsProjectName)
+            .ProducesArtifact($"{AtomUnitTestsProjectName}-{MatrixParam(Params.GithubRunsOn)}")
             .Executes(() => RunDotnetUnitTests(AtomUnitTestsProjectName));
 }

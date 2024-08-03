@@ -139,20 +139,36 @@ public sealed class GithubWorkflowWriter(
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
             }
 
-            WriteLine("runs-on: ubuntu-latest");
-
             if (job.MatrixDimensions.Count > 0)
-            {
                 using (WriteSection("strategy:"))
                 using (WriteSection("matrix:"))
                 {
                     foreach (var dimension in job.MatrixDimensions)
                         WriteLine(
-                            $"{buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName}: [{string.Join(", ", dimension.Values)}]");
+                            $"{buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName}: [ {string.Join(", ", dimension.Values)} ]");
                 }
 
-                WriteLine();
-            }
+            var githubPlatformOption = job
+                                           .Options
+                                           .Concat(workflow.Options)
+                                           .OfType<GithubRunsOn>()
+                                           .FirstOrDefault() ??
+                                       GithubRunsOn.UbuntuLatest;
+
+            var labelsDisplay = githubPlatformOption.Labels.Length is 1
+                ? githubPlatformOption.Labels[0]
+                : $"[ {string.Join(", ", githubPlatformOption.Labels)} ]";
+
+            if (githubPlatformOption.Group is { Length: > 0 })
+                using (WriteSection("runs-on:"))
+                {
+                    WriteLine($"group: {githubPlatformOption.Group}");
+                    WriteLine($"labels: {labelsDisplay}");
+                }
+            else
+                WriteLine($"runs-on: {labelsDisplay}");
+
+            WriteLine();
 
             var outputs = new List<string>();
 
@@ -246,13 +262,14 @@ public sealed class GithubWorkflowWriter(
                     }
                 }
 
-                var extraParams = job
+                var extraParamsFromMatrix = job
                     .MatrixDimensions
+                    .Where(x => x.Name is not nameof(IGithubWorkflows.GithubRunsOn))
                     .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
                     .Select(name => (name, $"${{{{ matrix.{name} }}}}"))
                     .ToArray();
 
-                WriteCommandStep(workflow, commandStep, commandStepTarget, extraParams, true);
+                WriteCommandStep(workflow, commandStep, commandStepTarget, extraParamsFromMatrix, true);
 
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {

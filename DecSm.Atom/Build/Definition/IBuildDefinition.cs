@@ -25,4 +25,8 @@ public interface IBuildDefinition
             : Services.GetRequiredService<T>();
 
     static virtual void Register(IServiceCollection services) { }
+
+    // TODO: Need a vendor-agnostic solution
+    string MatrixParam(string paramName) =>
+        $"${{{{ matrix.{ParamDefinitions[paramName].Attribute.ArgName} }}}}";
 }
