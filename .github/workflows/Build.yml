@@ -10,6 +10,7 @@ jobs:
   
   Setup:
     runs-on: ubuntu-latest
+    
     outputs:
       atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
     steps:
@@ -26,6 +27,7 @@ jobs:
   PackAtom:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -46,10 +48,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom
+          matrix-slice: 
   
   PackAtomTool:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -70,10 +74,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Tool
+          matrix-slice: 
   
   PackAzureKeyVaultExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -94,10 +100,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
+          matrix-slice: 
   
   PackAzureStorageExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -118,10 +126,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Extensions.AzureStorage
+          matrix-slice: 
   
   PackDotnetExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -142,10 +152,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Extensions.Dotnet
+          matrix-slice: 
   
   PackGithubWorkflowsExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -166,10 +178,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
+          matrix-slice: 
   
   PackGitVersionExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout
@@ -190,10 +204,15 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Extensions.GitVersion
+          matrix-slice: 
   
   TestAtom:
     needs: [ Setup ]
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.github-runs-on }}
+    
     steps:
       
       - name: Checkout
@@ -204,6 +223,9 @@ jobs:
       - name: TestAtom
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+        env:
+          github-runs-on: ${{ matrix.github-runs-on }}
+          matrix-slice: ${{ matrix.github-runs-on }}
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -214,10 +236,12 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           atom-artifacts: DecSm.Atom.Tests
+          matrix-slice: ${{ matrix.github-runs-on }}
   
   PushToNuget:
     needs: [ Setup, PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
     runs-on: ubuntu-latest
+    
     steps:
       
       - name: Checkout

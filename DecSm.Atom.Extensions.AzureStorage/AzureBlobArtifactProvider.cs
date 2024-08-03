@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Reports;
-
-namespace DecSm.Atom.Extensions.AzureStorage;
+﻿namespace DecSm.Atom.Extensions.AzureStorage;
 
 public sealed class AzureBlobArtifactProvider(
     IParamService paramService,
@@ -22,10 +20,17 @@ public sealed class AzureBlobArtifactProvider(
         var solutionName = fileSystem.SolutionName();
         var containerClient = new BlobContainerClient(connectionString, container);
 
+        var invalidPathChars = Path.GetInvalidPathChars();
+        var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
+        var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+
         foreach (var artifactName in artifactNames)
         {
             var publishDir = fileSystem.PublishDirectory() / artifactName;
-            var artifactBlobDir = $"{solutionName}/{buildId}/{artifactName}";
+
+            var artifactBlobDir = matrixSlice is { Length: > 0 }
+                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
+                : $"{solutionName}/{buildId}/{artifactName}";
 
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
@@ -46,8 +51,7 @@ public sealed class AzureBlobArtifactProvider(
             }
 
             // Add report data for the artifact - name and url
-            reportService.AddReportData(new ArtifactReportData($"{artifactName} - {buildId}",
-                $"{containerClient.Uri}/{artifactBlobDir}"));
+            reportService.AddReportData(new ArtifactReportData($"{artifactName} - {buildId}", $"{containerClient.Uri}/{artifactBlobDir}"));
         }
     }
 
@@ -59,6 +63,10 @@ public sealed class AzureBlobArtifactProvider(
         var solutionName = fileSystem.SolutionName();
         var containerClient = new BlobContainerClient(connectionString, container);
 
+        var invalidPathChars = Path.GetInvalidPathChars();
+        var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
+        var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+
         foreach (var artifactName in artifactNames)
         {
             var artifactDir = fileSystem.ArtifactDirectory() / artifactName;
@@ -68,8 +76,12 @@ public sealed class AzureBlobArtifactProvider(
 
             fileSystem.Directory.CreateDirectory(artifactDir);
 
+            var artifactBlobDir = matrixSlice is { Length: > 0 }
+                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
+                : $"{solutionName}/{buildId}/{artifactName}";
+
             var blobs = containerClient
-                .GetBlobsByHierarchy(prefix: $"{solutionName}/{buildId}/{artifactName}/")
+                .GetBlobsByHierarchy(prefix: artifactBlobDir)
                 .ToArray();
 
             foreach (var blob in blobs)

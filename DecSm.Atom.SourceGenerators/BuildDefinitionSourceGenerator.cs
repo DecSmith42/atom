@@ -149,7 +149,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Select(propertySymbol => new InterfaceWithProperty(interfaceSymbol, propertySymbol)))
             .ToArray();
 
-        var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(p => p.Property.Type.Name is Target));
+        var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
 
         var interfacesWithParams = interfacesWithProperties
             .Where(static p => p

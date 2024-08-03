@@ -5,4 +5,6 @@ public sealed record WorkflowJobModel(string Name, IReadOnlyList<IWorkflowStepMo
     public List<string> JobDependencies { get; } = [];
 
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
+
+    public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
 }

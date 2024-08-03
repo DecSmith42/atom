@@ -31,6 +31,7 @@ internal static class WorkflowBuilder
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
                 MatrixDimensions = step.MatrixDimensions,
+                Options = step.Options,
             })
             .ToList();
 
@@ -38,7 +39,6 @@ internal static class WorkflowBuilder
 
         foreach (var targetName in buildModel.Targets.Select(x => x.Name))
             if (!commandJobMap.ContainsKey(targetName))
-
                 commandJobMap[targetName] = new(targetName, [new CommandWorkflowStep(targetName)]);
 
         foreach (var jobName in commandJobMap.Keys)

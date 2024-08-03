@@ -5,6 +5,8 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
 {
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
 
+    public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
+
     public bool SuppressArtifactPublishing { get; init; }
 
     public IWorkflowStepModel CreateStep(IBuildDefinition buildDefinition) =>
@@ -12,6 +14,7 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
         {
             MatrixDimensions = MatrixDimensions,
             SuppressArtifactPublishing = SuppressArtifactPublishing,
+            Options = Options,
         };
 
     public CommandDefinition WithMatrixDimensions(params MatrixDimension[] dimensions) =>
@@ -20,9 +23,31 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
             MatrixDimensions = dimensions,
         };
 
+    public CommandDefinition WithAddedMatrixDimensions(params MatrixDimension[] dimensions) =>
+        this with
+        {
+            MatrixDimensions = MatrixDimensions
+                .Concat(dimensions)
+                .ToList(),
+        };
+
     public CommandDefinition WithSuppressedArtifactPublishing =>
         this with
         {
             SuppressArtifactPublishing = true,
+        };
+
+    public CommandDefinition WithOptions(params IWorkflowOption[] options) =>
+        this with
+        {
+            Options = options,
+        };
+
+    public CommandDefinition WithAddedOptions(params IWorkflowOption[] options) =>
+        this with
+        {
+            Options = Options
+                .Concat(options)
+                .ToList(),
         };
 }

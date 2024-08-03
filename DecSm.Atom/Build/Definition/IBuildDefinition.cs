@@ -2,6 +2,9 @@
 
 public interface IBuildDefinition
 {
+    [ParamDefinition("matrix-slice", "Unique identifier for the combination of matrix parameters for this job")]
+    string MatrixSlice => GetParam(() => MatrixSlice)!;
+
     IReadOnlyList<WorkflowDefinition> Workflows => [];
 
     IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
