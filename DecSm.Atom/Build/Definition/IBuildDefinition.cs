@@ -2,6 +2,9 @@
 
 public interface IBuildDefinition
 {
+    [ParamDefinition("matrix-slice", "Unique identifier for the combination of matrix parameters for this job")]
+    string MatrixSlice => GetParam(() => MatrixSlice)!;
+
     IReadOnlyList<WorkflowDefinition> Workflows => [];
 
     IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
@@ -25,8 +28,4 @@ public interface IBuildDefinition
             : Services.GetRequiredService<T>();
 
     static virtual void Register(IServiceCollection services) { }
-
-    // TODO: Need a vendor-agnostic solution
-    string MatrixParam(string paramName) =>
-        $"${{{{ matrix.{ParamDefinitions[paramName].Attribute.ArgName} }}}}";
 }

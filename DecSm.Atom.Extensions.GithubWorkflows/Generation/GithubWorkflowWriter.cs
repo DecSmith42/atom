@@ -262,14 +262,20 @@ public sealed class GithubWorkflowWriter(
                     }
                 }
 
-                var extraParamsFromMatrix = job
+                var matrixParams = job
                     .MatrixDimensions
-                    .Where(x => x.Name is not nameof(IGithubWorkflows.GithubRunsOn))
                     .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
-                    .Select(name => (name, $"${{{{ matrix.{name} }}}}"))
+                    .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
                     .ToArray();
 
-                WriteCommandStep(workflow, commandStep, commandStepTarget, extraParamsFromMatrix, true);
+                var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+
+                if (matrixSlice.Value.Length > 0)
+                    matrixParams = matrixParams
+                        .Append(matrixSlice)
+                        .ToArray();
+
+                WriteCommandStep(workflow, commandStep, commandStepTarget, matrixParams, true);
 
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
@@ -283,7 +289,10 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
-                            [("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName)))],
+                            [
+                                ("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
+                                matrixSlice,
+                            ],
                             false);
                     }
                     else
