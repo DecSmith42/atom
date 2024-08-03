@@ -16,7 +16,9 @@ public partial interface IDotnetToolHelper
                     InvocationLogLevel = LogLevel.Debug,
                 });
 
-        if (!forceReinstall)
+        if (!forceReinstall &&
+            !GetService<CommandLineArgs>()
+                .HasHeadless)
         {
             var globalListResult = GetService<IProcessRunner>()
                 .Run(new("dotnet", $"tool list {toolName} {globalFlag}")
@@ -64,7 +66,9 @@ public partial interface IDotnetToolHelper
                     InvocationLogLevel = LogLevel.Debug,
                 });
 
-        if (!forceReinstall)
+        if (!forceReinstall &&
+            !GetService<CommandLineArgs>()
+                .HasHeadless)
         {
             var globalListResult = await GetService<IProcessRunner>()
                 .RunAsync(new("dotnet", $"tool list {toolName} {globalFlag}")
