@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 [TargetDefinition]
-public interface IUploadArtifact : IArtifactHelper
+public partial interface IUploadArtifact : IArtifactHelper
 {
     Target UploadArtifact =>
         targetDefinition =>

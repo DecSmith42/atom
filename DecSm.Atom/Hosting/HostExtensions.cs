@@ -10,7 +10,7 @@ public static class HostExtensions
 
         builder.Services.AddSingleton<IBuildDefinition, T>();
 
-        T.RegisterTargets(builder.Services);
+        T.Register(builder.Services);
 
         builder.Services.AddAccessedSingleton<IParamService, ParamService>();
         builder.Services.AddAccessedSingleton<IReportService, ReportService>();

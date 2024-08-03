@@ -1,6 +1,7 @@
-﻿AtomHost.Run<Build>(args);
+﻿namespace Atom;
 
 [BuildDefinition]
+[GenerateEntryPoint]
 internal partial class Build : BuildDefinition,
     IAzureKeyVault,
     IAzureArtifactStorage,
@@ -13,7 +14,6 @@ internal partial class Build : BuildDefinition,
     IPackDotnetExtension,
     IPackGithubWorkflowsExtension,
     IPackGitVersionExtension,
-    IPackAtomSourceGenerators,
     IPushToNuget,
     ITestAtom
 {
@@ -36,7 +36,6 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetExtension.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsExtension.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionExtension.WithSuppressedArtifactPublishing,
-                Commands.PackAtomSourceGenerators.WithSuppressedArtifactPublishing,
                 Commands.TestAtom,
             ],
             WorkflowTypes = [Github.WorkflowType],
@@ -53,7 +52,6 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetExtension,
                 Commands.PackGithubWorkflowsExtension,
                 Commands.PackGitVersionExtension,
-                Commands.PackAtomSourceGenerators,
                 Commands.TestAtom,
                 Commands.PushToNuget,
             ],

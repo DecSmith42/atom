@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 [TargetDefinition]
-public interface IArtifactHelper : IBuildDefinition
+public partial interface IArtifactHelper
 {
     [ParamDefinition("atom-artifacts", "The name of the artifact/s to work with. Use ';' to separate multiple artifacts.")]
     string AtomArtifacts => GetParam(() => AtomArtifacts)!;

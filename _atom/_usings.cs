@@ -8,7 +8,5 @@ global using DecSm.Atom.Extensions.Dotnet;
 global using DecSm.Atom.Extensions.GithubWorkflows;
 global using DecSm.Atom.Extensions.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.Extensions.GitVersion;
-global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Workflows.Definition;
-global using static Build;

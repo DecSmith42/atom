@@ -2,7 +2,9 @@
 
 public interface IParamService
 {
-    string? GetParam(Expression<Func<string?>> paramExpression);
+    // string? GetParam(Expression<Func<string?>> paramExpression);
+
+    string? GetParam<T>(Expression<Func<T?>> paramExpression);
 
     string? GetParam(string paramName);
 
@@ -23,7 +25,7 @@ internal sealed class ParamService(
     public string MaskSecrets(string text) =>
         _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
 
-    public string? GetParam(Expression<Func<string?>> paramExpression)
+    public string? GetParam<T>(Expression<Func<T?>> paramExpression)
     {
         var paramName = paramExpression switch
         {

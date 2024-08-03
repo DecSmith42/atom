@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Build;
 
 [TargetDefinition]
-public interface IVersionHelper : IBuildDefinition
+public partial interface IVersionHelper
 {
     VersionInfo Version =>
         GetService<IBuildVersionProvider>()
