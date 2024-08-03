@@ -35,7 +35,7 @@ public sealed class AzureBlobArtifactProvider(
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
             foreach (var file in files)
-                logger.LogInformation("Uploading file {File}", file);
+                logger.LogDebug("Uploading file {File}", file);
 
             if (files.Length == 0)
                 throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
@@ -76,16 +76,17 @@ public sealed class AzureBlobArtifactProvider(
 
             fileSystem.Directory.CreateDirectory(artifactDir);
 
+            // Includes path separator at the end to prevent matching other directories with the same start of the name
             var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
-                : $"{solutionName}/{buildId}/{artifactName}";
+                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}/"
+                : $"{solutionName}/{buildId}/{artifactName}/";
 
             var blobs = containerClient
                 .GetBlobsByHierarchy(prefix: artifactBlobDir)
                 .ToArray();
 
             foreach (var blob in blobs)
-                logger.LogInformation("Downloading blob {Blob}", blob.Blob.Name);
+                logger.LogDebug("Downloading blob {Blob}", blob.Blob.Name);
 
             if (blobs.Length == 0)
                 throw new InvalidOperationException(
@@ -99,7 +100,7 @@ public sealed class AzureBlobArtifactProvider(
                 var blobName = blobItem.Blob.Name;
 
                 if (blobName.StartsWith($"{solutionName}/{buildId}/{artifactName}/"))
-                    blobName = blobName.Substring($"{solutionName}/{buildId}/{artifactName}/".Length);
+                    blobName = blobName[$"{solutionName}/{buildId}/{artifactName}/".Length..];
                 else
                     throw new InvalidOperationException($"Blob name {blobName} does not start with {solutionName}/{buildId}");
 
