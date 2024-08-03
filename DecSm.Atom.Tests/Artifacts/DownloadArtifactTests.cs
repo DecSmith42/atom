@@ -16,7 +16,7 @@ public class DownloadArtifactTests
             .Returns(new[] { "param1", "param2" });
 
         artifactProvider
-            .Setup(x => x.DownloadArtifacts(It.Is<string[]>(s => s.SequenceEqual(artifactNames))))
+            .Setup(x => x.DownloadArtifacts(It.Is<string[]>(s => s.SequenceEqual(artifactNames)), It.IsAny<string?>()))
             .Returns(Task.CompletedTask)
             .Verifiable(Times.Once);
 

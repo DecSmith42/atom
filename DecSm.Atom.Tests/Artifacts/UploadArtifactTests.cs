@@ -16,7 +16,7 @@ public class UploadArtifactTests
             .Returns(new[] { "param1", "param2" });
 
         artifactProvider
-            .Setup(x => x.UploadArtifacts(It.Is<string[]>(s => s.SequenceEqual(artifactNames))))
+            .Setup(x => x.UploadArtifacts(It.Is<string[]>(s => s.SequenceEqual(artifactNames)), It.IsAny<string?>()))
             .Returns(Task.CompletedTask)
             .Verifiable(Times.Once);
 
