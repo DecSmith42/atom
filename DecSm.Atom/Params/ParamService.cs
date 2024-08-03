@@ -25,21 +25,6 @@ internal sealed class ParamService(
     public string MaskSecrets(string text) =>
         _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
 
-    // public string? GetParam(Expression<Func<string?>> paramExpression)
-    // {
-    //     var paramName = paramExpression switch
-    //     {
-    //         LambdaExpression lambdaExpression => lambdaExpression.Body switch
-    //         {
-    //             MemberExpression memberExpression => memberExpression.Member.Name,
-    //             _ => throw new ArgumentException("Invalid expression type."),
-    //         },
-    //         _ => throw new ArgumentException("Invalid expression type."),
-    //     };
-    //
-    //     return GetParam(paramName);
-    // }
-
     public string? GetParam<T>(Expression<Func<T?>> paramExpression)
     {
         var paramName = paramExpression switch

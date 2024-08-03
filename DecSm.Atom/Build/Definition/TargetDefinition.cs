@@ -110,17 +110,16 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition DependsOn<T>()
+    public TargetDefinition DependsOn(string commandName)
     {
-        var targets = typeof(T)
-            .GetProperties()
-            .Where(x => x.PropertyType == typeof(Target))
-            .ToList();
+        Dependencies.Add(commandName);
 
-        if (targets.Count != 1)
-            throw new InvalidOperationException($"Type '{typeof(T).Name}' must have exactly one property of type 'Target'.");
+        return this;
+    }
 
-        Dependencies.Add(targets[0].Name);
+    public TargetDefinition DependsOn(CommandDefinition command)
+    {
+        Dependencies.Add(command.Name);
 
         return this;
     }
@@ -141,15 +140,16 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ConsumesArtifact<T>(string artifactName)
-        where T : IBuildDefinition
+    public TargetDefinition ConsumesArtifact(string commandName, string artifactName)
     {
-        var name = typeof(T).Name;
+        ConsumedArtifacts.Add(new(commandName, artifactName));
 
-        if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
-            name = name[1..];
+        return this;
+    }
 
-        ConsumedArtifacts.Add(new(name, artifactName));
+    public TargetDefinition ConsumesArtifact(CommandDefinition command, string artifactName)
+    {
+        ConsumedArtifacts.Add(new(command.Name, artifactName));
 
         return this;
     }
@@ -161,15 +161,16 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ConsumesVariable<T>(string outputName)
-        where T : IBuildDefinition
+    public TargetDefinition ConsumesVariable(string commandName, string outputName)
     {
-        var name = typeof(T).Name;
+        ConsumedVariables.Add(new(commandName, outputName));
 
-        if (name.Length > 1 && name.StartsWith('I') && char.IsUpper(name[1]))
-            name = name[1..];
+        return this;
+    }
 
-        ConsumedVariables.Add(new(name, outputName));
+    public TargetDefinition ConsumesVariable(CommandDefinition command, string outputName)
+    {
+        ConsumedVariables.Add(new(command.Name, outputName));
 
         return this;
     }

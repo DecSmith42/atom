@@ -12,15 +12,15 @@ internal partial interface IPushToNuget : INugetHelper
     Target PushToNuget =>
         d => d
             .WithDescription("Pushes the Atom projects to Nuget")
-            .ConsumesArtifact<IPackAtom>(IPackAtom.AtomProjectName)
-            .ConsumesArtifact<IPackAtomTool>(IPackAtomTool.AtomToolProjectName)
-            .ConsumesArtifact<IPackAzureKeyVaultExtension>(IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName)
-            .ConsumesArtifact<IPackAzureStorageExtension>(IPackAzureStorageExtension.AzureStorageExtensionProjectName)
-            .ConsumesArtifact<IPackDotnetExtension>(IPackDotnetExtension.DotnetExtensionProjectName)
-            .ConsumesArtifact<IPackGithubWorkflowsExtension>(IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName)
-            .ConsumesArtifact<IPackGitVersionExtension>(IPackGitVersionExtension.GitVersionExtensionProjectName)
+            .ConsumesArtifact(Commands.PackAtom, IPackAtom.AtomProjectName)
+            .ConsumesArtifact(Commands.PackAtomTool, IPackAtomTool.AtomToolProjectName)
+            .ConsumesArtifact(Commands.PackAzureKeyVaultExtension, IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName)
+            .ConsumesArtifact(Commands.PackAzureStorageExtension, IPackAzureStorageExtension.AzureStorageExtensionProjectName)
+            .ConsumesArtifact(Commands.PackDotnetExtension, IPackDotnetExtension.DotnetExtensionProjectName)
+            .ConsumesArtifact(Commands.PackGithubWorkflowsExtension, IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName)
+            .ConsumesArtifact(Commands.PackGitVersionExtension, IPackGitVersionExtension.GitVersionExtensionProjectName)
             .RequiresParam(Params.NugetFeed)
-            .RequiresParam(Secrets.NugetApiKey)
+            .RequiresParam(Params.NugetApiKey)
             .Executes(async () =>
             {
                 await PushProject(IPackAtom.AtomProjectName, NugetFeed, NugetApiKey);

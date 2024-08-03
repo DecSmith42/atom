@@ -3,95 +3,95 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax Declaration, bool HasAttribute);
 
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
 public class TargetDefinitionSourceGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
+    // ReSharper disable InconsistentNaming
+
+    private const string TargetDefinitionAttributeFull = "DecSm.Atom.Build.Definition.TargetDefinitionAttribute";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string GetService = "GetService";
+
+    // ReSharper restore InconsistentNaming
+
+    public void Initialize(IncrementalGeneratorInitializationContext context) =>
+        context.RegisterSourceOutput(context.CompilationProvider.Combine(context
+                .SyntaxProvider
+                .CreateSyntaxProvider(static (syntaxNode, unknown) => syntaxNode is InterfaceDeclarationSyntax,
+                    static (context, _) => GetInterfaceDeclaration(context))
+                .Where(static declarationResult => declarationResult.HasAttribute)
+                .Select(static (declarationResult, _) => declarationResult.Declaration)
+                .Collect()),
+            GenerateCode);
+
+    private static DeclarationResult GetInterfaceDeclaration(GeneratorSyntaxContext context)
     {
-        // Filter classes annotated with the [TargetDefinition] attribute. Only filtered Syntax Nodes can trigger code generation.
-        var provider = context
-            .SyntaxProvider
-            .CreateSyntaxProvider((s, _) => s is InterfaceDeclarationSyntax, (ctx, _) => GetInterfaceDeclarationForSourceGen(ctx))
-            .Where(t => t.reportAttributeFound)
-            .Select((t, _) => t.Item1);
+        var interfaceDeclarationSyntax = (InterfaceDeclarationSyntax)context.Node;
 
-        // Generate the source code.
-        context.RegisterSourceOutput(context.CompilationProvider.Combine(provider.Collect()),
-            (ctx, t) => GenerateCode(ctx, t.Left, t.Right));
-    }
-
-    private static (InterfaceDeclarationSyntax, bool reportAttributeFound) GetInterfaceDeclarationForSourceGen(
-        GeneratorSyntaxContext context)
-    {
-        var classDeclarationSyntax = (InterfaceDeclarationSyntax)context.Node;
-
-        // Go through all attributes of the class.
-        foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
+        foreach (var attributeListSyntax in interfaceDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
         {
-            if (context.SemanticModel.GetSymbolInfo(attributeSyntax)
-                    .Symbol is not IMethodSymbol attributeSymbol)
-                continue; // if we can't get the symbol, ignore it
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+
+            if (symbolInfo.Symbol is not IMethodSymbol attributeSymbol)
+                continue;
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            // Check the full name of the [Report] attribute.
-            if (attributeName == "DecSm.Atom.Build.Definition.TargetDefinitionAttribute")
-                return (classDeclarationSyntax, true);
+            if (attributeName == TargetDefinitionAttributeFull)
+                return (interfaceDeclarationSyntax, true);
         }
 
-        return (classDeclarationSyntax, false);
+        return (interfaceDeclarationSyntax, false);
     }
 
-    private void GenerateCode(
+    private static void GenerateCode(
         SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<InterfaceDeclarationSyntax> classDeclarations)
+        (Compilation Compilation, ImmutableArray<InterfaceDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
     {
-        // Go through all filtered class declarations.
-        foreach (var classDeclarationSyntax in classDeclarations)
-        {
-            // We need to get semantic model of the class to retrieve metadata.
-            var semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
+        foreach (var interfaceDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
+            if (compilationWithClassDeclarations
+                    .Compilation
+                    .GetSemanticModel(interfaceDeclarationSyntax.SyntaxTree)
+                    .GetDeclaredSymbol(interfaceDeclarationSyntax) is INamedTypeSymbol classSymbol)
+                GeneratePartial(context, classSymbol, interfaceDeclarationSyntax);
+    }
 
-            // Symbols allow us to get the compile-time information.
-            if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol interfaceSymbol)
-                continue;
+    private static void GeneratePartial(
+        SourceProductionContext context,
+        INamedTypeSymbol interfaceSymbol,
+        InterfaceDeclarationSyntax interfaceDeclarationSyntax)
+    {
+        var @namespace = interfaceSymbol.ContainingNamespace.ToDisplayString();
 
-            var namespaceLine = interfaceSymbol.ContainingNamespace.ToDisplayString() is "<global namespace>"
-                ? string.Empty
-                : $"namespace {interfaceSymbol.ContainingNamespace.ToDisplayString()};";
+        var namespaceLine = @namespace is "<global namespace>"
+            ? string.Empty
+            : $"namespace {@namespace};";
 
-            var interfaceName = classDeclarationSyntax.Identifier.Text;
+        var @interface = interfaceDeclarationSyntax.Identifier.Text;
 
-            // Build up the source code
-            var code = $$"""
-                         // <auto-generated/>
+        // Build up the source code
+        var code = $$"""
+                     // <auto-generated/>
 
-                         using System;
-                         using System.Collections.Generic;
-                         using DecSm.Atom;
-                         using DecSm.Atom.Build.Definition;
-                         using JetBrains.Annotations;
-                         using Microsoft.Extensions.DependencyInjection;
-                         using Microsoft.Extensions.Logging;
+                     #nullable enable
 
-                         {{namespaceLine}}
+                     {{namespaceLine}}
 
-                         [PublicAPI]
-                         partial interface {{interfaceName}} : IBuildDefinition
-                         {
-                             private ILogger<{{interfaceName}}> Logger => GetService<ILogger<{{interfaceName}}>>();
-                             private System.IO.Abstractions.IFileSystem FileSystem => GetService<System.IO.Abstractions.IFileSystem>();
-                         }
+                     [JetBrains.Annotations.PublicAPI]
+                     partial interface {{@interface}} : {{IBuildDefinitionFull}}
+                     {
+                         private Microsoft.Extensions.Logging.ILogger<{{@interface}}> Logger => {{GetService}}<Microsoft.Extensions.Logging.ILogger<{{@interface}}>>();
+                         private System.IO.Abstractions.IFileSystem FileSystem => {{GetService}}<System.IO.Abstractions.IFileSystem>();
+                     }
 
-                         """;
+                     """;
 
-            // Add the source code to the compilation.
-            context.AddSource($"{interfaceName}.g.cs", SourceText.From(code, Encoding.UTF8));
-        }
+        // Add the source code to the compilation.
+        context.AddSource($"{@interface}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }

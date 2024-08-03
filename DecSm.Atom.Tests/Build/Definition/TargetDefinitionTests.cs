@@ -91,7 +91,7 @@ public class TargetDefinitionTests
         var targetDefinition = new TargetDefinition();
 
         // Act
-        targetDefinition.DependsOn<ITestTarget>();
+        targetDefinition.DependsOn(nameof(ITestTarget.TestTarget));
 
         // Assert
         targetDefinition.Dependencies.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
@@ -143,7 +143,7 @@ public class TargetDefinitionTests
         var targetDefinition = new TargetDefinition();
 
         // Act
-        targetDefinition.ConsumesArtifact<ITestTarget>(artifactName);
+        targetDefinition.ConsumesArtifact(nameof(ITestTarget.TestTarget), artifactName);
 
         // Assert
         targetDefinition.ConsumedArtifacts.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
@@ -181,7 +181,7 @@ public class TargetDefinitionTests
         var targetDefinition = new TargetDefinition();
 
         // Act
-        targetDefinition.ConsumesVariable<ITestTarget>(variableName);
+        targetDefinition.ConsumesVariable(nameof(ITestTarget.TestTarget), variableName);
 
         // Assert
         targetDefinition.ConsumedVariables.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),

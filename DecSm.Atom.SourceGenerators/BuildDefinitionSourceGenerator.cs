@@ -1,45 +1,58 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
+using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
 
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        // Filter classes annotated with the BuildDefinition attribute. Only filtered Syntax Nodes can trigger code generation.
-        var provider = context
-            .SyntaxProvider
-            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclarationForSourceGen(ctx))
-            .Where(t => t.reportAttributeFound)
-            .Select((t, _) => t.Item1);
+    // ReSharper disable InconsistentNaming
 
-        // Generate the source code.
-        context.RegisterSourceOutput(context.CompilationProvider.Combine(provider.Collect()),
-            (ctx, t) => GenerateCode(ctx, t.Left, t.Right));
-    }
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private const string Target = "Target";
+    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
+    private const string CommandDefinitionFull = "DecSm.Atom.Workflows.Definition.Command.CommandDefinition";
+    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
+    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
+    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
+    private const string IBuildDefinition = "IBuildDefinition";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string Register = "Register";
+    private const string RegisterTarget = "RegisterTarget";
 
-    private static (ClassDeclarationSyntax, bool reportAttributeFound) GetClassDeclarationForSourceGen(GeneratorSyntaxContext context)
+    // ReSharper restore InconsistentNaming
+
+    public void Initialize(IncrementalGeneratorInitializationContext context) =>
+        context.RegisterSourceOutput(context.CompilationProvider.Combine(context
+                .SyntaxProvider
+                .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is ClassDeclarationSyntax,
+                    static (context, _) => GetClassDeclaration(context))
+                .Where(static declarationResult => declarationResult.HasAttribute)
+                .Select(static (declarationResult, _) => declarationResult.Declaration)
+                .Collect()),
+            GenerateCode);
+
+    private static DeclarationResult GetClassDeclaration(GeneratorSyntaxContext context)
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
-        // Go through all attributes of the class.
         foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
         {
-            if (context.SemanticModel.GetSymbolInfo(attributeSyntax)
-                    .Symbol is not IMethodSymbol attributeSymbol)
-                continue; // if we can't get the symbol, ignore it
+            var symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+
+            if (symbolInfo.Symbol is not IMethodSymbol attributeSymbol)
+                continue;
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            // Check the full name of the BuildDefinition attribute.
-            if (attributeName == "DecSm.Atom.Build.Definition.BuildDefinitionAttribute")
+            if (attributeName == BuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -48,273 +61,195 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private static void GenerateCode(
         SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> classDeclarations)
+        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
     {
-        // Go through all filtered class declarations.
-        foreach (var classDeclarationSyntax in classDeclarations)
-        {
-            // We need to get semantic model of the class to retrieve metadata.
-            var semanticModel = compilation.GetSemanticModel(classDeclarationSyntax.SyntaxTree);
-
-            // Symbols allow us to get the compile-time information.
-            if (semanticModel.GetDeclaredSymbol(classDeclarationSyntax) is not INamedTypeSymbol classSymbol)
-                continue;
-
-            var namespaceLine = classSymbol.ContainingNamespace.ToDisplayString() is "<global namespace>"
-                ? string.Empty
-                : $"namespace {classSymbol.ContainingNamespace.ToDisplayString()};";
-
-            var className = classDeclarationSyntax.Identifier.Text;
-
-            GeneratePartialBuild(context, classSymbol, namespaceLine, className);
-        }
+        foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
+            if (compilationWithClassDeclarations
+                    .Compilation
+                    .GetSemanticModel(classDeclarationSyntax.SyntaxTree)
+                    .GetDeclaredSymbol(classDeclarationSyntax) is INamedTypeSymbol classSymbol)
+                GeneratePartial(context, classSymbol, classDeclarationSyntax);
     }
 
-    private static void GeneratePartialBuild(
-        SourceProductionContext context,
-        INamedTypeSymbol classSymbol,
-        string namespaceLine,
-        string className)
+    private record struct InterfaceWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
+
+    private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
+
+    private static string SimpleName(string fullName) =>
+        fullName
+            .Split('.')
+            .Last();
+
+    private static List<InterfaceWithProperty> DeduplicateTargets(IEnumerable<InterfaceWithProperty> interfacesWithTargets)
     {
-        // Get all defined targets (property that returns Target) in all inherited interfaces
-        var interfaceTargets = classSymbol
-            .AllInterfaces
-            .SelectMany(i => i
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(x => (Interface: i, Property: x)))
-            .Where(p => p.Property.Type.Name == "Target")
+        var interfacesWithTargetsList = interfacesWithTargets.ToList();
 
-            // .Where(p => p.Interface.Name != "IInheritedSetup")
-            .Select(p => (p.Interface, p.Property))
-            .ToList();
-
-        bool RemoveOverridden()
+        while (true)
         {
-            foreach (var interfaceTarget in interfaceTargets)
+            var continueWhile = false;
+
+            foreach (var interfaceWithTarget in interfacesWithTargetsList)
             {
-                var duplicateInterfaceTarget = interfaceTargets.FirstOrDefault(p => p
-                                                                                        .Property
-                                                                                        .Name
-                                                                                        .Split('.')
-                                                                                        .Last() ==
-                                                                                    interfaceTarget
-                                                                                        .Property
-                                                                                        .Name
-                                                                                        .Split('.')
-                                                                                        .Last() &&
-                                                                                    !p.Interface.Equals(interfaceTarget.Interface,
-                                                                                        SymbolEqualityComparer.IncludeNullability));
+                var (interfaceSymbol, propertySymbol) = interfaceWithTarget;
+
+                var duplicateInterfaceTarget = new InterfaceWithProperty();
+
+                var matches = interfacesWithTargetsList.Where(p =>
+                    SimpleName(p.Property.Name) == SimpleName(propertySymbol.Name) &&
+                    !p.Interface.Equals(interfaceSymbol, SymbolEqualityComparer.IncludeNullability));
+
+                foreach (var match in matches)
+                {
+                    duplicateInterfaceTarget = match;
+
+                    break;
+                }
 
                 if (duplicateInterfaceTarget == default)
                     continue;
 
                 var interfaceTargetInheritsFromDuplicate =
-                    interfaceTarget.Interface.AllInterfaces.Contains(duplicateInterfaceTarget.Interface);
+                    interfaceWithTarget.Interface.AllInterfaces.Contains(duplicateInterfaceTarget.Interface);
 
-                interfaceTargets.Remove(interfaceTargetInheritsFromDuplicate
+                interfacesWithTargetsList.Remove(interfaceTargetInheritsFromDuplicate
                     ? duplicateInterfaceTarget
-                    : interfaceTarget);
+                    : interfaceWithTarget);
 
-                return true;
+                continueWhile = true;
+
+                break;
             }
 
-            return false;
+            if (!continueWhile)
+                break;
         }
 
-        while (RemoveOverridden()) { }
+        return interfacesWithTargetsList;
+    }
 
-        // Get all defined Params (Property with ParamDefinitionAttribute) in all inherited interfaces,
-        // along with the ParamDefinitionAttribute.Name value
-        var interfaceParams = classSymbol
+    private static void GeneratePartial(
+        SourceProductionContext context,
+        INamedTypeSymbol classSymbol,
+        ClassDeclarationSyntax classDeclarationSyntax)
+    {
+        var @namespace = classSymbol.ContainingNamespace.ToDisplayString();
+
+        var namespaceLine = @namespace is "<global namespace>"
+            ? string.Empty
+            : $"namespace {@namespace};";
+
+        var @class = classDeclarationSyntax.Identifier.Text;
+        var classFull = $"{@namespace}.{@class}";
+
+        var interfacesWithProperties = classSymbol
             .AllInterfaces
-            .SelectMany(i => i
+            .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IPropertySymbol>()
-                .Select(x => (Interface: i, Property: x)))
-            .Where(p => p
+                .Select(propertySymbol => new InterfaceWithProperty(interfaceSymbol, propertySymbol)))
+            .ToArray();
+
+        var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(p => p.Property.Type.Name is Target));
+
+        var interfacesWithParams = interfacesWithProperties
+            .Where(static p => p
                 .Property
                 .GetAttributes()
-                .Any(a => a.AttributeClass?.Name == "ParamDefinitionAttribute"))
-            .Select(p => (p.Interface, p.Property, Attribute: p
-                .Property
-                .GetAttributes()
-                .First(a => a.AttributeClass?.Name == "ParamDefinitionAttribute")))
+                .Any(static attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
+            .Select(static interfaceWithProperty => new PropertyWithAttribute(interfaceWithProperty.Property,
+                interfaceWithProperty
+                    .Property
+                    .GetAttributes()
+                    .First(attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
             .ToList();
 
-        // Get all defined Secrets (Property with SecretDefinitionAttribute) in all inherited interfaces,
-        // along with the SecretDefinitionAttribute.Name value
-        var interfaceSecretParams = classSymbol
-            .AllInterfaces
-            .SelectMany(i => i
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(x => (Interface: i, Property: x)))
-            .Where(p => p
-                .Property
-                .GetAttributes()
-                .Any(a => a.AttributeClass?.Name == "SecretDefinitionAttribute"))
-            .Select(p => (p.Interface, p.Property, Attribute: p
-                .Property
-                .GetAttributes()
-                .First(a => a.AttributeClass?.Name == "SecretDefinitionAttribute")))
-            .ToList();
+        var targetDefinitionsPropertyBodyLines = interfacesWithTargets.Select(static p =>
+            $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""");
 
-        // Generate a static accessor for each target
-        var targetsPropertiesBodies = interfaceTargets.Select(p =>
-            $"        public static string {p.Property.Name.Split('.').Last()} = nameof({p.Interface}.{p.Property.Name.Split('.').Last()});");
-
-        // Generate a static accessor for each CommandDefinition
-        var commandDefsPropertyBodies = interfaceTargets.Select(p =>
-            $"        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition {p.Property.Name.Split('.').Last()} = new(nameof({p.Interface}.{p.Property.Name.Split('.').Last()}));");
-
-        // Generate the Targets property
-        var targetDefinitionsPropertyBody = interfaceTargets.Select(p =>
-            $$"""        { "{{p.Property.Name.Split('.').Last()}}", (({{p.Interface}})this).{{p.Property.Name.Split('.').Last()}} },""");
-
-        // Generate a static accessor for each param
-        var paramsPropertiesBodies = interfaceParams.Select(p =>
-            $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
-
-        // Generate a static accessor for each secret param
-        var secretParamsPropertiesBodies = interfaceSecretParams.Select(p =>
-            $"        public static string {p.Property.Name} = nameof({p.Interface}.{p.Property.Name});");
-
-        // Generate the ParamDefinitions property
-        var paramDefinitionsPropertyBody = interfaceParams
-            .Select(x =>
+        var paramDefinitionsPropertyBodyLines = interfacesWithParams
+            .Select(static x => new
             {
-                var interfaceName = $"{x.Interface.ContainingNamespace.ToDisplayString()}.{x.Interface.Name}";
-
-                return new
-                {
-                    x.Property.Name,
-                    Interface = $"typeof({interfaceName})",
-                    AttrubuteName = x.Attribute.AttributeClass!.ToDisplayString(),
-                    AttributeArgs = x
-                        .Attribute
-                        .ConstructorArguments
-                        .Select(a => a.Value)
-                        .Select(a => a is string s
-                            ? $"\"{s}\""
-                            : a)
-                        .Select(a => a ?? "null"),
-                };
+                x.Property.Name,
+                AttrubuteName = x.Attribute.AttributeClass!.ToDisplayString(),
+                AttributeArgs = x
+                    .Attribute
+                    .ConstructorArguments
+                    .Select(static a => a.Value)
+                    .Select(static a => a is string s
+                        ? $"\"{s}\""
+                        : a)
+                    .Select(static a => a ?? "null")
+                    .Aggregate(static (a, b) => $"{a}, {b}"),
             })
-            .Select(p =>
-                $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{string.Join(", ", p.AttributeArgs)}})) },""");
+            .Select(static p => $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{p.AttributeArgs}})) },""");
 
-        // Generate the SecretParamDefinitions property
-        var secretParamDefinitionsPropertyBody = interfaceSecretParams
-            .Select(x =>
-            {
-                var interfaceName = $"{x.Interface.ContainingNamespace.ToDisplayString()}.{x.Interface.Name}";
+        var commandDefsPropertiesLines = interfacesWithTargets.Select(static p =>
+            $"""        public static {CommandDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""");
 
-                return new
-                {
-                    x.Property.Name,
-                    Interface = $"typeof({interfaceName})",
-                    AttrubuteName = x.Attribute.AttributeClass!.ToDisplayString(),
-                    AttributeArgs = x
-                        .Attribute
-                        .ConstructorArguments
-                        .Select(a => a.Value)
-                        .Select(a => a is string s
-                            ? $"\"{s}\""
-                            : a)
-                        .Select(a => a ?? "null"),
-                };
-            })
-            .Select(p =>
-                $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{string.Join(", ", p.AttributeArgs)}})) },""");
+        var paramsPropertiesLines = interfacesWithParams.Select(static p =>
+            $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""");
 
-        // Generate the RegisterTargets method
-        var registerTargets = classSymbol
+        var registerMethodBodyLines = classSymbol
             .AllInterfaces
-            .Where(x => x.AllInterfaces.Any(i => i.Name == "IBuildDefinition"))
-            .Select(x => x);
-
-        var registerTargetsMethodBody = string.Join("\n\n",
-            registerTargets.Select(x => x
-                .GetMembers("DecSm.Atom.Build.Definition.IBuildDefinition.Register")
+            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition))
+            .Select(static @interface => @interface
+                .GetMembers($"{IBuildDefinitionFull}.{Register}")
                 .Any()
                 ? $"""
-                           services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());
-                           RegisterTarget<{x}>(services);
+                           Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{@interface}>(services, static p => ({@interface})p.GetRequiredService<{IBuildDefinitionFull}>());
+                           {RegisterTarget}<{@interface}>(services);
                    """
-                : $"        services.TryAddSingleton<{x}>(p => ({x})p.GetRequiredService<IBuildDefinition>());"));
+                : $"        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{@interface}>(services, static p => ({@interface})p.GetRequiredService<{IBuildDefinitionFull}>());");
 
-        // Build up the source code
         var code = $$"""
                      // <auto-generated/>
 
                      #nullable enable
-                     
-                     global using static {{classSymbol.ContainingNamespace.ToDisplayString()}}.{{className}};
 
-                     using System;
-                     using System.Collections.Generic;
-                     using System.Reflection;
-                     using DecSm.Atom;
-                     using DecSm.Atom.Build.Definition;
-                     using DecSm.Atom.Params;
-                     using JetBrains.Annotations;
-                     using Microsoft.Extensions.DependencyInjection.Extensions;
+                     global using static {{classFull}};
 
                      {{namespaceLine}}
 
-                     [PublicAPI]
-                     partial class {{className}}
+                     [JetBrains.Annotations.PublicAPI]
+                     partial class {{@class}}
                      {
-                         public {{className}}(IServiceProvider services) : base(services) { }
-                         
-                         private Dictionary<string, Target>? _targetDefinitions;
-                         private Dictionary<string, ParamDefinition>? _paramDefinitions;
+                         private System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}>? _targetDefinitions;
+                         private System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}>? _paramDefinitions;
                      
-                         public override Dictionary<string, Target> TargetDefinitions => _targetDefinitions ??= new Dictionary<string, Target>
+                         public {{@class}}(System.IServiceProvider services) : base(services) { }
+                         
+                         public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, {{TargetFull}}>
                          {
-                     {{string.Join("\n", targetDefinitionsPropertyBody)}}
+                     {{string.Join("\n", targetDefinitionsPropertyBodyLines)}}
                          };
                          
-                         public override Dictionary<string, ParamDefinition> ParamDefinitions => _paramDefinitions ??= new Dictionary<string, ParamDefinition>
+                         public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>
                          {
-                     {{string.Join("\n", paramDefinitionsPropertyBody)}}
-                     {{string.Join("\n", secretParamDefinitionsPropertyBody)}}
+                     {{string.Join("\n", paramDefinitionsPropertyBodyLines)}}
                          };
-                     
-                         public static class Targets
-                         {
-                     {{string.Join("\n\n", targetsPropertiesBodies)}}
-                         }
                          
                          public static class Commands
                          {
-                     {{string.Join("\n\n", commandDefsPropertyBodies)}}
+                     {{string.Join("\n\n", commandDefsPropertiesLines)}}
                          }
                          
                          public static class Params
                          {
-                     {{string.Join("\n\n", paramsPropertiesBodies)}}
+                     {{string.Join("\n\n", paramsPropertiesLines)}}
                          }
                          
-                         public static class Secrets
+                         static void {{IBuildDefinitionFull}}.{{Register}}(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
                          {
-                     {{string.Join("\n\n", secretParamsPropertiesBodies)}}
+                     {{string.Join("\n\n", registerMethodBodyLines)}}
                          }
                          
-                         static void IBuildDefinition.Register(IServiceCollection services)
-                         {
-                     {{registerTargetsMethodBody}}
-                         }
-                         
-                         private static void RegisterTarget<T>(IServiceCollection services) where T : IBuildDefinition =>
-                             T.Register(services);
+                         private static void {{RegisterTarget}}<T>(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+                             where T : {{IBuildDefinitionFull}} =>
+                             T.{{Register}}(services);
                      }
 
                      """;
 
-        // Add the source code to the compilation.
-        context.AddSource($"{className}.g.cs", SourceText.From(code, Encoding.UTF8));
+        context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }
