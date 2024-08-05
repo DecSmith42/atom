@@ -62,7 +62,6 @@ internal partial class Build : BuildDefinition,
                 Github.Triggers.Manual,
                 new GithubPushTrigger
                 {
-                    IncludedBranches = ["main"],
                     IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
                 },
             ],
