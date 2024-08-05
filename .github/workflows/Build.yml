@@ -36,16 +36,12 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+      - name: Upload DecSm.Atom
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom
   
   PackAtomTool:
     needs: [ Setup ]
@@ -60,16 +56,12 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+      - name: Upload DecSm.Atom.Tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Tool
   
   PackAzureKeyVaultExtension:
     needs: [ Setup ]
@@ -84,16 +76,12 @@ jobs:
       - name: PackAzureKeyVaultExtension
         id: PackAzureKeyVaultExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+      - name: Upload DecSm.Atom.Extensions.AzureKeyVault
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureKeyVault
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.AzureKeyVault"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
   
   PackAzureStorageExtension:
     needs: [ Setup ]
@@ -108,16 +96,12 @@ jobs:
       - name: PackAzureStorageExtension
         id: PackAzureStorageExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+      - name: Upload DecSm.Atom.Extensions.AzureStorage
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureStorage
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.AzureStorage"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.AzureStorage
   
   PackDotnetExtension:
     needs: [ Setup ]
@@ -132,16 +116,12 @@ jobs:
       - name: PackDotnetExtension
         id: PackDotnetExtension
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+      - name: Upload DecSm.Atom.Extensions.Dotnet
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.Dotnet
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.Dotnet"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.Dotnet
   
   PackGithubWorkflowsExtension:
     needs: [ Setup ]
@@ -156,16 +136,12 @@ jobs:
       - name: PackGithubWorkflowsExtension
         id: PackGithubWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+      - name: Upload DecSm.Atom.Extensions.GithubWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GithubWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.GithubWorkflows"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
   
   PackGitVersionExtension:
     needs: [ Setup ]
@@ -180,16 +156,12 @@ jobs:
       - name: PackGitVersionExtension
         id: PackGitVersionExtension
         run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+      - name: Upload DecSm.Atom.Extensions.GitVersion
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GitVersion
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.GitVersion"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Extensions.GitVersion
   
   TestAtom:
     needs: [ Setup ]
@@ -210,17 +182,12 @@ jobs:
         env:
           github-runs-on: ${{ matrix.github-runs-on }}
           matrix-slice: ${{ matrix.github-runs-on }}
+      - name: Upload DecSm.Atom.Tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tests
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom.Tests
-          matrix-slice: ${{ matrix.github-runs-on }}
   
   PushToNuget:
     needs: [ Setup, PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
@@ -232,15 +199,47 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: DownloadArtifact
-        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
-        env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
-          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom;DecSm.Atom.Tool;DecSm.Atom.Extensions.AzureKeyVault;DecSm.Atom.Extensions.AzureStorage;DecSm.Atom.Extensions.Dotnet;DecSm.Atom.Extensions.GithubWorkflows;DecSm.Atom.Extensions.GitVersion
+      - name: Download DecSm.Atom
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Extensions.AzureKeyVault
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureKeyVault
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.AzureKeyVault"
+      
+      - name: Download DecSm.Atom.Extensions.AzureStorage
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureStorage
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.AzureStorage"
+      
+      - name: Download DecSm.Atom.Extensions.Dotnet
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.Dotnet
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.Dotnet"
+      
+      - name: Download DecSm.Atom.Extensions.GithubWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GithubWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.GithubWorkflows"
+      
+      - name: Download DecSm.Atom.Extensions.GitVersion
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GitVersion
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.GitVersion"
       
       - name: PushToNuget
         id: PushToNuget

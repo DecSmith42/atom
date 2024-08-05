@@ -18,10 +18,7 @@ internal partial class Build : BuildDefinition,
     ITestAtom,
     ICleanupPrereleaseArtifacts
 {
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
-    [
-        AzureKeyVault.UseAzureKeyVault, Artifacts.UseCustomArtifactProvider,
-    ];
+    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [AzureKeyVault.UseAzureKeyVault];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
