@@ -15,7 +15,8 @@ internal partial class Build : BuildDefinition,
     IPackGithubWorkflowsExtension,
     IPackGitVersionExtension,
     IPushToNuget,
-    ITestAtom
+    ITestAtom,
+    ICleanupPrereleaseArtifacts
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
@@ -55,6 +56,20 @@ internal partial class Build : BuildDefinition,
                 Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
                 Commands.PushToNuget,
             ],
+            WorkflowTypes = [Github.WorkflowType],
+        },
+        new("Cleanup")
+        {
+            Triggers =
+            [
+                Github.Triggers.Manual,
+                new GithubPushTrigger
+                {
+                    IncludedBranches = ["main"],
+                    IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
+                },
+            ],
+            StepDefinitions = [Commands.CleanupPrereleaseArtifacts],
             WorkflowTypes = [Github.WorkflowType],
         },
         Github.DependabotWorkflow(new()

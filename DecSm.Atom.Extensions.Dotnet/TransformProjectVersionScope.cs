@@ -2,6 +2,6 @@
 
 public static class TransformProjectVersionScope
 {
-    public static ITransformFileScope Create(AbsolutePath file, VersionInfo version) =>
+    public static ITransformFileScope Create(AbsolutePath file, SemVer version) =>
         ITransformFileScope.Create(file, text => MsBuildUtil.SetVersionInfo(text, version));
 }

@@ -37,7 +37,6 @@ public class AtomBuildVersionProviderTests
         // Assert
         version.ShouldSatisfyAllConditions(x => x.ShouldNotBeNull(),
             x => x
-                .Version
                 .ToString()
                 .ShouldBe("1.2.3"));
     }

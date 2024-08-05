@@ -1,12 +1,15 @@
 ﻿global using Atom.Targets;
 global using Atom.Targets.Build;
+global using DecSm.Atom;
 global using DecSm.Atom.Artifacts;
+global using DecSm.Atom.Build;
 global using DecSm.Atom.Extensions.AzureKeyVault;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Extensions.AzureStorage;
 global using DecSm.Atom.Extensions.Dotnet;
 global using DecSm.Atom.Extensions.GithubWorkflows;
 global using DecSm.Atom.Extensions.GithubWorkflows.Generation.Options;
+global using DecSm.Atom.Extensions.GithubWorkflows.Triggers;
 global using DecSm.Atom.Extensions.GitVersion;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Workflows.Definition;

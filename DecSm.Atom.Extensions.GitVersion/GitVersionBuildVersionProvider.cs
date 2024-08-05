@@ -2,9 +2,9 @@
 
 public class GitVersionBuildVersionProvider(IDotnetToolHelper dotnetToolHelper, IProcessRunner processRunner) : IBuildVersionProvider
 {
-    private VersionInfo? _version;
+    private SemVer? _version;
 
-    public VersionInfo Version
+    public SemVer Version
     {
         get
         {
@@ -32,27 +32,11 @@ public class GitVersionBuildVersionProvider(IDotnetToolHelper dotnetToolHelper, 
                 .GetProperty("Patch")
                 .GetUInt32();
 
-            var revisionProp = jsonOutput
-                .GetProperty("PreReleaseNumber")
-                .GetUInt32();
-
             var preReleaseTagProp = jsonOutput
                 .GetProperty("PreReleaseTag")
                 .GetString()!;
 
-            var informationalVersionProp = jsonOutput
-                .GetProperty("InformationalVersion")
-                .GetString()!;
-
-            var prefix = new VersionSem(majorProp, minorProp, patchProp);
-            var suffix = new VersionFreetext(preReleaseTagProp);
-            var version = new VersionWithSuffix(prefix, suffix);
-            var packageVersion = new VersionWithSuffix(prefix, suffix);
-            var assemblyVersion = new VersionWithRevision(prefix, 0);
-            var fileInfoVersion = new VersionWithRevision(prefix, revisionProp);
-            var informationalVersion = new VersionFreetext(informationalVersionProp);
-
-            return _version = new(prefix, suffix, version, packageVersion, assemblyVersion, fileInfoVersion, informationalVersion);
+            return _version = SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}");
         }
     }
 }

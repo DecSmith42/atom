@@ -4,13 +4,12 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - main
+      - 'main'
 
 jobs:
   
   Setup:
     runs-on: ubuntu-latest
-    
     outputs:
       atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
     steps:
@@ -27,7 +26,6 @@ jobs:
   PackAtom:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -42,7 +40,6 @@ jobs:
   PackAtomTool:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -57,7 +54,6 @@ jobs:
   PackAzureKeyVaultExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -72,7 +68,6 @@ jobs:
   PackAzureStorageExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -87,7 +82,6 @@ jobs:
   PackDotnetExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -102,7 +96,6 @@ jobs:
   PackGithubWorkflowsExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -117,7 +110,6 @@ jobs:
   PackGitVersionExtension:
     needs: [ Setup ]
     runs-on: ubuntu-latest
-    
     steps:
       
       - name: Checkout
@@ -135,7 +127,6 @@ jobs:
       matrix:
         github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.github-runs-on }}
-    
     steps:
       
       - name: Checkout

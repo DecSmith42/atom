@@ -18,7 +18,7 @@ public partial interface INugetHelper : IVersionHelper
             return;
         }
 
-        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{Version.PackageVersion}.nupkg");
+        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{Version}.nupkg");
 
         await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
     }

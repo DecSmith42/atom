@@ -2,5 +2,5 @@
 
 public interface IBuildVersionProvider
 {
-    VersionInfo Version { get; }
+    SemVer Version { get; }
 }

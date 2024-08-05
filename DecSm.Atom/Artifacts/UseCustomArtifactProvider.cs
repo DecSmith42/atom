@@ -1,3 +1,3 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
-public readonly record struct UseCustomArtifactProvider : IWorkflowOption;
+public sealed record UseCustomArtifactProvider : IWorkflowOption;

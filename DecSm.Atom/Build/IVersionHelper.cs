@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IVersionHelper
 {
-    VersionInfo Version =>
+    SemVer Version =>
         GetService<IBuildVersionProvider>()
             .Version;
 }

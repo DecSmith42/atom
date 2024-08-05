@@ -34,7 +34,6 @@ public sealed class GithubWorkflowWriter(
                         using (WriteSection("inputs:"))
                         {
                             foreach (var input in manualTrigger.Inputs)
-                            {
                                 using (WriteSection($"{input.Name}:"))
                                 {
                                     WriteLine($"description: {input.Description}");
@@ -76,7 +75,6 @@ public sealed class GithubWorkflowWriter(
                                             break;
                                     }
                                 }
-                            }
                         }
                 }
 
@@ -87,14 +85,35 @@ public sealed class GithubWorkflowWriter(
                         using (WriteSection("branches:"))
                         {
                             foreach (var branch in pullRequestTrigger.IncludedBranches)
-                                WriteLine($"- {branch}");
+                                WriteLine($"- '{branch}'");
                         }
 
-                    if (pullRequestTrigger.ExcludedBranches?.Count > 0)
+                    if (pullRequestTrigger.ExcludedBranches.Count > 0)
                         using (WriteSection("branches-ignore:"))
                         {
                             foreach (var branch in pullRequestTrigger.ExcludedBranches)
-                                WriteLine($"- {branch}");
+                                WriteLine($"- '{branch}'");
+                        }
+
+                    if (pullRequestTrigger.IncludedPaths.Count > 0)
+                        using (WriteSection("paths:"))
+                        {
+                            foreach (var path in pullRequestTrigger.IncludedPaths)
+                                WriteLine($"- '{path}'");
+                        }
+
+                    if (pullRequestTrigger.ExcludedPaths.Count > 0)
+                        using (WriteSection("paths-ignore:"))
+                        {
+                            foreach (var path in pullRequestTrigger.ExcludedPaths)
+                                WriteLine($"- '{path}'");
+                        }
+
+                    if (pullRequestTrigger.Types.Count > 0)
+                        using (WriteSection("types:"))
+                        {
+                            foreach (var type in pullRequestTrigger.Types)
+                                WriteLine($"- '{type}'");
                         }
                 }
 
@@ -105,14 +124,42 @@ public sealed class GithubWorkflowWriter(
                         using (WriteSection("branches:"))
                         {
                             foreach (var branch in pushTrigger.IncludedBranches)
-                                WriteLine($"- {branch}");
+                                WriteLine($"- '{branch}'");
                         }
 
-                    if (pushTrigger.ExcludedBranches?.Count > 0)
+                    if (pushTrigger.ExcludedBranches.Count > 0)
                         using (WriteSection("branches-ignore:"))
                         {
                             foreach (var branch in pushTrigger.ExcludedBranches)
-                                WriteLine($"- {branch}");
+                                WriteLine($"- '{branch}'");
+                        }
+
+                    if (pushTrigger.IncludedPaths.Count > 0)
+                        using (WriteSection("paths:"))
+                        {
+                            foreach (var path in pushTrigger.IncludedPaths)
+                                WriteLine($"- '{path}'");
+                        }
+
+                    if (pushTrigger.ExcludedPaths.Count > 0)
+                        using (WriteSection("paths-ignore:"))
+                        {
+                            foreach (var path in pushTrigger.ExcludedPaths)
+                                WriteLine($"- '{path}'");
+                        }
+
+                    if (pushTrigger.IncludedTags.Count > 0)
+                        using (WriteSection("tags:"))
+                        {
+                            foreach (var tag in pushTrigger.IncludedTags)
+                                WriteLine($"- '{tag}'");
+                        }
+
+                    if (pushTrigger.ExcludedTags.Count > 0)
+                        using (WriteSection("tags-ignore:"))
+                        {
+                            foreach (var tag in pushTrigger.ExcludedTags)
+                                WriteLine($"- '{tag}'");
                         }
                 }
         }
@@ -167,8 +214,6 @@ public sealed class GithubWorkflowWriter(
                 }
             else
                 WriteLine($"runs-on: {labelsDisplay}");
-
-            WriteLine();
 
             var outputs = new List<string>();
 
@@ -270,7 +315,7 @@ public sealed class GithubWorkflowWriter(
 
                 var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
 
-                if (matrixSlice.Value.Length > 0)
+                if (!string.IsNullOrWhiteSpace(matrixSlice.Value))
                     matrixParams = matrixParams
                         .Append(matrixSlice)
                         .ToArray();
@@ -291,7 +336,9 @@ public sealed class GithubWorkflowWriter(
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
                             [
                                 ("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
-                                matrixSlice,
+                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
+                                    ? matrixSlice
+                                    : default,
                             ],
                             false);
                     }
@@ -398,13 +445,21 @@ public sealed class GithubWorkflowWriter(
                 env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
             }
 
-            if (env.Count > 0 || extraParams.Length > 0)
+            var validEnv = env
+                .Where(static x => x.Value is { Length: > 0 })
+                .ToList();
+
+            var validExtraParams = extraParams
+                .Where(static x => x.value is { Length: > 0 })
+                .ToList();
+
+            if (validEnv.Count > 0 || validExtraParams.Count > 0)
                 using (WriteSection("env:"))
                 {
-                    foreach (var (key, value) in env)
+                    foreach (var (key, value) in validEnv)
                         WriteLine($"{key}: {value}");
 
-                    foreach (var (key, value) in extraParams)
+                    foreach (var (key, value) in validExtraParams)
                         WriteLine($"{key}: {value}");
                 }
         }
