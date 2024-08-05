@@ -185,7 +185,7 @@ jobs:
       - name: Upload DecSm.Atom.Tests
         uses: actions/upload-artifact@v4
         with:
-          name: DecSm.Atom.Tests
+          name: DecSm.Atom.Tests-${{ matrix.github-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
   

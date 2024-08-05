@@ -258,6 +258,19 @@ public sealed class GithubWorkflowWriter(
 
                 var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
 
+                var matrixParams = job
+                    .MatrixDimensions
+                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
+                    .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
+                    .ToArray();
+
+                var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+
+                if (!string.IsNullOrWhiteSpace(matrixSlice.Value))
+                    matrixParams = matrixParams
+                        .Append(matrixSlice)
+                        .ToArray();
+
                 if (commandStepTarget.ConsumedArtifacts.Count > 0)
                 {
                     foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)
@@ -282,7 +295,12 @@ public sealed class GithubWorkflowWriter(
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
-                            [("atom-artifacts", string.Join(";", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName)))],
+                            [
+                                ("atom-artifacts", string.Join(";", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
+                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
+                                    ? matrixSlice
+                                    : default,
+                            ],
                             false);
 
                         WriteLine();
@@ -297,7 +315,10 @@ public sealed class GithubWorkflowWriter(
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine($"name: {artifact.ArtifactName}");
+                                    WriteLine(!string.IsNullOrWhiteSpace(matrixSlice.Value)
+                                        ? $"name: {artifact.ArtifactName}-{matrixSlice.Value}"
+                                        : $"name: {artifact.ArtifactName}");
+
                                     WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
                                 }
                             }
@@ -306,19 +327,6 @@ public sealed class GithubWorkflowWriter(
                         }
                     }
                 }
-
-                var matrixParams = job
-                    .MatrixDimensions
-                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
-                    .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
-                    .ToArray();
-
-                var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
-
-                if (!string.IsNullOrWhiteSpace(matrixSlice.Value))
-                    matrixParams = matrixParams
-                        .Append(matrixSlice)
-                        .ToArray();
 
                 WriteCommandStep(workflow, commandStep, commandStepTarget, matrixParams, true);
 
@@ -352,7 +360,10 @@ public sealed class GithubWorkflowWriter(
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine($"name: {artifact.ArtifactName}");
+                                    WriteLine(!string.IsNullOrWhiteSpace(matrixSlice.Value)
+                                        ? $"name: {artifact.ArtifactName}-{matrixSlice.Value}"
+                                        : $"name: {artifact.ArtifactName}");
+
                                     WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
                                 }
                             }
