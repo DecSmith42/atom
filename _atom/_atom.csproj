@@ -9,16 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom.Extensions.GitVersion\DecSm.Atom.Extensions.GitVersion.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj"/>
-        <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="..\DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.Extensions.GitVersion\DecSm.Atom.Extensions.GitVersion.csproj" />
+        <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj" />
+        <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 </Project>
