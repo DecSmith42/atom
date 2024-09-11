@@ -1,14 +1,12 @@
 ﻿namespace DecSm.Atom.Build;
 
-internal sealed partial class AtomBuildVersionProvider(IFileSystem fileSystem) : IBuildVersionProvider
+internal sealed partial class AtomBuildVersionProvider(IAtomFileSystem fileSystem) : IBuildVersionProvider
 {
     public SemVer Version
     {
         get
         {
-            var solutionRoot = fileSystem.SolutionRoot();
-
-            var directoryBuildProps = solutionRoot / "Directory.Build.props";
+            var directoryBuildProps = fileSystem.AtomRootDirectory / "Directory.Build.props";
 
             if (!directoryBuildProps.FileExists)
                 throw new InvalidOperationException(

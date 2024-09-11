@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Util;
+﻿namespace DecSm.Atom.Paths;
 
 public interface ITransformFileScope : IAsyncDisposable, IDisposable
 {

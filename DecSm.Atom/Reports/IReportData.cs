@@ -26,9 +26,9 @@ public sealed record ListReportData(IReadOnlyList<string> Items) : ICustomReport
 {
     public string? Title { get; init; }
 
-    public bool BeforeStandardData { get; init; }
-
     public string Prefix { get; init; } = "- ";
+
+    public bool BeforeStandardData { get; init; }
 }
 
 public sealed record TextReportData(string Text) : ICustomReportData

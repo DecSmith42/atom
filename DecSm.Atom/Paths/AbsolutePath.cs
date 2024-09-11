@@ -1,24 +1,37 @@
-﻿namespace DecSm.Atom.Util;
+﻿namespace DecSm.Atom.Paths;
 
-public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
+public sealed record AbsolutePath(IAtomFileSystem FileSystem, string Path)
 {
     public AbsolutePath? Parent
     {
         get
         {
-            var parent = FileSystem.Path.GetDirectoryName(Path);
+            if (FileSystem.Path.GetPathRoot(Path) == Path)
+                return null;
 
-            if (parent == null)
+            var path = Path switch
+            {
+                [.., '/'] => Path[..^1],
+                [.., '\\'] => Path[..^1],
+                _ => Path,
+            };
+
+            var lastForwardSlash = path.LastIndexOf('/');
+            var lastBackSlash = path.LastIndexOf('\\');
+
+            var lastSlash = Math.Max(lastForwardSlash, lastBackSlash);
+
+            if (lastSlash == -1)
                 return null;
 
             return this with
             {
-                Path = parent,
+                Path = $"{path[..lastSlash]}{FileSystem.Path.DirectorySeparatorChar}",
             };
         }
     }
 
-    public bool Exists => FileSystem.File.Exists(Path) || FileSystem.Directory.Exists(Path);
+    public bool PathExists => FileExists || DirectoryExists;
 
     public bool FileExists => FileSystem.File.Exists(Path);
 
@@ -29,18 +42,9 @@ public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
             ? FileSystem.Path.GetFileName(Path)
             : null;
 
-    public string? FileExtension =>
-        FileExists
-            ? FileSystem.Path.GetExtension(Path)
-            : null;
-
     public string? DirectoryName =>
         DirectoryExists
-            ? FileSystem.Path.GetDirectoryName(Path)!
-                .Split("/")
-                .Last()
-                .Split("\\")
-                .Last()
+            ? FileSystem.Path.GetDirectoryName(Path)
             : null;
 
     public static AbsolutePath operator /(AbsolutePath left, string right) =>
@@ -51,9 +55,6 @@ public sealed record AbsolutePath(IFileSystem FileSystem, string Path)
 
     public static implicit operator string(AbsolutePath path) =>
         path.Path;
-
-    public static AbsolutePath FromFileInfo(IFileInfo fileInfo) =>
-        new(fileInfo.FileSystem, fileInfo.FullName);
 
     public override string ToString() =>
         Path;

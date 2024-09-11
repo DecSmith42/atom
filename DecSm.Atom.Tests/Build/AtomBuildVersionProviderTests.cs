@@ -1,4 +1,7 @@
-﻿namespace DecSm.Atom.Tests.Build;
+﻿using System.IO.Abstractions;
+using DecSm.Atom.Paths;
+
+namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class AtomBuildVersionProviderTests
@@ -8,6 +11,19 @@ public class AtomBuildVersionProviderTests
         : "/Solution";
 
     private static readonly char Ps = Path.DirectorySeparatorChar;
+
+    private static IAtomFileSystem NewFileSystem(IFileSystem fileSystem)
+    {
+        var result = new AtomFileSystem
+        {
+            FileSystem = fileSystem,
+            PathLocators = [],
+        };
+
+        result.ClearCache();
+
+        return result;
+    }
 
     [Test]
     public void Version_Returns_VersionInfo()
@@ -21,13 +37,13 @@ public class AtomBuildVersionProviderTests
                                            """;
 
         // Arrange
-        var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+        var fileSystem = NewFileSystem(new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { $"{OsAgnosticRoot}{Ps}Solution.sln", new MockFileData("<!-- -->") },
+                { $"{OsAgnosticRoot}{Ps}Solution.sln", new("<!-- -->") },
                 { $"{OsAgnosticRoot}{Ps}Project", new MockDirectoryData() },
-                { $"{OsAgnosticRoot}{Ps}Directory.Build.props", new MockFileData(directoryBuildProps) },
+                { $"{OsAgnosticRoot}{Ps}Directory.Build.props", new(directoryBuildProps) },
             },
-            OsAgnosticRoot);
+            OsAgnosticRoot));
 
         var provider = new AtomBuildVersionProvider(fileSystem);
 
@@ -46,14 +62,13 @@ public class AtomBuildVersionProviderTests
     public void Version_WhenDirectoryBuildPropsDoesNotExist_ThrowsInvalidOperationException()
     {
         // Arrange
-        FileSystemExtensions.ClearCachedPaths();
 
-        var fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
+        var fileSystem = NewFileSystem(new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { $"{OsAgnosticRoot}{Ps}Solution.sln", new MockFileData("<!-- -->") },
+                { $"{OsAgnosticRoot}{Ps}Solution.sln", new("<!-- -->") },
                 { $"{OsAgnosticRoot}{Ps}Project", new MockDirectoryData() },
             },
-            OsAgnosticRoot);
+            OsAgnosticRoot));
 
         var provider = new AtomBuildVersionProvider(fileSystem);
 

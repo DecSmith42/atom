@@ -1,13 +1,22 @@
 ﻿namespace DecSm.Atom.Extensions.GitVersion;
 
-public sealed class GitVersionBuildIdProvider(IDotnetToolHelper dotnetToolHelper, IProcessRunner processRunner) : IBuildIdProvider
+public sealed class GitVersionBuildIdProvider(
+    IDotnetToolHelper dotnetToolHelper,
+    IProcessRunner processRunner,
+    IBuildDefinition buildDefinition
+) : IBuildIdProvider
 {
     private string? _buildId;
 
-    public string BuildId
+    public string? BuildId
     {
         get
         {
+            if (IWorkflowOption
+                .GetOptionsForCurrentTarget(buildDefinition)
+                .Contains(ProvideGitVersionAsWorkflowId.Disabled))
+                return null;
+
             if (_buildId is not null)
                 return _buildId;
 

@@ -1,8 +1,9 @@
 ﻿namespace DecSm.Atom.Args;
 
-[PublicAPI]
-public sealed record CommandLineArgs(IArg[] Args)
+public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
 {
+    public bool IsValid => Valid;
+
     public bool HasHelp => Args.Any(arg => arg is HelpArg);
 
     public bool HasGen => Args.Any(arg => arg is GenArg);
@@ -13,13 +14,13 @@ public sealed record CommandLineArgs(IArg[] Args)
 
     public bool HasVerbose => Args.Any(arg => arg is VerboseArg);
 
-    public ParamArg[] Params =>
+    public IReadOnlyList<ParamArg> Params =>
         Args
             .OfType<ParamArg>()
-            .ToArray();
+            .ToList();
 
-    public CommandArg[] Commands =>
+    public IReadOnlyList<CommandArg> Commands =>
         Args
             .OfType<CommandArg>()
-            .ToArray();
+            .ToList();
 }

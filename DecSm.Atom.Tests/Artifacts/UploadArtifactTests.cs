@@ -13,7 +13,7 @@ public class UploadArtifactTests
 
         artifactProvider
             .Setup(x => x.RequiredParams)
-            .Returns(new[] { "param1", "param2" });
+            .Returns(["param1", "param2"]);
 
         artifactProvider
             .Setup(x => x.UploadArtifacts(It.Is<string[]>(s => s.SequenceEqual(artifactNames)), It.IsAny<string?>()))
@@ -35,7 +35,7 @@ public class UploadArtifactTests
 
         instance
             .Setup(x => x.AtomArtifacts)
-            .Returns($"{artifactNames[0]};{artifactNames[1]}");
+            .Returns([artifactNames[0], artifactNames[1]]);
 
         // Act
         var target = instance.Object.UploadArtifact(new());

@@ -2,7 +2,7 @@
 
 public static class Github
 {
-    public static bool IsGithubActions => Variables.Actions.ToLower() == "true";
+    public static bool IsGithubActions => Variables.Actions.Equals("true", StringComparison.CurrentCultureIgnoreCase);
 
     public static string PipelinePublishDirectory => "${{ github.workspace }}/.github/publish";
 

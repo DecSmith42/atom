@@ -23,12 +23,11 @@ public class BuildDefinitionSourceGeneratorTests
 
         // We need to create a compilation with the required source code.
         var compilation = CSharpCompilation.Create(nameof(BuildDefinitionSourceGeneratorTests),
-            new[] { CSharpSyntaxTree.ParseText(InputText) },
-            new[]
-            {
+            [CSharpSyntaxTree.ParseText(InputText)],
+            [
                 // To support 'System.Attribute' inheritance, add reference to 'System.Private.CoreLib'.
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            });
+            ]);
 
         // Run generators and retrieve all results.
         var runResult = driver

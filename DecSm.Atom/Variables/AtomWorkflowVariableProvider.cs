@@ -1,10 +1,10 @@
 ﻿namespace DecSm.Atom.Variables;
 
-internal sealed class AtomWorkflowVariableProvider(IFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
+internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
 {
     public async Task<bool> WriteVariable(string variableName, string variableValue)
     {
-        var variablesPath = fileSystem.TempDirectory() / "variables";
+        var variablesPath = fileSystem.AtomTempDirectory / "variables";
 
         Dictionary<string, string>? variables;
 
@@ -28,7 +28,7 @@ internal sealed class AtomWorkflowVariableProvider(IFileSystem fileSystem, Build
 
     public async Task<bool> ReadVariable(string jobName, string variableName)
     {
-        var variablesPath = fileSystem.TempDirectory() / "variables";
+        var variablesPath = fileSystem.AtomTempDirectory / "variables";
 
         if (!variablesPath.FileExists)
             return false;

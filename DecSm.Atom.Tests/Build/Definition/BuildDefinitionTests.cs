@@ -12,7 +12,9 @@ public class BuildDefinitionTests
         var paramService = new Mock<IParamService>();
 
         paramService
-            .Setup(x => x.GetParam(It.Is<Expression<Func<string?>>>(s => s == parameterExpression)))
+            .Setup(x => x.GetParam(It.Is<Expression<Func<string?>>>(s => s == parameterExpression),
+                It.IsAny<string?>(),
+                It.IsAny<Func<string?, string?>?>()))
             .Verifiable(Times.Once);
 
         var services = new ServiceCollection()

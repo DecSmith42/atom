@@ -8,8 +8,10 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [];
         var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldBeEmpty();
     }
@@ -22,8 +24,10 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg];
         var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -40,8 +44,10 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg];
         var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -58,14 +64,56 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg];
         var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build);
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
         parsedArgs
             .Args[0]
             .ShouldBeOfType<SkipArg>();
+    }
+
+    [TestCase("-hl")]
+    [TestCase("-HL")]
+    [TestCase("--headless")]
+    [TestCase("--HEADLESS")]
+    public void Parse_Headless_Arg(string arg)
+    {
+        string[] rawArgs = [arg];
+        var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
+
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldHaveSingleItem();
+
+        parsedArgs
+            .Args[0]
+            .ShouldBeOfType<HeadlessArg>();
+    }
+
+    [TestCase("-v")]
+    [TestCase("-V")]
+    [TestCase("--verbose")]
+    [TestCase("--VERBOSE")]
+    public void Parse_Verbose_Arg(string arg)
+    {
+        string[] rawArgs = [arg];
+        var build = Mock.Of<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
+
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldHaveSingleItem();
+
+        parsedArgs
+            .Args[0]
+            .ShouldBeOfType<VerboseArg>();
     }
 
     [TestCase("--param1", "param1", "Param1")]
@@ -76,6 +124,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg, "value"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -86,7 +135,9 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
+        var parser = new CommandLineArgsParser(build.Object, console);
+
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -103,6 +154,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = ["--param1", "--param2"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -113,7 +165,9 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
+        var parser = new CommandLineArgsParser(build.Object, console);
+
+        Should.Throw<ArgumentException>(() => parser.Parse(rawArgs));
     }
 
     [Test]
@@ -121,6 +175,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = ["--param1"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -131,7 +186,9 @@ public class CommandLineArgParserTests
                 ["Param3"] = new("Param3", new("param3", "Param 3")),
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
+        var parser = new CommandLineArgsParser(build.Object, console);
+
+        Should.Throw<ArgumentException>(() => parser.Parse(rawArgs));
     }
 
     [TestCase("Command1", "Command1")]
@@ -142,6 +199,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.TargetDefinitions)
@@ -152,7 +210,9 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
+        var parser = new CommandLineArgsParser(build.Object, console);
+
+        var parsedArgs = parser.Parse(rawArgs);
 
         parsedArgs.Args.ShouldHaveSingleItem();
 
@@ -169,6 +229,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = [arg];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.TargetDefinitions)
@@ -179,7 +240,14 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        Should.Throw<ArgumentException>(() => CommandLineArgsParser.Parse(rawArgs, build.Object));
+        build
+            .Setup(x => x.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>());
+
+        var parser = new CommandLineArgsParser(build.Object, console);
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.IsValid.ShouldBeFalse();
     }
 
     [Test]
@@ -187,6 +255,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = ["-h", "--param1", "value1", "--param2", "value2", "Command1"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -206,9 +275,11 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
+        var parser = new CommandLineArgsParser(build.Object, console);
 
-        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(4),
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Count.ShouldBe(4),
             args => args[0]
                 .ShouldBeOfType<HelpArg>(),
             args => args[1]
@@ -231,6 +302,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "--skip"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -250,9 +322,11 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
+        var parser = new CommandLineArgsParser(build.Object, console);
 
-        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(4),
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Count.ShouldBe(4),
             args => args[0]
                 .ShouldBeOfType<ParamArg>()
                 .ShouldSatisfyAllConditions(x => x.ArgName.ShouldBe("param1"),
@@ -275,6 +349,7 @@ public class CommandLineArgParserTests
     {
         string[] rawArgs = ["--param1", "value1", "--param2", "value2", "Command1", "-s", "--param3", "value3"];
         var build = new Mock<IBuildDefinition>();
+        var console = new TestConsole();
 
         build
             .Setup(x => x.ParamDefinitions)
@@ -294,9 +369,11 @@ public class CommandLineArgParserTests
                 ["Command3"] = definition => definition,
             });
 
-        var parsedArgs = CommandLineArgsParser.Parse(rawArgs, build.Object);
+        var parser = new CommandLineArgsParser(build.Object, console);
 
-        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Length.ShouldBe(5),
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldSatisfyAllConditions(args => args.Count.ShouldBe(5),
             args => args[0]
                 .ShouldBeOfType<ParamArg>()
                 .ShouldSatisfyAllConditions(x => x.ArgName.ShouldBe("param1"),

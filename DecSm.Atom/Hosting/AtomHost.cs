@@ -2,7 +2,7 @@
 
 public static class AtomHost
 {
-    public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args, Action<IAtomConfiguration>? configureAtom = null)
+    public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args)
         where T : BuildDefinition
     {
         var builder = Host.CreateEmptyApplicationBuilder(new()
@@ -14,10 +14,7 @@ public static class AtomHost
         builder.Configuration.AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddUserSecrets(Assembly.GetEntryAssembly()!);
 
-        if (configureAtom is not null)
-            configureAtom.Invoke(builder.AddAtom<T>(args));
-        else
-            builder.AddAtom<T>(args);
+        builder.AddAtom<HostApplicationBuilder, T>(args);
 
         return builder;
     }

@@ -1,6 +1,6 @@
 <Project>
-    <PropertyGroup>
-        <Product>Atom</Product>
-        <Authors>Declan Smith</Authors>
-    </PropertyGroup>
+  <PropertyGroup>
+    <Product>Atom</Product>
+    <Authors>Declan Smith</Authors>
+  </PropertyGroup>
 </Project>

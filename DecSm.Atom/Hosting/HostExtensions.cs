@@ -2,20 +2,30 @@
 
 public static class HostExtensions
 {
-    public static IAtomConfiguration AddAtom<T>(this IHostApplicationBuilder builder, string[] args)
-        where T : BuildDefinition, IBuildDefinition
+    public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)
+        where TBuilder : IHostApplicationBuilder
+        where TBuild : BuildDefinition, IBuildDefinition
     {
-        var configurator = new AtomConfiguration(builder);
         builder.Services.AddHostedService<AtomService>();
+        builder.Services.AddSingleton<IBuildDefinition, TBuild>();
 
-        builder.Services.AddSingleton<IBuildDefinition, T>();
-
-        T.Register(builder.Services);
+        TBuild.Register(builder.Services);
 
         builder.Services.AddAccessedSingleton<IParamService, ParamService>();
         builder.Services.AddAccessedSingleton<IReportService, ReportService>();
 
-        builder.Services.AddSingleton<IFileSystem, FileSystem>();
+        builder
+            .Services
+            .AddSingleton<IAtomFileSystem>(x => new AtomFileSystem
+            {
+                FileSystem = new FileSystem(),
+                PathLocators = x
+                    .GetServices<IPathProvider>()
+                    .OrderByDescending(l => l.Priority)
+                    .ToList(),
+            })
+            .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
+
         builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
         builder.Services.AddSingleton<IBuildExecutor, BuildExecutor>();
         builder.Services.AddSingleton<IWorkflowGenerator, WorkflowGenerator>();
@@ -28,21 +38,26 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
         builder.Services.TryAddSingleton<ICheatsheetService, CheatsheetService>();
 
+        builder.Services.AddSingleton<CommandLineArgsParser>();
+
         builder.Services.AddSingleton<CommandLineArgs>(services =>
-            CommandLineArgsParser.Parse(args, services.GetRequiredService<IBuildDefinition>()));
-
-        builder.Services.AddSingleton<BuildModel>(services =>
         {
-            var buildDefinition = services.GetRequiredService<IBuildDefinition>();
-            var commandLineArgs = services.GetRequiredService<CommandLineArgs>();
+            var parsedArgs = services
+                .GetRequiredService<CommandLineArgsParser>()
+                .Parse(args);
 
-            return BuildResolver.ResolveBuild(buildDefinition,
-                commandLineArgs
-                    .Commands
-                    .Select(x => x.Name)
-                    .ToArray(),
-                !commandLineArgs.HasSkip);
+            if (parsedArgs.HasVerbose)
+                LogOptions.IsVerboseEnabled = true;
+
+            return parsedArgs;
         });
+
+        builder.Services.AddSingleton<BuildResolver>();
+        builder.Services.AddSingleton<WorkflowResolver>();
+
+        builder.Services.AddSingleton<BuildModel>(services => services
+            .GetRequiredService<BuildResolver>()
+            .Resolve());
 
         builder.Logging.ClearProviders();
 
@@ -57,6 +72,6 @@ public static class HostExtensions
             _ => true,
         });
 
-        return configurator;
+        return builder;
     }
 }

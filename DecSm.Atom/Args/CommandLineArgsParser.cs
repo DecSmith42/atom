@@ -1,57 +1,20 @@
 ﻿namespace DecSm.Atom.Args;
 
-internal static class CommandLineArgsParser
+internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IAnsiConsole console)
 {
-    public static CommandLineArgs Parse(string[] rawArgs, IBuildDefinition buildDefinition)
+    public CommandLineArgs Parse(IReadOnlyList<string> rawArgs)
     {
         List<IArg> args = [];
 
-        for (var i = 0; i < rawArgs.Length; i++)
+        var isValid = true;
+
+        for (var i = 0; i < rawArgs.Count; i++)
         {
             var rawArg = rawArgs[i];
 
-            // Help
-            if (string.Equals(rawArg, "-h", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawArg, "--help", StringComparison.OrdinalIgnoreCase))
+            if (TryParseOption(rawArg) is { } optionArg)
             {
-                args.Add(new HelpArg());
-
-                continue;
-            }
-
-            // Gen
-            if (string.Equals(rawArg, "-g", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawArg, "--gen", StringComparison.OrdinalIgnoreCase))
-            {
-                args.Add(new GenArg());
-
-                continue;
-            }
-
-            // Skip
-            if (string.Equals(rawArg, "-s", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawArg, "--skip", StringComparison.OrdinalIgnoreCase))
-            {
-                args.Add(new SkipArg());
-
-                continue;
-            }
-
-            // Headless
-            if (string.Equals(rawArg, "-hl", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawArg, "--headless", StringComparison.OrdinalIgnoreCase))
-            {
-                args.Add(new HeadlessArg());
-
-                continue;
-            }
-
-            // Verbose
-            if (string.Equals(rawArg, "-v", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(rawArg, "--verbose", StringComparison.OrdinalIgnoreCase))
-            {
-                args.Add(new VerboseArg());
-                LogOptions.IsVerboseEnabled = true;
+                args.Add(optionArg);
 
                 continue;
             }
@@ -65,7 +28,7 @@ internal static class CommandLineArgsParser
                 foreach (var buildParam in buildDefinition.ParamDefinitions.Where(buildParam =>
                              string.Equals(argParam, buildParam.Value.Attribute.ArgName, StringComparison.OrdinalIgnoreCase)))
                 {
-                    if (i == rawArgs.Length - 1)
+                    if (i == rawArgs.Count - 1)
                         throw new ArgumentException($"Missing value for parameter '{argParam}'");
 
                     var nextArg = rawArgs[i + 1];
@@ -84,26 +47,73 @@ internal static class CommandLineArgsParser
                     continue;
             }
 
-            // Commands
-            var matchedCommand = false;
-
-            var buildTargets = buildDefinition.TargetDefinitions.Where(buildTarget =>
-                string.Equals(rawArg, buildTarget.Key, StringComparison.OrdinalIgnoreCase));
-
-            foreach (var buildTarget in buildTargets)
+            if (TryParseCommand(buildDefinition.TargetDefinitions, rawArg) is { } commandArg)
             {
-                args.Add(new CommandArg(buildTarget.Key));
-                matchedCommand = true;
+                args.Add(commandArg);
 
-                break;
+                continue;
             }
 
-            if (matchedCommand)
-                continue;
+            console.WriteLine();
+            console.WriteLine($"Unknown argument '{rawArg}'", new(Color.Red));
 
-            throw new ArgumentException($"Unknown argument '{rawArg}'");
+            var commandMatches = buildDefinition
+                .TargetDefinitions
+                .Keys
+                .OrderBy(targetDefinition => targetDefinition.GetLevenshteinDistance(rawArg))
+                .Take(3)
+                .ToList();
+
+            if (commandMatches.Count > 0)
+            {
+                console.WriteLine();
+                console.WriteLine("Similar commands", new(Color.Yellow));
+
+                foreach (var possibleMatch in commandMatches)
+                    console.WriteLine($"  {possibleMatch}");
+            }
+
+            var paramMatches = buildDefinition
+                .ParamDefinitions
+                .Values
+                .Select(paramDefinition => paramDefinition.Attribute.ArgName)
+                .OrderBy(paramDefinition => paramDefinition.GetLevenshteinDistance(rawArg))
+                .Take(3)
+                .ToList();
+
+            if (paramMatches.Count > 0)
+            {
+                console.WriteLine();
+                console.WriteLine("Similar parameters", new(Color.Yellow));
+
+                foreach (var possibleMatch in paramMatches)
+                    console.WriteLine($"  --{possibleMatch}");
+            }
+
+            console.WriteLine();
+
+            isValid = false;
         }
 
-        return new(args.ToArray());
+        return new(isValid, args.ToArray());
     }
+
+    private static IArg? TryParseOption(string rawArg) =>
+        rawArg.ToLower() switch
+        {
+            "-h" or "--help" => new HelpArg(),
+            "-g" or "--gen" => new GenArg(),
+            "-s" or "--skip" => new SkipArg(),
+            "-hl" or "--headless" => new HeadlessArg(),
+            "-v" or "--verbose" => new VerboseArg(),
+            _ => null,
+        };
+
+    private static CommandArg? TryParseCommand(IReadOnlyDictionary<string, Target> targetDefinitions, string rawArg) =>
+        targetDefinitions
+            .Where(buildTarget => string.Equals(rawArg, buildTarget.Key, StringComparison.OrdinalIgnoreCase))
+            .Select(x => x.Key)
+            .FirstOrDefault() is { } matchedBuildTarget
+            ? new CommandArg(matchedBuildTarget)
+            : null;
 }

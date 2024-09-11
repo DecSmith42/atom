@@ -9,9 +9,8 @@ internal interface IWorkflowGenerator
 
 internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
-    BuildModel buildModel,
     IEnumerable<IWorkflowWriter> writers,
-    IEnumerable<IWorkflowOptionProvider> workflowOptionProviders
+    WorkflowResolver workflowResolver
 ) : IWorkflowGenerator
 {
     private readonly List<IWorkflowWriter> _writers = writers.ToList();
@@ -30,7 +29,7 @@ internal sealed class WorkflowGenerator(
             if (writer is null)
                 continue;
 
-            var workflow = WorkflowBuilder.BuildWorkflow(workflowDefinition, buildDefinition, buildModel, workflowOptionProviders);
+            var workflow = workflowResolver.Resolve(workflowDefinition);
             var generateTask = writer.Generate(workflow);
 
             generationTasks.Add(generateTask);
@@ -53,7 +52,7 @@ internal sealed class WorkflowGenerator(
             if (writer is null)
                 continue;
 
-            var workflow = WorkflowBuilder.BuildWorkflow(workflowDefinition, buildDefinition, buildModel, workflowOptionProviders);
+            var workflow = workflowResolver.Resolve(workflowDefinition);
             var checkTask = writer.CheckForDirtyWorkflow(workflow);
 
             checkTasks.Add(checkTask);

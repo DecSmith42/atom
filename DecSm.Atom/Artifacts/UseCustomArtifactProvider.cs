@@ -1,3 +1,3 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
-public sealed record UseCustomArtifactProvider : IWorkflowOption;
+public sealed record UseCustomArtifactProvider : ToggleWorkflowOption<UseCustomArtifactProvider>;

@@ -1,24 +1,33 @@
 ﻿namespace DecSm.Atom.Workflows;
 
-internal static class WorkflowBuilder
+internal sealed class WorkflowResolver(
+    IBuildDefinition buildDefinition,
+    BuildModel buildModel,
+    IEnumerable<IWorkflowOptionProvider> workflowOptionProviders
+)
 {
-    public static WorkflowModel BuildWorkflow(
-        WorkflowDefinition definition,
-        IBuildDefinition buildDefinition,
-        BuildModel buildModel,
-        IEnumerable<IWorkflowOptionProvider> workflowOptionProviders)
+    private readonly IReadOnlyList<IWorkflowOptionProvider> _workflowOptionProviders = workflowOptionProviders.ToList();
+
+    public WorkflowModel Resolve(WorkflowDefinition definition)
     {
-        if (definition.StepDefinitions.Count == 0)
+        var workflowOptions = IWorkflowOption
+            .MergeOptions(buildDefinition
+                .DefaultWorkflowOptions
+                .Concat(_workflowOptionProviders.SelectMany(provider => provider.WorkflowOptions))
+                .Concat(definition.Options))
+            .ToList();
+
+        if (definition.StepDefinitions.Count is 0)
             return new(definition.Name)
             {
                 Triggers = definition.Triggers,
-                Options = definition.Options,
+                Options = workflowOptions,
                 Jobs = [],
             };
 
         var definedSteps = definition
             .StepDefinitions
-            .Select(stepDefinition => stepDefinition.CreateStep(buildDefinition))
+            .Select(stepDefinition => stepDefinition.CreateStep())
             .ToList();
 
         var definedNonTargetJobs = definedSteps
@@ -30,8 +39,8 @@ internal static class WorkflowBuilder
             .OfType<CommandWorkflowStep>()
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
-                MatrixDimensions = step.MatrixDimensions,
                 Options = step.Options,
+                MatrixDimensions = step.MatrixDimensions,
             })
             .ToList();
 
@@ -44,10 +53,6 @@ internal static class WorkflowBuilder
         foreach (var jobName in commandJobMap.Keys)
         {
             var target = buildModel.Targets.Single(x => x.Name == jobName);
-
-            var job = commandJobMap[jobName];
-
-            job.JobDependencies.AddRange(target.Dependencies.Select(x => x.Name));
 
             foreach (var consumedVariable in target.ConsumedVariables)
             {
@@ -88,17 +93,10 @@ internal static class WorkflowBuilder
             .Concat(OrderJobs(commandJobs, commandJobMap))
             .ToList();
 
-        var options = definition
-            .Options
-            .Concat(buildDefinition.DefaultWorkflowOptions)
-            .Concat(workflowOptionProviders.SelectMany(x => x.WorkflowOptions))
-            .Distinct()
-            .ToList();
-
         return new(definition.Name)
         {
             Triggers = definition.Triggers,
-            Options = options,
+            Options = workflowOptions,
             Jobs = jobs,
         };
     }

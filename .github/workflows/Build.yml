@@ -8,23 +8,7 @@ on:
 
 jobs:
   
-  Setup:
-    runs-on: ubuntu-latest
-    outputs:
-      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Setup
-        id: Setup
-        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
-  
   PackAtom:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -44,7 +28,6 @@ jobs:
       
   
   PackAtomTool:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -64,7 +47,6 @@ jobs:
       
   
   PackAzureKeyVaultExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -84,7 +66,6 @@ jobs:
       
   
   PackAzureStorageExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -104,7 +85,6 @@ jobs:
       
   
   PackDotnetExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -124,7 +104,6 @@ jobs:
       
   
   PackGithubWorkflowsExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -144,7 +123,6 @@ jobs:
       
   
   PackGitVersionExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -164,7 +142,6 @@ jobs:
       
   
   TestAtom:
-    needs: [ Setup ]
     strategy:
       matrix:
         github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -190,7 +167,6 @@ jobs:
       
   
   PushToNuget:
-    needs: [ Setup, PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
     runs-on: ubuntu-latest
     steps:
       
@@ -245,7 +221,4 @@ jobs:
         id: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         env:
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}

@@ -1,6 +1,5 @@
 ﻿namespace DecSm.Atom;
 
-[PublicAPI]
 public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
     public int Major { get; private init; }
@@ -21,45 +20,81 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
 
     public int BuildNumberFromMetadata => ExtractBuildNumber(Metadata);
 
-    public bool IsBetween(SemVer firstBound, SemVer secondBound) =>
-        firstBound == secondBound
-            ? Equals(firstBound)
-            : firstBound < secondBound
-                ? firstBound < this && this < secondBound
-                : secondBound < this && this < firstBound;
-
-    public Version ToSystemVersion(bool throwIfContainsPreRelease = false, bool throwIfContainsMetadata = false) =>
-        throwIfContainsPreRelease && PreRelease is not null
-            ? throw new ArgumentException("The SemVer contains a pre-release tag, which is not supported by System.Version.")
-            : throwIfContainsMetadata && Metadata is not null
-                ? throw new ArgumentException("The SemVer contains metadata, which is not supported by System.Version.")
-                : new(Major, Minor, Patch);
-
-    public static SemVer FromSystemVersion(Version version, bool throwIfContainsRevision = false) =>
-        throwIfContainsRevision && version.Revision > 0
-            ? throw new ArgumentException("The version contains a revision number, which is not supported by SemVer.")
-            : new()
-            {
-                Major = version.Major,
-                Minor = version.Minor,
-                Patch = version.Build,
-            };
-
-    public static int ExtractBuildNumber(string? input)
+    public int CompareTo(SemVer? other)
     {
-        if (string.IsNullOrWhiteSpace(input))
-            return 0;
+        if (other is null)
+            return 1;
 
-        var matches = NumberRegex()
-            .Matches(input);
+        var majorComparison = Major.CompareTo(other.Major);
 
-        return matches.Count is 1
-            ? int.Parse(matches[0].Value)
-            : 0;
+        if (majorComparison != 0)
+            return majorComparison;
+
+        var minorComparison = Minor.CompareTo(other.Minor);
+
+        if (minorComparison != 0)
+            return minorComparison;
+
+        var patchComparison = Patch.CompareTo(other.Patch);
+
+        if (patchComparison != 0)
+            return patchComparison;
+
+        switch (PreRelease, other.PreRelease)
+        {
+            case (null, not null):
+                return 1;
+            case (not null, null):
+                return -1;
+            case (null, null):
+                return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
+        }
+
+        var preReleaseParts = PreRelease.Split('.');
+        var otherPreReleaseParts = other.PreRelease.Split('.');
+
+        for (var i = 0; i < Math.Min(preReleaseParts.Length, otherPreReleaseParts.Length); i++)
+            if (int.TryParse(preReleaseParts[i], out var preReleasePart) &&
+                int.TryParse(otherPreReleaseParts[i], out var otherPreReleasePart))
+            {
+                var preReleasePartComparison = preReleasePart.CompareTo(otherPreReleasePart);
+
+                if (preReleasePartComparison != 0)
+                    return preReleasePartComparison;
+            }
+            else
+            {
+                var preReleasePartComparison = string.Compare(preReleaseParts[i], otherPreReleaseParts[i], StringComparison.Ordinal);
+
+                if (preReleasePartComparison != 0)
+                    return preReleasePartComparison;
+            }
+
+        var preReleaseLengthComparison = preReleaseParts.Length.CompareTo(otherPreReleaseParts.Length);
+
+        if (preReleaseLengthComparison != 0)
+            return preReleaseLengthComparison;
+
+        return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
     }
 
-    public static SemVer Parse(string s) =>
-        Parse(s, null);
+    public static bool operator >(SemVer left, SemVer right) =>
+        left.CompareTo(right) > 0;
+
+    public static bool operator >=(SemVer left, SemVer right) =>
+        left.CompareTo(right) >= 0;
+
+    public static bool operator <(SemVer left, SemVer right) =>
+        left.CompareTo(right) < 0;
+
+    public static bool operator <=(SemVer left, SemVer right) =>
+        left.CompareTo(right) <= 0;
+
+    public static bool operator ==(SemVer? left, SemVer? right) =>
+        (left is null && right is null) || (left is not null && left.Equals(right));
+
+    public static bool operator !=(SemVer? left, SemVer? right) =>
+        !(left == right);
 
     public static SemVer Parse(string s, IFormatProvider? provider)
     {
@@ -127,75 +162,57 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
         return true;
     }
 
-    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out SemVer result) =>
-        TryParse(s, null, out result);
-
     public static SemVer Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
         Parse(s.ToString(), provider);
 
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out SemVer result) =>
         TryParse(s.ToString(), provider, out result);
 
+    public bool IsBetween(SemVer firstBound, SemVer secondBound) =>
+        firstBound == secondBound
+            ? Equals(firstBound)
+            : firstBound < secondBound
+                ? firstBound < this && this < secondBound
+                : secondBound < this && this < firstBound;
+
+    public Version ToSystemVersion(bool throwIfContainsPreRelease = false, bool throwIfContainsMetadata = false) =>
+        throwIfContainsPreRelease && PreRelease is not null
+            ? throw new ArgumentException("The SemVer contains a pre-release tag, which is not supported by System.Version.")
+            : throwIfContainsMetadata && Metadata is not null
+                ? throw new ArgumentException("The SemVer contains metadata, which is not supported by System.Version.")
+                : new(Major, Minor, Patch);
+
+    public static SemVer FromSystemVersion(Version version, bool throwIfContainsRevision = false) =>
+        throwIfContainsRevision && version.Revision > 0
+            ? throw new ArgumentException("The version contains a revision number, which is not supported by SemVer.")
+            : new()
+            {
+                Major = version.Major,
+                Minor = version.Minor,
+                Patch = version.Build,
+            };
+
+    public static int ExtractBuildNumber(string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return 0;
+
+        var matches = NumberRegex()
+            .Matches(input);
+
+        return matches.Count is 1
+            ? int.Parse(matches[0].Value)
+            : 0;
+    }
+
+    public static SemVer Parse(string s) =>
+        Parse(s, null);
+
+    public static bool TryParse([NotNullWhen(true)] string? s, [MaybeNullWhen(false)] out SemVer result) =>
+        TryParse(s, null, out result);
+
     public static bool TryParse(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out SemVer result) =>
         TryParse(s.ToString(), out result);
-
-    public int CompareTo(SemVer? other)
-    {
-        if (other is null)
-            return 1;
-
-        var majorComparison = Major.CompareTo(other.Major);
-
-        if (majorComparison != 0)
-            return majorComparison;
-
-        var minorComparison = Minor.CompareTo(other.Minor);
-
-        if (minorComparison != 0)
-            return minorComparison;
-
-        var patchComparison = Patch.CompareTo(other.Patch);
-
-        if (patchComparison != 0)
-            return patchComparison;
-
-        switch (PreRelease, other.PreRelease)
-        {
-            case (null, not null):
-                return 1;
-            case (not null, null):
-                return -1;
-            case (null, null):
-                return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
-        }
-
-        var preReleaseParts = PreRelease.Split('.');
-        var otherPreReleaseParts = other.PreRelease.Split('.');
-
-        for (var i = 0; i < Math.Min(preReleaseParts.Length, otherPreReleaseParts.Length); i++)
-            if (int.TryParse(preReleaseParts[i], out var preReleasePart) &&
-                int.TryParse(otherPreReleaseParts[i], out var otherPreReleasePart))
-            {
-                var preReleasePartComparison = preReleasePart.CompareTo(otherPreReleasePart);
-
-                if (preReleasePartComparison != 0)
-                    return preReleasePartComparison;
-            }
-            else
-            {
-                var preReleasePartComparison = string.Compare(preReleaseParts[i], otherPreReleaseParts[i], StringComparison.Ordinal);
-
-                if (preReleasePartComparison != 0)
-                    return preReleasePartComparison;
-            }
-
-        var preReleaseLengthComparison = preReleaseParts.Length.CompareTo(otherPreReleaseParts.Length);
-
-        if (preReleaseLengthComparison != 0)
-            return preReleaseLengthComparison;
-
-        return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
-    }
 
     public bool Equals(SemVer? other) =>
         CompareTo(other) == 0;
@@ -205,24 +222,6 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
 
     public override int GetHashCode() =>
         HashCode.Combine(Major, Minor, Patch, PreRelease, Metadata);
-
-    public static bool operator >(SemVer left, SemVer right) =>
-        left.CompareTo(right) > 0;
-
-    public static bool operator >=(SemVer left, SemVer right) =>
-        left.CompareTo(right) >= 0;
-
-    public static bool operator <(SemVer left, SemVer right) =>
-        left.CompareTo(right) < 0;
-
-    public static bool operator <=(SemVer left, SemVer right) =>
-        left.CompareTo(right) <= 0;
-
-    public static bool operator ==(SemVer? left, SemVer? right) =>
-        (left is null && right is null) || (left is not null && left.Equals(right));
-
-    public static bool operator !=(SemVer? left, SemVer? right) =>
-        !(left == right);
 
     public static implicit operator SemVer(string s) =>
         Parse(s);

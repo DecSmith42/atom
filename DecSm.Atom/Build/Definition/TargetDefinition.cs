@@ -6,6 +6,8 @@ public sealed class TargetDefinition
 
     public string? Description { get; private set; }
 
+    public bool Hidden { get; private set; }
+
     public List<Func<Task>> Tasks { get; private set; } = [];
 
     public List<string> Dependencies { get; private set; } = [];
@@ -100,6 +102,13 @@ public sealed class TargetDefinition
         return this;
     }
 
+    public TargetDefinition IsHidden()
+    {
+        Hidden = true;
+
+        return this;
+    }
+
     public TargetDefinition Executes(Func<Task> task)
     {
         if (Tasks.Any(x => x() == task()))
@@ -126,9 +135,12 @@ public sealed class TargetDefinition
 
     public TargetDefinition RequiresParam(string? param, [CallerArgumentExpression("param")] string _ = null!)
     {
-        RequiredParams.Add(_
-            .Split('.')
-            .Last());
+        if (_.StartsWith("nameof("))
+            RequiredParams.Add(_[7..^1]);
+        else
+            RequiredParams.Add(_
+                .Split('.')
+                .Last());
 
         return this;
     }

@@ -1,6 +1,5 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Command;
 
-[UsedImplicitly]
 public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
 {
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
@@ -9,7 +8,13 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
 
     public bool SuppressArtifactPublishing { get; init; }
 
-    public IWorkflowStepModel CreateStep(IBuildDefinition buildDefinition) =>
+    public CommandDefinition WithSuppressedArtifactPublishing =>
+        this with
+        {
+            SuppressArtifactPublishing = true,
+        };
+
+    public IWorkflowStepModel CreateStep() =>
         new CommandWorkflowStep(Name)
         {
             MatrixDimensions = MatrixDimensions,
@@ -29,12 +34,6 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
             MatrixDimensions = MatrixDimensions
                 .Concat(dimensions)
                 .ToList(),
-        };
-
-    public CommandDefinition WithSuppressedArtifactPublishing =>
-        this with
-        {
-            SuppressArtifactPublishing = true,
         };
 
     public CommandDefinition WithOptions(params IWorkflowOption[] options) =>

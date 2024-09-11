@@ -8,7 +8,7 @@ public partial interface INugetHelper : IVersionHelper
 
     async Task PushProject(string projectName, string feed, string apiKey)
     {
-        var packageBuildDir = FileSystem.ArtifactDirectory() / projectName;
+        var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
         var packages = FileSystem.Directory.GetFiles(packageBuildDir, "*.nupkg");
 
         if (packages.Length == 0)

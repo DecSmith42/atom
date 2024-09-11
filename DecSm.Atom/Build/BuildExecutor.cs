@@ -20,7 +20,7 @@ internal sealed class BuildExecutor(
     {
         var commands = args.Commands;
 
-        if (commands is { Length: 0 })
+        if (commands is { Count: 0 })
         {
             logger.LogInformation("No targets specified; execution skipped");
 
@@ -35,6 +35,9 @@ internal sealed class BuildExecutor(
                 async context =>
                 {
                     foreach (var command in commands)
+                        ValidateTargetParameters(buildModel.GetTarget(command.Name));
+
+                    foreach (var command in commands)
                         await ExecuteTarget(buildModel.GetTarget(command.Name), context);
                 });
 
@@ -47,6 +50,18 @@ internal sealed class BuildExecutor(
             {
                 logger.LogError(ex, "An error occurred while reporting run outcome");
             }
+    }
+
+    private void ValidateTargetParameters(TargetModel target)
+    {
+        foreach (var requirement in target.RequiredParams.Where(requirement => paramService.GetParam(requirement) is null or ""))
+        {
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
+
+            buildModel.TargetStates[target].Status = TargetRunState.Failed;
+
+            return;
+        }
     }
 
     private async Task ExecuteTarget(TargetModel target, StatusContext context)
@@ -88,15 +103,6 @@ internal sealed class BuildExecutor(
                 variable,
                 variable.TargetName,
                 target.Name);
-
-            buildModel.TargetStates[target].Status = TargetRunState.Failed;
-
-            return;
-        }
-
-        foreach (var requirement in target.RequiredParams.Where(requirement => paramService.GetParam(requirement) is null or ""))
-        {
-            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
 
             buildModel.TargetStates[target].Status = TargetRunState.Failed;
 

@@ -12,22 +12,6 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
-    // ReSharper disable InconsistentNaming
-
-    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
-    private const string Target = "Target";
-    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
-    private const string CommandDefinitionFull = "DecSm.Atom.Workflows.Definition.Command.CommandDefinition";
-    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
-    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
-    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
-    private const string IBuildDefinition = "IBuildDefinition";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-    private const string Register = "Register";
-    private const string RegisterTarget = "RegisterTarget";
-
-    // ReSharper restore InconsistentNaming
-
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
                 .SyntaxProvider
@@ -70,10 +54,6 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .GetDeclaredSymbol(classDeclarationSyntax) is INamedTypeSymbol classSymbol)
                 GeneratePartial(context, classSymbol, classDeclarationSyntax);
     }
-
-    private record struct InterfaceWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
-
-    private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
 
     private static string SimpleName(string fullName) =>
         fullName
@@ -252,4 +232,24 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
+
+    private record struct InterfaceWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
+
+    private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
+
+    // ReSharper disable InconsistentNaming
+
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private const string Target = "Target";
+    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
+    private const string CommandDefinitionFull = "DecSm.Atom.Workflows.Definition.Command.CommandDefinition";
+    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
+    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
+    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
+    private const string IBuildDefinition = "IBuildDefinition";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string Register = "Register";
+    private const string RegisterTarget = "RegisterTarget";
+
+    // ReSharper restore InconsistentNaming
 }

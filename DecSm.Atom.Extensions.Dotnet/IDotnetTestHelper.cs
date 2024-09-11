@@ -7,19 +7,19 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
     {
         Logger.LogInformation("Running unit tests for Atom project {AtomProjectName}", projectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.SolutionRoot() / projectName / $"{projectName}.csproj");
+        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / projectName / $"{projectName}.csproj");
 
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
 
-        var testOutputDirectory = FileSystem.SolutionRoot() / projectName / "TestResults";
+        var testOutputDirectory = FileSystem.AtomRootDirectory / projectName / "TestResults";
 
         if (testOutputDirectory.DirectoryExists)
             FileSystem.Directory.Delete(testOutputDirectory, true);
 
         FileSystem.Directory.CreateDirectory(testOutputDirectory);
 
-        var projectPublishDirectory = FileSystem.PublishDirectory() / projectName;
+        var projectPublishDirectory = FileSystem.AtomPublishDirectory / projectName;
 
         if (projectPublishDirectory.DirectoryExists)
             FileSystem.Directory.Delete(projectPublishDirectory, true);
@@ -61,7 +61,7 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
                 $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",
                 $"-targetdir:{coverageResultsPublishDirectory}",
                 "-reporttypes:HtmlInline;JsonSummary",
-                "-sourcedirs:" + FileSystem.SolutionRoot(),
+                "-sourcedirs:" + FileSystem.AtomRootDirectory,
             ])
             {
                 AllowFailedResult = true,

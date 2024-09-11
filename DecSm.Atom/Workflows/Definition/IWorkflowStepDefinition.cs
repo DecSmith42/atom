@@ -2,5 +2,5 @@
 
 public interface IWorkflowStepDefinition
 {
-    IWorkflowStepModel CreateStep(IBuildDefinition buildDefinition);
+    IWorkflowStepModel CreateStep();
 }
