@@ -10,7 +10,7 @@ internal sealed class WorkflowResolver(
 
     public WorkflowModel Resolve(WorkflowDefinition definition)
     {
-        var workflowOptions = IWorkflowOption
+        var workflowOptions = WorkflowOptionUtil
             .MergeOptions(buildDefinition
                 .DefaultWorkflowOptions
                 .Concat(_workflowOptionProviders.SelectMany(provider => provider.WorkflowOptions))

@@ -12,7 +12,7 @@ public sealed class GitVersionBuildIdProvider(
     {
         get
         {
-            if (IWorkflowOption
+            if (WorkflowOptionUtil
                 .GetOptionsForCurrentTarget(buildDefinition)
                 .Contains(ProvideGitVersionAsWorkflowId.Disabled))
                 return null;
