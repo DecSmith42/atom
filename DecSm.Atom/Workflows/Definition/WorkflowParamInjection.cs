@@ -2,7 +2,9 @@
 
 public sealed record WorkflowParamInjection(string Name, string Value) : IWorkflowOption
 {
-    public IEnumerable<T> Merge<T>(IEnumerable<T> entries)
+    public bool AllowMultiple => true;
+
+    public IEnumerable<T> MergeWith<T>(IEnumerable<T> entries)
         where T : IWorkflowOption =>
         entries
             .OfType<WorkflowParamInjection>()
