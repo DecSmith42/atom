@@ -1,53 +1,86 @@
-﻿namespace DecSm.Atom.Workflows;
+﻿using DecSm.Atom.Artifacts;
 
-internal static class WorkflowBuilder
+namespace DecSm.Atom.Workflows;
+
+internal sealed class WorkflowResolver(
+    IBuildDefinition buildDefinition,
+    BuildModel buildModel,
+    IEnumerable<IWorkflowOptionProvider> workflowOptionProviders
+)
 {
-    public static WorkflowModel BuildWorkflow(
-        WorkflowDefinition definition,
-        IBuildDefinition buildDefinition,
-        BuildModel buildModel,
-        IEnumerable<IWorkflowOptionProvider> workflowOptionProviders)
+    private readonly IReadOnlyList<IWorkflowOptionProvider> _workflowOptionProviders = workflowOptionProviders.ToList();
+
+    public WorkflowModel Resolve(WorkflowDefinition definition)
     {
-        if (definition.StepDefinitions.Count == 0)
+        // Get all default options from BuildDefinition, WorkflowOptionProviders and WorkflowDefinition
+        var workflowOptions = WorkflowOptionUtil
+            .MergeOptions(buildDefinition
+                .DefaultWorkflowOptions
+                .Concat(_workflowOptionProviders.SelectMany(provider => provider.WorkflowOptions))
+                .Concat(definition.Options))
+            .ToList();
+
+        // If there are no steps, we can return a simple workflow
+        if (definition.StepDefinitions.Count is 0)
             return new(definition.Name)
             {
                 Triggers = definition.Triggers,
-                Options = definition.Options,
+                Options = workflowOptions,
                 Jobs = [],
             };
 
+        // Transform all step definitions into steps
         var definedSteps = definition
             .StepDefinitions
-            .Select(stepDefinition => stepDefinition.CreateStep(buildDefinition))
+            .Select(stepDefinition => stepDefinition.CreateStep())
             .ToList();
 
+        // Get the steps that are not Commands
         var definedNonTargetJobs = definedSteps
             .Where(step => step is not CommandWorkflowStep)
             .Select(step => new WorkflowJobModel(step.Name, [step]))
             .ToList();
 
+        // Get the steps that are Commands
         var definedTargetJobs = definedSteps
             .OfType<CommandWorkflowStep>()
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
-                MatrixDimensions = step.MatrixDimensions,
                 Options = step.Options,
+                MatrixDimensions = step.MatrixDimensions,
             })
             .ToList();
 
+        // If this workflow uses a custom artifact provider, we need to ensure that steps that
+        // consume or produce artifacts are dependent on the Setup step.
+        // It will be up to the WorkflowWriter to implement the download/upload steps.
+        if (UseCustomArtifactProvider.IsEnabled(workflowOptions))
+            definedTargetJobs = definedTargetJobs.ConvertAll(job => job
+                .Steps
+                .Where(step => step is CommandWorkflowStep { SuppressArtifactPublishing: false })
+                .Select(step => buildModel.Targets.Single(target => target.Name == step.Name))
+                .Any(target => target.ConsumedArtifacts.Count > 0 || target.ProducedArtifacts.Count > 0)
+                ? job with
+                {
+                    JobDependencies = job
+                        .JobDependencies
+                        .Append(nameof(ISetup.Setup))
+                        .ToList(),
+                }
+                : job);
+
+        // Map Command jobs by name for easy lookup
         var commandJobMap = definedTargetJobs.ToDictionary(job => job.Name);
 
+        // Add all targets that are not already defined as jobs
         foreach (var targetName in buildModel.Targets.Select(x => x.Name))
             if (!commandJobMap.ContainsKey(targetName))
                 commandJobMap[targetName] = new(targetName, [new CommandWorkflowStep(targetName)]);
 
+        // Check that all consumed variables are produced by the target they are consumed from to avoid errors later on
         foreach (var jobName in commandJobMap.Keys)
         {
             var target = buildModel.Targets.Single(x => x.Name == jobName);
-
-            var job = commandJobMap[jobName];
-
-            job.JobDependencies.AddRange(target.Dependencies.Select(x => x.Name));
 
             foreach (var consumedVariable in target.ConsumedVariables)
             {
@@ -62,6 +95,7 @@ internal static class WorkflowBuilder
 
         var commandJobs = commandJobMap.Values.ToList();
 
+        // Remove jobs that are not defined and not depended on by any other defined or dependent job
         while (commandJobs.Count > 0)
         {
             var removedJob = false;
@@ -84,21 +118,15 @@ internal static class WorkflowBuilder
                 break;
         }
 
+        // Order jobs based on dependencies
         var jobs = definedNonTargetJobs
             .Concat(OrderJobs(commandJobs, commandJobMap))
-            .ToList();
-
-        var options = definition
-            .Options
-            .Concat(buildDefinition.DefaultWorkflowOptions)
-            .Concat(workflowOptionProviders.SelectMany(x => x.WorkflowOptions))
-            .Distinct()
             .ToList();
 
         return new(definition.Name)
         {
             Triggers = definition.Triggers,
-            Options = options,
+            Options = workflowOptions,
             Jobs = jobs,
         };
     }

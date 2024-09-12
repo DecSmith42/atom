@@ -3,19 +3,10 @@
 [TestFixture]
 public class BuildExecutorTests
 {
-    private CommandLineArgs _commandLineArgs;
-    private BuildModel _buildModel;
-    private Mock<IParamService> _paramService;
-    private Mock<IWorkflowVariableService> _workflowVariableService;
-    private IReadOnlyList<Mock<IOutcomeReporter>> _outcomeReporters; 
-    private TestConsole _console;
-    private Mock<IReportService> _reportService;
-    private Mock<ILogger<BuildExecutor>> _logger;
-
     [SetUp]
     public void SetUp()
     {
-        _commandLineArgs = new([]);
+        _commandLineArgs = new(true, []);
 
         _buildModel = new()
         {
@@ -34,6 +25,15 @@ public class BuildExecutorTests
     [TearDown]
     public void TearDown() =>
         _console.Dispose();
+
+    private CommandLineArgs _commandLineArgs;
+    private BuildModel _buildModel;
+    private Mock<IParamService> _paramService;
+    private Mock<IWorkflowVariableService> _workflowVariableService;
+    private IReadOnlyList<Mock<IOutcomeReporter>> _outcomeReporters;
+    private TestConsole _console;
+    private Mock<IReportService> _reportService;
+    private Mock<ILogger<BuildExecutor>> _logger;
 
     [Test]
     public async Task Execute_NoCommand_SucceedsAndLogs()
@@ -66,9 +66,9 @@ public class BuildExecutorTests
         // Arrange
         var testVal = new TestVal();
 
-        _commandLineArgs = new([new CommandArg("Test")]);
+        _commandLineArgs = new(true, [new CommandArg("Test")]);
 
-        var target = new TargetModel("Test", null)
+        var target = new TargetModel("Test", null, false)
         {
             Tasks =
             [

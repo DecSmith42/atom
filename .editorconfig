@@ -1,11 +1,20 @@
 ﻿root = true
 
 [*]
+
+# Default properties
 charset = utf-8
 end_of_line = crlf
 trim_trailing_whitespace = false
 insert_final_newline = false
 indent_style = space
+indent_size = 2
+
+[{*.cs,*.cshtml,*.razor}]
+
+# CSharp properties
+trim_trailing_whitespace = true
+insert_final_newline = true
 indent_size = 4
 max_line_length = 140
 
@@ -37,6 +46,7 @@ resharper_blank_lines_before_control_transfer_statements = 1
 resharper_blank_lines_before_multiline_statements = 1
 resharper_blank_lines_before_single_line_comment = 1
 resharper_braces_for_using = required_for_multiline
+resharper_braces_for_while = required_for_multiline
 resharper_csharp_blank_lines_around_single_line_invocable = 1
 resharper_csharp_empty_block_style = together_same_line
 resharper_csharp_place_type_constraints_on_same_line = false
@@ -49,7 +59,8 @@ resharper_csharp_wrap_multiple_type_parameter_constraints_style = chop_always
 resharper_csharp_wrap_object_and_collection_initializer_style = chop_always
 resharper_csharp_wrap_parameters_style = chop_if_long
 resharper_csharp_wrap_ternary_expr_style = chop_always
-resharper_indent_preprocessor_if = outdent
+resharper_indent_preprocessor_if = usual_indent
+resharper_instance_members_qualify_declared_in = base_class
 resharper_keep_existing_declaration_parens_arrangement = false
 resharper_keep_existing_embedded_arrangement = false
 resharper_keep_existing_expr_member_arrangement = false
@@ -74,5 +85,9 @@ resharper_wrap_chained_binary_patterns = chop_if_long
 resharper_wrap_chained_method_calls = chop_always
 resharper_wrap_list_pattern = chop_if_long
 
-[version.json]
-indent_size = 2
+# Verify settings
+[*.{received,verified}.{txt,xml,json}]
+end_of_line = lf
+indent_size = unset
+indent_style = unset
+tab_width = unset

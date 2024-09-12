@@ -1,19 +1,8 @@
 ﻿namespace DecSm.Atom.Reports;
 
-public partial class ConsoleOutcomeReporter(
-    CommandLineArgs args,
-    IAnsiConsole console,
-    BuildModel buildModel,
-    IReportService reportService
-) : IOutcomeReporter
+public partial class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, BuildModel buildModel, IReportService reportService)
+    : IOutcomeReporter
 {
-    [return: NotNullIfNotNull("input")]
-    private static string? StripEmojis(string? input) =>
-        input is not null
-            ? EmojiRegex()
-                .Replace(input, string.Empty)
-            : null;
-
     public Task ReportRunOutcome()
     {
         var table = new Table()
@@ -33,14 +22,14 @@ public partial class ConsoleOutcomeReporter(
             {
                 TargetRunState.Succeeded => "[green]Succeeded[/]",
                 TargetRunState.Failed => "[red]Failed[/]",
-                TargetRunState.NotRun => "[yellow]NotRun[/]",
+                TargetRunState.NotRun or TargetRunState.PendingRun => "[yellow]NotRun[/]",
                 var runState => $"[red]Unexpected state: {runState}[/]",
             };
 
             var targetDuration = state.RunDuration;
 
-            var durationText = state.Status is TargetRunState.Succeeded or TargetRunState.Failed
-                ? $"{targetDuration?.TotalSeconds:0.00}s"
+            var durationText = state.Status is TargetRunState.Succeeded or TargetRunState.Failed && targetDuration is not null
+                ? $"{targetDuration.Value.TotalSeconds:0.00}s"
                 : string.Empty;
 
             if (state.Status is TargetRunState.NotRun && args.HasHeadless)
@@ -59,6 +48,13 @@ public partial class ConsoleOutcomeReporter(
 
         return Task.CompletedTask;
     }
+
+    [return: NotNullIfNotNull("input")]
+    private static string? StripEmojis(string? input) =>
+        input is not null
+            ? EmojiRegex()
+                .Replace(input, string.Empty)
+            : null;
 
     private void Write(IReadOnlyList<IReportData> reportData)
     {
@@ -132,7 +128,7 @@ public partial class ConsoleOutcomeReporter(
 
         foreach (var log in reportData)
         {
-            var messageLines = log.Message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var messageLines = log.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
             var rows = new List<IRenderable>
             {

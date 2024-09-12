@@ -9,7 +9,7 @@ public partial interface IDotnetToolHelper
             ? "-g"
             : string.Empty;
 
-        if (!global && !FileSystem.File.Exists(FileSystem.CurrentDir() / ".config" / "dotnet-tools.json"))
+        if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
             GetService<IProcessRunner>()
                 .Run(new("dotnet", "new tool-manifest")
                 {
@@ -59,7 +59,7 @@ public partial interface IDotnetToolHelper
             ? "-g"
             : string.Empty;
 
-        if (!global && !FileSystem.File.Exists(FileSystem.CurrentDir() / ".config" / "dotnet-tools.json"))
+        if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
             await GetService<IProcessRunner>()
                 .RunAsync(new("dotnet", "new tool-manifest")
                 {

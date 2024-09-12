@@ -8,7 +8,8 @@ internal static class ServiceAccessor<T>
 
 internal static class ServiceAccessorExtensions
 {
-    public static IServiceCollection AddAccessedSingleton<TService, TImplementation>(this IServiceCollection services)
+    public static void AddAccessedSingleton<TService,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
         where TService : class
         where TImplementation : class, TService =>
         services

@@ -53,11 +53,8 @@ public sealed class AzureKeyVaultProvider(IBuildDefinition buildDefinition, Comm
     {
         get
         {
-            if (!buildDefinition
-                    .DefaultWorkflowOptions
-                    .Where(x => x is UseAzureKeyVault)
-                    .Concat(buildDefinition.Workflows.SelectMany(x => x.Options))
-                    .Any())
+            if (!UseAzureKeyVault.IsEnabled(
+                    buildDefinition.DefaultWorkflowOptions.Concat(buildDefinition.Workflows.SelectMany(x => x.Options))))
                 return [];
 
             if (buildDefinition is not IAzureKeyVault)

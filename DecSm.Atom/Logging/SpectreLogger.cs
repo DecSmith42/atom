@@ -79,7 +79,7 @@ internal sealed class SpectreLogger(string categoryName, IExternalScopeProvider?
         string? command = null;
         var processOutput = false;
 
-        scopeProvider?.ForEachScope((scopeData, logEventData) =>
+        scopeProvider?.ForEachScope((scopeData, _) =>
             {
                 if (scopeData is not Dictionary<string, object> scopeValues)
                     return;

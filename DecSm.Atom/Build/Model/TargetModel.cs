@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Model;
 
-public sealed record TargetModel(string Name, string? Description)
+public sealed record TargetModel(string Name, string? Description, bool IsHidden)
 {
     public required IReadOnlyList<Func<Task>> Tasks { get; init; }
 
@@ -14,5 +14,5 @@ public sealed record TargetModel(string Name, string? Description)
 
     public required IReadOnlyList<string> ProducedVariables { get; init; }
 
-    public required List<TargetModel> Dependencies { get; init; }
+    public required IReadOnlyList<TargetModel> Dependencies { get; init; }
 }

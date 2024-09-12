@@ -1,19 +1,19 @@
 ﻿namespace DecSm.Atom.Extensions.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
-    IFileSystem fileSystem,
+    IAtomFileSystem fileSystem,
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
     ILogger<GithubWorkflowWriter> logger
 ) : WorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
 {
-    private readonly IFileSystem _fileSystem = fileSystem;
+    private readonly IAtomFileSystem _fileSystem = fileSystem;
 
     protected override string FileExtension => "yml";
 
     protected override int TabSize => 2;
 
-    protected override AbsolutePath FileLocation => _fileSystem.SolutionRoot() / ".github" / "workflows";
+    protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".github" / "workflows";
 
     protected override void WriteWorkflow(WorkflowModel workflow)
     {
@@ -180,11 +180,10 @@ public sealed class GithubWorkflowWriter(
     {
         using (WriteSection($"{job.Name}:"))
         {
-            if (job.JobDependencies is { Count: > 0 })
-            {
-                var jobRequirementNames = job.JobDependencies;
+            var jobRequirementNames = job.JobDependencies;
+
+            if (jobRequirementNames.Count > 0)
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
-            }
 
             if (job.MatrixDimensions.Count > 0)
                 using (WriteSection("strategy:"))
@@ -202,7 +201,7 @@ public sealed class GithubWorkflowWriter(
                                            .FirstOrDefault() ??
                                        GithubRunsOn.UbuntuLatest;
 
-            var labelsDisplay = githubPlatformOption.Labels.Length is 1
+            var labelsDisplay = githubPlatformOption.Labels.Count is 1
                 ? githubPlatformOption.Labels[0]
                 : $"[ {string.Join(", ", githubPlatformOption.Labels)} ]";
 
@@ -287,10 +286,7 @@ public sealed class GithubWorkflowWriter(
                                 consumedArtifact.ArtifactName,
                                 consumedArtifact.TargetName);
 
-                    if (workflow
-                        .Options
-                        .OfType<UseCustomArtifactProvider>()
-                        .Any())
+                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
@@ -332,10 +328,7 @@ public sealed class GithubWorkflowWriter(
 
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
-                    if (workflow
-                        .Options
-                        .OfType<UseCustomArtifactProvider>()
-                        .Any())
+                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteLine();
 
@@ -352,6 +345,9 @@ public sealed class GithubWorkflowWriter(
                     }
                     else
                     {
+                        if (commandStepTarget.ProducedArtifacts.Count > 0)
+                            WriteLine();
+
                         foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
@@ -429,16 +425,7 @@ public sealed class GithubWorkflowWriter(
                         $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
-            var paramInjections = workflow
-                .Options
-                .OfType<WorkflowParamInjection>()
-                .Where(x => x.Command is null);
-
-            // Later injections override earlier ones, we want the command specific ones to override the global ones
-            paramInjections = paramInjections.Concat(workflow
-                .Options
-                .OfType<WorkflowParamInjection>()
-                .Where(x => x.Command?.Name == commandStep.Name));
+            var paramInjections = workflow.Options.OfType<WorkflowParamInjection>();
 
             foreach (var paramInjection in paramInjections)
             {

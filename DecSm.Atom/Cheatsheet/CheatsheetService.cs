@@ -5,7 +5,13 @@ public interface ICheatsheetService
     public void ShowCheatsheet();
 }
 
-internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition buildDefinition, BuildModel buildModel) : ICheatsheetService
+internal sealed class CheatsheetService(
+    IAnsiConsole console,
+    CommandLineArgs args,
+    IBuildDefinition buildDefinition,
+    BuildModel buildModel,
+    IConfiguration config
+) : ICheatsheetService
 {
     public void ShowCheatsheet()
     {
@@ -21,15 +27,73 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         console.Write(new Markup("  [dim]-h,  --help[/]      [dim]Show help[/]\n"));
         console.Write(new Markup("  [dim]-g,  --gen[/]       [dim]Generate build script[/]\n"));
-        console.Write(new Markup("  [dim]-s,  --skip[/]      [dim]Skip target execution[/]\n"));
+        console.Write(new Markup("  [dim]-s,  --skip[/]      [dim]Skip dependency execution[/]\n"));
         console.Write(new Markup("  [dim]-hl, --headless[/]  [dim]Run in headless mode[/]\n"));
+        console.Write(new Markup("  [dim]-v,  --verbose[/]   [dim]Show verbose output[/]\n"));
         console.WriteLine();
 
-        console.Write(new Markup("[bold]Commands[/]\n"));
-        console.WriteLine();
+        var targets = args.HasVerbose
+            ? buildModel.Targets
+            : args.Commands.Count is 0
+                ? buildModel
+                    .Targets
+                    .Where(x => !x.IsHidden)
+                    .ToList()
+                : buildModel
+                    .Targets
+                    .Where(x => args
+                        .Commands
+                        .Select(command => command.Name)
+                        .Contains(x.Name))
+                    .ToList();
 
-        foreach (var target in buildModel.Targets)
-            WriteCommand(target);
+        var atomAssembly = typeof(ICheatsheetService).Assembly;
+
+        var projectAssembly = buildDefinition.GetType()
+            .Assembly;
+
+        var atomTargets = new List<TargetModel>(targets.Count);
+        var libraryTargets = new List<TargetModel>(targets.Count);
+        var projectTargets = new List<TargetModel>(targets.Count);
+
+        foreach (var target in targets)
+        {
+            var assembly = buildDefinition.TargetDefinitions[target.Name].Method.ReflectedType!.Assembly;
+
+            if (assembly == atomAssembly)
+                atomTargets.Add(target);
+            else if (assembly == projectAssembly)
+                projectTargets.Add(target);
+            else
+                libraryTargets.Add(target);
+        }
+
+        if (atomTargets.Count > 0)
+        {
+            console.Write(new Markup("[bold]Atom Commands[/]\n"));
+            console.WriteLine();
+
+            foreach (var target in atomTargets)
+                WriteCommand(target);
+        }
+
+        if (libraryTargets.Count > 0)
+        {
+            console.Write(new Markup("[bold]Library Commands[/]\n"));
+            console.WriteLine();
+
+            foreach (var target in libraryTargets)
+                WriteCommand(target);
+        }
+
+        if (projectTargets.Count > 0)
+        {
+            console.Write(new Markup("[bold]Project Commands[/]\n"));
+            console.WriteLine();
+
+            foreach (var target in projectTargets)
+                WriteCommand(target);
+        }
     }
 
     private void WriteCommand(TargetModel target)
@@ -42,7 +106,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         var dependencies = target.Dependencies;
 
-        if (dependencies.Count > 0)
+        if (dependencies.Count > 0 && args.HasVerbose)
         {
             var depTree = tree.AddNode("[dim bold yellow]Depends on[/]");
 
@@ -61,7 +125,9 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
 
         var optionalParams = allParams
             .Except(secrets)
-            .Where(x => x.Attribute.DefaultValue is { Length: > 0 })
+            .Where(x => x.Attribute.DefaultValue is { Length: > 0 } ||
+                        config
+                            .GetSection("Params")[x.Attribute.ArgName] is { Length: > 0 })
             .ToList();
 
         var requiredParams = allParams
@@ -82,7 +148,24 @@ internal sealed class CheatsheetService(IAnsiConsole console, IBuildDefinition b
             var optTree = tree.AddNode("[dim bold green]Options[/]");
 
             foreach (var optionalParam in optionalParams)
-                optTree.AddNode($"--{optionalParam.Attribute.ArgName} [dim][[Default: {optionalParam.Attribute.DefaultValue}]][/]");
+            {
+                var defaultValue = optionalParam.Attribute.DefaultValue;
+
+                var configuredValue = config
+                    .GetSection("Params")[optionalParam.Attribute.ArgName];
+
+                var defaultDisplay = (defaultValue, configuredValue) switch
+                {
+                    ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
+                        $"[dim][[Default/Configured: {defaultValue}]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) => $"[dim][[Default: {defaultValue}]][/][dim][[Configured: {configuredValue}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim][[Default: {defaultValue}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim][[Configured: {configuredValue}]][/]",
+                    _ => string.Empty,
+                };
+
+                optTree.AddNode($"--{optionalParam.Attribute.ArgName} {defaultDisplay}");
+            }
         }
 
         if (secrets.Count > 0)

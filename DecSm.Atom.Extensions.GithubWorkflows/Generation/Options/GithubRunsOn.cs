@@ -1,14 +1,28 @@
 ﻿namespace DecSm.Atom.Extensions.GithubWorkflows.Generation.Options;
 
-public sealed record GithubRunsOn(string[] Labels) : IWorkflowOption
+public sealed record GithubRunsOn : IWorkflowOption
 {
-    public string? Group { get; set; }
+    public IReadOnlyList<string> Labels { get; init; } = [];
 
-    public static GithubRunsOn WindowsLatest { get; } = new(["windows-latest"]);
+    public string? Group { get; init; }
 
-    public static GithubRunsOn UbuntuLatest { get; } = new(["ubuntu-latest"]);
+    public static GithubRunsOn WindowsLatest { get; } = new()
+    {
+        Labels = ["windows-latest"],
+    };
 
-    public static GithubRunsOn MacOsLatest { get; } = new(["macos-latest"]);
+    public static GithubRunsOn UbuntuLatest { get; } = new()
+    {
+        Labels = ["ubuntu-latest"],
+    };
 
-    public static GithubRunsOn MatrixDefined { get; } = new(["${{ matrix.github-runs-on }}"]);
+    public static GithubRunsOn MacOsLatest { get; } = new()
+    {
+        Labels = ["macos-latest"],
+    };
+
+    public static GithubRunsOn MatrixDefined { get; } = new()
+    {
+        Labels = ["${{ matrix.github-runs-on }}"],
+    };
 }

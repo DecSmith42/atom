@@ -10,18 +10,10 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class TargetDefinitionSourceGenerator : IIncrementalGenerator
 {
-    // ReSharper disable InconsistentNaming
-
-    private const string TargetDefinitionAttributeFull = "DecSm.Atom.Build.Definition.TargetDefinitionAttribute";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-    private const string GetService = "GetService";
-
-    // ReSharper restore InconsistentNaming
-
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
                 .SyntaxProvider
-                .CreateSyntaxProvider(static (syntaxNode, unknown) => syntaxNode is InterfaceDeclarationSyntax,
+                .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is InterfaceDeclarationSyntax,
                     static (context, _) => GetInterfaceDeclaration(context))
                 .Where(static declarationResult => declarationResult.HasAttribute)
                 .Select(static (declarationResult, _) => declarationResult.Declaration)
@@ -86,7 +78,7 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                      partial interface {{@interface}} : {{IBuildDefinitionFull}}
                      {
                          private Microsoft.Extensions.Logging.ILogger<{{@interface}}> Logger => {{GetService}}<Microsoft.Extensions.Logging.ILogger<{{@interface}}>>();
-                         private System.IO.Abstractions.IFileSystem FileSystem => {{GetService}}<System.IO.Abstractions.IFileSystem>();
+                         private {{IAtomFileSystemFull}} FileSystem => {{GetService}}<{{IAtomFileSystemFull}}>();
                      }
 
                      """;
@@ -94,4 +86,13 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
         // Add the source code to the compilation.
         context.AddSource($"{@interface}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
+
+    // ReSharper disable InconsistentNaming
+
+    private const string TargetDefinitionAttributeFull = "DecSm.Atom.Build.Definition.TargetDefinitionAttribute";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string IAtomFileSystemFull = "DecSm.Atom.Paths.IAtomFileSystem";
+    private const string GetService = "GetService";
+
+    // ReSharper restore InconsistentNaming
 }

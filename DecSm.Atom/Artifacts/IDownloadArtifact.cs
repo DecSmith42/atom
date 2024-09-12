@@ -8,12 +8,14 @@ public partial interface IDownloadArtifact : IArtifactHelper
         {
             var artifactProvider = GetService<IArtifactProvider>();
 
+            targetDefinition.IsHidden();
+
             targetDefinition.ConsumesVariable(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId));
 
             targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
             targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
 
-            targetDefinition.Executes(() => artifactProvider.DownloadArtifacts(AtomArtifactNames));
+            targetDefinition.Executes(() => artifactProvider.DownloadArtifacts(AtomArtifacts));
 
             return targetDefinition;
         };

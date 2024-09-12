@@ -18,9 +18,19 @@ public partial interface IGithubWorkflows
             typeof(GithubVariableProvider),
             ServiceLifetime.Singleton));
 
+        services.AddSingleton<IBuildIdProvider, GithubBuildIdProvider>();
+
         if (Github.IsGithubActions)
             services
                 .AddSingleton<IBuildIdProvider, GithubBuildIdProvider>()
-                .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>();
+                .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>()
+                .ProvidePath((key, locator) => Github.IsGithubActions
+                    ? key switch
+                    {
+                        AtomPaths.Artifacts => locator(AtomPaths.Root) / ".github" / "artifacts",
+                        AtomPaths.Publish => locator(AtomPaths.Root) / ".github" / "publish",
+                        _ => null,
+                    }
+                    : null);
     }
 }

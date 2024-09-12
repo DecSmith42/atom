@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Writer;
 
-public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger) : IWorkflowWriter<T>
+public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger) : IWorkflowWriter<T>
     where T : IWorkflowType
 {
     private readonly StringBuilder _stringBuilder = new();
@@ -9,7 +9,7 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
 
     protected virtual int TabSize => 2;
 
-    protected virtual AbsolutePath FileLocation => fileSystem.SolutionRoot();
+    protected virtual AbsolutePath FileLocation => fileSystem.AtomRootDirectory;
 
     protected abstract string FileExtension { get; }
 
@@ -29,13 +29,20 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
         if (existingText == newText)
             return;
 
-        if (existingText.Length > 0)
-            logger.LogInformation("Updating workflow file: {FilePath}", filePath);
-        else
-            logger.LogInformation("Writing new workflow file: {FilePath}", filePath);
+        switch (existingText.Length)
+        {
+            case > 0:
+                logger.LogInformation("Updating workflow file: {FilePath}", filePath);
 
-        if (filePath.Parent?.Exists is false)
-            fileSystem.Directory.CreateDirectory(filePath.Parent);
+                break;
+            default:
+                logger.LogInformation("Writing new workflow file: {FilePath}", filePath);
+
+                break;
+        }
+
+        if (!fileSystem.Directory.Exists(FileLocation))
+            fileSystem.Directory.CreateDirectory(FileLocation);
 
         await fileSystem.File.WriteAllTextAsync(filePath, newText);
     }
@@ -79,7 +86,7 @@ public abstract class WorkflowFileWriter<T>(IFileSystem fileSystem, ILogger<Work
         WriteLine(header);
         IndentLevel += TabSize;
 
-        return new Disposable(() => IndentLevel -= TabSize);
+        return new DisposableAction(() => IndentLevel -= TabSize);
     }
 
     protected abstract void WriteWorkflow(WorkflowModel workflow);

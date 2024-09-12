@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Extensions.GithubWorkflows;
 
-internal sealed class GithubSummaryOutcomeReporter(IFileSystem fileSystem, IReportService reportService) : IOutcomeReporter
+internal sealed class GithubSummaryOutcomeReporter(IAtomFileSystem fileSystem, IReportService reportService) : IOutcomeReporter
 {
     public async Task ReportRunOutcome()
     {

@@ -1,15 +1,15 @@
 ﻿namespace DecSm.Atom.Extensions.GithubWorkflows.Generation;
 
-public sealed class DependabotWorkflowWriter(IFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
+public sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
     : WorkflowFileWriter<DependabotWorkflowType>(fileSystem, logger)
 {
-    private readonly IFileSystem _fileSystem = fileSystem;
+    private readonly IAtomFileSystem _fileSystem = fileSystem;
 
     protected override string FileExtension => "yml";
 
     protected override int TabSize => 2;
 
-    protected override AbsolutePath FileLocation => _fileSystem.SolutionRoot() / ".github";
+    protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".github";
 
     protected override void WriteWorkflow(WorkflowModel workflow)
     {

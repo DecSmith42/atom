@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom;
 
-[PublicAPI]
-public readonly struct BuildTimeStamp(int value) : IComparable<BuildTimeStamp>, IComparisonOperators<BuildTimeStamp, BuildTimeStamp, bool>
+public readonly struct BuildTimeStamp(int value) : IComparable<BuildTimeStamp>,
+    IComparisonOperators<BuildTimeStamp, BuildTimeStamp, bool>,
+    IEquatable<BuildTimeStamp>
 {
     private readonly int _value = value;
 

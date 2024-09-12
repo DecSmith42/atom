@@ -8,23 +8,7 @@ on:
 
 jobs:
   
-  Setup:
-    runs-on: ubuntu-latest
-    outputs:
-      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Setup
-        id: Setup
-        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
-  
   PackAtom:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -36,6 +20,7 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+      
       - name: Upload DecSm.Atom
         uses: actions/upload-artifact@v4
         with:
@@ -44,7 +29,6 @@ jobs:
       
   
   PackAtomTool:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -56,6 +40,7 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+      
       - name: Upload DecSm.Atom.Tool
         uses: actions/upload-artifact@v4
         with:
@@ -64,7 +49,6 @@ jobs:
       
   
   PackAzureKeyVaultExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -76,6 +60,7 @@ jobs:
       - name: PackAzureKeyVaultExtension
         id: PackAzureKeyVaultExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.AzureKeyVault
         uses: actions/upload-artifact@v4
         with:
@@ -84,7 +69,6 @@ jobs:
       
   
   PackAzureStorageExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -96,6 +80,7 @@ jobs:
       - name: PackAzureStorageExtension
         id: PackAzureStorageExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.AzureStorage
         uses: actions/upload-artifact@v4
         with:
@@ -104,7 +89,6 @@ jobs:
       
   
   PackDotnetExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -116,6 +100,7 @@ jobs:
       - name: PackDotnetExtension
         id: PackDotnetExtension
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.Dotnet
         uses: actions/upload-artifact@v4
         with:
@@ -124,7 +109,6 @@ jobs:
       
   
   PackGithubWorkflowsExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -136,6 +120,7 @@ jobs:
       - name: PackGithubWorkflowsExtension
         id: PackGithubWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.GithubWorkflows
         uses: actions/upload-artifact@v4
         with:
@@ -144,7 +129,6 @@ jobs:
       
   
   PackGitVersionExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -156,6 +140,7 @@ jobs:
       - name: PackGitVersionExtension
         id: PackGitVersionExtension
         run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.GitVersion
         uses: actions/upload-artifact@v4
         with:
@@ -164,7 +149,6 @@ jobs:
       
   
   TestAtom:
-    needs: [ Setup ]
     strategy:
       matrix:
         github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -182,6 +166,7 @@ jobs:
         env:
           github-runs-on: ${{ matrix.github-runs-on }}
           matrix-slice: ${{ matrix.github-runs-on }}
+      
       - name: Upload DecSm.Atom.Tests
         uses: actions/upload-artifact@v4
         with:
@@ -190,7 +175,6 @@ jobs:
       
   
   PushToNuget:
-    needs: [ Setup, PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
     runs-on: ubuntu-latest
     steps:
       
@@ -245,7 +229,4 @@ jobs:
         id: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         env:
-          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
-          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
-          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}

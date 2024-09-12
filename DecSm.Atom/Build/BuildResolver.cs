@@ -1,9 +1,16 @@
 ﻿namespace DecSm.Atom.Build;
 
-internal static class BuildResolver
+internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLineArgs commandLineArgs)
 {
-    public static BuildModel ResolveBuild(IBuildDefinition buildDefinition, IEnumerable<string> specifiedTargets, bool includeDependencies)
+    public BuildModel Resolve()
     {
+        var specifiedTargets = commandLineArgs
+            .Commands
+            .Select(x => x.Name)
+            .ToArray();
+
+        var includeDependencies = !commandLineArgs.HasSkip;
+
         // Extract target definitions from build definition
         var targetDefinitions = buildDefinition
             .TargetDefinitions
@@ -25,29 +32,33 @@ internal static class BuildResolver
             throw new(
                 $"One or more targets are defined multiple times, which is not allowed: {string.Join(", ", $"'{duplicateTargetNames}'")}.");
 
+        // Allows mutation of target model dependencies within this scope
+        var targetModelDependencyMap = new Dictionary<string, List<TargetModel>>();
+
         // Transform target definitions into target models
         var targetModels = targetDefinitions
-            .Select(x => new TargetModel(x.Name, x.Description)
+            .Select(x =>
             {
-                Tasks = x.Tasks,
-                RequiredParams = x.RequiredParams,
-                ConsumedArtifacts = x.ConsumedArtifacts,
-                ProducedArtifacts = x.ProducedArtifacts,
-                ConsumedVariables = x.ConsumedVariables,
-                ProducedVariables = x.ProducedVariables,
-                Dependencies = [],
+                var dependencies = new List<TargetModel>();
+                targetModelDependencyMap.Add(x.Name, dependencies);
+
+                return new TargetModel(x.Name, x.Description, x.Hidden)
+                {
+                    Tasks = x.Tasks,
+                    RequiredParams = x.RequiredParams,
+                    ConsumedArtifacts = x.ConsumedArtifacts,
+                    ProducedArtifacts = x.ProducedArtifacts,
+                    ConsumedVariables = x.ConsumedVariables,
+                    ProducedVariables = x.ProducedVariables,
+                    Dependencies = dependencies,
+                };
             })
             .ToArray();
-
-        var setupDefinition = targetDefinitions.Single(x => x.Name == "Setup");
 
         // Copy target definition dependencies to their respective target models
         foreach (var targetDefinition in targetDefinitions)
         {
             var targetModel = targetModels.First(x => x.Name == targetDefinition.Name);
-
-            if (targetDefinition != setupDefinition)
-                targetDefinition.Dependencies.Add(setupDefinition.Name);
 
             var dependencyNames = targetDefinition
                 .Dependencies
@@ -62,7 +73,8 @@ internal static class BuildResolver
                 if (dependencyTargetDefinition is null)
                     throw new($"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
 
-                targetModel.Dependencies.Add(targetModels.First(x => x.Name == dependencyName));
+                targetModelDependencyMap[targetModel.Name]
+                    .Add(targetModels.First(x => x.Name == dependencyName));
             }
         }
 

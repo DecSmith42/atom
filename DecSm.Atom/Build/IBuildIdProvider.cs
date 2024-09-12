@@ -2,5 +2,5 @@
 
 public interface IBuildIdProvider
 {
-    string BuildId { get; }
+    string? BuildId { get; }
 }

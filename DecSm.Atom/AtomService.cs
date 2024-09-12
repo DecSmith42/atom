@@ -14,7 +14,14 @@ internal sealed class AtomService(
     {
         try
         {
-            if (args.Args is { Length: 0 })
+            if (!args.IsValid)
+            {
+                Environment.ExitCode = 1;
+
+                return;
+            }
+
+            if (args.Args is { Count: 0 } or [VerboseArg])
             {
                 await workflowGenerator.GenerateWorkflows();
                 cheatsheetService.ShowCheatsheet();
@@ -23,7 +30,11 @@ internal sealed class AtomService(
             }
 
             if (args.HasHelp)
+            {
                 cheatsheetService.ShowCheatsheet();
+
+                return;
+            }
 
             if (args.HasGen || !args.HasHeadless)
                 await workflowGenerator.GenerateWorkflows();

@@ -2,5 +2,5 @@
 
 public interface IWorkflowStepModel
 {
-    string Name { get; init; }
+    string Name { get; }
 }

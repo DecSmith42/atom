@@ -8,23 +8,7 @@ on:
 
 jobs:
   
-  Setup:
-    runs-on: ubuntu-latest
-    outputs:
-      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Setup
-        id: Setup
-        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
-  
   PackAtom:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -38,7 +22,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
   
   PackAtomTool:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -52,7 +35,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
   
   PackAzureKeyVaultExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -66,7 +48,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
   
   PackAzureStorageExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -80,7 +61,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
   
   PackDotnetExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -94,7 +74,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
   
   PackGithubWorkflowsExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -108,7 +87,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
   
   PackGitVersionExtension:
-    needs: [ Setup ]
     runs-on: ubuntu-latest
     steps:
       
@@ -122,7 +100,6 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
   
   TestAtom:
-    needs: [ Setup ]
     strategy:
       matrix:
         github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -140,6 +117,7 @@ jobs:
         env:
           github-runs-on: ${{ matrix.github-runs-on }}
           matrix-slice: ${{ matrix.github-runs-on }}
+      
       - name: Upload DecSm.Atom.Tests
         uses: actions/upload-artifact@v4
         with:

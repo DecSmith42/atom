@@ -3,23 +3,36 @@
 [TargetDefinition]
 public partial interface ISetup
 {
-    [ParamDefinition("atom-build-id", "Unique build ID")]
+    [ParamDefinition("atom-build-id", "Build/run ID")]
     string AtomBuildId => GetParam(() => AtomBuildId)!;
+
+    [ParamDefinition("atom-build-version", "Build version")]
+    string AtomBuildVersion => GetParam(() => AtomBuildVersion)!;
 
     IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
 
+    IBuildVersionProvider BuildVersionProvider => GetService<IBuildVersionProvider>();
+
     Target Setup =>
         d => d
+            .WithDescription("Sets up the build")
+            .IsHidden()
+            .RequiresParam(AtomBuildName)
             .ProducesVariable(nameof(AtomBuildId))
+            .ProducesVariable(nameof(AtomBuildVersion))
             .Executes(async () =>
             {
-                var buildId = BuildIdProvider.BuildId;
-
+                var buildId = BuildIdProvider.BuildId ?? throw new StepFailedException("A build ID must be provided");
                 await WriteVariable(nameof(AtomBuildId), buildId);
 
-                var solutionName = FileSystem.SolutionName();
+                var buildVersion = BuildVersionProvider.Version;
+                await WriteVariable(nameof(AtomBuildVersion), buildVersion);
 
-                AddReportData(new TextReportData($"{solutionName} | {buildId}")
+                var reportedBuildId = buildId == buildVersion
+                    ? buildId
+                    : $"{buildVersion} - {buildId}";
+
+                AddReportData(new TextReportData($"{AtomBuildName} | {reportedBuildId}")
                 {
                     Title = "Run Information",
                     BeforeStandardData = true,
@@ -28,5 +41,9 @@ public partial interface ISetup
                 Services
                     .GetRequiredService<ILogger<ISetup>>()
                     .LogInformation("Build ID: {BuildId}", buildId);
+
+                Services
+                    .GetRequiredService<ILogger<ISetup>>()
+                    .LogInformation("Build Version: {BuildVersion}", buildVersion);
             });
 }
