@@ -175,6 +175,7 @@ jobs:
       
   
   PushToNuget:
+    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
     runs-on: ubuntu-latest
     steps:
       
