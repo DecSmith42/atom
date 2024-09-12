@@ -3,6 +3,16 @@
 [TestFixture]
 public class BuildResolverTests
 {
+    [SetUp]
+    public void Setup() =>
+        _services = new ServiceCollection()
+            .AddSingleton<IServiceProvider>(x => _services)
+            .BuildServiceProvider();
+
+    [TearDown]
+    public void TearDown() =>
+        _services.Dispose();
+
     public class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services)
     {
         public IReadOnlyDictionary<string, Target> ManualTargetDefinitions { get; init; } = new Dictionary<string, Target>();
@@ -14,16 +24,6 @@ public class BuildResolverTests
 
         public override IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions => ManualParamDefinitions;
     }
-
-    [SetUp]
-    public void Setup() =>
-        _services = new ServiceCollection()
-            .AddSingleton<IServiceProvider>(x => _services)
-            .BuildServiceProvider();
-
-    [TearDown]
-    public void TearDown() =>
-        _services.Dispose();
 
     private ServiceProvider _services = null!;
 
