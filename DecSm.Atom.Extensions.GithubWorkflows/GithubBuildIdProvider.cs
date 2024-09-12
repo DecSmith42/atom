@@ -3,9 +3,7 @@
 public sealed class GithubBuildIdProvider(IBuildDefinition buildDefinition) : IBuildIdProvider
 {
     public string? BuildId =>
-        WorkflowOptionUtil
-            .GetOptionsForCurrentTarget(buildDefinition)
-            .Contains(ProvideGithubRunIdAsWorkflowId.Enabled)
+        ProvideGithubRunIdAsWorkflowId.IsEnabled(WorkflowOptionUtil.GetOptionsForCurrentTarget(buildDefinition))
             ? Github.Variables.RunId
             : null;
 }

@@ -20,6 +20,7 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+      
       - name: Upload DecSm.Atom
         uses: actions/upload-artifact@v4
         with:
@@ -39,6 +40,7 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+      
       - name: Upload DecSm.Atom.Tool
         uses: actions/upload-artifact@v4
         with:
@@ -58,6 +60,7 @@ jobs:
       - name: PackAzureKeyVaultExtension
         id: PackAzureKeyVaultExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.AzureKeyVault
         uses: actions/upload-artifact@v4
         with:
@@ -77,6 +80,7 @@ jobs:
       - name: PackAzureStorageExtension
         id: PackAzureStorageExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.AzureStorage
         uses: actions/upload-artifact@v4
         with:
@@ -96,6 +100,7 @@ jobs:
       - name: PackDotnetExtension
         id: PackDotnetExtension
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.Dotnet
         uses: actions/upload-artifact@v4
         with:
@@ -115,6 +120,7 @@ jobs:
       - name: PackGithubWorkflowsExtension
         id: PackGithubWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.GithubWorkflows
         uses: actions/upload-artifact@v4
         with:
@@ -134,6 +140,7 @@ jobs:
       - name: PackGitVersionExtension
         id: PackGitVersionExtension
         run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+      
       - name: Upload DecSm.Atom.Extensions.GitVersion
         uses: actions/upload-artifact@v4
         with:
@@ -159,6 +166,7 @@ jobs:
         env:
           github-runs-on: ${{ matrix.github-runs-on }}
           matrix-slice: ${{ matrix.github-runs-on }}
+      
       - name: Upload DecSm.Atom.Tests
         uses: actions/upload-artifact@v4
         with:

@@ -180,11 +180,10 @@ public sealed class GithubWorkflowWriter(
     {
         using (WriteSection($"{job.Name}:"))
         {
-            if (job.JobDependencies is { Count: > 0 })
-            {
-                var jobRequirementNames = job.JobDependencies;
+            var jobRequirementNames = job.JobDependencies;
+
+            if (jobRequirementNames.Count > 0)
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
-            }
 
             if (job.MatrixDimensions.Count > 0)
                 using (WriteSection("strategy:"))
@@ -287,10 +286,7 @@ public sealed class GithubWorkflowWriter(
                                 consumedArtifact.ArtifactName,
                                 consumedArtifact.TargetName);
 
-                    if (workflow
-                        .Options
-                        .OfType<UseCustomArtifactProvider>()
-                        .Any())
+                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteCommandStep(workflow,
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
@@ -332,10 +328,7 @@ public sealed class GithubWorkflowWriter(
 
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
-                    if (workflow
-                        .Options
-                        .OfType<UseCustomArtifactProvider>()
-                        .Any())
+                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteLine();
 
@@ -352,6 +345,9 @@ public sealed class GithubWorkflowWriter(
                     }
                     else
                     {
+                        if (commandStepTarget.ProducedArtifacts.Count > 0)
+                            WriteLine();
+
                         foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
