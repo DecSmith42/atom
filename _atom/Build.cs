@@ -20,7 +20,10 @@ internal partial class Build : BuildDefinition,
     ITestAtom,
     ICleanupPrereleaseArtifacts
 {
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [UseAzureKeyVault.Enabled, new DevopsVariableGroup("Atom")];
+    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
+    [
+        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+    ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

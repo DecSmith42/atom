@@ -22,16 +22,6 @@ public partial interface ISetup
             .ProducesVariable(nameof(AtomBuildVersion))
             .Executes(async () =>
             {
-                var variables = Environment.GetEnvironmentVariables();
-
-                var variablesLines = variables
-                    .Cast<DictionaryEntry>()
-                    .Select(variable => $"{variable.Key}: {variable.Value}");
-
-                Logger.LogInformation("Environment variables: {Variables}", string.Join(Environment.NewLine, variablesLines));
-                Logger.LogInformation("BuildIdProvider: {BuildIdProvider}", BuildIdProvider);
-                Logger.LogInformation("BuildId: {BuildId}", BuildIdProvider.BuildId);
-
                 var buildId = BuildIdProvider.BuildId ?? throw new StepFailedException("A build ID must be provided");
                 await WriteVariable(nameof(AtomBuildId), buildId);
 
