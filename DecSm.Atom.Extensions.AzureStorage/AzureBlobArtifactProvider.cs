@@ -15,24 +15,28 @@ public sealed class AzureBlobArtifactProvider(
     public async Task UploadArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
     {
         buildId ??= paramService.GetParam(nameof(ISetup.AtomBuildId));
+
+        if (buildId is null)
+            throw new InvalidOperationException("Build ID is required to upload artifacts");
+
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var solutionName = fileSystem.AtomRootDirectory;
+        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'", container, artifactNames);
+        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'", artifactNames, container);
 
         foreach (var artifactName in artifactNames)
         {
             var publishDir = fileSystem.AtomPublishDirectory / artifactName;
 
             var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{solutionName}/{buildId}/{artifactName}/{matrixSlice}"
-                : $"{solutionName}/{buildId}/{artifactName}";
+                ? $"{buildName}/{buildId}/{artifactName}/{matrixSlice}"
+                : $"{buildName}/{buildId}/{artifactName}";
 
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
@@ -41,6 +45,8 @@ public sealed class AzureBlobArtifactProvider(
 
             if (files.Length == 0)
                 throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
+
+            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir);
 
             foreach (var file in files)
             {
@@ -73,7 +79,7 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'", container, artifactNames);
+        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'", artifactNames, container);
 
         foreach (var artifactName in artifactNames)
         {
@@ -140,7 +146,7 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'", container, artifactName);
+        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'", artifactName, container);
 
         foreach (var buildId in buildIds)
         {
