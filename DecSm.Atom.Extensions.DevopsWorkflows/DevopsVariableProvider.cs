@@ -11,7 +11,7 @@ public class DevopsVariableProvider(ILogger<DevopsVariableProvider> logger) : IW
             variableName,
             variableValue);
 
-        Console.WriteLine($"##vso[task.setvariable variable={variableName};]{variableValue}");
+        Console.WriteLine($"##vso[task.setvariable variable={variableName};isoutput=true;]{variableValue}");
 
         return Task.FromResult(true);
     }
