@@ -2,5 +2,20 @@
   <PropertyGroup>
     <Product>Atom</Product>
     <Authors>Declan Smith</Authors>
+
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageDescription>An opinionated task and build automation framework#</PackageDescription>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+    <LangVersion>12</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS1591;NU5104;RCS1001;RCS1123;</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\readme.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 </Project>

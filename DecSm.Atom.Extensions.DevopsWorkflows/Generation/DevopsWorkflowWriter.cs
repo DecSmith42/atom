@@ -298,7 +298,8 @@ public sealed class DevopsWorkflowWriter(
             {
                 var variableName = buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName;
 
-                variables[variableName] = $"$[ dependencies.{consumedVariable.TargetName}.outputs['{variableName}'] ]";
+                variables[variableName] =
+                    $"$[ dependencies.{consumedVariable.TargetName}.outputs['{consumedVariable.TargetName}.{variableName}'] ]";
             }
 
             if (variables.Count > 0)

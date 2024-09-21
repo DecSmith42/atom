@@ -25,7 +25,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -48,7 +48,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -71,7 +71,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -94,7 +94,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -117,7 +117,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -140,7 +140,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -163,7 +163,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -186,7 +186,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -217,7 +217,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
@@ -244,7 +244,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
     steps:
       
       - checkout: self
