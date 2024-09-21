@@ -2,7 +2,7 @@
 
 public static class Devops
 {
-    public static bool IsDevopsPipelines => Variables.TfBuild.Equals("true", StringComparison.CurrentCultureIgnoreCase);
+    public static bool IsDevopsPipelines => Variables.TfBuild.Equals("true", StringComparison.OrdinalIgnoreCase);
 
     public static string PipelinePublishDirectory => "$(Build.BinariesDirectory)";
 

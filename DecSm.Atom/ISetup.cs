@@ -24,10 +24,13 @@ public partial interface ISetup
             {
                 var variables = Environment.GetEnvironmentVariables();
 
-                foreach (DictionaryEntry variable in variables)
-                    Services
-                        .GetRequiredService<ILogger<ISetup>>()
-                        .LogInformation("{Key}: {Value}", variable.Key, variable.Value);
+                var variablesLines = variables
+                    .Cast<DictionaryEntry>()
+                    .Select(variable => $"{variable.Key}: {variable.Value}");
+
+                Logger.LogInformation("Environment variables: {Variables}", string.Join(Environment.NewLine, variablesLines));
+                Logger.LogInformation("BuildIdProvider: {BuildIdProvider}", BuildIdProvider);
+                Logger.LogInformation("BuildId: {BuildId}", BuildIdProvider.BuildId);
 
                 var buildId = BuildIdProvider.BuildId ?? throw new StepFailedException("A build ID must be provided");
                 await WriteVariable(nameof(AtomBuildId), buildId);

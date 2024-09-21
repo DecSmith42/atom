@@ -431,7 +431,7 @@ public sealed class DevopsWorkflowWriter(
                                 ? $"{artifact.ArtifactName}-{matrixSlice.Value}"
                                 : artifact.ArtifactName;
 
-                            using (WriteSection("- task: DownloadPipelineArtifact@2"))
+                            using (WriteSection("- task: PublishPipelineArtifact@1"))
                             {
                                 WriteLine($"displayName: {name}");
 

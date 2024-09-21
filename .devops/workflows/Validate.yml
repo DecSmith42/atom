@@ -127,7 +127,7 @@ jobs:
           job-runs-on: $(job-runs-on)
           matrix-slice: $(job-runs-on)
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)

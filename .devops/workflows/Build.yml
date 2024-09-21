@@ -31,7 +31,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom
         inputs:
           artifactName: DecSm.Atom
@@ -49,7 +49,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tool
         inputs:
           artifactName: DecSm.Atom.Tool
@@ -67,7 +67,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
         name: PackAzureKeyVaultExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.AzureKeyVault
         inputs:
           artifactName: DecSm.Atom.Extensions.AzureKeyVault
@@ -85,7 +85,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
         name: PackAzureStorageExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.AzureStorage
         inputs:
           artifactName: DecSm.Atom.Extensions.AzureStorage
@@ -103,7 +103,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
         name: PackDevopsWorkflowsExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.DevopsWorkflows
         inputs:
           artifactName: DecSm.Atom.Extensions.DevopsWorkflows
@@ -121,7 +121,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
         name: PackDotnetExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.Dotnet
         inputs:
           artifactName: DecSm.Atom.Extensions.Dotnet
@@ -139,7 +139,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
         name: PackGithubWorkflowsExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.GithubWorkflows
         inputs:
           artifactName: DecSm.Atom.Extensions.GithubWorkflows
@@ -157,7 +157,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
         name: PackGitVersionExtension
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.GitVersion
         inputs:
           artifactName: DecSm.Atom.Extensions.GitVersion
@@ -186,7 +186,7 @@ jobs:
           job-runs-on: $(job-runs-on)
           matrix-slice: $(job-runs-on)
       
-      - task: DownloadPipelineArtifact@2
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
