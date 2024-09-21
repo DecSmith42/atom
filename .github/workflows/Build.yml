@@ -8,6 +8,22 @@ on:
 
 jobs:
   
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
+      atom-build-version: ${{ steps.Setup.outputs.atom-build-version }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+  
   PackAtom:
     runs-on: ubuntu-latest
     steps:
@@ -88,6 +104,26 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.AzureStorage"
       
   
+  PackDevopsWorkflowsExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackDevopsWorkflowsExtension
+        id: PackDevopsWorkflowsExtension
+        run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+      
+      - name: Upload DecSm.Atom.Extensions.DevopsWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.DevopsWorkflows"
+      
+  
   PackDotnetExtension:
     runs-on: ubuntu-latest
     steps:
@@ -151,8 +187,8 @@ jobs:
   TestAtom:
     strategy:
       matrix:
-        github-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
-    runs-on: ${{ matrix.github-runs-on }}
+        job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.job-runs-on }}
     steps:
       
       - name: Checkout
@@ -164,18 +200,18 @@ jobs:
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         env:
-          github-runs-on: ${{ matrix.github-runs-on }}
-          matrix-slice: ${{ matrix.github-runs-on }}
+          job-runs-on: ${{ matrix.job-runs-on }}
+          matrix-slice: ${{ matrix.job-runs-on }}
       
       - name: Upload DecSm.Atom.Tests
         uses: actions/upload-artifact@v4
         with:
-          name: DecSm.Atom.Tests-${{ matrix.github-runs-on }}
+          name: DecSm.Atom.Tests-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
+    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDevopsWorkflowsExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
     runs-on: ubuntu-latest
     steps:
       
@@ -207,6 +243,12 @@ jobs:
         with:
           name: DecSm.Atom.Extensions.AzureStorage
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.AzureStorage"
+      
+      - name: Download DecSm.Atom.Extensions.DevopsWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.DevopsWorkflows"
       
       - name: Download DecSm.Atom.Extensions.Dotnet
         uses: actions/download-artifact@v4

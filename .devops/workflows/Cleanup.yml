@@ -1,0 +1,17 @@
+name: Cleanup
+
+trigger:
+  branches:
+  tags:
+    include:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  
+  - job: CleanupPrereleaseArtifacts
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj CleanupPrereleaseArtifacts --skip --headless
+        name: CleanupPrereleaseArtifacts

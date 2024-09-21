@@ -23,6 +23,6 @@ public sealed record GithubRunsOn : IWorkflowOption
 
     public static GithubRunsOn MatrixDefined { get; } = new()
     {
-        Labels = ["${{ matrix.github-runs-on }}"],
+        Labels = ["${{ matrix.job-runs-on }}"],
     };
 }

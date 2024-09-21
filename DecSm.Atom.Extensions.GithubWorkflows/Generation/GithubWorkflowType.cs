@@ -2,5 +2,5 @@
 
 public sealed record GithubWorkflowType : IWorkflowType
 {
-    public bool IsRunning => !string.IsNullOrWhiteSpace(Github.Variables.Workflow);
+    public bool IsRunning => Github.IsGithubActions;
 }

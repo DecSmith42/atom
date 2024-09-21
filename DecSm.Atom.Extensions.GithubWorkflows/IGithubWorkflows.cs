@@ -1,11 +1,8 @@
 ﻿namespace DecSm.Atom.Extensions.GithubWorkflows;
 
 [TargetDefinition]
-public partial interface IGithubWorkflows
+public partial interface IGithubWorkflows : IJobRunsOn
 {
-    [ParamDefinition("github-runs-on", "Github runner to use for a job")]
-    string GithubRunsOn => GetParam(() => GithubRunsOn)!;
-
     static void IBuildDefinition.Register(IServiceCollection services)
     {
         services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter), typeof(GithubWorkflowWriter), ServiceLifetime.Singleton));

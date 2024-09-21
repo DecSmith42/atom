@@ -1,0 +1,233 @@
+name: BuildWithCustomArtifacts
+
+trigger:
+  branches:
+    include:
+      - 'main'
+
+jobs:
+  
+  - job: Setup
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        name: Setup
+  
+  - job: PackAtom
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+        name: PackAtom
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom
+  
+  - job: PackAtomTool
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+        name: PackAtomTool
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Tool
+  
+  - job: PackAzureKeyVaultExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+        name: PackAzureKeyVaultExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
+  
+  - job: PackAzureStorageExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+        name: PackAzureStorageExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.AzureStorage
+  
+  - job: PackDevopsWorkflowsExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+        name: PackDevopsWorkflowsExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.DevopsWorkflows
+  
+  - job: PackDotnetExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+        name: PackDotnetExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.Dotnet
+  
+  - job: PackGithubWorkflowsExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+        name: PackGithubWorkflowsExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
+  
+  - job: PackGitVersionExtension
+    dependsOn: [ Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+        name: PackGitVersionExtension
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Extensions.GitVersion
+  
+  - job: TestAtom
+    dependsOn: [ Setup ]
+    strategy:
+      matrix:
+        001_windows-latest:
+          job-runs-on: 'windows-latest'
+        002_ubuntu-latest:
+          job-runs-on: 'ubuntu-latest'
+        003_macos-latest:
+          job-runs-on: 'macos-latest'
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+        name: TestAtom
+        env:
+          job-runs-on: $(job-runs-on)
+          matrix-slice: $(job-runs-on)
+      
+      - script: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom.Tests
+          matrix-slice: $(job-runs-on)
+  
+  - job: PushToNuget
+    dependsOn: [ PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDevopsWorkflowsExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension, Setup ]
+    pool:
+      vmImage: ubuntu-latest
+    variables:
+      atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
+    steps:
+      
+      - script: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+        env:
+          atom-build-id: $(atom-build-id)
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          atom-artifacts: DecSm.Atom;DecSm.Atom.Tool;DecSm.Atom.Extensions.AzureKeyVault;DecSm.Atom.Extensions.AzureStorage;DecSm.Atom.Extensions.DevopsWorkflows;DecSm.Atom.Extensions.Dotnet;DecSm.Atom.Extensions.GithubWorkflows;DecSm.Atom.Extensions.GitVersion
+      
+      - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
+        name: PushToNuget
+        env:
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
