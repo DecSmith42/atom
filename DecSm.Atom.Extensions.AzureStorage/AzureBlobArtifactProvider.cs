@@ -20,7 +20,7 @@ public sealed class AzureBlobArtifactProvider(
         var solutionName = fileSystem.AtomRootDirectory;
         var containerClient = new BlobContainerClient(connectionString, container);
 
-        var invalidPathChars = Path.GetInvalidPathChars();
+        var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
@@ -67,7 +67,7 @@ public sealed class AzureBlobArtifactProvider(
         var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
-        var invalidPathChars = Path.GetInvalidPathChars();
+        var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
@@ -132,7 +132,7 @@ public sealed class AzureBlobArtifactProvider(
         var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
-        var invalidPathChars = Path.GetInvalidPathChars();
+        var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
@@ -220,7 +220,7 @@ public sealed class AzureBlobArtifactProvider(
 
         if (artifactName is { Length: > 0 })
         {
-            var invalidPathChars = Path.GetInvalidPathChars();
+            var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
             var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
             var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
