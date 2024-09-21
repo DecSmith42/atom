@@ -15,7 +15,14 @@ public partial interface IDownloadArtifact : IArtifactHelper
             targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
             targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
 
-            targetDefinition.Executes(() => artifactProvider.DownloadArtifacts(AtomArtifacts));
+            targetDefinition.Executes(async () =>
+            {
+                Logger.LogInformation("Using artifact provider: {Provider}",
+                    artifactProvider.GetType()
+                        .Name);
+
+                await artifactProvider.DownloadArtifacts(AtomArtifacts);
+            });
 
             return targetDefinition;
         };

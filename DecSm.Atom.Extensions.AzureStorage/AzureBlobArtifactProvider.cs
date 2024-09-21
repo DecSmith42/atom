@@ -24,6 +24,11 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
+        logger.LogInformation("Uploading artifacts to container {Container} in storage account {StorageAccount}: {Artifacts}",
+            container,
+            connectionString,
+            artifactNames);
+
         foreach (var artifactName in artifactNames)
         {
             var publishDir = fileSystem.AtomPublishDirectory / artifactName;
@@ -70,6 +75,11 @@ public sealed class AzureBlobArtifactProvider(
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+
+        logger.LogInformation("Downloading artifacts from container {Container} in storage account {StorageAccount}: {Artifacts}",
+            container,
+            connectionString,
+            artifactNames);
 
         foreach (var artifactName in artifactNames)
         {
@@ -135,6 +145,12 @@ public sealed class AzureBlobArtifactProvider(
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+
+        logger.LogInformation("Downloading artifact {Artifact} from container {Container} in storage account {StorageAccount}: {BuildIds}",
+            artifactName,
+            container,
+            connectionString,
+            buildIds);
 
         foreach (var buildId in buildIds)
         {

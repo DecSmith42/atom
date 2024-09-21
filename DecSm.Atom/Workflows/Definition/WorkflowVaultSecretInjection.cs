@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Definition;
 
-public sealed record WorkflowVaultSecretInjection(string Param) : IWorkflowOption
+public sealed record WorkflowVaultSecretInjection : WorkflowOption<string, WorkflowVaultSecretInjection>
 {
-    public bool AllowMultiple => true;
+    public override bool AllowMultiple => true;
 }

@@ -406,7 +406,16 @@ public sealed class GithubWorkflowWriter(
             if (requiredSecrets.Any(x => x.Attribute.IsSecret))
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
-                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
+                    if (injectedSecret.Value is null)
+                    {
+                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a vault secret injection with a null value",
+                            workflow.Name,
+                            commandStep.Name);
+
+                        continue;
+                    }
+
+                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
                         env[paramDefinition.Attribute.ArgName] =
