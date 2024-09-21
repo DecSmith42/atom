@@ -1,26 +1,8 @@
 name: Validate
 
-parameters:
-  - name: nuget-feed
-    displayName: 'nuget-feed | The Nuget feed to push to.'
-    type: string
-    default: 'https://api.nuget.org/v3/index.json'
-  - name: nuget-dry-run
-    displayName: 'nuget-dry-run | Whether to perform a dry run of nuget write operations.'
-    type: boolean
-    default: 'False'
-  - name: azure-vault-address
-    displayName: 'azure-vault-address | Address for the Azure Vault'
-    type: string
-    default: 'Option1'
-    values:
-      - 'Option1'
-      - 'Option2'
-      - 'Option3'
+variables:
+  - group: Atom
 trigger:
-  branches:
-    include:
-      - 'main'
 
 jobs:
   

@@ -20,23 +20,13 @@ internal partial class Build : BuildDefinition,
     ITestAtom,
     ICleanupPrereleaseArtifacts
 {
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [UseAzureKeyVault.Enabled];
+    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [UseAzureKeyVault.Enabled, new DevopsVariableGroup("Atom")];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
         new("Validate")
         {
-            Triggers =
-            [
-                Github.Triggers.Manual,
-                Github.Triggers.PullIntoMain,
-                Devops.Triggers.PushToMain,
-                new DevopsManualTrigger([
-                    DevopsManualStringInput.ForParam(ParamDefinitions[Params.NugetFeed]),
-                    DevopsManualBoolInput.ForParam(ParamDefinitions[Params.NugetDryRun]),
-                    DevopsManualChoiceInput.ForParam(ParamDefinitions[Params.AzureVaultAddress], ["Option1", "Option2", "Option3"]),
-                ]),
-            ],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain, Devops.Triggers.Manual],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -58,7 +48,7 @@ internal partial class Build : BuildDefinition,
         },
         new("Build")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.PushToMain],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.Manual, Devops.Triggers.PushToMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -112,23 +102,6 @@ internal partial class Build : BuildDefinition,
             StepDefinitions = [Commands.CleanupPrereleaseArtifacts],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
-        Github.DependabotWorkflow(new()
-        {
-            Registries = [new("nuget", DependabotValues.NugetType, DependabotValues.NugetUrl)],
-            Updates =
-            [
-                new(DependabotValues.NugetEcosystem)
-                {
-                    Registries = ["nuget"],
-                    Groups =
-                    [
-                        new("nuget-deps")
-                        {
-                            Patterns = ["*"],
-                        },
-                    ],
-                },
-            ],
-        }),
+        Github.DependabotDefaultWorkflow(),
     ];
 }

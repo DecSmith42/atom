@@ -1,5 +1,7 @@
 name: Build
 
+variables:
+  - group: Atom
 trigger:
   branches:
     include:

@@ -27,10 +27,10 @@ public sealed class DevopsWorkflowWriter(
             .OfType<DevopsManualTrigger>()
             .FirstOrDefault();
 
-        if (manualTrigger is not null)
+        if (manualTrigger is { Inputs.Count: > 0 })
             using (WriteSection("parameters:"))
             {
-                foreach (var input in manualTrigger.Inputs ?? [])
+                foreach (var input in manualTrigger.Inputs)
                     using (WriteSection($"- name: {input.Name}"))
                     {
                         WriteLine($"displayName: '{input.Name} | {input.Description}'");
@@ -76,6 +76,18 @@ public sealed class DevopsWorkflowWriter(
             }
 
         // TODO: Variables
+
+        var variableGroups = workflow
+            .Options
+            .OfType<DevopsVariableGroup>()
+            .ToArray();
+
+        if (variableGroups.Length > 0)
+            using (WriteSection("variables:"))
+            {
+                foreach (var variableGroup in variableGroups)
+                    WriteLine($"- group: {variableGroup.Name}");
+            }
 
         using (WriteSection("trigger:"))
         {

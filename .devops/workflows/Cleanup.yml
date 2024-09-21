@@ -1,5 +1,7 @@
 name: Cleanup
 
+variables:
+  - group: Atom
 trigger:
   branches:
   tags:
