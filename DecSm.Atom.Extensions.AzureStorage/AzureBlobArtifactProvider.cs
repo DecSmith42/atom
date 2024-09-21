@@ -24,10 +24,7 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Uploading artifacts to container {Container} in storage account {StorageAccount}: {Artifacts}",
-            container,
-            connectionString,
-            artifactNames);
+        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'", container, artifactNames);
 
         foreach (var artifactName in artifactNames)
         {
@@ -76,10 +73,7 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifacts from container {Container} in storage account {StorageAccount}: {Artifacts}",
-            container,
-            connectionString,
-            artifactNames);
+        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'", container, artifactNames);
 
         foreach (var artifactName in artifactNames)
         {
@@ -146,11 +140,7 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifact {Artifact} from container {Container} in storage account {StorageAccount}: {BuildIds}",
-            artifactName,
-            container,
-            connectionString,
-            buildIds);
+        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'", container, artifactName);
 
         foreach (var buildId in buildIds)
         {

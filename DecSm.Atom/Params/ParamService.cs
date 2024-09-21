@@ -57,9 +57,12 @@ internal sealed class ParamService(
     private T? GetParam<T>(ParamDefinition paramDefinition, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
         if (_cache.TryGetValue(paramDefinition, out var value))
-            return value is T valueAsT
-                ? valueAsT
-                : defaultValue;
+            return value switch
+            {
+                T valueAsT => valueAsT,
+                string valueAsString => Convert(valueAsString, converter),
+                _ => defaultValue,
+            };
 
         var matchingArg = args.Params.FirstOrDefault(x => x.ParamName == paramDefinition.Name);
 
