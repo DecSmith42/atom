@@ -4,26 +4,23 @@ internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, I
 {
     public async Task ReportRunOutcome()
     {
-        var tempFile = fileSystem.AtomTempDirectory / "summary.md";
+        var tempFile = fileSystem.AtomTempDirectory / "DevopsSummaryOutcome.md";
 
         if (tempFile.FileExists)
             fileSystem.File.Delete(tempFile);
 
-        try
-        {
-            await using (var writer = fileSystem.File.Create(tempFile))
-                await writer.WriteAsync(Encoding.UTF8.GetBytes(ReportDataMarkdownWriter.Write(reportService.GetReportData())));
+        var content = Encoding.UTF8.GetBytes(ReportDataMarkdownWriter.Write(reportService.GetReportData()));
 
-            // TODO: Debug code, remove
-            var fileContent = await fileSystem.File.ReadAllTextAsync(tempFile);
-            Console.WriteLine($"Contents of \"{tempFile}\":\n{fileContent}");
+        if (content.Length is 0)
+            return;
 
-            Console.WriteLine($"##vso[task.uploadsummary]{tempFile}");
-        }
-        finally
-        {
-            if (tempFile.FileExists)
-                fileSystem.File.Delete(tempFile);
-        }
+        await using (var writer = fileSystem.File.Create(tempFile))
+            await writer.WriteAsync(content);
+
+        // TODO: Debug code, remove
+        var fileContent = await fileSystem.File.ReadAllTextAsync(tempFile);
+        Console.WriteLine($"Contents of \"{tempFile}\":\n{fileContent}");
+
+        Console.WriteLine($"##vso[task.uploadsummary]{tempFile}");
     }
 }
