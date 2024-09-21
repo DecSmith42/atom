@@ -292,7 +292,7 @@ public sealed class GithubWorkflowWriter(
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
                             [
-                                ("atom-artifacts", string.Join(";", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
+                                ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
                                     ? matrixSlice
                                     : default,
@@ -336,7 +336,7 @@ public sealed class GithubWorkflowWriter(
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
                             [
-                                ("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
+                                ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
                                     ? matrixSlice
                                     : default,

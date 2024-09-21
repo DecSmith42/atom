@@ -265,7 +265,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-          atom-artifacts: DecSm.Atom;DecSm.Atom.Tool;DecSm.Atom.Extensions.AzureKeyVault;DecSm.Atom.Extensions.AzureStorage;DecSm.Atom.Extensions.DevopsWorkflows;DecSm.Atom.Extensions.Dotnet;DecSm.Atom.Extensions.GithubWorkflows;DecSm.Atom.Extensions.GitVersion
+          atom-artifacts: DecSm.Atom,DecSm.Atom.Tool,DecSm.Atom.Extensions.AzureKeyVault,DecSm.Atom.Extensions.AzureStorage,DecSm.Atom.Extensions.DevopsWorkflows,DecSm.Atom.Extensions.Dotnet,DecSm.Atom.Extensions.GithubWorkflows,DecSm.Atom.Extensions.GitVersion
       
       - name: PushToNuget
         id: PushToNuget
