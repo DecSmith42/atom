@@ -7,11 +7,12 @@ parameters:
     default: 'https://api.nuget.org/v3/index.json'
   - name: nuget-dry-run
     displayName: 'nuget-dry-run | Whether to perform a dry run of nuget write operations.'
-    type: bool
+    type: boolean
     default: 'False'
   - name: azure-vault-address
     displayName: 'azure-vault-address | Address for the Azure Vault'
     type: string
+    default: 'Option1'
     values:
       - 'Option1'
       - 'Option2'
@@ -115,7 +116,7 @@ jobs:
           matrix-slice: $(job-runs-on)
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"

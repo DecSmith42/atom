@@ -39,7 +39,7 @@ public sealed class DevopsWorkflowWriter(
                         {
                             case DevopsManualBoolInput boolInput:
 
-                                WriteLine("type: bool");
+                                WriteLine("type: boolean");
 
                                 if (boolInput.DefaultValue is not null)
                                     WriteLine($"default: '{boolInput.DefaultValue.Value}'");
@@ -61,6 +61,8 @@ public sealed class DevopsWorkflowWriter(
 
                                 if (choiceInput.DefaultValue is not null)
                                     WriteLine($"default: {choiceInput.DefaultValue}");
+                                else
+                                    WriteLine($"default: '{choiceInput.Choices[0]}'");
 
                                 using (WriteSection("values:"))
                                 {
@@ -360,7 +362,7 @@ public sealed class DevopsWorkflowWriter(
 
                             using (WriteSection("- task: DownloadPipelineArtifact@2"))
                             {
-                                WriteLine($"name: {name}");
+                                WriteLine($"displayName: {name}");
 
                                 using (WriteSection("inputs:"))
                                 {
@@ -406,7 +408,7 @@ public sealed class DevopsWorkflowWriter(
 
                             using (WriteSection("- task: DownloadPipelineArtifact@2"))
                             {
-                                WriteLine($"name: {name}");
+                                WriteLine($"displayName: {name}");
 
                                 using (WriteSection("inputs:"))
                                 {

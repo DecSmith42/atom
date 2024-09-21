@@ -24,7 +24,7 @@ jobs:
         name: PackAtom
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom
+        displayName: DecSm.Atom
         inputs:
           artifactName: DecSm.Atom
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom"
@@ -39,7 +39,7 @@ jobs:
         name: PackAtomTool
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Tool
+        displayName: DecSm.Atom.Tool
         inputs:
           artifactName: DecSm.Atom.Tool
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tool"
@@ -54,7 +54,7 @@ jobs:
         name: PackAzureKeyVaultExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.AzureKeyVault
+        displayName: DecSm.Atom.Extensions.AzureKeyVault
         inputs:
           artifactName: DecSm.Atom.Extensions.AzureKeyVault
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.AzureKeyVault"
@@ -69,7 +69,7 @@ jobs:
         name: PackAzureStorageExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.AzureStorage
+        displayName: DecSm.Atom.Extensions.AzureStorage
         inputs:
           artifactName: DecSm.Atom.Extensions.AzureStorage
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.AzureStorage"
@@ -84,7 +84,7 @@ jobs:
         name: PackDevopsWorkflowsExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.DevopsWorkflows
+        displayName: DecSm.Atom.Extensions.DevopsWorkflows
         inputs:
           artifactName: DecSm.Atom.Extensions.DevopsWorkflows
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.DevopsWorkflows"
@@ -99,7 +99,7 @@ jobs:
         name: PackDotnetExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.Dotnet
+        displayName: DecSm.Atom.Extensions.Dotnet
         inputs:
           artifactName: DecSm.Atom.Extensions.Dotnet
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.Dotnet"
@@ -114,7 +114,7 @@ jobs:
         name: PackGithubWorkflowsExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.GithubWorkflows
+        displayName: DecSm.Atom.Extensions.GithubWorkflows
         inputs:
           artifactName: DecSm.Atom.Extensions.GithubWorkflows
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.GithubWorkflows"
@@ -129,7 +129,7 @@ jobs:
         name: PackGitVersionExtension
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.GitVersion
+        displayName: DecSm.Atom.Extensions.GitVersion
         inputs:
           artifactName: DecSm.Atom.Extensions.GitVersion
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Extensions.GitVersion"
@@ -155,7 +155,7 @@ jobs:
           matrix-slice: $(job-runs-on)
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
@@ -168,49 +168,49 @@ jobs:
     steps:
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom
+        displayName: DecSm.Atom
         inputs:
           artifact: DecSm.Atom
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Tool
+        displayName: DecSm.Atom.Tool
         inputs:
           artifact: DecSm.Atom.Tool
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.AzureKeyVault
+        displayName: DecSm.Atom.Extensions.AzureKeyVault
         inputs:
           artifact: DecSm.Atom.Extensions.AzureKeyVault
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.AzureKeyVault"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.AzureStorage
+        displayName: DecSm.Atom.Extensions.AzureStorage
         inputs:
           artifact: DecSm.Atom.Extensions.AzureStorage
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.AzureStorage"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.DevopsWorkflows
+        displayName: DecSm.Atom.Extensions.DevopsWorkflows
         inputs:
           artifact: DecSm.Atom.Extensions.DevopsWorkflows
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.DevopsWorkflows"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.Dotnet
+        displayName: DecSm.Atom.Extensions.Dotnet
         inputs:
           artifact: DecSm.Atom.Extensions.Dotnet
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.Dotnet"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.GithubWorkflows
+        displayName: DecSm.Atom.Extensions.GithubWorkflows
         inputs:
           artifact: DecSm.Atom.Extensions.GithubWorkflows
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.GithubWorkflows"
       
       - task: DownloadPipelineArtifact@2
-        name: DecSm.Atom.Extensions.GitVersion
+        displayName: DecSm.Atom.Extensions.GitVersion
         inputs:
           artifact: DecSm.Atom.Extensions.GitVersion
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Extensions.GitVersion"
