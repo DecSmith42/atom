@@ -3,6 +3,8 @@ name: Validate
 variables:
   - group: Atom
 trigger:
+  branches:
+    - none
 
 jobs:
   

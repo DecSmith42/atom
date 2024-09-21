@@ -89,9 +89,18 @@ public sealed class DevopsWorkflowWriter(
                     WriteLine($"- group: {variableGroup.Name}");
             }
 
+        var pushTriggers = workflow
+            .Triggers
+            .OfType<DevopsPushTrigger>()
+            .ToArray();
+
         using (WriteSection("trigger:"))
         {
-            foreach (var pushTrigger in workflow.Triggers.OfType<DevopsPushTrigger>())
+            if (pushTriggers.Length is 0)
+                using (WriteSection("branches:"))
+                    WriteLine("- none");
+
+            foreach (var pushTrigger in pushTriggers)
             {
                 using (WriteSection("branches:"))
                 {
