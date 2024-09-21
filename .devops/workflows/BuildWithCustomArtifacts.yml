@@ -14,6 +14,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
         name: Setup
   
@@ -24,6 +27,9 @@ jobs:
     variables:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
@@ -45,6 +51,9 @@ jobs:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
       
@@ -64,6 +73,9 @@ jobs:
     variables:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
         name: PackAzureKeyVaultExtension
@@ -85,6 +97,9 @@ jobs:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
         name: PackAzureStorageExtension
       
@@ -104,6 +119,9 @@ jobs:
     variables:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
         name: PackDevopsWorkflowsExtension
@@ -125,6 +143,9 @@ jobs:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
         name: PackDotnetExtension
       
@@ -145,6 +166,9 @@ jobs:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
         name: PackGithubWorkflowsExtension
       
@@ -164,6 +188,9 @@ jobs:
     variables:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
         name: PackGitVersionExtension
@@ -193,6 +220,9 @@ jobs:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
         env:
@@ -216,6 +246,9 @@ jobs:
     variables:
       atom-build-id: $[ dependencies.Setup.outputs['atom-build-id'] ]
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
         env:

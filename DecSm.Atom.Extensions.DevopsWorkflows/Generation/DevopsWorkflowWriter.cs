@@ -326,6 +326,11 @@ public sealed class DevopsWorkflowWriter(
         {
             case CommandWorkflowStep commandStep:
 
+                using (WriteSection("- checkout:"))
+                    WriteLine("fetchDepth: 0");
+
+                WriteLine();
+
                 var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
 
                 var matrixParams = job

@@ -14,6 +14,10 @@ internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, I
             await using (var writer = fileSystem.File.Create(tempFile))
                 await writer.WriteAsync(Encoding.UTF8.GetBytes(ReportDataMarkdownWriter.Write(reportService.GetReportData())));
 
+            // TODO: Debug code, remove
+            var fileContent = await fileSystem.File.ReadAllTextAsync(tempFile);
+            Console.WriteLine($"Contents of \"{tempFile}\":\n{fileContent}");
+
             Console.WriteLine($"##vso[task.uploadsummary]{tempFile}");
         }
         finally

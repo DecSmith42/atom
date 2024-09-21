@@ -11,6 +11,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
         name: Setup
   
@@ -18,6 +21,9 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
@@ -27,6 +33,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
   
@@ -34,6 +43,9 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
         name: PackAzureKeyVaultExtension
@@ -43,6 +55,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
         name: PackAzureStorageExtension
   
@@ -50,6 +65,9 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
         name: PackDevopsWorkflowsExtension
@@ -59,6 +77,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
         name: PackDotnetExtension
   
@@ -67,6 +88,9 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
+      - checkout:
+        fetchDepth: 0
+      
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
         name: PackGithubWorkflowsExtension
   
@@ -74,6 +98,9 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
         name: PackGitVersionExtension
@@ -90,6 +117,9 @@ jobs:
     pool:
       vmImage: $(job-runs-on)
     steps:
+      
+      - checkout:
+        fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
