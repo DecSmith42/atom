@@ -326,7 +326,7 @@ public sealed class DevopsWorkflowWriter(
         {
             case CommandWorkflowStep commandStep:
 
-                using (WriteSection("- checkout:"))
+                using (WriteSection("- checkout: self"))
                     WriteLine("fetchDepth: 0");
 
                 WriteLine();

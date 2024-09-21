@@ -14,7 +14,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
@@ -25,7 +25,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
@@ -43,7 +43,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
@@ -61,7 +61,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
@@ -79,7 +79,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
@@ -97,7 +97,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
@@ -115,7 +115,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
@@ -133,7 +133,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
@@ -151,7 +151,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
@@ -177,7 +177,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
@@ -199,7 +199,7 @@ jobs:
       vmImage: ubuntu-latest
     steps:
       
-      - checkout:
+      - checkout: self
         fetchDepth: 0
       
       - task: DownloadPipelineArtifact@2
