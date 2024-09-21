@@ -94,68 +94,67 @@ public sealed class DevopsWorkflowWriter(
             .OfType<DevopsPushTrigger>()
             .ToArray();
 
-        using (WriteSection("trigger:"))
-        {
-            if (pushTriggers.Length is 0)
-                using (WriteSection("branches:"))
-                    WriteLine("- none");
-
-            foreach (var pushTrigger in pushTriggers)
+        if (pushTriggers.Length is 0)
+            WriteLine("trigger: none");
+        else
+            using (WriteSection("trigger:"))
             {
-                using (WriteSection("branches:"))
+                foreach (var pushTrigger in pushTriggers)
                 {
-                    if (pushTrigger.IncludedBranches.Count > 0)
-                        using (WriteSection("include:"))
+                    using (WriteSection("branches:"))
+                    {
+                        if (pushTrigger.IncludedBranches.Count > 0)
+                            using (WriteSection("include:"))
+                            {
+                                foreach (var branch in pushTrigger.IncludedBranches)
+                                    WriteLine($"- '{branch}'");
+                            }
+
+                        if (pushTrigger.ExcludedBranches.Count > 0)
+                            using (WriteSection("exclude:"))
+                            {
+                                foreach (var branch in pushTrigger.ExcludedBranches)
+                                    WriteLine($"- '{branch}'");
+                            }
+                    }
+
+                    if (pushTrigger.IncludedPaths.Count > 0 || pushTrigger.ExcludedPaths.Count > 0)
+                        using (WriteSection("paths:"))
                         {
-                            foreach (var branch in pushTrigger.IncludedBranches)
-                                WriteLine($"- '{branch}'");
+                            if (pushTrigger.IncludedPaths.Count > 0)
+                                using (WriteSection("include:"))
+                                {
+                                    foreach (var path in pushTrigger.IncludedPaths)
+                                        WriteLine($"- '{path}'");
+                                }
+
+                            if (pushTrigger.ExcludedPaths.Count > 0)
+                                using (WriteSection("exclude:"))
+                                {
+                                    foreach (var path in pushTrigger.ExcludedPaths)
+                                        WriteLine($"- '{path}'");
+                                }
                         }
 
-                    if (pushTrigger.ExcludedBranches.Count > 0)
-                        using (WriteSection("exclude:"))
+                    if (pushTrigger.IncludedTags.Count > 0 || pushTrigger.ExcludedTags.Count > 0)
+                        using (WriteSection("tags:"))
                         {
-                            foreach (var branch in pushTrigger.ExcludedBranches)
-                                WriteLine($"- '{branch}'");
+                            if (pushTrigger.IncludedTags.Count > 0)
+                                using (WriteSection("include:"))
+                                {
+                                    foreach (var tag in pushTrigger.IncludedTags)
+                                        WriteLine($"- '{tag}'");
+                                }
+
+                            if (pushTrigger.ExcludedTags.Count > 0)
+                                using (WriteSection("exclude:"))
+                                {
+                                    foreach (var tag in pushTrigger.ExcludedTags)
+                                        WriteLine($"- '{tag}'");
+                                }
                         }
                 }
-
-                if (pushTrigger.IncludedPaths.Count > 0 || pushTrigger.ExcludedPaths.Count > 0)
-                    using (WriteSection("paths:"))
-                    {
-                        if (pushTrigger.IncludedPaths.Count > 0)
-                            using (WriteSection("include:"))
-                            {
-                                foreach (var path in pushTrigger.IncludedPaths)
-                                    WriteLine($"- '{path}'");
-                            }
-
-                        if (pushTrigger.ExcludedPaths.Count > 0)
-                            using (WriteSection("exclude:"))
-                            {
-                                foreach (var path in pushTrigger.ExcludedPaths)
-                                    WriteLine($"- '{path}'");
-                            }
-                    }
-
-                if (pushTrigger.IncludedTags.Count > 0 || pushTrigger.ExcludedTags.Count > 0)
-                    using (WriteSection("tags:"))
-                    {
-                        if (pushTrigger.IncludedTags.Count > 0)
-                            using (WriteSection("include:"))
-                            {
-                                foreach (var tag in pushTrigger.IncludedTags)
-                                    WriteLine($"- '{tag}'");
-                            }
-
-                        if (pushTrigger.ExcludedTags.Count > 0)
-                            using (WriteSection("exclude:"))
-                            {
-                                foreach (var tag in pushTrigger.ExcludedTags)
-                                    WriteLine($"- '{tag}'");
-                            }
-                    }
             }
-        }
 
         WriteLine();
 
