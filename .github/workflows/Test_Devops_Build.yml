@@ -1,0 +1,298 @@
+name: Test_Devops_Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
+      atom-build-version: ${{ steps.Setup.outputs.atom-build-version }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        env:
+          nuget-dry-run: true
+  
+  PackAtom:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackAtom
+        id: PackAtom
+        run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
+      
+  
+  PackAtomTool:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackAtomTool
+        id: PackAtomTool
+        run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
+      
+  
+  PackAzureKeyVaultExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackAzureKeyVaultExtension
+        id: PackAzureKeyVaultExtension
+        run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.AzureKeyVault
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureKeyVault
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.AzureKeyVault"
+      
+  
+  PackAzureStorageExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackAzureStorageExtension
+        id: PackAzureStorageExtension
+        run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.AzureStorage
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureStorage
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.AzureStorage"
+      
+  
+  PackDevopsWorkflowsExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackDevopsWorkflowsExtension
+        id: PackDevopsWorkflowsExtension
+        run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.DevopsWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.DevopsWorkflows"
+      
+  
+  PackDotnetExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackDotnetExtension
+        id: PackDotnetExtension
+        run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.Dotnet
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.Dotnet
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.Dotnet"
+      
+  
+  PackGithubWorkflowsExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackGithubWorkflowsExtension
+        id: PackGithubWorkflowsExtension
+        run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.GithubWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GithubWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.GithubWorkflows"
+      
+  
+  PackGitVersionExtension:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackGitVersionExtension
+        id: PackGitVersionExtension
+        run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+        env:
+          nuget-dry-run: true
+      
+      - name: Upload DecSm.Atom.Extensions.GitVersion
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GitVersion
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Extensions.GitVersion"
+      
+  
+  TestAtom:
+    strategy:
+      matrix:
+        job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.job-runs-on }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: TestAtom
+        id: TestAtom
+        run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+        env:
+          nuget-dry-run: true
+          job-runs-on: ${{ matrix.job-runs-on }}
+          matrix-slice: ${{ matrix.job-runs-on }}
+      
+      - name: Upload DecSm.Atom.Tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tests-${{ matrix.job-runs-on }}
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
+      
+  
+  PushToNuget:
+    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultExtension, PackAzureStorageExtension, PackDevopsWorkflowsExtension, PackDotnetExtension, PackGithubWorkflowsExtension, PackGitVersionExtension ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Download DecSm.Atom
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Extensions.AzureKeyVault
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureKeyVault
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.AzureKeyVault"
+      
+      - name: Download DecSm.Atom.Extensions.AzureStorage
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.AzureStorage
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.AzureStorage"
+      
+      - name: Download DecSm.Atom.Extensions.DevopsWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.DevopsWorkflows"
+      
+      - name: Download DecSm.Atom.Extensions.Dotnet
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.Dotnet
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.Dotnet"
+      
+      - name: Download DecSm.Atom.Extensions.GithubWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GithubWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.GithubWorkflows"
+      
+      - name: Download DecSm.Atom.Extensions.GitVersion
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Extensions.GitVersion
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Extensions.GitVersion"
+      
+      - name: PushToNuget
+        id: PushToNuget
+        run: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
+        env:
+          azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
