@@ -29,7 +29,7 @@ internal partial class Build : BuildDefinition,
     [
         new("Validate")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain, Devops.Triggers.Manual],
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -51,6 +51,47 @@ internal partial class Build : BuildDefinition,
         },
         new("Build")
         {
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
+            StepDefinitions =
+            [
+                Commands.Setup,
+                Commands.PackAtom,
+                Commands.PackAtomTool,
+                Commands.PackAzureKeyVaultExtension,
+                Commands.PackAzureStorageExtension,
+                Commands.PackDevopsWorkflowsExtension,
+                Commands.PackDotnetExtension,
+                Commands.PackGithubWorkflowsExtension,
+                Commands.PackGitVersionExtension,
+                Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
+                Commands.PushToNuget,
+            ],
+            WorkflowTypes = [Github.WorkflowType],
+        },
+        new("Test_Devops_Validate")
+        {
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain, Devops.Triggers.Manual],
+            StepDefinitions =
+            [
+                Commands.Setup,
+                Commands.PackAtom.WithSuppressedArtifactPublishing,
+                Commands.PackAtomTool.WithSuppressedArtifactPublishing,
+                Commands.PackAzureKeyVaultExtension.WithSuppressedArtifactPublishing,
+                Commands.PackAzureStorageExtension.WithSuppressedArtifactPublishing,
+                Commands.PackDevopsWorkflowsExtension.WithSuppressedArtifactPublishing,
+                Commands.PackDotnetExtension.WithSuppressedArtifactPublishing,
+                Commands.PackGithubWorkflowsExtension.WithSuppressedArtifactPublishing,
+                Commands.PackGitVersionExtension.WithSuppressedArtifactPublishing,
+                Commands
+                    .TestAtom
+                    .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
+                        ["windows-latest", "ubuntu-latest", "macos-latest"]))
+                    .WithAddedOptions(DevopsPool.MatrixDefined, GithubRunsOn.MatrixDefined),
+            ],
+            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+        },
+        new("Test_Devops_Build")
+        {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.Manual, Devops.Triggers.PushToMain],
             StepDefinitions =
             [
@@ -67,8 +108,9 @@ internal partial class Build : BuildDefinition,
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
         },
-        new("BuildWithCustomArtifacts")
+        new("Test_BuildWithCustomArtifacts")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.PushToMain],
             StepDefinitions =
@@ -86,7 +128,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [UseCustomArtifactProvider.Enabled],
+            Options = [UseCustomArtifactProvider.Enabled, new WorkflowParamInjection(Params.NugetDryRun, "true")],
         },
         new("Cleanup")
         {

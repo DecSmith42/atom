@@ -1,4 +1,4 @@
-name: Build
+name: Test_Devops_Build
 
 variables:
   - group: Atom
@@ -19,6 +19,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
         name: Setup
+        env:
+          nuget-dry-run: true
   
   - job: PackAtom
     pool:
@@ -30,6 +32,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom
@@ -48,6 +52,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tool
@@ -66,6 +72,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
         name: PackAzureKeyVaultExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.AzureKeyVault
@@ -84,6 +92,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
         name: PackAzureStorageExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.AzureStorage
@@ -102,6 +112,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
         name: PackDevopsWorkflowsExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.DevopsWorkflows
@@ -120,6 +132,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
         name: PackDotnetExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.Dotnet
@@ -138,6 +152,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
         name: PackGithubWorkflowsExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.GithubWorkflows
@@ -156,6 +172,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
         name: PackGitVersionExtension
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Extensions.GitVersion
@@ -183,6 +201,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
         env:
+          nuget-dry-run: true
           job-runs-on: $(job-runs-on)
           matrix-slice: $(job-runs-on)
       
@@ -257,3 +276,4 @@ jobs:
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          nuget-dry-run: true

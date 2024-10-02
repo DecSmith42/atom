@@ -1,4 +1,4 @@
-name: BuildWithCustomArtifacts
+name: Test_BuildWithCustomArtifacts
 
 on:
   workflow_dispatch:
@@ -23,6 +23,8 @@ jobs:
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        env:
+          nuget-dry-run: true
   
   PackAtom:
     needs: [ Setup ]
@@ -37,6 +39,8 @@ jobs:
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -46,6 +50,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom
   
   PackAtomTool:
@@ -61,6 +66,8 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -70,6 +77,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Tool
   
   PackAzureKeyVaultExtension:
@@ -85,6 +93,8 @@ jobs:
       - name: PackAzureKeyVaultExtension
         id: PackAzureKeyVaultExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -94,6 +104,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.AzureKeyVault
   
   PackAzureStorageExtension:
@@ -109,6 +120,8 @@ jobs:
       - name: PackAzureStorageExtension
         id: PackAzureStorageExtension
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -118,6 +131,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.AzureStorage
   
   PackDevopsWorkflowsExtension:
@@ -133,6 +147,8 @@ jobs:
       - name: PackDevopsWorkflowsExtension
         id: PackDevopsWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -142,6 +158,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.DevopsWorkflows
   
   PackDotnetExtension:
@@ -157,6 +174,8 @@ jobs:
       - name: PackDotnetExtension
         id: PackDotnetExtension
         run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -166,6 +185,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.Dotnet
   
   PackGithubWorkflowsExtension:
@@ -181,6 +201,8 @@ jobs:
       - name: PackGithubWorkflowsExtension
         id: PackGithubWorkflowsExtension
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -190,6 +212,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.GithubWorkflows
   
   PackGitVersionExtension:
@@ -205,6 +228,8 @@ jobs:
       - name: PackGitVersionExtension
         id: PackGitVersionExtension
         run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: UploadArtifact
         run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
@@ -214,6 +239,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Extensions.GitVersion
   
   TestAtom:
@@ -233,6 +259,7 @@ jobs:
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         env:
+          nuget-dry-run: true
           job-runs-on: ${{ matrix.job-runs-on }}
           matrix-slice: ${{ matrix.job-runs-on }}
       
@@ -244,6 +271,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Tests
           matrix-slice: ${{ matrix.job-runs-on }}
   
@@ -265,6 +293,7 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
           atom-artifacts: DecSm.Atom,DecSm.Atom.Tool,DecSm.Atom.Extensions.AzureKeyVault,DecSm.Atom.Extensions.AzureStorage,DecSm.Atom.Extensions.DevopsWorkflows,DecSm.Atom.Extensions.Dotnet,DecSm.Atom.Extensions.GithubWorkflows,DecSm.Atom.Extensions.GitVersion
       
       - name: PushToNuget
@@ -275,3 +304,4 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          nuget-dry-run: true
