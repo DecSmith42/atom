@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.12.4">
+    <PackageReference Include="Roslynator.Analyzers" Version="4.12.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.4">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.12.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -22,14 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.DevopsWorkflows\DecSm.Atom.Extensions.DevopsWorkflows.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.GitVersion\DecSm.Atom.Extensions.GitVersion.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Extensions.DevopsWorkflows\DecSm.Atom.Extensions.DevopsWorkflows.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Extensions.GitVersion\DecSm.Atom.Extensions.GitVersion.csproj" />
+    <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>
