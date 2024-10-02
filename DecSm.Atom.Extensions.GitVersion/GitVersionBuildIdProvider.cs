@@ -15,7 +15,7 @@ public sealed class GitVersionBuildIdProvider(
             if (!ProvideGitVersionAsWorkflowId.IsEnabled(IWorkflowOption.GetOptionsForCurrentTarget(buildDefinition)))
                 return null;
 
-            if (_buildId is not null)
+            if (_buildId is { Length: > 0 })
                 return _buildId;
 
             dotnetToolHelper.InstallTool("GitVersion.Tool");

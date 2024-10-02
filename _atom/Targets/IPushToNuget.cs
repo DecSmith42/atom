@@ -16,6 +16,7 @@ internal partial interface IPushToNuget : INugetHelper
             .ConsumesArtifact(Commands.PackAtomTool, IPackAtomTool.AtomToolProjectName)
             .ConsumesArtifact(Commands.PackAzureKeyVaultExtension, IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName)
             .ConsumesArtifact(Commands.PackAzureStorageExtension, IPackAzureStorageExtension.AzureStorageExtensionProjectName)
+            .ConsumesArtifact(Commands.PackDevopsWorkflowsExtension, IPackDevopsWorkflowsExtension.AtomDevopsWorkflowsExtensionProjectName)
             .ConsumesArtifact(Commands.PackDotnetExtension, IPackDotnetExtension.DotnetExtensionProjectName)
             .ConsumesArtifact(Commands.PackGithubWorkflowsExtension, IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName)
             .ConsumesArtifact(Commands.PackGitVersionExtension, IPackGitVersionExtension.GitVersionExtensionProjectName)
@@ -27,6 +28,7 @@ internal partial interface IPushToNuget : INugetHelper
                 await PushProject(IPackAtomTool.AtomToolProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackAzureStorageExtension.AzureStorageExtensionProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackDevopsWorkflowsExtension.AtomDevopsWorkflowsExtensionProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackDotnetExtension.DotnetExtensionProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackGitVersionExtension.GitVersionExtensionProjectName, NugetFeed, NugetApiKey);

@@ -1,0 +1,135 @@
+name: Validate
+
+variables:
+  - group: Atom
+trigger: none
+
+jobs:
+  
+  - job: Setup
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        name: Setup
+  
+  - job: PackAtom
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+        name: PackAtom
+  
+  - job: PackAtomTool
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+        name: PackAtomTool
+  
+  - job: PackAzureKeyVaultExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+        name: PackAzureKeyVaultExtension
+  
+  - job: PackAzureStorageExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+        name: PackAzureStorageExtension
+  
+  - job: PackDevopsWorkflowsExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+        name: PackDevopsWorkflowsExtension
+  
+  - job: PackDotnetExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+        name: PackDotnetExtension
+  
+  - job: PackGithubWorkflowsExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+        name: PackGithubWorkflowsExtension
+  
+  - job: PackGitVersionExtension
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+        name: PackGitVersionExtension
+  
+  - job: TestAtom
+    strategy:
+      matrix:
+        001_windows-latest:
+          job-runs-on: 'windows-latest'
+        002_ubuntu-latest:
+          job-runs-on: 'ubuntu-latest'
+        003_macos-latest:
+          job-runs-on: 'macos-latest'
+    pool:
+      vmImage: $(job-runs-on)
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+        name: TestAtom
+        env:
+          job-runs-on: $(job-runs-on)
+          matrix-slice: $(job-runs-on)
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Tests-$(job-runs-on)
+        inputs:
+          artifactName: DecSm.Atom.Tests-$(job-runs-on)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
+      

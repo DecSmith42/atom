@@ -15,7 +15,14 @@ public partial interface IUploadArtifact : IArtifactHelper
             targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
             targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
 
-            targetDefinition.Executes(() => artifactProvider.UploadArtifacts(AtomArtifacts));
+            targetDefinition.Executes(async () =>
+            {
+                Logger.LogInformation("Using artifact provider: {Provider}",
+                    artifactProvider.GetType()
+                        .Name);
+
+                await artifactProvider.UploadArtifacts(AtomArtifacts);
+            });
 
             return targetDefinition;
         };

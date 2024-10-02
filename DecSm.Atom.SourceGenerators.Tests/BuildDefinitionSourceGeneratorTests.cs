@@ -1,9 +1,3 @@
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Shouldly;
-using Xunit;
-
 namespace DecSm.Atom.SourceGenerators.Tests;
 
 public class BuildDefinitionSourceGeneratorTests
@@ -12,7 +6,7 @@ public class BuildDefinitionSourceGeneratorTests
 
     private const string ExpectedText = "//TODO";
 
-    [Fact]
+    [Test]
     public void GenerateReportMethod()
     {
         // Create an instance of the source generator.

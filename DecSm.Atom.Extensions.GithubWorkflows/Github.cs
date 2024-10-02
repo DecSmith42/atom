@@ -10,6 +10,26 @@ public static class Github
 
     public static GithubWorkflowType WorkflowType { get; } = new();
 
+    public static WorkflowDefinition DependabotDefaultWorkflow() =>
+        DependabotWorkflow(new()
+        {
+            Registries = [new("nuget", DependabotValues.NugetType, DependabotValues.NugetUrl)],
+            Updates =
+            [
+                new(DependabotValues.NugetEcosystem)
+                {
+                    Registries = ["nuget"],
+                    Groups =
+                    [
+                        new("nuget-deps")
+                        {
+                            Patterns = ["*"],
+                        },
+                    ],
+                },
+            ],
+        });
+
     public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
         new("dependabot")
         {

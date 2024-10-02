@@ -292,7 +292,7 @@ public sealed class GithubWorkflowWriter(
                             new(nameof(IDownloadArtifact.DownloadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
                             [
-                                ("atom-artifacts", string.Join(";", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
+                                ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
                                     ? matrixSlice
                                     : default,
@@ -336,7 +336,7 @@ public sealed class GithubWorkflowWriter(
                             new(nameof(IUploadArtifact.UploadArtifact)),
                             buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
                             [
-                                ("atom-artifacts", string.Join(";", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
+                                ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
                                     ? matrixSlice
                                     : default,
@@ -406,7 +406,16 @@ public sealed class GithubWorkflowWriter(
             if (requiredSecrets.Any(x => x.Attribute.IsSecret))
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
-                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Param);
+                    if (injectedSecret.Value is null)
+                    {
+                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a vault secret injection with a null value",
+                            workflow.Name,
+                            commandStep.Name);
+
+                        continue;
+                    }
+
+                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
                         env[paramDefinition.Attribute.ArgName] =
