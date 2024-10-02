@@ -13,10 +13,25 @@ public partial interface IDotnetPackHelper : IVersionHelper
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
 
+        List<AbsolutePath> filesToTransform = [projectPath];
+
+        var dir = projectPath;
+
+        do
+        {
+            dir = dir.Parent!;
+
+            var file = dir / "Directory.Build.props";
+
+            if (file.FileExists)
+                filesToTransform.Add(file);
+        }
+        while (dir != FileSystem.AtomRootDirectory && dir is not null);
+
         var buildVersionProvider = GetService<IBuildVersionProvider>();
 
         await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(projectPath, buildVersionProvider.Version)
+            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
             : null;
 
         var packDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration;
