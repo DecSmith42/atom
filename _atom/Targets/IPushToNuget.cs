@@ -14,23 +14,23 @@ internal partial interface IPushToNuget : INugetHelper
             .WithDescription("Pushes the Atom projects to Nuget")
             .ConsumesArtifact(Commands.PackAtom, IPackAtom.AtomProjectName)
             .ConsumesArtifact(Commands.PackAtomTool, IPackAtomTool.AtomToolProjectName)
-            .ConsumesArtifact(Commands.PackAzureKeyVaultExtension, IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName)
-            .ConsumesArtifact(Commands.PackAzureStorageExtension, IPackAzureStorageExtension.AzureStorageExtensionProjectName)
-            .ConsumesArtifact(Commands.PackDevopsWorkflowsExtension, IPackDevopsWorkflowsExtension.AtomDevopsWorkflowsExtensionProjectName)
-            .ConsumesArtifact(Commands.PackDotnetExtension, IPackDotnetExtension.DotnetExtensionProjectName)
-            .ConsumesArtifact(Commands.PackGithubWorkflowsExtension, IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName)
-            .ConsumesArtifact(Commands.PackGitVersionExtension, IPackGitVersionExtension.GitVersionExtensionProjectName)
+            .ConsumesArtifact(Commands.PackAzureKeyVaultModule, IPackAzureKeyVaultModule.AzureKeyVaultModuleProjectName)
+            .ConsumesArtifact(Commands.PackAzureStorageModule, IPackAzureStorageModule.AzureStorageModuleProjectName)
+            .ConsumesArtifact(Commands.PackDevopsWorkflowsModule, IPackDevopsWorkflowsModule.AtomDevopsWorkflowsModuleProjectName)
+            .ConsumesArtifact(Commands.PackDotnetModule, IPackDotnetModule.DotnetModuleProjectName)
+            .ConsumesArtifact(Commands.PackGithubWorkflowsModule, IPackGithubWorkflowsModule.AtomGithubWorkflowsModuleProjectName)
+            .ConsumesArtifact(Commands.PackGitVersionModule, IPackGitVersionModule.GitVersionModuleProjectName)
             .RequiresParam(Params.NugetFeed)
             .RequiresParam(Params.NugetApiKey)
             .Executes(async () =>
             {
                 await PushProject(IPackAtom.AtomProjectName, NugetFeed, NugetApiKey);
                 await PushProject(IPackAtomTool.AtomToolProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackAzureKeyVaultExtension.AzureKeyVaultExtensionProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackAzureStorageExtension.AzureStorageExtensionProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackDevopsWorkflowsExtension.AtomDevopsWorkflowsExtensionProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackDotnetExtension.DotnetExtensionProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackGithubWorkflowsExtension.AtomGithubWorkflowsExtensionProjectName, NugetFeed, NugetApiKey);
-                await PushProject(IPackGitVersionExtension.GitVersionExtensionProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackAzureKeyVaultModule.AzureKeyVaultModuleProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackAzureStorageModule.AzureStorageModuleProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackDevopsWorkflowsModule.AtomDevopsWorkflowsModuleProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackDotnetModule.DotnetModuleProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackGithubWorkflowsModule.AtomGithubWorkflowsModuleProjectName, NugetFeed, NugetApiKey);
+                await PushProject(IPackGitVersionModule.GitVersionModuleProjectName, NugetFeed, NugetApiKey);
             });
 }

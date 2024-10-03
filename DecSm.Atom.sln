@@ -12,21 +12,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5AD016BB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "_atom", "_atom\_atom.csproj", "{A26DBCF8-6379-4445-8D71-F72D724A7DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.GithubWorkflows", "DecSm.Atom.Extensions.GithubWorkflows\DecSm.Atom.Extensions.GithubWorkflows.csproj", "{68D0132E-7F70-4E6F-BACC-9178070D16CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.GithubWorkflows", "DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj", "{68D0132E-7F70-4E6F-BACC-9178070D16CF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Tool", "DecSm.Atom.Tool\DecSm.Atom.Tool.csproj", "{AF9EA7BE-41C1-453B-854A-D691BE103D4F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{5FFA3AFC-036E-49C2-B0CD-93DD5EDCEBAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.AzureKeyVault", "DecSm.Atom.Extensions.AzureKeyVault\DecSm.Atom.Extensions.AzureKeyVault.csproj", "{2D93A955-60F6-4BEC-8BBA-92CFB4E5088C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.AzureKeyVault", "DecSm.Atom.Module.AzureKeyVault\DecSm.Atom.Module.AzureKeyVault.csproj", "{2D93A955-60F6-4BEC-8BBA-92CFB4E5088C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.AzureStorage", "DecSm.Atom.Extensions.AzureStorage\DecSm.Atom.Extensions.AzureStorage.csproj", "{576958CF-DDF1-48D2-A578-7399449A679B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.AzureStorage", "DecSm.Atom.Module.AzureStorage\DecSm.Atom.Module.AzureStorage.csproj", "{576958CF-DDF1-48D2-A578-7399449A679B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.Dotnet", "DecSm.Atom.Extensions.Dotnet\DecSm.Atom.Extensions.Dotnet.csproj", "{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.Dotnet", "DecSm.Atom.Module.Dotnet\DecSm.Atom.Module.Dotnet.csproj", "{1ABF22FB-B8FC-4ED3-ABA2-B3B231A62FA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.GitVersion", "DecSm.Atom.Extensions.GitVersion\DecSm.Atom.Extensions.GitVersion.csproj", "{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.GitVersion", "DecSm.Atom.Module.GitVersion\DecSm.Atom.Module.GitVersion.csproj", "{15CEEDA9-E8B8-43D9-A3D2-7F93A97F17B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Extensions.DevopsWorkflows", "DecSm.Atom.Extensions.DevopsWorkflows\DecSm.Atom.Extensions.DevopsWorkflows.csproj", "{DF50CF84-BF79-403D-92EE-11DDABB5AE2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecSm.Atom.Module.DevopsWorkflows", "DecSm.Atom.Module.DevopsWorkflows\DecSm.Atom.Module.DevopsWorkflows.csproj", "{DF50CF84-BF79-403D-92EE-11DDABB5AE2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

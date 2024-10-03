@@ -50,7 +50,7 @@ jobs:
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
   
-  PackAzureKeyVaultExtension:
+  PackAzureKeyVaultModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -59,11 +59,11 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackAzureKeyVaultExtension
-        id: PackAzureKeyVaultExtension
-        run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultExtension --skip --headless
+      - name: PackAzureKeyVaultModule
+        id: PackAzureKeyVaultModule
+        run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
   
-  PackAzureStorageExtension:
+  PackAzureStorageModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -72,11 +72,11 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackAzureStorageExtension
-        id: PackAzureStorageExtension
-        run: dotnet run --project _atom/_atom.csproj PackAzureStorageExtension --skip --headless
+      - name: PackAzureStorageModule
+        id: PackAzureStorageModule
+        run: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
   
-  PackDevopsWorkflowsExtension:
+  PackDevopsWorkflowsModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -85,11 +85,11 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackDevopsWorkflowsExtension
-        id: PackDevopsWorkflowsExtension
-        run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsExtension --skip --headless
+      - name: PackDevopsWorkflowsModule
+        id: PackDevopsWorkflowsModule
+        run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
   
-  PackDotnetExtension:
+  PackDotnetModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -98,11 +98,11 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackDotnetExtension
-        id: PackDotnetExtension
-        run: dotnet run --project _atom/_atom.csproj PackDotnetExtension --skip --headless
+      - name: PackDotnetModule
+        id: PackDotnetModule
+        run: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
   
-  PackGithubWorkflowsExtension:
+  PackGithubWorkflowsModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -111,11 +111,11 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackGithubWorkflowsExtension
-        id: PackGithubWorkflowsExtension
-        run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsExtension --skip --headless
+      - name: PackGithubWorkflowsModule
+        id: PackGithubWorkflowsModule
+        run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
   
-  PackGitVersionExtension:
+  PackGitVersionModule:
     runs-on: ubuntu-latest
     steps:
       
@@ -124,9 +124,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: PackGitVersionExtension
-        id: PackGitVersionExtension
-        run: dotnet run --project _atom/_atom.csproj PackGitVersionExtension --skip --headless
+      - name: PackGitVersionModule
+        id: PackGitVersionModule
+        run: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
   
   TestAtom:
     strategy:
