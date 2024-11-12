@@ -86,7 +86,7 @@ public sealed class AzureKeyVaultProvider(IBuildDefinition buildDefinition, Comm
         return new ClientSecretCredential(definition.AzureVaultTenantId, definition.AzureVaultAppId, definition.AzureVaultAppSecret);
     }
 
-    private TokenCredential GetUserCredential(string? tenantId)
+    private InteractiveBrowserCredential GetUserCredential(string? tenantId)
     {
         logger.LogInformation(
             "Getting Azure Vault credentials interactively, please log in to Azure with a user that has access to the Vault");

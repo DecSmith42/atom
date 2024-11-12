@@ -45,8 +45,7 @@ internal partial interface ICleanupPrereleaseArtifacts
                 Logger.LogInformation("Cleaning prerelease builds up to version: {Version}", secondMostRecentStableVersion);
 
                 var versionsToCleanup = knownVersions
-                    .Where(x => x.IsPreRelease)
-                    .Where(x => x < secondMostRecentStableVersion)
+                    .Where(x => x.IsPreRelease && x < secondMostRecentStableVersion)
                     .ToArray();
 
                 if (versionsToCleanup.Length == 0)

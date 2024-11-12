@@ -72,7 +72,9 @@ public sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogger
                                 DependabotSchedule.Daily => "daily",
                                 DependabotSchedule.Weekly => "weekly",
                                 DependabotSchedule.Monthly => "monthly",
-                                _ => throw new ArgumentOutOfRangeException(),
+                                _ => throw new ArgumentOutOfRangeException(nameof(workflow),
+                                    nameof(update.Schedule),
+                                    $"Dependabot schedule '{update.Schedule}' is not supported."),
                             });
                         }
                     }

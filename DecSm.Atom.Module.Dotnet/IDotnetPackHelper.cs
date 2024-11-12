@@ -19,14 +19,16 @@ public partial interface IDotnetPackHelper : IVersionHelper
 
         do
         {
-            dir = dir.Parent!;
+            dir = dir.Parent;
+
+            if (dir is null)
+                break;
 
             var file = dir / "Directory.Build.props";
 
             if (file.FileExists)
                 filesToTransform.Add(file);
-        }
-        while (dir != FileSystem.AtomRootDirectory && dir is not null);
+        } while (dir != FileSystem.AtomRootDirectory);
 
         var buildVersionProvider = GetService<IBuildVersionProvider>();
 

@@ -125,7 +125,7 @@ internal sealed class BuildTimeStampTests
     {
         // Arrange
         var buildStamp = new BuildTimeStamp(123456);
-        var expectedValue = 123456;
+        const int expectedValue = 123456;
 
         // Act & Assert
         ((int)buildStamp).ShouldBe(expectedValue);
