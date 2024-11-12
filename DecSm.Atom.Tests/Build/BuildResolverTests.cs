@@ -6,7 +6,7 @@ public class BuildResolverTests
     [SetUp]
     public void Setup() =>
         _services = new ServiceCollection()
-            .AddSingleton<IServiceProvider>(x => _services)
+            .AddSingleton<IServiceProvider>(_ => _services)
             .BuildServiceProvider();
 
     [TearDown]

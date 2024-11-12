@@ -20,7 +20,7 @@ public class BuildModelTests
         currentTarget.ShouldBeNull();
     }
 
-    private TargetModel TestTargetModel =>
+    private static TargetModel TestTargetModel =>
         new("TargetModel", null, false)
         {
             Tasks = [],
@@ -157,6 +157,7 @@ public class BuildModelTests
     }
 
     [Test]
+    [SuppressMessage("ReSharper", "MoveLocalFunctionAfterJumpStatement")]
     public void GetTarget_WhenTargetDoesNotExist_ThrowsArgumentException()
     {
         // Arrange

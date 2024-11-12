@@ -1,4 +1,6 @@
-﻿global using System.IO.Abstractions.TestingHelpers;
+﻿global using System.Diagnostics.CodeAnalysis;
+global using System.IO.Abstractions;
+global using System.IO.Abstractions.TestingHelpers;
 global using System.Linq.Expressions;
 global using DecSm.Atom.Args;
 global using DecSm.Atom.Artifacts;
@@ -6,6 +8,7 @@ global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Build.Model;
 global using DecSm.Atom.Params;
+global using DecSm.Atom.Paths;
 global using DecSm.Atom.Reports;
 global using DecSm.Atom.Variables;
 global using FakeItEasy;

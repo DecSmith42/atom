@@ -7,7 +7,7 @@ public class TargetDefinitionTests
     public void WithDescription_SetsDescription()
     {
         // Arrange
-        var description = "description";
+        const string description = "description";
         var targetDefinition = new TargetDefinition();
 
         // Act
@@ -104,7 +104,7 @@ public class TargetDefinitionTests
     public void RequiresParam_AddsRequiredParam()
     {
         // Arrange
-        var paramName = "NotExpected";
+        const string paramName = "NotExpected";
         var targetDefinition = new TargetDefinition();
 
         // Act
@@ -121,7 +121,7 @@ public class TargetDefinitionTests
     public void ProducesArtifact_AddsProducedArtifact()
     {
         // Arrange
-        var artifactName = "ArtifactName";
+        const string artifactName = "ArtifactName";
         var targetDefinition = new TargetDefinition();
 
         // Act
@@ -139,7 +139,7 @@ public class TargetDefinitionTests
     public void ConsumesArtifact_AddsConsumedArtifact()
     {
         // Arrange
-        var artifactName = "ArtifactName";
+        const string artifactName = "ArtifactName";
         var targetDefinition = new TargetDefinition();
 
         // Act
@@ -160,7 +160,7 @@ public class TargetDefinitionTests
     public void ProducesVariable_AddsProducedVariable()
     {
         // Arrange
-        var variableName = "VariableName";
+        const string variableName = "VariableName";
         var targetDefinition = new TargetDefinition();
 
         // Act
@@ -177,7 +177,7 @@ public class TargetDefinitionTests
     public void ConsumesVariable_AddsConsumedVariable()
     {
         // Arrange
-        var variableName = "VariableName";
+        const string variableName = "VariableName";
         var targetDefinition = new TargetDefinition();
 
         // Act

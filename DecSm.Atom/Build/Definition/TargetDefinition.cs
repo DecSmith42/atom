@@ -133,7 +133,9 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition RequiresParam(string? param, [CallerArgumentExpression("param")] string _ = null!)
+    public TargetDefinition RequiresParam(
+        [SuppressMessage("Roslynator", "RCS1163:Unused parameter")] string? param,
+        [CallerArgumentExpression("param")] string _ = null!)
     {
         if (_.StartsWith("nameof("))
             RequiredParams.Add(_[7..^1]);

@@ -30,7 +30,6 @@ global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;
 global using DecSm.Atom.Workflows.Model;
 global using DecSm.Atom.Workflows.Writer;
-global using JetBrains.Annotations;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

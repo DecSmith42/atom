@@ -47,7 +47,7 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
             case (not null, null):
                 return -1;
             case (null, null):
-                return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
+                return string.CompareOrdinal(Metadata, other.Metadata);
         }
 
         var preReleaseParts = PreRelease.Split('.');
@@ -64,7 +64,7 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
             }
             else
             {
-                var preReleasePartComparison = string.Compare(preReleaseParts[i], otherPreReleaseParts[i], StringComparison.Ordinal);
+                var preReleasePartComparison = string.CompareOrdinal(preReleaseParts[i], otherPreReleaseParts[i]);
 
                 if (preReleasePartComparison != 0)
                     return preReleasePartComparison;
@@ -72,10 +72,9 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
 
         var preReleaseLengthComparison = preReleaseParts.Length.CompareTo(otherPreReleaseParts.Length);
 
-        if (preReleaseLengthComparison != 0)
-            return preReleaseLengthComparison;
-
-        return string.Compare(Metadata, other.Metadata, StringComparison.Ordinal);
+        return preReleaseLengthComparison != 0
+            ? preReleaseLengthComparison
+            : string.CompareOrdinal(Metadata, other.Metadata);
     }
 
     public static bool operator >(SemVer left, SemVer right) =>
@@ -91,7 +90,7 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
         left.CompareTo(right) <= 0;
 
     public static bool operator ==(SemVer? left, SemVer? right) =>
-        (left is null && right is null) || (left is not null && left.Equals(right));
+        (left is null && right is null) || left?.Equals(right) == true;
 
     public static bool operator !=(SemVer? left, SemVer? right) =>
         !(left == right);

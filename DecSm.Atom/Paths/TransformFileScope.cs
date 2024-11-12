@@ -66,22 +66,28 @@ public interface ITransformMultiFileScope : IAsyncDisposable, IDisposable
 {
     public static async Task<ITransformMultiFileScope> CreateAsync(IEnumerable<AbsolutePath> files, Func<string, string> transform)
     {
-        var initialContents = await Task.WhenAll(files.Select(x => x.FileSystem.File.ReadAllTextAsync(x)));
+        var filesArray = files.ToArray();
 
-        var scope = new TransformMultiFileScope(files, initialContents);
+        var initialContents = await Task.WhenAll(filesArray.Select(x => x.FileSystem.File.ReadAllTextAsync(x)));
 
-        await Task.WhenAll(files.Select((x, i) => x.FileSystem.File.WriteAllTextAsync(x, transform(initialContents[i]))));
+        var scope = new TransformMultiFileScope(filesArray, initialContents);
+
+        await Task.WhenAll(filesArray.Select((x, i) => x.FileSystem.File.WriteAllTextAsync(x, transform(initialContents[i]))));
 
         return scope;
     }
 
     public static ITransformMultiFileScope Create(IEnumerable<AbsolutePath> files, Func<string, string> transform)
     {
-        var initialContents = files.Select(x => x.FileSystem.File.ReadAllText(x)).ToArray();
+        var filesArray = files.ToArray();
 
-        var scope = new TransformMultiFileScope(files, initialContents);
+        var initialContents = filesArray
+            .Select(x => x.FileSystem.File.ReadAllText(x))
+            .ToArray();
 
-        foreach (var (file, i) in files.Select((x, i) => (x, i)))
+        var scope = new TransformMultiFileScope(filesArray, initialContents);
+
+        foreach (var (file, i) in filesArray.Select((x, i) => (x, i)))
             file.FileSystem.File.WriteAllText(file, transform(initialContents[i]));
 
         return scope;

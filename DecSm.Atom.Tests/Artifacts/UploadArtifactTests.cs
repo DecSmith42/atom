@@ -9,7 +9,7 @@ public class UploadArtifactTests
         Assert.Ignore("Need to wait for FakeItEasy to update with Castle.Core 5.2.0 with support for default interface methods.");
 
         // Arrange
-        var artifactNames = new[] { "artifact1", "artifact2" };
+        object?[] artifactNames = ["artifact1", "artifact2"];
 
         var artifactProvider = A.Fake<IArtifactProvider>();
 
@@ -37,7 +37,7 @@ public class UploadArtifactTests
 
         A
             .CallTo(() => instance.AtomArtifacts)
-            .Returns(new[] { artifactNames[0], artifactNames[1] });
+            .Returns([(string)artifactNames[0], (string)artifactNames[1]]);
 
         // Act
         var target = instance.UploadArtifact(new());

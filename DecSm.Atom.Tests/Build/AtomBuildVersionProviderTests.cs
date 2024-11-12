@@ -1,7 +1,4 @@
-﻿using System.IO.Abstractions;
-using DecSm.Atom.Paths;
-
-namespace DecSm.Atom.Tests.Build;
+﻿namespace DecSm.Atom.Tests.Build;
 
 [TestFixture]
 public class AtomBuildVersionProviderTests
@@ -12,7 +9,7 @@ public class AtomBuildVersionProviderTests
 
     private static readonly char Ps = Path.DirectorySeparatorChar;
 
-    private static IAtomFileSystem NewFileSystem(IFileSystem fileSystem)
+    private static AtomFileSystem NewFileSystem(IFileSystem fileSystem)
     {
         var result = new AtomFileSystem
         {
@@ -59,6 +56,7 @@ public class AtomBuildVersionProviderTests
 
     [Test]
     [NonParallelizable]
+    [SuppressMessage("ReSharper", "MoveLocalFunctionAfterJumpStatement")]
     public void Version_WhenDirectoryBuildPropsDoesNotExist_ThrowsInvalidOperationException()
     {
         // Arrange

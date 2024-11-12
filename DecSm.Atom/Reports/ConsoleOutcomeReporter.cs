@@ -143,7 +143,7 @@ public partial class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole c
             if (log.Exception is not null)
                 rows.Add(new Text(log.Exception.ToString()));
 
-            if (rows.Count > 1 && log != reportData.Last())
+            if (rows.Count > 1 && log != reportData[^1])
                 rows.Add(new Text(string.Empty));
 
             var node = new TreeNode(new Rows(rows));

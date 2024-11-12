@@ -37,7 +37,7 @@ public class BuildDefinitionTests
         //     CallBase = true,
         // }.Object;
 
-        var buildDefinition = A.Fake<BuildDefinition>(x => x.WithArgumentsForConstructor(new object[] { services }));
+        var buildDefinition = A.Fake<BuildDefinition>(x => x.WithArgumentsForConstructor([services]));
 
         // Act
         buildDefinition.GetParam(parameterExpression);
@@ -81,7 +81,7 @@ public class BuildDefinitionTests
         //     CallBase = true,
         // }.Object;
 
-        var buildDefinition = A.Fake<BuildDefinition>(x => x.WithArgumentsForConstructor(new object[] { services }));
+        var buildDefinition = A.Fake<BuildDefinition>(x => x.WithArgumentsForConstructor([services]));
 
         // Act
         buildDefinition.WriteVariable(name, value);

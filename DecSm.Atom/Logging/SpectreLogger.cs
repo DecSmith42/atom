@@ -138,14 +138,13 @@ internal sealed class SpectreLogger(string categoryName, IExternalScopeProvider?
         AnsiConsole.Write(table);
     }
 
-    private string FormatCategoryName(string name, string? command)
+    private static string FormatCategoryName(string name, string? command)
     {
         if (name == typeof(AtomService).FullName)
             return "Atom";
 
-        if (command is not null)
-            return $"{command} | {name}";
-
-        return name;
+        return command is not null
+            ? $"{command} | {name}"
+            : name;
     }
 }
