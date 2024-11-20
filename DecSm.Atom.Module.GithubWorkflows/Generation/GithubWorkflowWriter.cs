@@ -462,6 +462,7 @@ public sealed class GithubWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
+                    .Concat(commandStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Param == requiredSecret.Name);
 

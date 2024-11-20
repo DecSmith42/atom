@@ -412,3 +412,4 @@ jobs:
           azure-vault-tenant-id: ${{ secrets.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          private-nuget-api-key: ${{ secrets.PRIVATE_NUGET_API_KEY }}
