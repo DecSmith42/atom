@@ -87,6 +87,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PushToPrivateNuget,
             ],
             WorkflowTypes = [Github.WorkflowType],
+            Options = [new WorkflowSecretInjection(Params.PrivateNugetApiKey)],
         },
         new("Test_Devops_Validate")
         {
