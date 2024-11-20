@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.Dotnet;
+﻿using System.Text;
+
+namespace DecSm.Atom.Module.Dotnet;
 
 [TargetDefinition]
 public partial interface INugetHelper : IVersionHelper
@@ -6,7 +8,7 @@ public partial interface INugetHelper : IVersionHelper
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
 
-    async Task PushProject(string projectName, string feed, string apiKey)
+    async Task PushProject(string projectName, string feed, string apiKey, string? configFile = null)
     {
         var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
         var packages = FileSystem.Directory.GetFiles(packageBuildDir, "*.nupkg");
@@ -23,7 +25,7 @@ public partial interface INugetHelper : IVersionHelper
         await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
     }
 
-    async Task PushPackageToNuget(AbsolutePath packagePath, string feed, string apiKey)
+    async Task PushPackageToNuget(AbsolutePath packagePath, string feed, string apiKey, string? configFile = null)
     {
         Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
 
@@ -85,5 +87,56 @@ public partial interface INugetHelper : IVersionHelper
                 $"Failed to check if version {version} of {projectName} is published: {response.StatusCode}");
 
         return response.StatusCode is HttpStatusCode.OK;
+    }
+
+    async Task<ITransformFileScope> CreateNugetConfigOverwriteScope(string contents)
+    {
+        // Windows: %APPDATA%\NuGet\NuGet.Config
+        // Linux: $HOME/.nuget/NuGet.Config
+        // Mac: $HOME/.nuget/NuGet.Config
+        var appDataPath = FileSystem.CreateAbsolutePath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+        var nugetConfigPath = appDataPath / ".nuget" / "NuGet.Config";
+
+        return await ITransformFileScope.CreateAsync(nugetConfigPath, _ => contents);
+    }
+
+    async Task CreateNugetConfigOverwriteScope(params NugetFeed[] feeds)
+    {
+        var sources = string.Join(Environment.NewLine, feeds.Select((x, i) => $"<add key=\"{x.Name ?? $"Feed{i}"}\" value=\"{x.Url}\" />"));
+
+        var credentials = string.Join(Environment.NewLine,
+            feeds.Select((x, i) =>
+            {
+                var result = new StringBuilder();
+
+                result.AppendLine($"    <{x.Name ?? $"Feed{i}"}>");
+
+                if (x.Username is not null)
+                    result.AppendLine($"      <add key=\"Username\" value=\"{x.Username}\" />");
+
+                if (x.Password is not null)
+                    result.AppendLine($"      <add key=\"Password\" value=\"{x.Password}\" />");
+
+                if (x.PlainTextPassword is not null)
+                    result.AppendLine($"      <add key=\"ClearTextPassword\" value=\"{x.PlainTextPassword}\" />");
+
+                result.AppendLine($"    </{x.Name ?? $"Feed{i}"}>");
+
+                return result.ToString();
+            }));
+
+        var configText = $"""
+                          <configuration>
+                            <packageSources>
+                          {sources}
+                            </packageSources>
+                          
+                            <packageSourceCredentials>
+                          {credentials}
+                            </packageSourceCredentials>
+                          </configuration>
+                          """;
+
+        await CreateNugetConfigOverwriteScope(configText);
     }
 }

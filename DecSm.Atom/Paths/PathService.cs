@@ -31,6 +31,9 @@ public interface IAtomFileSystem : IFileSystem
     IPath IFileSystem.Path => FileSystem.Path;
 
     AbsolutePath GetPath(string key);
+
+    AbsolutePath CreateAbsolutePath(string path) =>
+        new(this, path);
 }
 
 internal sealed class AtomFileSystem : IAtomFileSystem
