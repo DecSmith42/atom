@@ -22,7 +22,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -45,7 +45,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -79,7 +79,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -113,7 +113,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -147,7 +147,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -181,7 +181,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -215,7 +215,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -249,7 +249,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -283,7 +283,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -320,7 +320,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
@@ -357,7 +357,7 @@ jobs:
       
       - name: Setup NuGet
         run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed DecSm;https://nuget.pkg.github.com/DecSm/index.json
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
           NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}

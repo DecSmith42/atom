@@ -290,7 +290,7 @@ public sealed class GithubWorkflowWriter(
                             // TODO: Change to acquire DecSm.Atom.Tool instead of directly calling project, once it's available
                             foreach (var feedToAdd in feedsToAdd)
                                 WriteLine(
-                                    $"dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed {feedToAdd.FeedName};{feedToAdd.FeedUrl}");
+                                    $"dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed \"{feedToAdd.FeedName};{feedToAdd.FeedUrl}\"");
                         }
 
                         WriteLine("shell: bash");
