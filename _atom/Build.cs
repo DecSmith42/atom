@@ -18,11 +18,28 @@ internal partial class Build : BuildDefinition,
     IPackGitVersionModule,
     IPushToNuget,
     ITestAtom,
-    ICleanupPrereleaseArtifacts
+    ICleanupPrereleaseArtifacts,
+    IPackPrivateTestLib,
+    IPushToPrivateNuget
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+        UseAzureKeyVault.Enabled,
+        ProvideGitVersionAsWorkflowId.Enabled,
+        new DevopsVariableGroup("Atom"),
+        new AddNugetFeedsStep
+        {
+            Name = "Update NuGet Feeds",
+            FeedsToAdd =
+            [
+                new()
+                {
+                    FeedName = "DecSm",
+                    FeedUrl = "https://nuget.pkg.github.com/DecSm/index.json",
+                    SecretName = "NUGET_TOKEN_GH_FEED",
+                },
+            ],
+        },
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -41,6 +58,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionModule.WithSuppressedArtifactPublishing,
+                Commands.PackPrivateTestLib,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
@@ -63,8 +81,10 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
+                Commands.PackPrivateTestLib,
                 Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
                 Commands.PushToNuget,
+                Commands.PushToPrivateNuget,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },

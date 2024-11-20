@@ -20,6 +20,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
@@ -33,6 +40,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
@@ -46,6 +60,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
@@ -59,6 +80,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackAzureKeyVaultModule
         id: PackAzureKeyVaultModule
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
@@ -72,6 +100,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackAzureStorageModule
         id: PackAzureStorageModule
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
@@ -85,6 +120,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackDevopsWorkflowsModule
         id: PackDevopsWorkflowsModule
         run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
@@ -98,6 +140,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackDotnetModule
         id: PackDotnetModule
         run: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
@@ -111,6 +160,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackGithubWorkflowsModule
         id: PackGithubWorkflowsModule
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
@@ -124,9 +180,43 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: PackGitVersionModule
         id: PackGitVersionModule
         run: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
+  
+  PackPrivateTestLib:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
+      - name: PackPrivateTestLib
+        id: PackPrivateTestLib
+        run: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
+      
+      - name: Upload DecSm.PrivateTestLib
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.PrivateTestLib
+          path: "${{ github.workspace }}/.github/publish/DecSm.PrivateTestLib"
+      
   
   TestAtom:
     strategy:
@@ -140,6 +230,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: TestAtom
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless

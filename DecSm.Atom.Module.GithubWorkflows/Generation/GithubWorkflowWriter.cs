@@ -270,6 +270,42 @@ public sealed class GithubWorkflowWriter(
                         .Append(matrixSlice)
                         .ToArray();
 
+                var allOptions = job.Options.Concat(workflow.Options);
+
+                var setupNugetSteps = allOptions
+                    .OfType<AddNugetFeedsStep>()
+                    .ToList();
+
+                if (setupNugetSteps.Count > 0)
+                {
+                    var feedsToAdd = setupNugetSteps
+                        .SelectMany(x => x.FeedsToAdd)
+                        .DistinctBy(x => x.FeedName)
+                        .ToList();
+
+                    using (WriteSection("- name: Setup NuGet"))
+                    {
+                        using (WriteSection("run: |"))
+                        {
+                            // TODO: Change to acquire DecSm.Atom.Tool instead of directly calling project, once it's available
+                            foreach (var feedToAdd in feedsToAdd)
+                                WriteLine(
+                                    $"dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add {feedToAdd.FeedName};{feedToAdd.FeedUrl}");
+                        }
+
+                        WriteLine("shell: bash");
+
+                        using (WriteSection("env:"))
+                        {
+                            foreach (var feedToAdd in feedsToAdd)
+                                WriteLine(
+                                    $$$"""{{{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                        }
+
+                        WriteLine();
+                    }
+                }
+
                 if (commandStepTarget.ConsumedArtifacts.Count > 0)
                 {
                     foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)

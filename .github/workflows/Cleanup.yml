@@ -17,6 +17,13 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add DecSm;https://nuget.pkg.github.com/DecSm/index.json
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+        
       - name: CleanupPrereleaseArtifacts
         id: CleanupPrereleaseArtifacts
         run: dotnet run --project _atom/_atom.csproj CleanupPrereleaseArtifacts --skip --headless
