@@ -117,10 +117,10 @@ jobs:
         name: PackPrivateTestLib
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.PrivateTestLib
+        displayName: PrivateTestLib
         inputs:
-          artifactName: DecSm.PrivateTestLib
-          targetPath: "$(Build.BinariesDirectory)/DecSm.PrivateTestLib"
+          artifactName: PrivateTestLib
+          targetPath: "$(Build.BinariesDirectory)/PrivateTestLib"
       
   
   - job: TestAtom

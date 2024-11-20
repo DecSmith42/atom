@@ -3,7 +3,7 @@ namespace Atom.Targets.Build;
 [TargetDefinition]
 internal partial interface IPackPrivateTestLib : IDotnetPackHelper
 {
-    public const string PrivateTestLibProjectName = "DecSm.PrivateTestLib";
+    public const string PrivateTestLibProjectName = "PrivateTestLib";
 
     Target PackPrivateTestLib =>
         d => d
