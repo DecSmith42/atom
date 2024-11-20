@@ -25,7 +25,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: Setup
         id: Setup
@@ -47,7 +47,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackAtom
         id: PackAtom
@@ -76,7 +76,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackAtomTool
         id: PackAtomTool
@@ -105,7 +105,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackAzureKeyVaultModule
         id: PackAzureKeyVaultModule
@@ -134,7 +134,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackAzureStorageModule
         id: PackAzureStorageModule
@@ -163,7 +163,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackDevopsWorkflowsModule
         id: PackDevopsWorkflowsModule
@@ -192,7 +192,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackDotnetModule
         id: PackDotnetModule
@@ -221,7 +221,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackGithubWorkflowsModule
         id: PackGithubWorkflowsModule
@@ -250,7 +250,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: PackGitVersionModule
         id: PackGitVersionModule
@@ -282,7 +282,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: TestAtom
         id: TestAtom
@@ -314,7 +314,7 @@ jobs:
           dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
         shell: bash
         env:
-          NUGET_TOKEN_DECSM: ${{ secrets.NUGET_TOKEN_GH_FEED }}
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
         
       - name: Download DecSm.Atom
         uses: actions/download-artifact@v4
