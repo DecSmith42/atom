@@ -26,7 +26,7 @@ public sealed record NugetAddOptions(string? FeedConnectionString)
             FeedConnectionString.Split(';')
                 .Length is not 2)
         {
-            Console.WriteLine("Invalid feed to add. Feed to add should be of format: Name;Url");
+            Console.WriteLine($"Invalid feed to add '{FeedConnectionString}'. Feed to add should be of format: Name;Url");
             hasErrors = true;
         }
 
