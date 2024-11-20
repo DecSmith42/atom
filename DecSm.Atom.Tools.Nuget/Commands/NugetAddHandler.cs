@@ -11,7 +11,12 @@ public static class NugetAddHandler
 
         Console.WriteLine("Fetching nuget sources...");
 
-        var listSourceProcess = Process.Start("dotnet", "nuget list source");
+        var listSourceProcess = Process.Start(new ProcessStartInfo("dotnet", "nuget list source")
+        {
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+        })!;
+
         await listSourceProcess.WaitForExitAsync(cancellationToken);
         var listSourceOutput = await listSourceProcess.StandardOutput.ReadToEndAsync(cancellationToken);
         var listSourceError = await listSourceProcess.StandardError.ReadToEndAsync(cancellationToken);
@@ -38,8 +43,11 @@ public static class NugetAddHandler
 
         Console.WriteLine($"Adding {feed.Name} feed...");
 
-        var addSourceProcess = Process.Start("dotnet",
-            $"nuget add source --name {feed.Name} --username USERNAME --password {secret} --store-password-in-clear-text {feed.Url}");
+        var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet",
+            $"nuget add source --name {feed.Name} --username USERNAME --password {secret} --store-password-in-clear-text {feed.Url}")
+        {
+            RedirectStandardError = true,
+        })!;
 
         await addSourceProcess.WaitForExitAsync(cancellationToken);
 
