@@ -252,8 +252,8 @@ public sealed class AzureBlobArtifactProvider(
         var buildIds = new List<string>();
 
         var blobNameRegex = artifactName is { Length: > 0 }
-            ? new Regex($"^{buildName}/[^/]+/{artifactName}")
-            : new($"^{buildName}/[^/]+/");
+            ? new Regex($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/{Regex.Escape(artifactName)}")
+            : new($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/");
 
         await foreach (var blob in blobs)
         {
