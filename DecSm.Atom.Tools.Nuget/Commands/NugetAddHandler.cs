@@ -39,12 +39,31 @@ public static class NugetAddHandler
             return 0;
         }
 
+        // Sanitize feed name and url
+        var feedName = feed
+            .Name
+            .Replace("\"", "")
+            .Replace("\n", "")
+            .Replace("\r", "");
+
+        var feedUrl = feed
+            .Url
+            .Replace("\"", "")
+            .Replace("\n", "")
+            .Replace("\r", "");
+
         var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{feed.Name.Replace(" ", "_").ToUpper()}");
+
+        // Sanitize secret as it comes from env vars
+        secret = secret
+            ?.Replace("\"", "")
+            .Replace("\n", "")
+            .Replace("\r", "");
 
         Console.WriteLine($"Adding {feed.Name} feed...");
 
         var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet",
-            $"nuget add source --name {feed.Name} --username USERNAME --password {secret} --store-password-in-clear-text {feed.Url}")
+            $"nuget add source --name \"{feedName}\" --username USERNAME --password \"{secret}\" --store-password-in-clear-text \"{feedUrl}\"")
         {
             RedirectStandardError = true,
         })!;
