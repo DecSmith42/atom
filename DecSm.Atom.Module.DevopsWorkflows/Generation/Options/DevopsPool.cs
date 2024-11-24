@@ -10,17 +10,17 @@ public sealed record DevopsPool : IWorkflowOption
 
     public static DevopsPool WindowsLatest { get; } = new()
     {
-        Hosted = "windows-latest",
+        Hosted = IJobRunsOn.WindowsLatestTag,
     };
 
     public static DevopsPool UbuntuLatest { get; } = new()
     {
-        Hosted = "ubuntu-latest",
+        Hosted = IJobRunsOn.UbuntuLatestTag,
     };
 
     public static DevopsPool MacOsLatest { get; } = new()
     {
-        Hosted = "macOS-latest",
+        Hosted = IJobRunsOn.MacOsLatestTag,
     };
 
     public static DevopsPool SetByMatrix { get; } = new()

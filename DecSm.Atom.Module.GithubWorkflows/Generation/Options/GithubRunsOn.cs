@@ -8,17 +8,17 @@ public sealed record GithubRunsOn : IWorkflowOption
 
     public static GithubRunsOn WindowsLatest { get; } = new()
     {
-        Labels = ["windows-latest"],
+        Labels = [IJobRunsOn.WindowsLatestTag],
     };
 
     public static GithubRunsOn UbuntuLatest { get; } = new()
     {
-        Labels = ["ubuntu-latest"],
+        Labels = [IJobRunsOn.UbuntuLatestTag],
     };
 
     public static GithubRunsOn MacOsLatest { get; } = new()
     {
-        Labels = ["macos-latest"],
+        Labels = [IJobRunsOn.MacOsLatestTag],
     };
 
     public static GithubRunsOn SetByMatrix { get; } = new()

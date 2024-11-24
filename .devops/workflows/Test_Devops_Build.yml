@@ -2,10 +2,7 @@ name: Test_Devops_Build
 
 variables:
   - group: Atom
-trigger:
-  branches:
-    include:
-      - 'main'
+trigger: none
 
 jobs:
   

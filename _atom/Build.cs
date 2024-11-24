@@ -45,9 +45,10 @@ internal partial class Build : BuildDefinition,
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
+        // Real workflows
         new("Validate")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -62,14 +63,14 @@ internal partial class Build : BuildDefinition,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
-                        ["windows-latest", "ubuntu-latest", "macos-latest"]))
+                        [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag]))
                     .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            WorkflowTypes = [Github.WorkflowType],
         },
         new("Build")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
+            Triggers = [Github.Triggers.PushToMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -82,14 +83,18 @@ internal partial class Build : BuildDefinition,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
                 Commands.PackPrivateTestLib,
-                Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
+                Commands.TestAtom.WithGithubRunnerMatrix([
+                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+                ]),
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
+
+        // Test workflows
         new("Test_ValidatePrivateNugetFeed")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.Setup, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
@@ -98,18 +103,17 @@ internal partial class Build : BuildDefinition,
         },
         new("Test_BuildPrivateNugetFeed")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
+            Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.Setup,
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
             ],
-            WorkflowTypes = [Github.WorkflowType],
+            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
         new("Test_Devops_Validate")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain, Devops.Triggers.Manual],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -124,14 +128,13 @@ internal partial class Build : BuildDefinition,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
-                        ["windows-latest", "ubuntu-latest", "macos-latest"]))
+                        [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag]))
                     .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            WorkflowTypes = [Devops.WorkflowType],
         },
         new("Test_Devops_Build")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.Manual, Devops.Triggers.PushToMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -143,15 +146,17 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
-                Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
+                Commands.TestAtom.WithGithubRunnerMatrix([
+                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+                ]),
                 Commands.PushToNuget,
             ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
         },
         new("Test_BuildWithCustomArtifacts")
         {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain, Devops.Triggers.PushToMain],
+            Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
                 Commands.Setup,
@@ -163,7 +168,9 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
-                Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
+                Commands.TestAtom.WithGithubRunnerMatrix([
+                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+                ]),
                 Commands.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
@@ -178,13 +185,9 @@ internal partial class Build : BuildDefinition,
                 {
                     IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
                 },
-                new DevopsPushTrigger
-                {
-                    IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
-                },
             ],
             StepDefinitions = [Commands.CleanupPrereleaseArtifacts],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            WorkflowTypes = [Github.WorkflowType],
         },
         Github.DependabotDefaultWorkflow(),
     ];

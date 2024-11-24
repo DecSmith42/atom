@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Workflows.Options;
-
-namespace DecSm.Atom.Module.GithubWorkflows;
+﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
 [TargetDefinition]
 public partial interface IGithubWorkflows : IJobRunsOn

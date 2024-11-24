@@ -94,9 +94,7 @@ public sealed class DevopsWorkflowWriter(
             .OfType<DevopsPushTrigger>()
             .ToArray();
 
-        if (pushTriggers.Length is 0)
-            WriteLine("trigger: none");
-        else
+        if (pushTriggers.Length > 0)
             using (WriteSection("trigger:"))
             {
                 foreach (var pushTrigger in pushTriggers)
@@ -155,6 +153,9 @@ public sealed class DevopsWorkflowWriter(
                         }
                 }
             }
+
+        if (manualTrigger is null && pushTriggers.Length is 0)
+            WriteLine("trigger: none");
 
         WriteLine();
 

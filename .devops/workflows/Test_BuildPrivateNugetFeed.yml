@@ -1,0 +1,70 @@
+name: Test_BuildPrivateNugetFeed
+
+variables:
+  - group: Atom
+trigger: none
+
+jobs:
+  
+  - job: Setup
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        name: Setup
+  
+  - job: TestPrivateNugetRestore
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
+        name: TestPrivateNugetRestore
+  
+  - job: PackPrivateTestLib
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
+        name: PackPrivateTestLib
+      
+      - task: PublishPipelineArtifact@1
+        displayName: PrivateTestLib
+        inputs:
+          artifactName: PrivateTestLib
+          targetPath: "$(Build.BinariesDirectory)/PrivateTestLib"
+      
+  
+  - job: PushToPrivateNuget
+    dependsOn: [ PackPrivateTestLib ]
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: PrivateTestLib
+        inputs:
+          artifact: PrivateTestLib
+          path: "$(Build.ArtifactStagingDirectory)/PrivateTestLib"
+      
+      - script: dotnet run --project _atom/_atom.csproj PushToPrivateNuget --skip --headless
+        name: PushToPrivateNuget
+        env:
+          azure-vault-address: $(AZURE_VAULT_ADDRESS)
+          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
+          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
