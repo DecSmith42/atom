@@ -28,7 +28,9 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'", artifactNames, container);
+        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'",
+            artifactNames,
+            container.SanitizeForLogging());
 
         foreach (var artifactName in artifactNames)
         {
