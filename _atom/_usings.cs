@@ -15,5 +15,6 @@ global using DecSm.Atom.Module.GithubWorkflows.Generation.Options;
 global using DecSm.Atom.Module.GithubWorkflows.Triggers;
 global using DecSm.Atom.Module.GitVersion;
 global using DecSm.Atom.Params;
+global using DecSm.Atom.Process;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;
