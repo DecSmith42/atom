@@ -16,6 +16,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
         name: Setup
+        env:
+          nuget-dry-run: true
   
   - job: TestPrivateNugetRestore
     pool:
@@ -33,6 +35,8 @@ jobs:
         
       - script: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
         name: TestPrivateNugetRestore
+        env:
+          nuget-dry-run: true
   
   - job: PackPrivateTestLib
     pool:
@@ -44,6 +48,8 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
         name: PackPrivateTestLib
+        env:
+          nuget-dry-run: true
       
       - task: PublishPipelineArtifact@1
         displayName: PrivateTestLib
@@ -75,3 +81,4 @@ jobs:
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           private-nuget-api-key: $(PRIVATE_NUGET_API_KEY)
+          nuget-dry-run: true
