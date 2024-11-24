@@ -2,13 +2,6 @@
 
 internal class CancellationTokenValueSource : IValueDescriptor<CancellationToken>, IValueSource
 {
-    public bool TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
-    {
-        boundValue = (CancellationToken)bindingContext.GetService(typeof(CancellationToken))!;
-
-        return true;
-    }
-
     public object GetDefaultValue() =>
         throw new NotImplementedException();
 
@@ -17,4 +10,11 @@ internal class CancellationTokenValueSource : IValueDescriptor<CancellationToken
     public Type ValueType => throw new NotImplementedException();
 
     public bool HasDefaultValue => throw new NotImplementedException();
+
+    public bool TryGetValue(IValueDescriptor valueDescriptor, BindingContext bindingContext, out object? boundValue)
+    {
+        boundValue = (CancellationToken)bindingContext.GetService(typeof(CancellationToken))!;
+
+        return true;
+    }
 }

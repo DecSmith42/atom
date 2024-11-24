@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows;
+﻿using DecSm.Atom.Workflows.Options;
+
+namespace DecSm.Atom.Module.GithubWorkflows;
 
 public static class Extensions
 {

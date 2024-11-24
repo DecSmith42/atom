@@ -2,8 +2,6 @@
 
 public sealed record NugetAddOptions(string? FeedConnectionString)
 {
-    public sealed record NugetFeed(string Name, string Url);
-
     // Feed to add in the format: Name;Url
     public NugetFeed GetFeed()
     {
@@ -34,6 +32,8 @@ public sealed record NugetAddOptions(string? FeedConnectionString)
             ? 1
             : 0;
     }
+
+    public sealed record NugetFeed(string Name, string Url);
 }
 
 public sealed class NugetAddOptionsBinder(Option<string> feedsOption) : BinderBase<NugetAddOptions>

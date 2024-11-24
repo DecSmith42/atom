@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom;
+﻿namespace DecSm.Atom.Workflows.Options;
 
 public interface IJobRunsOn : IBuildDefinition
 {

@@ -1,4 +1,4 @@
-name: BuildPrivateNugetFeed
+name: Test_BuildPrivateNugetFeed
 
 on:
   workflow_dispatch:
