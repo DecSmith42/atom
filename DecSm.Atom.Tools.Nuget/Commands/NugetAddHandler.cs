@@ -49,7 +49,8 @@ public static class NugetAddHandler
         secret = secret
             ?.Replace("\"", "")
             .Replace("\n", "")
-            .Replace("\r", "");
+            .Replace("\r", "") ??
+                 string.Empty;
 
         Console.WriteLine($"Adding {feed.Name} feed...");
 
