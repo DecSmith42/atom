@@ -14,6 +14,8 @@ public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
 
     public bool HasVerbose => Args.Any(arg => arg is VerboseArg);
 
+    public bool HasProject => Args.Any(arg => arg is ProjectArg);
+
     public IReadOnlyList<ParamArg> Params =>
         Args
             .OfType<ParamArg>()
@@ -23,4 +25,11 @@ public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
         Args
             .OfType<CommandArg>()
             .ToList();
+
+    public string ProjectName =>
+        Args
+            .OfType<ProjectArg>()
+            .Select(arg => arg.ProjectName)
+            .FirstOrDefault() ??
+        "_atom";
 }

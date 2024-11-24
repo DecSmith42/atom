@@ -116,6 +116,27 @@ public class CommandLineArgParserTests
             .ShouldBeOfType<VerboseArg>();
     }
 
+    [TestCase("-p", "project-1")]
+    [TestCase("-P", "project-1")]
+    [TestCase("--project", "project-1")]
+    [TestCase("--PROJECT", "project-1")]
+    public void Parse_Project_Arg(string arg, string value)
+    {
+        string[] rawArgs = [arg, value];
+        var build = A.Fake<IBuildDefinition>();
+        var console = new TestConsole();
+        var parser = new CommandLineArgsParser(build, console);
+
+        var parsedArgs = parser.Parse(rawArgs);
+
+        parsedArgs.Args.ShouldHaveSingleItem();
+
+        parsedArgs
+            .Args[0]
+            .ShouldBeOfType<ProjectArg>()
+            .ShouldSatisfyAllConditions(x => x.ProjectName.ShouldBe(value));
+    }
+
     [TestCase("--param1", "param1", "Param1")]
     [TestCase("--PARAM1", "param1", "Param1")]
     [TestCase("--param2", "param2", "Param2")]

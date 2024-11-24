@@ -15,3 +15,5 @@ public sealed record SkipArg : IArg;
 public sealed record HeadlessArg : IArg;
 
 public sealed record VerboseArg : IArg;
+
+public sealed record ProjectArg(string ProjectName) : IArg;

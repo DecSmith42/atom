@@ -14,6 +14,15 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
 
             if (TryParseOption(rawArg) is { } optionArg)
             {
+                if (optionArg is ProjectArg)
+                {
+                    if (i == rawArgs.Count - 1)
+                        throw new ArgumentException("Missing value for -[-p]roject option");
+
+                    optionArg = new ProjectArg(rawArgs[i + 1]);
+                    i++;
+                }
+
                 args.Add(optionArg);
 
                 continue;
@@ -106,6 +115,7 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
             "-s" or "--skip" => new SkipArg(),
             "-hl" or "--headless" => new HeadlessArg(),
             "-v" or "--verbose" => new VerboseArg(),
+            "-p" or "--project" => new ProjectArg(string.Empty),
             _ => null,
         };
 

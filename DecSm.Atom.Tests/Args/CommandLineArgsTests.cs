@@ -174,6 +174,23 @@ public class CommandLineArgsTests
     }
 
     [Test]
+    public void HasProject_ShouldReturnTrue_WhenProjectArgIsPresent()
+    {
+        // Arrange
+        var args = new CommandLineArgs(true,
+            new List<IArg>
+            {
+                new ProjectArg("project-1"),
+            });
+
+        // Act
+        var result = args.HasProject;
+
+        // Assert
+        result.ShouldBeTrue();
+    }
+
+    [Test]
     public void Params_ShouldReturnAllParamArgs()
     {
         var paramArg1 = new ParamArg("param-1", "Param1", "1");

@@ -44,6 +44,8 @@ internal sealed class AtomFileSystem : IAtomFileSystem
 
     public required IFileSystem FileSystem { get; init; }
 
+    public required string ProjectName { get; init; }
+
     public AbsolutePath GetPath(string key)
     {
         if (_pathCache.TryGetValue(key, out var path))
