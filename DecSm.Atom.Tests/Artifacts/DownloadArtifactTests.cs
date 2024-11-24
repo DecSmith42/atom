@@ -22,7 +22,7 @@ public class DownloadArtifactTests
             });
 
         A
-            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string?>._))
+            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string>.Ignored))
             .Returns(Task.CompletedTask);
 
         var services = new ServiceCollection()
@@ -60,7 +60,7 @@ public class DownloadArtifactTests
             .Tasks[0]();
 
         A
-            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string?>._))
+            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string>.Ignored))
             .MustHaveHappenedOnceExactly();
     }
 }

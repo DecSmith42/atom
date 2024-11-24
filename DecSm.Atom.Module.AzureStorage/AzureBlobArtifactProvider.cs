@@ -1,9 +1,12 @@
-﻿namespace DecSm.Atom.Module.AzureStorage;
+﻿using DecSm.Atom.Build;
+
+namespace DecSm.Atom.Module.AzureStorage;
 
 public sealed class AzureBlobArtifactProvider(
     IParamService paramService,
     IReportService reportService,
     IAtomFileSystem fileSystem,
+    IBuildIdProvider buildIdProvider,
     ILogger<AzureBlobArtifactProvider> logger
 ) : IArtifactProvider
 {
@@ -14,10 +17,13 @@ public sealed class AzureBlobArtifactProvider(
 
     public async Task UploadArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
     {
-        buildId ??= paramService.GetParam(nameof(ISetup.AtomBuildId));
+        buildId ??= buildIdProvider.BuildId;
 
         if (buildId is null)
             throw new InvalidOperationException("Build ID is required to upload artifacts");
+
+        var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+        var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
@@ -37,8 +43,8 @@ public sealed class AzureBlobArtifactProvider(
             var publishDir = fileSystem.AtomPublishDirectory / artifactName;
 
             var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildId}/{artifactName}/{matrixSlice}"
-                : $"{buildName}/{buildId}/{artifactName}";
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}"
+                : $"{buildName}/{buildIdPath}/{artifactName}";
 
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
@@ -71,7 +77,14 @@ public sealed class AzureBlobArtifactProvider(
 
     public async Task DownloadArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
     {
-        buildId ??= paramService.GetParam(nameof(ISetup.AtomBuildId));
+        buildId ??= buildIdProvider.BuildId;
+
+        if (buildId is null)
+            throw new InvalidOperationException("Build ID is required to upload artifacts");
+
+        var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+        var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
+
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
@@ -96,8 +109,8 @@ public sealed class AzureBlobArtifactProvider(
 
             // Includes path separator at the end to prevent matching other directories with the same start of the name
             var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildId}/{artifactName}/{matrixSlice}/"
-                : $"{buildName}/{buildId}/{artifactName}/";
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}/"
+                : $"{buildName}/{buildIdPath}/{artifactName}/";
 
             var hasAtLeastOneBlob = false;
 
@@ -114,10 +127,10 @@ public sealed class AzureBlobArtifactProvider(
                 var blobDownloadInfo = await blobClient.DownloadAsync();
                 var blobName = blobItem.Blob.Name;
 
-                if (blobName.StartsWith($"{buildName}/{buildId}/{artifactName}/"))
-                    blobName = blobName[$"{buildName}/{buildId}/{artifactName}/".Length..];
+                if (blobName.StartsWith($"{buildName}/{buildIdPath}/{artifactName}/"))
+                    blobName = blobName[$"{buildName}/{buildIdPath}/{artifactName}/".Length..];
                 else
-                    throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildId}");
+                    throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
 
                 var blobPath = artifactDir / blobName;
                 var blobDir = fileSystem.Path.GetDirectoryName(blobPath);
@@ -135,7 +148,7 @@ public sealed class AzureBlobArtifactProvider(
 
             if (!hasAtLeastOneBlob)
                 throw new InvalidOperationException(
-                    $"Could not find any blobs in the container {container} with the prefix {buildName}/{buildId}/{artifactName}");
+                    $"Could not find any blobs in the container {container} with the prefix {buildName}/{buildIdPath}/{artifactName}");
         }
     }
 
@@ -156,7 +169,10 @@ public sealed class AzureBlobArtifactProvider(
 
         foreach (var buildId in buildIds)
         {
-            var artifactDir = fileSystem.AtomArtifactsDirectory / buildId / artifactName;
+            var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+            var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
+
+            var artifactDir = fileSystem.AtomArtifactsDirectory / buildIdPath / artifactName;
 
             if (artifactDir.DirectoryExists)
                 fileSystem.Directory.Delete(artifactDir, true);
@@ -164,8 +180,8 @@ public sealed class AzureBlobArtifactProvider(
             fileSystem.Directory.CreateDirectory(artifactDir);
 
             var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildId}/{artifactName}/{matrixSlice}/"
-                : $"{buildName}/{buildId}/{artifactName}/";
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}/"
+                : $"{buildName}/{buildIdPath}/{artifactName}/";
 
             var hasAtLeastOneBlob = false;
 
@@ -182,10 +198,10 @@ public sealed class AzureBlobArtifactProvider(
                 var blobDownloadInfo = await blobClient.DownloadAsync();
                 var blobName = blobItem.Blob.Name;
 
-                if (blobName.StartsWith($"{buildName}/{buildId}/{artifactName}/"))
-                    blobName = blobName[$"{buildName}/{buildId}/{artifactName}/".Length..];
+                if (blobName.StartsWith($"{buildName}/{buildIdPath}/{artifactName}/"))
+                    blobName = blobName[$"{buildName}/{buildIdPath}/{artifactName}/".Length..];
                 else
-                    throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildId}");
+                    throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
 
                 var blobPath = artifactDir / blobName;
                 var blobDir = fileSystem.Path.GetDirectoryName(blobPath);
@@ -203,7 +219,7 @@ public sealed class AzureBlobArtifactProvider(
 
             if (!hasAtLeastOneBlob)
                 throw new InvalidOperationException(
-                    $"Could not find any blobs in the container {container} with the prefix {buildName}/{buildId}/{artifactName}");
+                    $"Could not find any blobs in the container {container} with the prefix {buildName}/{buildIdPath}/{artifactName}");
         }
     }
 
@@ -216,7 +232,10 @@ public sealed class AzureBlobArtifactProvider(
 
         foreach (var buildId in buildIds)
         {
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildId}/");
+            var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+            var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
+
+            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildIdPath}/");
 
             await foreach (var blob in blobs)
             {
@@ -252,18 +271,22 @@ public sealed class AzureBlobArtifactProvider(
         var buildIds = new List<string>();
 
         var blobNameRegex = artifactName is { Length: > 0 }
-            ? new Regex($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/{Regex.Escape(artifactName)}")
-            : new($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/");
+            ? new Regex($"^{Regex.Escape(buildName ?? string.Empty)}/([^/]+/)+{Regex.Escape(artifactName)}")
+            : new($"^{Regex.Escape(buildName ?? string.Empty)}/([^/]+/)+");
 
         await foreach (var blob in blobs)
         {
             var blobName = blob.Blob.Name;
+            var match = blobNameRegex.Match(blobName);
 
-            if (!blobNameRegex.IsMatch(blobName))
+            if (!match.Success)
                 continue;
 
-            var buildId = blobName
-                .Split('/', StringSplitOptions.RemoveEmptyEntries)[1];
+            var buildId = match
+                .Groups[1]
+                .Value
+                .Split('/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Last();
 
             if (!buildIds.Contains(buildId))
                 buildIds.Add(buildId);
