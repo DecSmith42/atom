@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Workflows.Options;
-
-namespace DecSm.Atom.Module.DevopsWorkflows;
+﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
 [TargetDefinition]
 public partial interface IDevopsWorkflows : IJobRunsOn

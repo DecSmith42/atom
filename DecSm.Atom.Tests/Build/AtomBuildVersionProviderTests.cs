@@ -15,6 +15,7 @@ public class AtomBuildVersionProviderTests
         {
             FileSystem = fileSystem,
             PathLocators = [],
+            ProjectName = "Atom",
         };
 
         result.ClearCache();

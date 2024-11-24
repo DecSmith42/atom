@@ -23,6 +23,8 @@ public static class HostExtensions
                     .GetServices<IPathProvider>()
                     .OrderByDescending(l => l.Priority)
                     .ToList(),
+                ProjectName = x.GetRequiredService<CommandLineArgs>()
+                    .ProjectName,
             })
             .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
 

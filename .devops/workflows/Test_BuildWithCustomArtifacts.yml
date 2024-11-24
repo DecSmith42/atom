@@ -2,10 +2,7 @@ name: Test_BuildWithCustomArtifacts
 
 variables:
   - group: Atom
-trigger:
-  branches:
-    include:
-      - 'main'
+trigger: none
 
 jobs:
   
