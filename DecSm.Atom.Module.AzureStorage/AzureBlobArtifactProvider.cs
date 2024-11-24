@@ -48,7 +48,7 @@ public sealed class AzureBlobArtifactProvider(
             if (files.Length == 0)
                 throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
 
-            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir);
+            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir.SanitizeForLogging());
 
             foreach (var file in files)
             {
