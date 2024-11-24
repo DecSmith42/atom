@@ -7,8 +7,22 @@ while (currentDirectory?.Exists is true)
     if (Directory.Exists(Path.Combine(currentDirectory.FullName, "_atom")))
     {
         var atomProjectPath = Path.Combine(currentDirectory.FullName, "_atom", "_atom.csproj");
-        var escapedArgs = args.Select(arg => System.Security.SecurityElement.Escape(arg));
-        var atomProcess = Process.Start("dotnet", $"run --project \"{atomProjectPath}\" {string.Join(" ", escapedArgs)}");
+
+        // Sanitize arguments
+        var escapedArgs = args.Select(arg =>
+        {
+            arg = arg
+                .Replace("\n", string.Empty)
+                .Replace("\r", string.Empty);
+
+            return arg.Contains(';') || arg.Contains('&') || arg.Contains('|') || arg.Contains(' ')
+                ? $"\"{arg}\""
+                : arg;
+        });
+
+        var allArgs = new[] { "run", "--project", atomProjectPath }.Concat(escapedArgs);
+
+        var atomProcess = Process.Start("dotnet", allArgs);
         atomProcess.WaitForExit();
 
         return atomProcess.ExitCode;
