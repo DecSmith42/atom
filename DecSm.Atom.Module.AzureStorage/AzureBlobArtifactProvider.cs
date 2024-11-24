@@ -28,7 +28,9 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'", artifactNames, container);
+        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'",
+            artifactNames,
+            container.SanitizeForLogging());
 
         foreach (var artifactName in artifactNames)
         {
@@ -46,7 +48,7 @@ public sealed class AzureBlobArtifactProvider(
             if (files.Length == 0)
                 throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
 
-            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir);
+            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir.SanitizeForLogging());
 
             foreach (var file in files)
             {
@@ -79,7 +81,9 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'", artifactNames, container);
+        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'",
+            artifactNames,
+            container.SanitizeForLogging());
 
         foreach (var artifactName in artifactNames)
         {
@@ -146,7 +150,9 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'", artifactName, container);
+        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'",
+            artifactName,
+            container.SanitizeForLogging());
 
         foreach (var buildId in buildIds)
         {
@@ -246,8 +252,8 @@ public sealed class AzureBlobArtifactProvider(
         var buildIds = new List<string>();
 
         var blobNameRegex = artifactName is { Length: > 0 }
-            ? new Regex($"^{buildName}/[^/]+/{artifactName}")
-            : new($"^{buildName}/[^/]+/");
+            ? new Regex($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/{Regex.Escape(artifactName)}")
+            : new($"^{Regex.Escape(buildName ?? string.Empty)}/[^/]+/");
 
         await foreach (var blob in blobs)
         {

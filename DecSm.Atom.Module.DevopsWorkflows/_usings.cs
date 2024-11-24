@@ -10,6 +10,7 @@ global using DecSm.Atom.Module.DevopsWorkflows.Triggers;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
 global using DecSm.Atom.Reports;
+global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;

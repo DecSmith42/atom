@@ -36,4 +36,22 @@ public static class StringUtil
 
         return distance.Span[fromLength * (toLength + 1) + toLength];
     }
+
+    [return: NotNullIfNotNull(nameof(value))]
+    public static string? SanitizeForLogging(this string? value, bool stripNewlines = true, int maxLength = 4096)
+    {
+        if (string.IsNullOrEmpty(value))
+            return value;
+
+        if (stripNewlines)
+            value = value
+                .Replace(Environment.NewLine, " ")
+                .Replace("\r", " ")
+                .Replace("\n", " ");
+
+        if (value.Length <= maxLength)
+            return value;
+
+        return value[..maxLength] + "...";
+    }
 }
