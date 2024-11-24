@@ -39,22 +39,13 @@ public static class NugetAddHandler
             return 0;
         }
 
-        // Sanitize feed name and url
-        var feedName = feed
-            .Name
-            .Replace("\"", "")
-            .Replace("\n", "")
-            .Replace("\r", "");
-
-        var feedUrl = feed
-            .Url
-            .Replace("\"", "")
-            .Replace("\n", "")
-            .Replace("\r", "");
-
         var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{feed.Name.Replace(" ", "_").ToUpper()}");
 
-        // Sanitize secret as it comes from env vars
+        // Sanitize feed name and url
+        var feedName = new string(feed.Name.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_').ToArray());
+        var feedUrl = new string(feed.Url.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '/' || c == ':' || c == '.').ToArray());
+
+        // Sanitize secret
         secret = secret
             ?.Replace("\"", "")
             .Replace("\n", "")
@@ -62,9 +53,9 @@ public static class NugetAddHandler
 
         Console.WriteLine($"Adding {feed.Name} feed...");
 
-        var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet",
-            $"nuget add source --name \"{feedName}\" --username USERNAME --password \"{secret}\" --store-password-in-clear-text \"{feedUrl}\"")
+        var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet")
         {
+            ArgumentList = { "nuget", "add", "source", "--name", feedName, "--username", "USERNAME", "--password", secret, "--store-password-in-clear-text", feedUrl },
             RedirectStandardError = true,
         })!;
 
