@@ -20,14 +20,16 @@ internal partial class Build : BuildDefinition,
     ITestAtom,
     ICleanupPrereleaseArtifacts,
     IPackPrivateTestLib,
-    IPushToPrivateNuget
+    IPushToPrivateNuget,
+    ITestPrivateNugetRestore
 {
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled,
-        ProvideGitVersionAsWorkflowId.Enabled,
-        new DevopsVariableGroup("Atom"),
-        new AddNugetFeedsStep
+        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+    ];
+
+    private static AddNugetFeedsStep AddNugetFeedsStep =>
+        new()
         {
             Name = "Update NuGet Feeds",
             FeedsToAdd =
@@ -39,8 +41,7 @@ internal partial class Build : BuildDefinition,
                     SecretName = "PRIVATE_NUGET_API_KEY",
                 },
             ],
-        },
-    ];
+        };
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
@@ -64,6 +65,7 @@ internal partial class Build : BuildDefinition,
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
                         ["windows-latest", "ubuntu-latest", "macos-latest"]))
                     .WithAddedOptions(DevopsPool.MatrixDefined, GithubRunsOn.MatrixDefined),
+                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
@@ -83,6 +85,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackGitVersionModule,
                 Commands.PackPrivateTestLib,
                 Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
+                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToNuget,
                 Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
             ],

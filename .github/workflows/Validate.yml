@@ -20,13 +20,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
@@ -40,13 +33,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackAtom
         id: PackAtom
         run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
@@ -60,13 +46,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
@@ -80,13 +59,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackAzureKeyVaultModule
         id: PackAzureKeyVaultModule
         run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
@@ -100,13 +72,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackAzureStorageModule
         id: PackAzureStorageModule
         run: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
@@ -120,13 +85,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackDevopsWorkflowsModule
         id: PackDevopsWorkflowsModule
         run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
@@ -140,13 +98,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackDotnetModule
         id: PackDotnetModule
         run: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
@@ -160,13 +111,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackGithubWorkflowsModule
         id: PackGithubWorkflowsModule
         run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
@@ -180,13 +124,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackGitVersionModule
         id: PackGitVersionModule
         run: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
@@ -200,13 +137,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: PackPrivateTestLib
         id: PackPrivateTestLib
         run: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
@@ -230,13 +160,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup NuGet
-        run: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
-        shell: bash
-        env:
-          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
-        
       - name: TestAtom
         id: TestAtom
         run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
@@ -250,3 +173,23 @@ jobs:
           name: DecSm.Atom.Tests-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
+  
+  TestPrivateNugetRestore:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSm/index.json"
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
+        
+      - name: TestPrivateNugetRestore
+        id: TestPrivateNugetRestore
+        run: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
