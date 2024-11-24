@@ -1,3 +1,3 @@
-﻿using PrivateTestLib;
+using PrivateTestLib;
 
 Console.WriteLine(TestClass.TestMethod());
