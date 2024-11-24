@@ -25,6 +25,12 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - script: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSmith42/index.json"
+        displayName: 'Setup NuGet'
+        env:
+          NUGET_TOKEN_DECSM: $(PRIVATE_NUGET_API_KEY)
+        
       - script: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
         name: TestPrivateNugetRestore
   
@@ -68,3 +74,4 @@ jobs:
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
+          private-nuget-api-key: $(PRIVATE_NUGET_API_KEY)

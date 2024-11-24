@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace DecSm.Atom.Module.DevopsWorkflows.Generation;
+﻿namespace DecSm.Atom.Module.DevopsWorkflows.Generation;
 
 public sealed class DevopsWorkflowWriter(
     IAtomFileSystem fileSystem,
@@ -348,6 +346,38 @@ public sealed class DevopsWorkflowWriter(
                         .Append(matrixSlice)
                         .ToArray();
 
+                var setupNugetSteps = workflow
+                    .Options
+                    .Concat(commandStep.Options)
+                    .OfType<AddNugetFeedsStep>()
+                    .ToList();
+
+                if (setupNugetSteps.Count > 0)
+                {
+                    var feedsToAdd = setupNugetSteps
+                        .SelectMany(x => x.FeedsToAdd)
+                        .DistinctBy(x => x.FeedName)
+                        .ToList();
+
+                    using (WriteSection("- script: |"))
+                    {
+                        // TODO: Change to acquire DecSm.Atom.Tool instead of directly calling project, once it's available
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $"  dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed \"{feedToAdd.FeedName};{feedToAdd.FeedUrl}\"");
+
+                        WriteLine("displayName: 'Setup NuGet'");
+
+                        using (WriteSection("env:"))
+                        {
+                            foreach (var feedToAdd in feedsToAdd)
+                                WriteLine($$$"""{{{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}}}: $({{{feedToAdd.SecretName}}})""");
+                        }
+
+                        WriteLine();
+                    }
+                }
+
                 if (commandStepTarget.ConsumedArtifacts.Count > 0)
                 {
                     foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)
@@ -503,6 +533,7 @@ public sealed class DevopsWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
+                    .Concat(commandStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Param == requiredSecret.Name);
 
