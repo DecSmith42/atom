@@ -20,7 +20,7 @@ while (currentDirectory?.Exists is true)
                 : arg;
         });
 
-        var allArgs = new[] { "run", "--project", atomProjectPath }.Concat(escapedArgs);
+        var allArgs = new[] { "run", "--project", atomProjectPath, "--" }.Concat(escapedArgs);
 
         var atomProcess = Process.Start("dotnet", allArgs);
         atomProcess.WaitForExit();
