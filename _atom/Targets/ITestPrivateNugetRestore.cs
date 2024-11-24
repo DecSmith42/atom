@@ -10,7 +10,8 @@ internal partial interface ITestPrivateNugetRestore
     Target TestPrivateNugetRestore =>
         d => d.Executes(async () =>
         {
-            var runResult = await ProcessRunner.RunAsync(new("dotnet", $"run --project {PrivateTestLibTesterProjectName}"));
+            var runResult = await ProcessRunner.RunAsync(new("dotnet",
+                $"run --project {PrivateTestLibTesterProjectName}/{PrivateTestLibTesterProjectName}.csproj"));
 
             if (runResult.ExitCode is not 0)
                 throw new($"Failed to run {PrivateTestLibTesterProjectName} package. Exit code: {runResult.ExitCode}");
