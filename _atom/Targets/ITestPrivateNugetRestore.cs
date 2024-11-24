@@ -7,7 +7,6 @@ internal partial interface ITestPrivateNugetRestore
 
     IProcessRunner ProcessRunner => Services.GetRequiredService<IProcessRunner>();
 
-
     Target TestPrivateNugetRestore =>
         d => d.Executes(async () =>
         {

@@ -1,0 +1,47 @@
+name: Test_ValidatePrivateNugetFeed
+
+variables:
+  - group: Atom
+trigger: none
+
+jobs:
+  
+  - job: Setup
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        name: Setup
+  
+  - job: PackPrivateTestLib
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
+        name: PackPrivateTestLib
+      
+      - task: PublishPipelineArtifact@1
+        displayName: PrivateTestLib
+        inputs:
+          artifactName: PrivateTestLib
+          targetPath: "$(Build.BinariesDirectory)/PrivateTestLib"
+      
+  
+  - job: TestPrivateNugetRestore
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+      
+      - checkout: self
+        fetchDepth: 0
+      
+      - script: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
+        name: TestPrivateNugetRestore

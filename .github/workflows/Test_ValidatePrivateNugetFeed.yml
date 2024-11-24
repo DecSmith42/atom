@@ -1,4 +1,4 @@
-name: ValidatePrivateNugetFeed
+name: Test_ValidatePrivateNugetFeed
 
 on:
   workflow_dispatch:

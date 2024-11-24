@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.DevopsWorkflows;
+﻿using DecSm.Atom.Workflows.Options;
+
+namespace DecSm.Atom.Module.DevopsWorkflows;
 
 public static class Extensions
 {

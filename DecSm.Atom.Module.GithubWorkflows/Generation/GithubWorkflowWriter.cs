@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Generation;
+﻿using DecSm.Atom.Nuget;
+
+namespace DecSm.Atom.Module.GithubWorkflows.Generation;
 
 public sealed class GithubWorkflowWriter(
     IAtomFileSystem fileSystem,

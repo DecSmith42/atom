@@ -23,11 +23,6 @@ internal partial class Build : BuildDefinition,
     IPushToPrivateNuget,
     ITestPrivateNugetRestore
 {
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
-    [
-        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
-    ];
-
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
         {
@@ -42,6 +37,11 @@ internal partial class Build : BuildDefinition,
                 },
             ],
         };
+
+    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
+    [
+        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+    ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
@@ -67,15 +67,6 @@ internal partial class Build : BuildDefinition,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
-        new("ValidatePrivateNugetFeed")
-        {
-            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
-            StepDefinitions =
-            [
-                Commands.Setup, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
-            ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-        },
         new("Build")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
@@ -92,13 +83,20 @@ internal partial class Build : BuildDefinition,
                 Commands.PackGitVersionModule,
                 Commands.PackPrivateTestLib,
                 Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
-                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToNuget,
-                Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
-        new("BuildPrivateNugetFeed")
+        new("Test_ValidatePrivateNugetFeed")
+        {
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            StepDefinitions =
+            [
+                Commands.Setup, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
+            ],
+            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+        },
+        new("Test_BuildPrivateNugetFeed")
         {
             Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
             StepDefinitions =
@@ -171,7 +169,7 @@ internal partial class Build : BuildDefinition,
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
             Options = [UseCustomArtifactProvider.Enabled, new WorkflowParamInjection(Params.NugetDryRun, "true")],
         },
-        new("Cleanup")
+        new("CleanupBuilds")
         {
             Triggers =
             [
