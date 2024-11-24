@@ -34,4 +34,12 @@ public sealed class GitVersionBuildIdProvider(
             return _buildId = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
         }
     }
+
+    public string GetBuildIdPathPrefix(string buildId)
+    {
+        if (!SemVer.TryParse(buildId, out var version))
+            throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer");
+
+        return $"{version.Major}/{version.Minor}/{version.Patch}";
+    }
 }

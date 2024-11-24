@@ -22,6 +22,8 @@ jobs:
       - name: Setup
         id: Setup
         run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+        env:
+          nuget-dry-run: true
   
   TestPrivateNugetRestore:
     runs-on: ubuntu-latest
@@ -42,6 +44,8 @@ jobs:
       - name: TestPrivateNugetRestore
         id: TestPrivateNugetRestore
         run: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
+        env:
+          nuget-dry-run: true
   
   PackPrivateTestLib:
     runs-on: ubuntu-latest
@@ -55,6 +59,8 @@ jobs:
       - name: PackPrivateTestLib
         id: PackPrivateTestLib
         run: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
+        env:
+          nuget-dry-run: true
       
       - name: Upload PrivateTestLib
         uses: actions/upload-artifact@v4
@@ -88,3 +94,4 @@ jobs:
           azure-vault-app-id: ${{ secrets.AZURE_VAULT_APP_ID }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           private-nuget-api-key: ${{ secrets.PRIVATE_NUGET_API_KEY }}
+          nuget-dry-run: true

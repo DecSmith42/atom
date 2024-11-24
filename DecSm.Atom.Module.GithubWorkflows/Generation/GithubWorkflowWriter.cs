@@ -272,9 +272,9 @@ public sealed class GithubWorkflowWriter(
                         .Append(matrixSlice)
                         .ToArray();
 
-                var allOptions = job.Options.Concat(workflow.Options);
-
-                var setupNugetSteps = allOptions
+                var setupNugetSteps = workflow
+                    .Options
+                    .Concat(commandStep.Options)
                     .OfType<AddNugetFeedsStep>()
                     .ToList();
 
