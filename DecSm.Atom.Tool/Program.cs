@@ -7,7 +7,8 @@ while (currentDirectory?.Exists is true)
     if (Directory.Exists(Path.Combine(currentDirectory.FullName, "_atom")))
     {
         var atomProjectPath = Path.Combine(currentDirectory.FullName, "_atom", "_atom.csproj");
-        var atomProcess = Process.Start("dotnet", $"run --project \"{atomProjectPath}\" {string.Join(" ", args)}");
+        var escapedArgs = args.Select(arg => System.Security.SecurityElement.Escape(arg));
+        var atomProcess = Process.Start("dotnet", $"run --project \"{atomProjectPath}\" {string.Join(" ", escapedArgs)}");
         atomProcess.WaitForExit();
 
         return atomProcess.ExitCode;
