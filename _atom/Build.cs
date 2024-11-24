@@ -63,7 +63,7 @@ internal partial class Build : BuildDefinition,
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
                         ["windows-latest", "ubuntu-latest", "macos-latest"]))
-                    .WithAddedOptions(DevopsPool.MatrixDefined, GithubRunsOn.MatrixDefined),
+                    .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
@@ -125,7 +125,7 @@ internal partial class Build : BuildDefinition,
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
                         ["windows-latest", "ubuntu-latest", "macos-latest"]))
-                    .WithAddedOptions(DevopsPool.MatrixDefined, GithubRunsOn.MatrixDefined),
+                    .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },

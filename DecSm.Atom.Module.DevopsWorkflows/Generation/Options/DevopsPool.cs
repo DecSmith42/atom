@@ -23,7 +23,7 @@ public sealed record DevopsPool : IWorkflowOption
         Hosted = "macOS-latest",
     };
 
-    public static DevopsPool MatrixDefined { get; } = new()
+    public static DevopsPool SetByMatrix { get; } = new()
     {
         Hosted = "$(job-runs-on)",
     };
