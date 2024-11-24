@@ -3,6 +3,25 @@
 [TestFixture]
 public class BuildExecutorTests
 {
+    private class TestBuildDefinition : IBuildDefinition
+    {
+        public IReadOnlyDictionary<string, Target> TargetDefinitions { get; } = new Dictionary<string, Target>();
+
+        public IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; } = new Dictionary<string, ParamDefinition>();
+
+        public IServiceProvider Services { get; } = new ServiceCollection().BuildServiceProvider();
+
+        [return: NotNullIfNotNull("defaultValue")]
+        public T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+            throw new NotImplementedException();
+
+        public Task WriteVariable(string name, string value) =>
+            throw new NotImplementedException();
+
+        public void AddReportData(IReportData reportData) =>
+            throw new NotImplementedException();
+    }
+
     [SetUp]
     public void SetUp()
     {
@@ -13,6 +32,8 @@ public class BuildExecutorTests
             Targets = [],
             TargetStates = new Dictionary<TargetModel, TargetState>(),
         };
+
+        _buildDefinition = new TestBuildDefinition();
 
         _paramService = A.Fake<IParamService>();
         _workflowVariableService = A.Fake<IWorkflowVariableService>();
@@ -28,6 +49,9 @@ public class BuildExecutorTests
 
     private CommandLineArgs _commandLineArgs;
     private BuildModel _buildModel;
+
+    // private Mock<IBuildDefinition> _buildDefinition;
+    private IBuildDefinition _buildDefinition;
 
     // private Mock<IParamService> _paramService;
     private IParamService _paramService;
@@ -60,6 +84,7 @@ public class BuildExecutorTests
 
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,
+            _buildDefinition,
             _paramService,
             _workflowVariableService,
             _outcomeReporters,
@@ -133,6 +158,7 @@ public class BuildExecutorTests
 
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,
+            _buildDefinition,
             _paramService,
             _workflowVariableService,
             _outcomeReporters,
