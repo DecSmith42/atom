@@ -30,7 +30,9 @@ public class DevopsVariableProvider(ILogger<DevopsVariableProvider> logger) : IW
             return Task.FromResult(false);
         }
 
-        logger.LogInformation("Read variable {VariableName} with value {VariableValue} from Azure DevOps pipeline", variableName, value);
+        logger.LogInformation("Read variable {VariableName} with value {VariableValue} from Azure DevOps pipeline",
+            variableName,
+            value.SanitizeForLogging());
 
         return Task.FromResult(true);
     }
