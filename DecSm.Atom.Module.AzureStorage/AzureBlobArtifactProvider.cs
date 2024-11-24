@@ -150,7 +150,9 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'", artifactName, container);
+        logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'",
+            artifactName,
+            container.SanitizeForLogging());
 
         foreach (var buildId in buildIds)
         {
