@@ -105,24 +105,6 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
         name: PackGitVersionModule
   
-  - job: PackPrivateTestLib
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
-        name: PackPrivateTestLib
-      
-      - task: PublishPipelineArtifact@1
-        displayName: PrivateTestLib
-        inputs:
-          artifactName: PrivateTestLib
-          targetPath: "$(Build.BinariesDirectory)/PrivateTestLib"
-      
-  
   - job: TestAtom
     strategy:
       matrix:
@@ -151,14 +133,3 @@ jobs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
-  
-  - job: TestPrivateNugetRestore
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - script: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless
-        name: TestPrivateNugetRestore

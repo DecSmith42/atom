@@ -1,0 +1,65 @@
+name: ValidatePrivateNugetFeed
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  
+  Setup:
+    runs-on: ubuntu-latest
+    outputs:
+      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
+      atom-build-version: ${{ steps.Setup.outputs.atom-build-version }}
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup
+        id: Setup
+        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+  
+  PackPrivateTestLib:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: PackPrivateTestLib
+        id: PackPrivateTestLib
+        run: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
+      
+      - name: Upload PrivateTestLib
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrivateTestLib
+          path: "${{ github.workspace }}/.github/publish/PrivateTestLib"
+      
+  
+  TestPrivateNugetRestore:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup NuGet
+        run: |
+          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSmith42/index.json"
+        shell: bash
+        env:
+          NUGET_TOKEN_DECSM: ${{ secrets.PRIVATE_NUGET_API_KEY }}
+        
+      - name: TestPrivateNugetRestore
+        id: TestPrivateNugetRestore
+        run: dotnet run --project _atom/_atom.csproj TestPrivateNugetRestore --skip --headless

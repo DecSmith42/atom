@@ -37,7 +37,7 @@ internal partial class Build : BuildDefinition,
                 new()
                 {
                     FeedName = "DecSm",
-                    FeedUrl = "https://nuget.pkg.github.com/DecSm/index.json",
+                    FeedUrl = "https://nuget.pkg.github.com/DecSmith42/index.json",
                     SecretName = "PRIVATE_NUGET_API_KEY",
                 },
             ],
@@ -59,13 +59,20 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Commands.PackPrivateTestLib,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
                         ["windows-latest", "ubuntu-latest", "macos-latest"]))
                     .WithAddedOptions(DevopsPool.MatrixDefined, GithubRunsOn.MatrixDefined),
-                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
+            ],
+            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+        },
+        new("ValidatePrivateNugetFeed")
+        {
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PullIntoMain],
+            StepDefinitions =
+            [
+                Commands.Setup, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
@@ -87,6 +94,17 @@ internal partial class Build : BuildDefinition,
                 Commands.TestAtom.WithGithubRunnerMatrix(["windows-latest", "ubuntu-latest", "macos-latest"]),
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToNuget,
+                Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
+            ],
+            WorkflowTypes = [Github.WorkflowType],
+        },
+        new("BuildPrivateNugetFeed")
+        {
+            Triggers = [Github.Triggers.Manual, Github.Triggers.PushToMain],
+            StepDefinitions =
+            [
+                Commands.Setup,
+                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
             ],
             WorkflowTypes = [Github.WorkflowType],
