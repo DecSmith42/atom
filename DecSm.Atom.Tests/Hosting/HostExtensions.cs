@@ -3,6 +3,7 @@
 [TestFixture]
 public class HostExtensionsTests
 {
+    [UsedImplicitly]
     private class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services), IBuildDefinition
     {
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => new Dictionary<string, Target>();
@@ -117,7 +118,7 @@ public class HostExtensionsTests
         var builder = new HostApplicationBuilder();
 
         // Act
-        builder.AddAtom<HostApplicationBuilder, TestBuildDefinition>(Array.Empty<string>());
+        builder.AddAtom<HostApplicationBuilder, TestBuildDefinition>([]);
 
         // Assert
         var serviceProvider = builder.Services.BuildServiceProvider();

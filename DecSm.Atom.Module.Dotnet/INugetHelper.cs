@@ -128,7 +128,7 @@ public partial interface INugetHelper : IVersionHelper
                             <packageSources>
                           {sources}
                             </packageSources>
-
+                          
                             <packageSourceCredentials>
                           {credentials}
                             </packageSourceCredentials>

@@ -13,12 +13,11 @@ public class BuildResolverTests
     public void TearDown() =>
         _services.Dispose();
 
-    public class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services)
+    private class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services)
     {
         public IReadOnlyDictionary<string, Target> ManualTargetDefinitions { get; init; } = new Dictionary<string, Target>();
 
-        public IReadOnlyDictionary<string, ParamDefinition> ManualParamDefinitions { get; init; } =
-            new Dictionary<string, ParamDefinition>();
+        private IReadOnlyDictionary<string, ParamDefinition> ManualParamDefinitions { get; } = new Dictionary<string, ParamDefinition>();
 
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => ManualTargetDefinitions;
 
@@ -85,13 +84,8 @@ public class BuildResolverTests
         var buildResolver = new BuildResolver(buildDefinition, commandLineArgs);
 
         // Act
-        void Resolve()
-        {
-            buildResolver.Resolve();
-        }
-
         // Assert
-        Assert.Throws<Exception>(Resolve);
+        Assert.Throws<Exception>(() => buildResolver.Resolve());
     }
 
     [Test]
@@ -222,13 +216,8 @@ public class BuildResolverTests
         var buildResolver = new BuildResolver(buildDefinition, commandLineArgs);
 
         // Act
-        void Resolve()
-        {
-            buildResolver.Resolve();
-        }
-
         // Assert
-        Assert.Throws<Exception>(Resolve);
+        Assert.Throws<Exception>(() => buildResolver.Resolve());
     }
 
     [Test]

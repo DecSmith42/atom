@@ -37,7 +37,7 @@ public class BuildExecutorTests
         public IServiceProvider Services { get; } = new ServiceCollection().BuildServiceProvider();
 
         [return: NotNullIfNotNull("defaultValue")]
-        public T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+        public T GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
             throw new NotImplementedException();
 
         public Task WriteVariable(string name, string value) =>

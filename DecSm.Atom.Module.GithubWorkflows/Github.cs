@@ -38,6 +38,7 @@ public static class Github
             WorkflowTypes = [new DependabotWorkflowType()],
         };
 
+    [PublicAPI]
     public static class VariableNames
     {
         public const string Actions = "GITHUB_ACTIONS";
@@ -86,6 +87,7 @@ public static class Github
         public const string RunnerWorkspace = "RUNNER_WORKSPACE";
     }
 
+    [PublicAPI]
     public static class Triggers
     {
         public static GithubManualTrigger Manual { get; } = new();
@@ -101,6 +103,7 @@ public static class Github
         };
     }
 
+    [PublicAPI]
     public static class Variables
     {
         /// <summary>

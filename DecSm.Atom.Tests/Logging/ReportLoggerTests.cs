@@ -54,19 +54,12 @@ public class ReportLoggerTests
         ServiceAccessor<IReportService>.Service = A.Fake<IReportService>();
 
         // Act
-        _logger.Log(logLevel, eventId, state, exception, Formatter);
+        _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
         A
             .CallTo(() => ServiceAccessor<IReportService>.Service.AddReportData(A<LogReportData>._, A<string>._))
             .MustNotHaveHappened();
-
-        return;
-
-        string Formatter(string s, Exception? e)
-        {
-            return s;
-        }
     }
 
     [Test]
@@ -80,19 +73,12 @@ public class ReportLoggerTests
         ServiceAccessor<IReportService>.Service = A.Fake<IReportService>();
 
         // Act
-        _logger.Log(logLevel, eventId, state, exception, Formatter);
+        _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
         A
             .CallTo(() => ServiceAccessor<IReportService>.Service.AddReportData(A<LogReportData>._, A<string>._))
             .MustHaveHappenedOnceExactly();
-
-        return;
-
-        string Formatter(string s, Exception? e)
-        {
-            return s;
-        }
     }
 
     private class TestScopeProvider : IExternalScopeProvider

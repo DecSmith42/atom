@@ -1,7 +1,4 @@
-﻿using DecSm.Atom.Vaults;
-using Microsoft.Extensions.Configuration;
-
-namespace DecSm.Atom.Tests.Params;
+﻿namespace DecSm.Atom.Tests.Params;
 
 [TestFixture]
 public class ParamServiceTests
@@ -27,7 +24,7 @@ public class ParamServiceTests
     private IEnumerable<IVaultProvider> _vaultProviders;
     private ParamService _paramService;
 
-    private string TestParam => "TestParam";
+    private static string TestParam => "TestParam";
 
     [Test]
     public void GetParam_WithExpression_ReturnsExpectedValue()

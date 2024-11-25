@@ -53,17 +53,10 @@ public class SpectreLoggerTests
         Exception? exception = null;
 
         // Act
-        _logger.Log(logLevel, eventId, state, exception, Formatter);
+        _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
         // No assertion needed as we are testing that nothing happens
-
-        return;
-
-        string Formatter(string s, Exception? e)
-        {
-            return s;
-        }
     }
 
     [Test]
@@ -76,17 +69,10 @@ public class SpectreLoggerTests
         Exception? exception = null;
 
         // Act
-        _logger.Log(logLevel, eventId, state, exception, Formatter);
+        _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
         // No assertion needed as we are testing that logging happens
-
-        return;
-
-        string Formatter(string s, Exception? e)
-        {
-            return s;
-        }
     }
 
     private class TestScopeProvider : IExternalScopeProvider

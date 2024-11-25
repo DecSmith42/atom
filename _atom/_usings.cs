@@ -8,7 +8,6 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Module.AzureStorage;
 global using DecSm.Atom.Module.DevopsWorkflows;
 global using DecSm.Atom.Module.DevopsWorkflows.Generation.Options;
-global using DecSm.Atom.Module.DevopsWorkflows.Triggers;
 global using DecSm.Atom.Module.Dotnet;
 global using DecSm.Atom.Module.GithubWorkflows;
 global using DecSm.Atom.Module.GithubWorkflows.Generation.Options;

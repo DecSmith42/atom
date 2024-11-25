@@ -72,14 +72,9 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     protected void WriteLine(string? value = null)
     {
         if (IndentLevel > 0)
-        {
             _stringBuilder.Append(new string(' ', IndentLevel));
-            _stringBuilder.AppendLine(value);
-        }
-        else
-        {
-            _stringBuilder.AppendLine(value);
-        }
+
+        _stringBuilder.AppendLine(value);
     }
 
     protected IDisposable WriteSection(string header)

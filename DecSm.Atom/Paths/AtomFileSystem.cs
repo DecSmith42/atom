@@ -3,6 +3,8 @@
 [PublicAPI]
 public interface IAtomFileSystem : IFileSystem
 {
+    string ProjectName { get; init; }
+
     public IFileSystem FileSystem { get; }
 
     AbsolutePath AtomRootDirectory => GetPath(AtomPaths.Root);
