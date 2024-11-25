@@ -19,4 +19,5 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;
+global using DecSm.Atom.Workflows.Definition.Options;
 global using DecSm.Atom.Workflows.Options;

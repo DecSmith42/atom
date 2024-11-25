@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
+[PublicAPI]
 public static class Devops
 {
     public static bool IsDevopsPipelines => Variables.TfBuild.Equals("true", StringComparison.OrdinalIgnoreCase);

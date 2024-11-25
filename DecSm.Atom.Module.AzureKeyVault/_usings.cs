@@ -7,5 +7,7 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.Vaults;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition;
+global using DecSm.Atom.Workflows.Definition.Options;
+global using JetBrains.Annotations;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

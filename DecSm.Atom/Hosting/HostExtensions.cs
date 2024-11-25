@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Hosting;
 
+[PublicAPI]
 public static class HostExtensions
 {
     public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)

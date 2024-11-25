@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
+[PublicAPI]
 public abstract class BuildDefinition(IServiceProvider services) : ISetup, IValidateBuild
 {
     public abstract IReadOnlyDictionary<string, Target> TargetDefinitions { get; }

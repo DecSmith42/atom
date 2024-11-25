@@ -1,11 +1,13 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
+[PublicAPI]
 public sealed record CoverageModel
 {
     [JsonPropertyName("summary")]
     public CoverageSummary Summary { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record CoverageSummary
 {
     [JsonPropertyName("generatedon")]

@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Tools.Nuget.Commands;
 
-public static class NugetAddHandler
+internal static class NugetAddHandler
 {
     public static async Task<int> Handle(NugetAddOptions options, CancellationToken cancellationToken)
     {
@@ -42,21 +42,41 @@ public static class NugetAddHandler
         var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{feed.Name.Replace(" ", "_").ToUpper()}");
 
         // Sanitize feed name and url
-        var feedName = new string(feed.Name.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_').ToArray());
-        var feedUrl = new string(feed.Url.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '/' || c == ':' || c == '.').ToArray());
+        var feedName = new string(feed
+            .Name
+            .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_')
+            .ToArray());
+
+        var feedUrl = new string(feed
+            .Url
+            .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '/' || c == ':' || c == '.')
+            .ToArray());
 
         // Sanitize secret
         secret = secret
-            ?.Replace("\"", "")
-            .Replace("\n", "")
-            .Replace("\r", "") ??
+                     ?.Replace("\"", "")
+                     .Replace("\n", "")
+                     .Replace("\r", "") ??
                  string.Empty;
 
         Console.WriteLine($"Adding {feed.Name} feed...");
 
         var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet")
         {
-            ArgumentList = { "nuget", "add", "source", "--name", feedName, "--username", "USERNAME", "--password", secret, "--store-password-in-clear-text", feedUrl },
+            ArgumentList =
+            {
+                "nuget",
+                "add",
+                "source",
+                "--name",
+                feedName,
+                "--username",
+                "USERNAME",
+                "--password",
+                secret,
+                "--store-password-in-clear-text",
+                feedUrl,
+            },
             RedirectStandardError = true,
         })!;
 

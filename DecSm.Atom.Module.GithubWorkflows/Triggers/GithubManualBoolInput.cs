@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.GithubWorkflows.Triggers;
 
+[PublicAPI]
 public sealed record GithubManualBoolInput(string Name, string Description, bool Required, bool? DefaultValue = null)
     : ManualInput(Name, Description, Required)
 {

@@ -4,5 +4,7 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Module.Dotnet;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Workflows.Definition;
+global using DecSm.Atom.Workflows.Definition.Options;
+global using JetBrains.Annotations;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

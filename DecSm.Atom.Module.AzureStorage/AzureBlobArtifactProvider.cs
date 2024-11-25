@@ -1,7 +1,6 @@
-﻿using DecSm.Atom.Build;
+﻿namespace DecSm.Atom.Module.AzureStorage;
 
-namespace DecSm.Atom.Module.AzureStorage;
-
+[PublicAPI]
 public sealed class AzureBlobArtifactProvider(
     IParamService paramService,
     IReportService reportService,

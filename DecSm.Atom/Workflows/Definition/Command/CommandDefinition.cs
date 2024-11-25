@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Command;
 
+[PublicAPI]
 public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
 {
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];

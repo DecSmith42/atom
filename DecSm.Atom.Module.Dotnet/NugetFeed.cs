@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.Dotnet;
 
+[PublicAPI]
 public record NugetFeed(
     string Url,
     string? Name = null,

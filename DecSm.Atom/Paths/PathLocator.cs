@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Paths;
 
+[PublicAPI]
 public interface IPathProvider
 {
     int Priority { get; }

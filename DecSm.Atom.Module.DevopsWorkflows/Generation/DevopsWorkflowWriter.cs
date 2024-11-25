@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Generation;
 
-public sealed class DevopsWorkflowWriter(
+internal sealed class DevopsWorkflowWriter(
     IAtomFileSystem fileSystem,
     IBuildDefinition buildDefinition,
     BuildModel buildModel,

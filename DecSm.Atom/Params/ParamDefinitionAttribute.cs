@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Params;
 
+[PublicAPI]
 [AttributeUsage(AttributeTargets.Property)]
 public class ParamDefinitionAttribute(string argName, string description, string? defaultValue = null) : Attribute
 {

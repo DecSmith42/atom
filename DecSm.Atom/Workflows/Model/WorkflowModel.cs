@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Model;
 
+[PublicAPI]
 public sealed record WorkflowModel(string Name)
 {
     public required IReadOnlyList<IWorkflowTrigger> Triggers { get; init; }

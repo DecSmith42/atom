@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Paths;
 
+[PublicAPI]
 public interface IAtomFileSystem : IFileSystem
 {
     public IFileSystem FileSystem { get; }
@@ -42,9 +43,9 @@ internal sealed class AtomFileSystem : IAtomFileSystem
 
     public required IReadOnlyList<IPathProvider> PathLocators { private get; init; }
 
-    public required IFileSystem FileSystem { get; init; }
-
     public required string ProjectName { get; init; }
+
+    public required IFileSystem FileSystem { get; init; }
 
     public AbsolutePath GetPath(string key)
     {

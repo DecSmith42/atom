@@ -50,38 +50,23 @@ public class BuildExecutorTests
     private CommandLineArgs _commandLineArgs;
     private BuildModel _buildModel;
 
-    // private Mock<IBuildDefinition> _buildDefinition;
     private IBuildDefinition _buildDefinition;
 
-    // private Mock<IParamService> _paramService;
     private IParamService _paramService;
 
-    // private Mock<IWorkflowVariableService> _workflowVariableService;
     private IWorkflowVariableService _workflowVariableService;
 
-    // private IReadOnlyList<Mock<IOutcomeReporter>> _outcomeReporters;
     private IReadOnlyList<IOutcomeReporter> _outcomeReporters;
     private TestConsole _console;
 
-    // private Mock<IReportService> _reportService;
     private IReportService _reportService;
 
-    // private Mock<ILogger<BuildExecutor>> _logger;
     private ILogger<BuildExecutor> _logger;
 
     [Test]
     public async Task Execute_NoCommand_SucceedsAndLogs()
     {
         // Arrange
-        // var buildExecutor = new BuildExecutor(_commandLineArgs,
-        //     _buildModel,
-        //     _paramService.Object,
-        //     _workflowVariableService.Object,
-        //     _outcomeReporters.Select(x => x.Object),
-        //     _console,
-        //     _reportService.Object,
-        //     _logger.Object);
-
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,
             _buildDefinition,
@@ -96,7 +81,6 @@ public class BuildExecutorTests
         await buildExecutor.Execute();
 
         // Assert
-        // _logger.VerifyLog(x => x.LogInformation("No targets specified; execution skipped"), Times.Once);
         // TODO: Verify logs
     }
 
@@ -146,15 +130,6 @@ public class BuildExecutorTests
                 },
             },
         };
-
-        // var buildExecutor = new BuildExecutor(_commandLineArgs,
-        //     _buildModel,
-        //     _paramService.Object,
-        //     _workflowVariableService.Object,
-        //     _outcomeReporters.Select(x => x.Object),
-        //     _console,
-        //     _reportService.Object,
-        //     _logger.Object);
 
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,

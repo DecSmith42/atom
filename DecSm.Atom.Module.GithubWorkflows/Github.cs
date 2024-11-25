@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
+[PublicAPI]
 public static class Github
 {
     public static bool IsGithubActions => Variables.Actions.Equals("true", StringComparison.CurrentCultureIgnoreCase);

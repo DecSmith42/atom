@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Params;
 
+[PublicAPI]
 public interface IParamService
 {
     [return: NotNullIfNotNull(nameof(defaultValue))]

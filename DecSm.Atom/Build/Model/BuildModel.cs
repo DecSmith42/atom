@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Model;
 
+[PublicAPI]
 public sealed record BuildModel
 {
     public required IReadOnlyList<TargetModel> Targets { get; init; }

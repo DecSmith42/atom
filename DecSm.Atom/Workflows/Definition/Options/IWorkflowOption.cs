@@ -1,5 +1,6 @@
-namespace DecSm.Atom.Workflows.Definition;
+namespace DecSm.Atom.Workflows.Definition.Options;
 
+[PublicAPI]
 public interface IWorkflowOption
 {
     public bool AllowMultiple => false;
@@ -25,40 +26,4 @@ public interface IWorkflowOption
                 ? entriesArray.Prepend((T)this)
                 : [entriesArray[^1]]
             : [(T)this];
-}
-
-public abstract record WorkflowOption<TData, TSelf> : IWorkflowOption
-    where TSelf : WorkflowOption<TData, TSelf>, new()
-{
-    public virtual TData? Value { get; init; }
-
-    public virtual bool AllowMultiple => false;
-
-    public static TSelf Create(TData value) =>
-        new()
-        {
-            Value = value,
-        };
-}
-
-public abstract record ToggleWorkflowOption<TSelf> : WorkflowOption<bool, TSelf>
-    where TSelf : WorkflowOption<bool, TSelf>, new()
-{
-    public static readonly TSelf Enabled = new()
-    {
-        Value = true,
-    };
-
-    public static readonly TSelf Disabled = new()
-    {
-        Value = false,
-    };
-
-    // We don't need a type parameter for this method
-#pragma warning disable RCS1158
-    public static bool IsEnabled(IEnumerable<IWorkflowOption> options) =>
-        options
-            .OfType<TSelf>()
-            .Any(x => x.Value);
-#pragma warning restore RCS1158
 }

@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Artifacts;
-
-namespace DecSm.Atom.Workflows;
+﻿namespace DecSm.Atom.Workflows;
 
 internal sealed class WorkflowResolver(
     IBuildDefinition buildDefinition,

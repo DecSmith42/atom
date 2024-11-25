@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Util;
 
+[PublicAPI]
 public static class StringUtil
 {
     public static int GetLevenshteinDistance(this string? from, string? to)

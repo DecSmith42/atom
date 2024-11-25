@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
+[PublicAPI]
 public sealed class TargetDefinition
 {
     public string Name { get; init; } = string.Empty;

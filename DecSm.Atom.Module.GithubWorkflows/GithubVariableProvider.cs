@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
-public class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger<GithubVariableProvider> logger) : IWorkflowVariableProvider
+internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger<GithubVariableProvider> logger) : IWorkflowVariableProvider
 {
     public async Task<bool> WriteVariable(string variableName, string variableValue)
     {

@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Model;
 
+[PublicAPI]
 public sealed record TargetModel(string Name, string? Description, bool IsHidden)
 {
     public required IReadOnlyList<Func<Task>> Tasks { get; init; }

@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
+[PublicAPI]
 [XmlRoot(ElementName = "TestRun", Namespace = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010")]
 public sealed record TestRun
 {
@@ -38,6 +39,7 @@ public sealed record TestRun
     public ResultSummary ResultSummary { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record Times
 {
     [XmlAttribute(AttributeName = "creation")]
@@ -53,6 +55,7 @@ public sealed record Times
     public DateTime Finish { get; init; }
 }
 
+[PublicAPI]
 public sealed record TestSettings
 {
     [XmlAttribute(AttributeName = "name")]
@@ -65,12 +68,14 @@ public sealed record TestSettings
     public Deployment Deployment { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record Deployment
 {
     [XmlAttribute(AttributeName = "runDeploymentRoot")]
     public string RunDeploymentRoot { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record UnitTestResult
 {
     [XmlAttribute(AttributeName = "executionId")]
@@ -110,12 +115,14 @@ public sealed record UnitTestResult
     public ResultOutput Output { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record ResultOutput
 {
     [XmlElement(ElementName = "ErrorInfo")]
     public ErrorInfo ErrorInfo { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record ErrorInfo
 {
     [XmlElement(ElementName = "Message")]
@@ -131,6 +138,7 @@ public sealed record ErrorInfo
     public string StdErr { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record UnitTest
 {
     [XmlAttribute(AttributeName = "name")]
@@ -149,12 +157,14 @@ public sealed record UnitTest
     public TestMethod TestMethod { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record Execution
 {
     [XmlAttribute(AttributeName = "id")]
     public string Id { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record TestMethod
 {
     [XmlAttribute(AttributeName = "codeBase")]
@@ -170,6 +180,7 @@ public sealed record TestMethod
     public string Name { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record TestEntry
 {
     [XmlAttribute(AttributeName = "testId")]
@@ -182,6 +193,7 @@ public sealed record TestEntry
     public string TestListId { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record TestList
 {
     [XmlAttribute(AttributeName = "name")]
@@ -191,6 +203,7 @@ public sealed record TestList
     public string Id { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record ResultSummary
 {
     [XmlAttribute(AttributeName = "outcome")]
@@ -207,6 +220,7 @@ public sealed record ResultSummary
     public List<Collector> CollectorDataEntries { get; init; } = [];
 }
 
+[PublicAPI]
 public sealed record Counters
 {
     [XmlAttribute(AttributeName = "total")]
@@ -258,12 +272,14 @@ public sealed record Counters
     public int Pending { get; init; }
 }
 
+[PublicAPI]
 public sealed record Output
 {
     [XmlElement(ElementName = "StdOut")]
     public string StdOut { get; init; } = string.Empty;
 }
 
+[PublicAPI]
 public sealed record Collector
 {
     [XmlAttribute(AttributeName = "agentName")]
@@ -280,12 +296,14 @@ public sealed record Collector
     public List<UriAttachment> UriAttachments { get; init; } = [];
 }
 
+[PublicAPI]
 public sealed record UriAttachment
 {
     [XmlElement(ElementName = "A")]
     public A A { get; init; } = new();
 }
 
+[PublicAPI]
 public sealed record A
 {
     [XmlAttribute(AttributeName = "href")]
