@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Args;
 
+[PublicAPI]
 public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
 {
     public bool IsValid => Valid;

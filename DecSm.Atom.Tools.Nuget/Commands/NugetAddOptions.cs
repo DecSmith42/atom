@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Tools.Nuget.Commands;
 
-public sealed record NugetAddOptions(string? FeedConnectionString)
+internal sealed record NugetAddOptions(string? FeedConnectionString)
 {
     // Feed to add in the format: Name;Url
     public NugetFeed GetFeed()
@@ -36,7 +36,7 @@ public sealed record NugetAddOptions(string? FeedConnectionString)
     public sealed record NugetFeed(string Name, string Url);
 }
 
-public sealed class NugetAddOptionsBinder(Option<string> feedsOption) : BinderBase<NugetAddOptions>
+internal sealed class NugetAddOptionsBinder(Option<string> feedsOption) : BinderBase<NugetAddOptions>
 {
     protected override NugetAddOptions GetBoundValue(BindingContext bindingContext) =>
         new(bindingContext.ParseResult.GetValueForOption(feedsOption));

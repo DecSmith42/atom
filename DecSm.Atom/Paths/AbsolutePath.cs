@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Paths;
 
+[PublicAPI]
 public sealed record AbsolutePath(IAtomFileSystem FileSystem, string Path)
 {
     public AbsolutePath? Parent

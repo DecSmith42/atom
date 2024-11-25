@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace DecSm.Atom.Module.Dotnet;
+﻿namespace DecSm.Atom.Module.Dotnet;
 
 [TargetDefinition]
 public partial interface INugetHelper : IVersionHelper

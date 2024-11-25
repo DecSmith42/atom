@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Definition;
 
+[PublicAPI]
 public sealed record WorkflowDefinition(string Name)
 {
     public IReadOnlyList<IWorkflowTrigger> Triggers { get; init; } = [];

@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Generation;
 
-public sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
+internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogger<DependabotWorkflowWriter> logger)
     : WorkflowFileWriter<DependabotWorkflowType>(fileSystem, logger)
 {
     private readonly IAtomFileSystem _fileSystem = fileSystem;

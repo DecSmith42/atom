@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.DevopsWorkflows.Triggers;
 
+[PublicAPI]
 public sealed record DevopsManualBoolInput(string Name, string Description, bool? DefaultValue = null) : ManualInput(Name, Description)
 {
     public static DevopsManualBoolInput ForParam(ParamDefinition paramDefinition) =>

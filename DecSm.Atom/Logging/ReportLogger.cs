@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Logging;
 
-public class ReportLogger(IExternalScopeProvider? scopeProvider) : ILogger
+internal sealed class ReportLogger(IExternalScopeProvider? scopeProvider) : ILogger
 {
     public bool IsEnabled(LogLevel logLevel) =>
         logLevel != LogLevel.None;

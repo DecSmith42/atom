@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GitVersion;
 
-public sealed class GitVersionBuildIdProvider(
+internal sealed class GitVersionBuildIdProvider(
     IDotnetToolHelper dotnetToolHelper,
     IProcessRunner processRunner,
     IBuildDefinition buildDefinition

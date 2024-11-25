@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.DevopsWorkflows.Triggers;
 
+[PublicAPI]
 public sealed record DevopsManualStringInput(string Name, string Description, string? DefaultValue = null) : ManualInput(Name, Description)
 {
     public static DevopsManualStringInput ForParam(ParamDefinition paramDefinition) =>

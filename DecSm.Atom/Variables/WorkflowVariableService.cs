@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Variables;
 
+[PublicAPI]
 public interface IWorkflowVariableService
 {
     Task WriteVariable(string variableName, string variableValue);

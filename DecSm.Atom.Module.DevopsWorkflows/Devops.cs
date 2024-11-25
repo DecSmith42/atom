@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
+[PublicAPI]
 public static class Devops
 {
     public static bool IsDevopsPipelines => Variables.TfBuild.Equals("true", StringComparison.OrdinalIgnoreCase);
@@ -10,6 +11,7 @@ public static class Devops
 
     public static DevopsWorkflowType WorkflowType { get; } = new();
 
+    [PublicAPI]
     public static class VariableNames
     {
         public const string SystemDebug = "SYSTEM_DEBUG";
@@ -99,6 +101,7 @@ public static class Devops
         public const string ChecksStageAttempt = "CHECKS_STAGEATTEMPT";
     }
 
+    [PublicAPI]
     public static class Triggers
     {
         public static DevopsManualTrigger Manual { get; } = new();
@@ -109,6 +112,7 @@ public static class Devops
         };
     }
 
+    [PublicAPI]
     public static class Variables
     {
         /// <summary>

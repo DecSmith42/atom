@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom;
 
+[PublicAPI]
 public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
     public int Major { get; private init; }

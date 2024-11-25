@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Model;
 
+[PublicAPI]
 public sealed record WorkflowJobModel(string Name, IReadOnlyList<IWorkflowStepModel> Steps)
 {
     public required IReadOnlyList<string> JobDependencies { get; init; }

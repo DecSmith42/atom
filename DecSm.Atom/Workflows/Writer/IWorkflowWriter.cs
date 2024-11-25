@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Workflows.Writer;
 
+[PublicAPI]
 public interface IWorkflowWriter
 {
     Type WorkflowType { get; }
@@ -9,6 +10,7 @@ public interface IWorkflowWriter
     Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow);
 }
 
+[PublicAPI]
 public interface IWorkflowWriter<T> : IWorkflowWriter
     where T : IWorkflowType
 {

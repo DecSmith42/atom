@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.GithubWorkflows.Triggers;
 
+[PublicAPI]
 public sealed record GithubPushTrigger : IWorkflowTrigger
 {
     public IReadOnlyList<string> IncludedBranches { get; init; } = [];

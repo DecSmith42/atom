@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Process;
 
+[PublicAPI]
 public sealed record ProcessRunOptions(string Name, string Args)
 {
     public ProcessRunOptions(string Name, string[] Args) : this(Name, string.Join(" ", Args)) { }

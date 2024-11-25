@@ -1,7 +1,6 @@
-﻿using DecSm.Atom.Workflows.Options;
+﻿namespace DecSm.Atom.Nuget;
 
-namespace DecSm.Atom.Nuget;
-
+[PublicAPI]
 public sealed record AddNugetFeedsStep : CustomStep
 {
     public IReadOnlyList<NugetFeedOptions> FeedsToAdd { get; init; } = [];

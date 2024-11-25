@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.AzureKeyVault;
 
+[PublicAPI]
 public sealed class AzureKeyVaultProvider(IBuildDefinition buildDefinition, CommandLineArgs args, ILogger<AzureKeyVaultProvider> logger)
     : IVaultProvider, IWorkflowOptionProvider
 {

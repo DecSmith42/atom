@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
+[PublicAPI]
 public static class TransformProjectVersionScope
 {
     public static ITransformFileScope Create(AbsolutePath file, SemVer version) =>

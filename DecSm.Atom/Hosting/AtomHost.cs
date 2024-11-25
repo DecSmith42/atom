@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Hosting;
 
+[PublicAPI]
 public static class AtomHost
 {
     public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args)

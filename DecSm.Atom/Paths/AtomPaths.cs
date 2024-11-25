@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Paths;
 
+[PublicAPI]
 public static class AtomPaths
 {
     public const string Root = "Root";

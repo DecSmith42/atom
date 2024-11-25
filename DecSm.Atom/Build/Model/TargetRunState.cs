@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Build.Model;
 
+[PublicAPI]
 public enum TargetRunState
 {
     Uninitialized,

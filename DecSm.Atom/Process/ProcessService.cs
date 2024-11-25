@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Process;
 
+[PublicAPI]
 public interface IProcessRunner
 {
     ProcessRunResult Run(ProcessRunOptions options);

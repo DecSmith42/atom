@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Module.DevopsWorkflows.Triggers;
 
+[PublicAPI]
 public sealed record DevopsManualChoiceInput(string Name, string Description, IReadOnlyList<string> Choices, string? DefaultValue = null)
     : ManualInput(Name, Description)
 {

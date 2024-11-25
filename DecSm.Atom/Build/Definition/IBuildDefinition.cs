@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
+[PublicAPI]
 public interface IBuildDefinition
 {
     [ParamDefinition("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name")]

@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
+[PublicAPI]
 public static class Extensions
 {
     public static CommandDefinition WithDevopsRunnerMatrix(this CommandDefinition commandDefinition, string[] labels) =>

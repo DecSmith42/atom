@@ -8,6 +8,7 @@ public partial interface IValidateBuild
             .WithDescription("Checks the atom build for common issues.")
             .Executes(() =>
             {
+                // ReSharper disable once CollectionNeverUpdated.Local - TODO
                 var errors = new List<string>();
                 var warnings = new List<string>();
 

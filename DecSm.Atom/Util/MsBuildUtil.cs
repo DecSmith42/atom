@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Util;
 
+[PublicAPI]
 public static class MsBuildUtil
 {
     public static string SetVersionInfo(string file, SemVer version)

@@ -7,7 +7,6 @@ public partial interface IDownloadArtifact : IArtifactHelper
         targetDefinition =>
         {
             var artifactProvider = GetService<IArtifactProvider>();
-            var buildIdProvider = GetService<IBuildIdProvider>();
 
             targetDefinition.IsHidden();
 

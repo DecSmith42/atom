@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Generation;
 
-public sealed class DevopsWorkflowWriter(
+internal sealed partial class DevopsWorkflowWriter(
     IAtomFileSystem fileSystem,
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
@@ -14,6 +14,9 @@ public sealed class DevopsWorkflowWriter(
     protected override int TabSize => 2;
 
     protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".devops" / "workflows";
+
+    [GeneratedRegex("-+")]
+    private static partial Regex HyphenReductionRegex();
 
     protected override void WriteWorkflow(WorkflowModel workflow)
     {
@@ -57,10 +60,9 @@ public sealed class DevopsWorkflowWriter(
 
                                 WriteLine("type: string");
 
-                                if (choiceInput.DefaultValue is not null)
-                                    WriteLine($"default: {choiceInput.DefaultValue}");
-                                else
-                                    WriteLine($"default: '{choiceInput.Choices[0]}'");
+                                WriteLine(choiceInput.DefaultValue is not null
+                                    ? $"default: {choiceInput.DefaultValue}"
+                                    : $"default: '{choiceInput.Choices[0]}'");
 
                                 using (WriteSection("values:"))
                                 {
@@ -215,7 +217,8 @@ public sealed class DevopsWorkflowWriter(
                                 .ToArray()))
 
                             // Replace multiple hyphens with a single hyphen
-                            .Select(value => Regex.Replace(value, "-+", "-"))
+                            .Select(value => HyphenReductionRegex()
+                                .Replace(value, "-"))
 
                             // Trim hyphens from the start and end of the dimension value
                             .Select(value => value.Trim('-'))
@@ -371,7 +374,7 @@ public sealed class DevopsWorkflowWriter(
                         using (WriteSection("env:"))
                         {
                             foreach (var feedToAdd in feedsToAdd)
-                                WriteLine($$$"""{{{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}}}: $({{{feedToAdd.SecretName}}})""");
+                                WriteLine($"{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
                         }
 
                         WriteLine();

@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
+[PublicAPI]
 public interface IArtifactProvider
 {
     IReadOnlyList<string> RequiredParams => [];

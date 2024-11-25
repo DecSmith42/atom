@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Reports;
 
+[PublicAPI]
 public interface IReportService
 {
     void AddReportData(IReportData reportData, string? targetName = null);
