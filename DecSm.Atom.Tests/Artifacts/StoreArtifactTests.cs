@@ -1,10 +1,10 @@
 ﻿namespace DecSm.Atom.Tests.Artifacts;
 
 [TestFixture]
-public class DownloadArtifactTests
+public class StoreArtifactTests
 {
     [Test]
-    public async Task DownloadArtifact_Returns_Valid_Target()
+    public async Task UploadArtifact_Returns_Valid_Target()
     {
         Assert.Ignore("Need to wait for FakeItEasy to update with Castle.Core 5.2.0 with support for default interface methods.");
 
@@ -22,15 +22,14 @@ public class DownloadArtifactTests
             });
 
         A
-            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string>.Ignored))
+            .CallTo(() => artifactProvider.StoreArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string?>._))
             .Returns(Task.CompletedTask);
 
         var services = new ServiceCollection()
             .AddSingleton(artifactProvider)
             .BuildServiceProvider();
 
-        // Act
-        var instance = A.Fake<IDownloadArtifact>(options => options.CallsBaseMethods());
+        var instance = A.Fake<IStoreArtifact>(options => options.CallsBaseMethods());
 
         A
             .CallTo(() => instance.Services)
@@ -40,7 +39,8 @@ public class DownloadArtifactTests
             .CallTo(() => instance.AtomArtifacts)
             .Returns([(string)artifactNames[0], (string)artifactNames[1]]);
 
-        var target = instance.DownloadArtifact(new());
+        // Act
+        var target = instance.StoreArtifact(new());
 
         // Assert
         target.ShouldSatisfyAllConditions(x => x.ShouldNotBeNull(),
@@ -60,7 +60,7 @@ public class DownloadArtifactTests
             .Tasks[0]();
 
         A
-            .CallTo(() => artifactProvider.DownloadArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string>.Ignored))
+            .CallTo(() => artifactProvider.StoreArtifacts(A<string[]>.That.IsSameSequenceAs(artifactNames), A<string?>._))
             .MustHaveHappenedOnceExactly();
     }
 }

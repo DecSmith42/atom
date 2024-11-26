@@ -41,8 +41,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -68,8 +68,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -95,8 +95,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -122,8 +122,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -149,8 +149,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -176,8 +176,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -203,8 +203,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -230,8 +230,8 @@ jobs:
         env:
           nuget-dry-run: true
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -262,8 +262,8 @@ jobs:
           job-runs-on: ${{ matrix.job-runs-on }}
           matrix-slice: ${{ matrix.job-runs-on }}
       
-      - name: UploadArtifact
-        run: dotnet run --project _atom/_atom.csproj UploadArtifact --skip --headless
+      - name: StoreArtifact
+        run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
@@ -284,8 +284,8 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: DownloadArtifact
-        run: dotnet run --project _atom/_atom.csproj DownloadArtifact --skip --headless
+      - name: RetrieveArtifact
+        run: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
         env:
           atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
           azure-vault-address: ${{ secrets.AZURE_VAULT_ADDRESS }}
