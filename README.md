@@ -2,7 +2,6 @@
 
 [![Build](https://github.com/DecSmith42/atom/actions/workflows/Build.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Build.yml)
 [![Test_BuildPrivateNugetFeed](https://github.com/DecSmith42/atom/actions/workflows/Test_BuildPrivateNugetFeed.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Test_BuildPrivateNugetFeed.yml)
-[![Test_Devops_Build](https://github.com/DecSmith42/atom/actions/workflows/Test_Devops_Build.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Test_Devops_Build.yml)
 [![Test_BuildWithCustomArtifacts](https://github.com/DecSmith42/atom/actions/workflows/Test_BuildWithCustomArtifacts.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Test_BuildWithCustomArtifacts.yml)
 [![CodeQL](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql)
 
