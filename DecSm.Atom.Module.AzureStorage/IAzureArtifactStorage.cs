@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.AzureStorage;
 
 [TargetDefinition]
-public partial interface IAzureArtifactStorage : IUploadArtifact, IDownloadArtifact
+public partial interface IAzureArtifactStorage : IStoreArtifact, IRetrieveArtifact
 {
     [SecretDefinition("azurestorage-artifact-connectionstring", "Connection string for Azure storage container")]
     string AzureArtifactStorageConnectionString => GetParam(() => AzureArtifactStorageConnectionString)!;

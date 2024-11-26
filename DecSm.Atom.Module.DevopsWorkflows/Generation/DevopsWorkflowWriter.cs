@@ -288,11 +288,11 @@ internal sealed partial class DevopsWorkflowWriter(
                 {
                     if (target.ConsumedArtifacts.Count > 0)
                         targetsForConsumedVariableDeclaration.Add(buildModel.Targets.Single(t =>
-                            t.Name == nameof(IDownloadArtifact.DownloadArtifact)));
+                            t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)));
 
                     if (target.ProducedArtifacts.Count > 0)
                         targetsForConsumedVariableDeclaration.Add(buildModel.Targets.Single(t =>
-                            t.Name == nameof(IUploadArtifact.UploadArtifact)));
+                            t.Name == nameof(IStoreArtifact.StoreArtifact)));
                 }
             }
 
@@ -400,8 +400,8 @@ internal sealed partial class DevopsWorkflowWriter(
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteCommandStep(workflow,
-                            new(nameof(IDownloadArtifact.DownloadArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
+                            new(nameof(IRetrieveArtifact.RetrieveArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
@@ -445,8 +445,8 @@ internal sealed partial class DevopsWorkflowWriter(
                         WriteLine();
 
                         WriteCommandStep(workflow,
-                            new(nameof(IUploadArtifact.UploadArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
+                            new(nameof(IStoreArtifact.StoreArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)

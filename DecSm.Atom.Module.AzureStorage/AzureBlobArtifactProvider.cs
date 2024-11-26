@@ -14,7 +14,7 @@ public sealed class AzureBlobArtifactProvider(
         nameof(IAzureArtifactStorage.AzureArtifactStorageContainer), nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
     ];
 
-    public async Task UploadArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
+    public async Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
     {
         buildId ??= buildIdProvider.BuildId;
 
@@ -74,7 +74,7 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task DownloadArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
+    public async Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
     {
         buildId ??= buildIdProvider.BuildId;
 
@@ -151,7 +151,7 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task DownloadArtifact(string artifactName, IReadOnlyList<string> buildIds)
+    public async Task RetrieveArtifact(string artifactName, IReadOnlyList<string> buildIds)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));

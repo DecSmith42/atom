@@ -1,16 +1,23 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
+/// <summary>
+///     Includes the target definition required for storing artifacts.
+///     Must be included in the build to use custom providers for storing artifacts.
+/// </summary>
+/// <remarks>
+///     When creating a custom provider for storing artifacts, add this interface to the build.
+/// </remarks>
 [TargetDefinition]
-public partial interface IDownloadArtifact : IArtifactHelper
+public partial interface IStoreArtifact : IArtifactHelper
 {
-    Target DownloadArtifact =>
+    Target StoreArtifact =>
         targetDefinition =>
         {
             var artifactProvider = GetService<IArtifactProvider>();
 
             targetDefinition.IsHidden();
 
-            targetDefinition.ConsumesVariable(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId));
+            targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
 
             targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
             targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
@@ -21,7 +28,7 @@ public partial interface IDownloadArtifact : IArtifactHelper
                     artifactProvider.GetType()
                         .Name);
 
-                await artifactProvider.DownloadArtifacts(AtomArtifacts);
+                await artifactProvider.StoreArtifacts(AtomArtifacts);
             });
 
             return targetDefinition;

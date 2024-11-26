@@ -325,8 +325,8 @@ internal sealed class GithubWorkflowWriter(
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
                         WriteCommandStep(workflow,
-                            new(nameof(IDownloadArtifact.DownloadArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IDownloadArtifact.DownloadArtifact)),
+                            new(nameof(IRetrieveArtifact.RetrieveArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
@@ -369,8 +369,8 @@ internal sealed class GithubWorkflowWriter(
                         WriteLine();
 
                         WriteCommandStep(workflow,
-                            new(nameof(IUploadArtifact.UploadArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IUploadArtifact.UploadArtifact)),
+                            new(nameof(IStoreArtifact.StoreArtifact)),
+                            buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(matrixSlice.Value)
