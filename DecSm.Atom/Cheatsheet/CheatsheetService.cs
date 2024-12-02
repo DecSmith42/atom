@@ -1,7 +1,14 @@
 ﻿namespace DecSm.Atom.Cheatsheet;
 
+/// <summary>
+///     Service for displaying a cheatsheet of available commands and options.
+/// </summary>
 public interface ICheatsheetService
 {
+    /// <summary>
+    ///     Displays a cheatsheet of available commands and options.
+    ///     The default Atom cheatsheet writes to the console.
+    /// </summary>
     public void ShowCheatsheet();
 }
 
