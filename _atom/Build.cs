@@ -21,7 +21,8 @@ internal partial class Build : BuildDefinition,
     ICleanupPrereleaseArtifacts,
     IPackPrivateTestLib,
     IPushToPrivateNuget,
-    ITestPrivateNugetRestore
+    ITestPrivateNugetRestore,
+    IPublishTester
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -60,6 +61,7 @@ internal partial class Build : BuildDefinition,
                 Commands.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionModule.WithSuppressedArtifactPublishing,
+                Commands.PublishTester.WithSuppressedArtifactPublishing,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
