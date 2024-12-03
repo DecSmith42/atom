@@ -36,23 +36,26 @@ public partial interface IDotnetPublishHelper : IVersionHelper
             ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
             : null;
 
-        var outputDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration / "publish";
+        var buildDir = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.ProjectName;
 
-        if (FileSystem.Directory.Exists(outputDirectory))
-            FileSystem.Directory.Delete(outputDirectory, true);
+        if (FileSystem.Directory.Exists(buildDir))
+            FileSystem.Directory.Delete(buildDir, true);
 
         await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"publish {project.FullName} -c {options.Configuration} -o {outputDirectory}"));
+            .RunAsync(new("dotnet", $"publish {project.FullName} -c {options.Configuration} -o {buildDir}"));
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;
 
-        Logger.LogInformation("Moving publish directory {PublishPath} to {PublishDir}", outputDirectory, publishDir);
+        Logger.LogInformation("Moving publish directory {OutputDir} to {PublishDir}", buildDir, publishDir);
 
         if (FileSystem.Directory.Exists(publishDir))
             FileSystem.Directory.Delete(publishDir, true);
 
-        FileSystem.Directory.Move(outputDirectory, publishDir);
+        if (!FileSystem.Directory.Exists(FileSystem.AtomPublishDirectory))
+            FileSystem.Directory.CreateDirectory(FileSystem.AtomPublishDirectory);
+
+        FileSystem.Directory.Move(buildDir, publishDir);
 
         Logger.LogInformation("Publishing Atom project {AtomProjectName} to {OutputArtifactName} completed",
             options.ProjectName,
