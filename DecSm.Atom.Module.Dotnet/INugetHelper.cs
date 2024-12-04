@@ -93,7 +93,12 @@ public partial interface INugetHelper : IVersionHelper
         // Linux: $HOME/.nuget/NuGet.Config
         // Mac: $HOME/.nuget/NuGet.Config
         var appDataPath = FileSystem.CreateAbsolutePath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-        var nugetConfigPath = appDataPath / ".nuget" / "NuGet.Config";
+
+        var nugetConfigPath = Environment.OSVersion.Platform switch
+        {
+            PlatformID.Win32NT => appDataPath / "NuGet" / "NuGet.Config",
+            _ => appDataPath / ".nuget" / "NuGet.Config",
+        };
 
         return await ITransformFileScope.CreateAsync(nugetConfigPath, _ => contents);
     }
@@ -128,7 +133,7 @@ public partial interface INugetHelper : IVersionHelper
                             <packageSources>
                           {sources}
                             </packageSources>
-                          
+
                             <packageSourceCredentials>
                           {credentials}
                             </packageSourceCredentials>
