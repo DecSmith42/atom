@@ -283,15 +283,20 @@ internal sealed class GithubWorkflowWriter(
                         .DistinctBy(x => x.FeedName)
                         .ToList();
 
+                    // TODO: Remove preview flag once v1.0.0 is released
+                    using (WriteSection("- name: Install atom tool"))
+                    {
+                        WriteLine("run: dotnet tool install --global DecSm.Atom.Tool --prerelease");
+                        WriteLine("shell: bash");
+                    }
+
+                    WriteLine();
+
                     using (WriteSection("- name: Setup NuGet"))
                     {
                         using (WriteSection("run: |"))
-                        {
-                            // TODO: Change to acquire DecSm.Atom.Tool instead of directly calling project, once it's available
                             foreach (var feedToAdd in feedsToAdd)
-                                WriteLine(
-                                    $"dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed \"{feedToAdd.FeedName};{feedToAdd.FeedUrl}\"");
-                        }
+                                WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
 
                         WriteLine("shell: bash");
 

@@ -43,8 +43,11 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - script: dotnet tool install --global DecSm.Atom.Tool --prerelease
+        displayName: 'Install atom tool'
+      
       - script: |
-          dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed "DecSm;https://nuget.pkg.github.com/DecSmith42/index.json"
+          atom nuget-add --name "DecSm" --url "https://nuget.pkg.github.com/DecSmith42/index.json"
         displayName: 'Setup NuGet'
         env:
           NUGET_TOKEN_DECSM: $(PRIVATE_NUGET_API_KEY)
