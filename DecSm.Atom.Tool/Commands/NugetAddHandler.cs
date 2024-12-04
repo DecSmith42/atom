@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Tools.Nuget.Commands;
+﻿namespace DecSm.Atom.Tool.Commands;
 
 internal static class NugetAddHandler
 {
@@ -30,24 +30,22 @@ internal static class NugetAddHandler
             return 1;
         }
 
-        var feed = options.GetFeed();
-
-        if (listSourceOutput.Contains(feed.Name) || listSourceOutput.Contains(feed.Url))
+        if (listSourceOutput.Contains(options.Name) || listSourceOutput.Contains(options.Url))
         {
-            Console.WriteLine($"'{feed.Name}' feed is already present, skipping");
+            Console.WriteLine($"'{options.Name}' feed is already present, skipping");
 
             return 0;
         }
 
-        var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{feed.Name.Replace(" ", "_").ToUpper()}");
+        var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{options.Name.Replace(" ", "_").ToUpper()}");
 
         // Sanitize feed name and url
-        var feedName = new string(feed
+        var feedName = new string(options
             .Name
             .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_')
             .ToArray());
 
-        var feedUrl = new string(feed
+        var feedUrl = new string(options
             .Url
             .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '/' || c == ':' || c == '.')
             .ToArray());
@@ -59,7 +57,7 @@ internal static class NugetAddHandler
                      .Replace("\r", "") ??
                  string.Empty;
 
-        Console.WriteLine($"Adding {feed.Name} feed...");
+        Console.WriteLine($"Adding {options.Name} feed...");
 
         var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet")
         {
@@ -86,12 +84,12 @@ internal static class NugetAddHandler
 
         if (addSourceProcess.ExitCode is 0)
         {
-            Console.WriteLine($"'{feed.Name}' feed added successfully.");
+            Console.WriteLine($"'{options.Name}' feed added successfully.");
 
             return 0;
         }
 
-        Console.WriteLine($"Failed to add {feed.Name} feed.");
+        Console.WriteLine($"Failed to add {options.Name} feed.");
         Console.WriteLine(addSourceError);
 
         return 1;

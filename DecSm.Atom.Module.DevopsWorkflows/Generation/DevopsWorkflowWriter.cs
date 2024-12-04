@@ -362,12 +362,16 @@ internal sealed partial class DevopsWorkflowWriter(
                         .DistinctBy(x => x.FeedName)
                         .ToList();
 
+                    // TODO: Remove preview flag once v1.0.0 is released
+                    using (WriteSection("- script: dotnet tool install --global DecSm.Atom.Tools.Nuget --preview"))
+                        WriteLine("displayName: 'Install atom tool'");
+
+                    WriteLine();
+
                     using (WriteSection("- script: |"))
                     {
-                        // TODO: Change to acquire DecSm.Atom.Tool instead of directly calling project, once it's available
                         foreach (var feedToAdd in feedsToAdd)
-                            WriteLine(
-                                $"  dotnet run --project DecSm.Atom.Tools.Nuget/DecSm.Atom.Tools.Nuget.csproj -- nuget-add --feed \"{feedToAdd.FeedName};{feedToAdd.FeedUrl}\"");
+                            WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
 
                         WriteLine("displayName: 'Setup NuGet'");
 

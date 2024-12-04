@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Tools.Nuget;
+﻿namespace DecSm.Atom.Tool;
 
 internal class CancellationTokenValueSource : IValueDescriptor<CancellationToken>, IValueSource
 {

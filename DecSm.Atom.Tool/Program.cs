@@ -1,58 +1,28 @@
-﻿using System.Diagnostics;
+﻿var runArgs = new Argument<string[]>();
+var projectOption = new Option<string>("--project", "The project to run.");
 
-var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+var nameOption = new Option<string>("--name", "The feed to add/remove.");
+var urlOption = new Option<string>("--url", "The url of the feed to add/remove.");
 
-while (currentDirectory?.Exists is true)
-{
-    if (Directory.Exists(Path.Combine(currentDirectory.FullName, "_atom")))
+var cancelTokenValueSource = new CancellationTokenValueSource();
+
+var result = await new CommandLineBuilder(new RootCommand
     {
-        // Sanitize arguments
-        var escapedArgs = args.Select(arg =>
+        runArgs,
+        projectOption,
+        new Command("run")
         {
-            arg = arg
-                .Replace("\n", string.Empty)
-                .Replace("\r", string.Empty);
+            runArgs,
+            projectOption,
+        }.WithHandler(RunHandler.Handle, RunArgsBinder.Instance, new ProjectOptionBinder(projectOption), cancelTokenValueSource),
+        new Command("nuget-add")
+        {
+            nameOption,
+        }.WithHandler(NugetAddHandler.Handle, new NugetAddOptionsBinder(nameOption, urlOption), cancelTokenValueSource),
+    }.WithHandler(RunHandler.Handle, RunArgsBinder.Instance, new ProjectOptionBinder(projectOption), cancelTokenValueSource))
+    .UseDefaults()
+    .CancelOnProcessTermination()
+    .Build()
+    .InvokeAsync(args);
 
-            return arg.Contains(';') || arg.Contains('&') || arg.Contains('|') || arg.Contains(' ')
-                ? $"\"{arg}\""
-                : arg;
-        });
-
-        // If an arg is --project or -p, use it (with following arg as value) as project path
-        var atomProjectName = "_atom";
-
-        for (var i = 0; i < args.Length; i++)
-            if (args[i]
-                    .Equals("--project", StringComparison.OrdinalIgnoreCase) ||
-                (args[i]
-                     .Equals("-p", StringComparison.OrdinalIgnoreCase) &&
-                 i < args.Length - 1))
-            {
-                atomProjectName = args[i + 1]
-                    .Replace("\n", string.Empty)
-                    .Replace("\r", string.Empty);
-
-                if (atomProjectName.Contains(';') ||
-                    atomProjectName.Contains('&') ||
-                    atomProjectName.Contains('|') ||
-                    atomProjectName.Contains(' '))
-                    atomProjectName = $"\"{atomProjectName}\"";
-
-                break;
-            }
-
-        var atomProjectPath = Path.Combine(currentDirectory.FullName, atomProjectName, $"{atomProjectName}.csproj");
-        var allArgs = new[] { "run", "--project", atomProjectPath, "--" }.Concat(escapedArgs);
-
-        var atomProcess = Process.Start("dotnet", allArgs);
-        atomProcess.WaitForExit();
-
-        return atomProcess.ExitCode;
-    }
-
-    currentDirectory = currentDirectory.Parent;
-}
-
-Console.WriteLine("No Atom project found.");
-
-return 1;
+Environment.Exit(result);
