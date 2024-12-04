@@ -61,7 +61,7 @@ internal sealed class ParamService(
             return value switch
             {
                 T valueAsT => valueAsT,
-                string valueAsString => Convert(valueAsString, converter),
+                string valueAsString => TypeUtils.Convert(valueAsString, converter),
                 _ => defaultValue,
             };
 
@@ -69,7 +69,7 @@ internal sealed class ParamService(
 
         if (matchingArg is not null)
         {
-            var convertedMatchingArg = Convert(matchingArg.ParamValue, converter);
+            var convertedMatchingArg = TypeUtils.Convert(matchingArg.ParamValue, converter);
             _cache[paramDefinition] = convertedMatchingArg;
 
             return convertedMatchingArg;
@@ -85,7 +85,7 @@ internal sealed class ParamService(
 
         if (envVar is not null)
         {
-            var convertedEnvVar = Convert(envVar, converter);
+            var convertedEnvVar = TypeUtils.Convert(envVar, converter);
             _cache[paramDefinition] = convertedEnvVar;
 
             return convertedEnvVar;
@@ -95,7 +95,7 @@ internal sealed class ParamService(
                               .GetSection("Params")
                               .GetSection(paramDefinition.Attribute.ArgName)
                               .Get<T>() ??
-                          Convert(config
+                          TypeUtils.Convert(config
                                   .GetSection("Params")[paramDefinition.Attribute.ArgName],
                               converter);
 
@@ -135,7 +135,7 @@ internal sealed class ParamService(
 
             _knownSecrets.Add(vaultValue);
 
-            var convertedVaultValue = Convert(vaultValue, converter);
+            var convertedVaultValue = TypeUtils.Convert(vaultValue, converter);
             _cache[paramDefinition] = convertedVaultValue;
 
             return convertedVaultValue;
@@ -144,57 +144,5 @@ internal sealed class ParamService(
         _cache[paramDefinition] = defaultValue;
 
         return defaultValue;
-    }
-
-    private static T? Convert<T>(string? stringValue, Func<string?, T?>? converter) =>
-        stringValue is null
-            ? default
-            : converter is not null
-                ? converter(stringValue)
-                : typeof(T).IsArray
-                    ? ConvertArray<T>(stringValue)
-                    : typeof(T).IsGenericType
-                        ? ConvertGeneric<T>(stringValue, typeof(T))
-                        : Convert(stringValue, typeof(T)) is T tValue
-                            ? tValue
-                            : default;
-
-    private static object? Convert(string value, Type type) =>
-        TypeDescriptor
-            .GetConverter(type)
-            .ConvertFromInvariantString(value);
-
-    private static T ConvertArray<T>(string value)
-    {
-        var elementType = typeof(T).GetElementType()!;
-        var values = value.Split(',');
-
-        var array = Array.CreateInstance(elementType, values.Length);
-
-        for (var i = 0; i < values.Length; i++)
-            array.SetValue(Convert(values[i], elementType), i);
-
-        return (T)(object)array;
-    }
-
-    private static T ConvertGeneric<T>(string value, Type type)
-    {
-        var genericType = type.GetGenericTypeDefinition();
-
-        var genericArgument = type
-            .GetGenericArguments()[0];
-
-        if (genericType == typeof(IReadOnlyList<>))
-        {
-            var values = value.Split(',');
-            var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(genericArgument))!;
-
-            foreach (var item in values)
-                list.Add(Convert(item, genericArgument));
-
-            return (T)list;
-        }
-
-        throw new NotSupportedException($"Generic type '{type}' is not supported.");
     }
 }
