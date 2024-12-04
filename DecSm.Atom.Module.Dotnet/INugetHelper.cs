@@ -6,6 +6,23 @@ public partial interface INugetHelper : IVersionHelper
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
 
+    AbsolutePath NugetConfigPath
+    {
+        get
+        {
+            // Windows: %APPDATA%\NuGet\NuGet.Config
+            // Linux: $HOME/.nuget/NuGet.Config
+            // Mac: $HOME/.nuget/NuGet.Config
+            var appDataPath = FileSystem.CreateAbsolutePath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+
+            return Environment.OSVersion.Platform switch
+            {
+                PlatformID.Win32NT => appDataPath / "NuGet" / "NuGet.Config",
+                _ => appDataPath / ".nuget" / "NuGet.Config",
+            };
+        }
+    }
+
     async Task PushProject(string projectName, string feed, string apiKey, string? configFile = null)
     {
         var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
@@ -87,24 +104,23 @@ public partial interface INugetHelper : IVersionHelper
         return response.StatusCode is HttpStatusCode.OK;
     }
 
-    async Task<ITransformFileScope> CreateNugetConfigOverwriteScope(string contents)
-    {
-        // Windows: %APPDATA%\NuGet\NuGet.Config
-        // Linux: $HOME/.nuget/NuGet.Config
-        // Mac: $HOME/.nuget/NuGet.Config
-        var appDataPath = FileSystem.CreateAbsolutePath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+    async Task<ITransformFileScope> CreateNugetConfigOverwriteScope(string contents) =>
+        await ITransformFileScope.CreateAsync(NugetConfigPath, _ => contents);
 
-        var nugetConfigPath = Environment.OSVersion.Platform switch
+    async Task CreateNugetConfigOverwriteScope(NugetFeed[] feeds, bool skipIfExists = false)
+    {
+        if (skipIfExists)
         {
-            PlatformID.Win32NT => appDataPath / "NuGet" / "NuGet.Config",
-            _ => appDataPath / ".nuget" / "NuGet.Config",
-        };
+            var nugetContents = await FileSystem.File.ReadAllTextAsync(NugetConfigPath);
 
-        return await ITransformFileScope.CreateAsync(nugetConfigPath, _ => contents);
-    }
+            if (feeds.All(f => nugetContents.Contains(f.Url, StringComparison.OrdinalIgnoreCase)))
+            {
+                Logger.LogInformation("Nuget config already contains package sources, skipping");
 
-    async Task CreateNugetConfigOverwriteScope(params NugetFeed[] feeds)
-    {
+                return;
+            }
+        }
+
         var sources = string.Join(Environment.NewLine, feeds.Select((x, i) => $"<add key=\"{x.Name ?? $"Feed{i}"}\" value=\"{x.Url}\" />"));
 
         var credentials = string.Join(Environment.NewLine,
@@ -114,14 +130,20 @@ public partial interface INugetHelper : IVersionHelper
 
                 result.AppendLine($"    <{x.Name ?? $"Feed{i}"}>");
 
-                if (x.Username is not null)
-                    result.AppendLine($"      <add key=\"Username\" value=\"{x.Username}\" />");
+                var username = x.Username();
 
-                if (x.Password is not null)
-                    result.AppendLine($"      <add key=\"Password\" value=\"{x.Password}\" />");
+                if (username is not null)
+                    result.AppendLine($"      <add key=\"Username\" value=\"{username}\" />");
 
-                if (x.PlainTextPassword is not null)
-                    result.AppendLine($"      <add key=\"ClearTextPassword\" value=\"{x.PlainTextPassword}\" />");
+                var password = x.Password();
+
+                if (password is not null)
+                    result.AppendLine($"      <add key=\"Password\" value=\"{password}\" />");
+
+                var plainTextPassword = x.PlainTextPassword();
+
+                if (plainTextPassword is not null)
+                    result.AppendLine($"      <add key=\"ClearTextPassword\" value=\"{plainTextPassword}\" />");
 
                 result.AppendLine($"    </{x.Name ?? $"Feed{i}"}>");
 
