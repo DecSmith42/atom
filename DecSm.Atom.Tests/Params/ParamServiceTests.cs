@@ -233,4 +233,42 @@ public class ParamServiceTests
         // Assert
         result.ShouldBe("This is a NotSecretValue in the text.");
     }
+
+    [Test]
+    public void GetParam_WithNoCacheScope_DoesNotCacheValue()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+
+        _config = new ConfigurationBuilder().Build();
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        string? result1;
+        string? result2;
+
+        using (_paramService.CreateNoCacheScope())
+        {
+            result1 = _paramService.GetParam("TestParam", "DefaultValue1");
+            result2 = _paramService.GetParam("TestParam", "DefaultValue2");
+        }
+
+        // Act
+        var result3 = _paramService.GetParam("TestParam", "DefaultValue3");
+        var result4 = _paramService.GetParam("TestParam", "DefaultValue4");
+
+        // Assert
+        result1.ShouldBe("DefaultValue1");
+        result2.ShouldBe("DefaultValue2");
+        result3.ShouldBe("DefaultValue3");
+        result4.ShouldBe("DefaultValue3");
+    }
 }

@@ -63,14 +63,12 @@ internal sealed class BuildExecutor(
                 if (paramDefinition.Attribute.DefaultValue is { Length: > 0 })
                     defaultValue = paramDefinition.Attribute.DefaultValue;
 
-            var interpolatedDefault = defaultValue is { Length: > 0 } && defaultValue.Contains('{') && defaultValue.Contains('}');
+            string? value;
 
-            var value = paramService.GetParam(requirement,
-                interpolatedDefault
-                    ? null
-                    : defaultValue);
+            using (var _ = paramService.CreateNoCacheScope())
+                value = paramService.GetParam(requirement, defaultValue);
 
-            if (value is { Length: > 0 } || interpolatedDefault)
+            if (value is { Length: > 0 })
                 continue;
 
             logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
