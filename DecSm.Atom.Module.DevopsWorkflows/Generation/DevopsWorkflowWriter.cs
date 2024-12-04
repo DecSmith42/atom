@@ -363,7 +363,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         .ToList();
 
                     // TODO: Remove preview flag once v1.0.0 is released
-                    using (WriteSection("- script: dotnet tool install --global DecSm.Atom.Tools.Nuget --prerelease"))
+                    using (WriteSection("- script: dotnet tool install --global DecSm.Atom.Tool --prerelease"))
                         WriteLine("displayName: 'Install atom tool'");
 
                     WriteLine();

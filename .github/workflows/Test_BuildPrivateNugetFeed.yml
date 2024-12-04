@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 0
       
       - name: Install atom tool
-        run: dotnet tool install --global DecSm.Atom.Tools.Nuget --prerelease
+        run: dotnet tool install --global DecSm.Atom.Tool --prerelease
         shell: bash
       
       - name: Setup NuGet

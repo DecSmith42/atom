@@ -286,7 +286,7 @@ internal sealed class GithubWorkflowWriter(
                     // TODO: Remove preview flag once v1.0.0 is released
                     using (WriteSection("- name: Install atom tool"))
                     {
-                        WriteLine("run: dotnet tool install --global DecSm.Atom.Tools.Nuget --prerelease");
+                        WriteLine("run: dotnet tool install --global DecSm.Atom.Tool --prerelease");
                         WriteLine("shell: bash");
                     }
 
