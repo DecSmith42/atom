@@ -152,10 +152,11 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 AttributeArgs = x
                     .Attribute
                     .ConstructorArguments
-                    .Select(static a => a.Value)
-                    .Select(static a => a is string s
+                    .Select(static a => a.Kind is TypedConstantKind.Enum
+                        ? $"({a.Type!.ToDisplayString()}){a.Value}"
+                        : a.Value is string s
                         ? $"\"{s}\""
-                        : a)
+                        : a.Value)
                     .Select(static a => a ?? "null")
                     .Aggregate(static (a, b) => $"{a}, {b}"),
             })
@@ -193,34 +194,34 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {
                          private System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}>? _targetDefinitions;
                          private System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}>? _paramDefinitions;
-                     
+
                          public {{@class}}(System.IServiceProvider services) : base(services) { }
-                     
+
                          public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, {{TargetFull}}>
                          {
                      {{string.Join("\n", targetDefinitionsPropertyBodyLines)}}
                          };
-                     
+
                          public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>
                          {
                      {{string.Join("\n", paramDefinitionsPropertyBodyLines)}}
                          };
-                     
+
                          public static class Commands
                          {
                      {{string.Join("\n\n", commandDefsPropertiesLines)}}
                          }
-                     
+
                          public static class Params
                          {
                      {{string.Join("\n\n", paramsPropertiesLines)}}
                          }
-                     
+
                          static void {{IBuildDefinitionFull}}.{{Register}}(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
                          {
                      {{string.Join("\n\n", registerMethodBodyLines)}}
                          }
-                     
+
                          private static void {{RegisterTarget}}<T>(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
                              where T : {{IBuildDefinitionFull}} =>
                              T.{{Register}}(services);

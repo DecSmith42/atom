@@ -1,6 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.Params;
 
 [TestFixture]
+[NonParallelizable]
 public class ParamServiceTests
 {
     [SetUp]
@@ -17,6 +18,10 @@ public class ParamServiceTests
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
     }
+
+    [TearDown]
+    public void TearDown() =>
+        Environment.SetEnvironmentVariable("test-param", null);
 
     private IBuildDefinition _buildDefinition;
     private CommandLineArgs _args;
@@ -113,9 +118,6 @@ public class ParamServiceTests
 
         // Assert
         result.ShouldBe("EnvValue");
-
-        // Cleanup
-        Environment.SetEnvironmentVariable("test-param", null);
     }
 
     [Test]
@@ -270,5 +272,319 @@ public class ParamServiceTests
         result2.ShouldBe("DefaultValue2");
         result3.ShouldBe("DefaultValue3");
         result4.ShouldBe("DefaultValue3");
+    }
+
+    [Test]
+    public void GetParam_WithNoneFilter_IncludesNone()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.None));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("DefaultValue");
+    }
+
+    [Test]
+    public void GetParam_WithCommandLineArgsFilter_IncludesCommandLineArgs()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.CommandLineArgs));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("ArgValue");
+    }
+
+    [Test]
+    public void GetParam_WithEnvironmentVariablesFilter_IncludesEnvironmentVariables()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.EnvironmentVariables));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("EnvValue");
+    }
+
+    [Test]
+    public void GetParam_WithConfigurationFilter_IncludesConfiguration()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.Configuration));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("ConfigValue");
+    }
+
+    [Test]
+    public void GetParam_WithVariablesFilter_IncludesCommandLineArgs()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.Variables));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("ArgValue");
+    }
+
+    [Test]
+    public void GetParam_WithVariablesFilter_IncludesEnvironmentVariables()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.Variables));
+
+        _args = new(true, [new ParamArg("not-test-param", "NotTestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("EnvValue");
+    }
+
+    [Test]
+    public void GetParam_WithVariablesFilter_IncludesConfiguration()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.Variables));
+
+        _args = new(true, [new ParamArg("not-test-param", "NotTestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("not-test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("ConfigValue");
+    }
+
+    [Test]
+    public void GetParam_WithVaultFilter_IncludesVault()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam",
+            new SecretDefinitionAttribute("test-param", "Test parameter", null, ParamSource.Vault));
+
+        _args = new(true, [new ParamArg("test-param", "NotTestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("VaultValue");
+    }
+
+    [Test]
+    public void GetParam_WithSecretsFilter_IncludesVault()
+    {
+        // Arrange
+        var paramDefinition = new ParamDefinition("TestParam",
+            new SecretDefinitionAttribute("test-param", "Test parameter", null, ParamSource.Vault));
+
+        _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
+        Environment.SetEnvironmentVariable("test-param", "EnvValue");
+
+        _config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                { "Params:test-param", "ConfigValue" },
+            })
+            .Build();
+
+        _vaultProviders = [new TestVaultProvider()];
+
+        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        // Act
+        var result = _paramService.GetParam("TestParam", "DefaultValue");
+
+        // Assert
+        result.ShouldBe("VaultValue");
+    }
+
+    private class TestVaultProvider : IVaultProvider
+    {
+        public string GetSecret(string secretName) =>
+            "VaultValue";
     }
 }

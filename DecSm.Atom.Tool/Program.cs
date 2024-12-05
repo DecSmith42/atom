@@ -18,9 +18,11 @@ var result = await new CommandLineBuilder(new RootCommand
         new Command("nuget-add")
         {
             nameOption,
+            urlOption,
         }.WithHandler(NugetAddHandler.Handle, new NugetAddOptionsBinder(nameOption, urlOption), cancelTokenValueSource),
     }.WithHandler(RunHandler.Handle, RunArgsBinder.Instance, new ProjectOptionBinder(projectOption), cancelTokenValueSource))
-    .UseDefaults()
+    .UseParseErrorReporting()
+    .UseExceptionHandler()
     .CancelOnProcessTermination()
     .Build()
     .InvokeAsync(args);
