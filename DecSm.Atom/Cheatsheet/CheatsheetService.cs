@@ -3,23 +3,18 @@
 /// <summary>
 ///     Service for displaying a cheatsheet of available commands and options.
 /// </summary>
-public interface ICheatsheetService
-{
-    /// <summary>
-    ///     Displays a cheatsheet of available commands and options.
-    ///     The default Atom cheatsheet writes to the console.
-    /// </summary>
-    public void ShowCheatsheet();
-}
-
 internal sealed class CheatsheetService(
     IAnsiConsole console,
     CommandLineArgs args,
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
     IConfiguration config
-) : ICheatsheetService
+)
 {
+    /// <summary>
+    ///     Displays a cheatsheet of available commands and options.
+    ///     The default Atom cheatsheet writes to the console.
+    /// </summary>
     public void ShowCheatsheet()
     {
         console.WriteLine();
@@ -54,7 +49,7 @@ internal sealed class CheatsheetService(
                         .Contains(x.Name))
                     .ToList();
 
-        var atomAssembly = typeof(ICheatsheetService).Assembly;
+        var atomAssembly = typeof(CheatsheetService).Assembly;
 
         var projectAssembly = buildDefinition.GetType()
             .Assembly;

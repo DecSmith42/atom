@@ -51,15 +51,16 @@ public class ReportLoggerTests
         var eventId = new EventId(1, "TestEvent");
         const string state = "TestState";
         Exception? exception = null;
-        ServiceAccessor<IReportService>.Service = A.Fake<IReportService>();
+        ServiceStaticAccessor<ReportService>.Service = new();
 
         // Act
         _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
-        A
-            .CallTo(() => ServiceAccessor<IReportService>.Service.AddReportData(A<LogReportData>._, A<string>._))
-            .MustNotHaveHappened();
+        ServiceStaticAccessor<ReportService>
+            .Service
+            .GetReportData()
+            .ShouldBeEmpty();
     }
 
     [Test]
@@ -70,15 +71,16 @@ public class ReportLoggerTests
         var eventId = new EventId(1, "TestEvent");
         const string state = "TestState";
         Exception? exception = null;
-        ServiceAccessor<IReportService>.Service = A.Fake<IReportService>();
+        ServiceStaticAccessor<ReportService>.Service = new();
 
         // Act
         _logger.Log(logLevel, eventId, state, exception, (s, _) => s);
 
         // Assert
-        A
-            .CallTo(() => ServiceAccessor<IReportService>.Service.AddReportData(A<LogReportData>._, A<string>._))
-            .MustHaveHappenedOnceExactly();
+        ServiceStaticAccessor<ReportService>
+            .Service
+            .GetReportData()
+            .ShouldNotBeEmpty();
     }
 
     private class TestScopeProvider : IExternalScopeProvider

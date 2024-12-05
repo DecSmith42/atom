@@ -1,14 +1,7 @@
 ﻿namespace DecSm.Atom.Process;
 
 [PublicAPI]
-public interface IProcessRunner
-{
-    ProcessRunResult Run(ProcessRunOptions options);
-
-    Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default);
-}
-
-internal sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunner
+public sealed class ProcessRunner(ILogger<ProcessRunner> logger)
 {
     public ProcessRunResult Run(ProcessRunOptions options)
     {

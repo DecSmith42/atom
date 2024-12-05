@@ -304,7 +304,7 @@ internal sealed class GithubWorkflowWriter(
                         {
                             foreach (var feedToAdd in feedsToAdd)
                                 WriteLine(
-                                    $$$"""{{{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                                    $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
                         }
 
                         WriteLine();

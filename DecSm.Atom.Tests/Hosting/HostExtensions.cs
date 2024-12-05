@@ -38,7 +38,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IReportService>()
+                .GetService<ReportService>()
                 .ShouldNotBeNull();
 
             serviceProvider
@@ -54,15 +54,15 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IBuildExecutor>()
+                .GetService<BuildExecutor>()
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IWorkflowGenerator>()
+                .GetService<WorkflowGenerator>()
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IProcessRunner>()
+                .GetService<ProcessRunner>()
                 .ShouldNotBeNull();
 
             serviceProvider
@@ -86,7 +86,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<ICheatsheetService>()
+                .GetService<CheatsheetService>()
                 .ShouldNotBeNull();
 
             serviceProvider

@@ -10,7 +10,7 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
-            GetService<IProcessRunner>()
+            GetService<ProcessRunner>()
                 .Run(new("dotnet", "new tool-manifest")
                 {
                     InvocationLogLevel = LogLevel.Debug,
@@ -20,7 +20,7 @@ public partial interface IDotnetToolHelper
             !GetService<CommandLineArgs>()
                 .HasHeadless)
         {
-            var globalListResult = GetService<IProcessRunner>()
+            var globalListResult = GetService<ProcessRunner>()
                 .Run(new("dotnet", $"tool list {toolName} {globalFlag}")
                 {
                     AllowFailedResult = true,
@@ -46,7 +46,7 @@ public partial interface IDotnetToolHelper
             ? $"-v {version}"
             : string.Empty;
 
-        GetService<IProcessRunner>()
+        GetService<ProcessRunner>()
             .Run(new("dotnet", $"tool install {toolName} {versionFlag} {globalFlag}")
             {
                 InvocationLogLevel = LogLevel.Debug,
@@ -60,7 +60,7 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
-            await GetService<IProcessRunner>()
+            await GetService<ProcessRunner>()
                 .RunAsync(new("dotnet", "new tool-manifest")
                 {
                     InvocationLogLevel = LogLevel.Debug,
@@ -70,7 +70,7 @@ public partial interface IDotnetToolHelper
             !GetService<CommandLineArgs>()
                 .HasHeadless)
         {
-            var globalListResult = await GetService<IProcessRunner>()
+            var globalListResult = await GetService<ProcessRunner>()
                 .RunAsync(new("dotnet", $"tool list {toolName} {globalFlag}")
                 {
                     AllowFailedResult = true,
@@ -96,7 +96,7 @@ public partial interface IDotnetToolHelper
             ? $"-v {version}"
             : string.Empty;
 
-        await GetService<IProcessRunner>()
+        await GetService<ProcessRunner>()
             .RunAsync(new("dotnet", $"tool install {toolName} {versionFlag} {globalFlag}")
             {
                 InvocationLogLevel = LogLevel.Debug,

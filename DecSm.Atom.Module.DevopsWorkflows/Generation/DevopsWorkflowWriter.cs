@@ -378,7 +378,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         using (WriteSection("env:"))
                         {
                             foreach (var feedToAdd in feedsToAdd)
-                                WriteLine($"{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
+                                WriteLine($"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
                         }
 
                         WriteLine();

@@ -41,7 +41,7 @@ public partial interface IDotnetPackHelper : IVersionHelper
         if (FileSystem.Directory.Exists(packDirectory))
             FileSystem.Directory.Delete(packDirectory, true);
 
-        await GetService<IProcessRunner>()
+        await GetService<ProcessRunner>()
             .RunAsync(new("dotnet", $"pack {project.FullName}"));
 
         var packageName = FileSystem

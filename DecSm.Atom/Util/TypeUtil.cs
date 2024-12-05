@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Util;
 
-public static class TypeUtils
+public static class TypeUtil
 {
     public static T? Convert<T>(string? stringValue, Func<string?, T?>? converter) =>
         stringValue is null

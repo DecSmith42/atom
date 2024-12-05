@@ -115,7 +115,7 @@ internal sealed class ParamService(
             return (true, value switch
             {
                 T valueAsT => valueAsT,
-                string valueAsString => TypeUtils.Convert(valueAsString, converter),
+                string valueAsString => TypeUtil.Convert(valueAsString, converter),
                 _ => default,
             });
 
@@ -129,7 +129,7 @@ internal sealed class ParamService(
         if (matchingArg is null)
             return (false, default);
 
-        var convertedMatchingArg = TypeUtils.Convert(matchingArg.ParamValue, converter);
+        var convertedMatchingArg = TypeUtil.Convert(matchingArg.ParamValue, converter);
 
         return (true, convertedMatchingArg);
     }
@@ -151,7 +151,7 @@ internal sealed class ParamService(
         if (string.IsNullOrEmpty(envVar))
             return (false, default);
 
-        var convertedEnvVar = TypeUtils.Convert(envVar, converter);
+        var convertedEnvVar = TypeUtil.Convert(envVar, converter);
 
         return (true, convertedEnvVar);
     }
@@ -162,7 +162,7 @@ internal sealed class ParamService(
                               .GetSection("Params")
                               .GetSection(paramDefinition.Attribute.ArgName)
                               .Get<T>() ??
-                          TypeUtils.Convert(config
+                          TypeUtil.Convert(config
                                   .GetSection("Params")[paramDefinition.Attribute.ArgName],
                               converter);
 
@@ -177,7 +177,7 @@ internal sealed class ParamService(
                                          .GetSection("Secrets")
                                          .GetSection(paramDefinition.Attribute.ArgName)
                                          .Get<T>() ??
-                                     TypeUtils.Convert(config
+                                     TypeUtil.Convert(config
                                              .GetSection("Secrets")[paramDefinition.Attribute.ArgName],
                                          converter);
 
@@ -200,7 +200,7 @@ internal sealed class ParamService(
 
             _knownSecrets.Add(vaultValue);
 
-            var convertedVaultValue = TypeUtils.Convert(vaultValue, converter);
+            var convertedVaultValue = TypeUtil.Convert(vaultValue, converter);
 
             return (true, convertedVaultValue);
         }

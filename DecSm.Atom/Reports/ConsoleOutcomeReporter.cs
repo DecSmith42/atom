@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Reports;
 
 [PublicAPI]
-public partial class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, BuildModel buildModel, IReportService reportService)
+public partial class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole console, BuildModel buildModel, ReportService reportService)
     : IOutcomeReporter
 {
     public Task ReportRunOutcome()

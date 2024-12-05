@@ -3,7 +3,7 @@
 [PublicAPI]
 public sealed class AzureBlobArtifactProvider(
     IParamService paramService,
-    IReportService reportService,
+    ReportService reportService,
     IAtomFileSystem fileSystem,
     IBuildIdProvider buildIdProvider,
     ILogger<AzureBlobArtifactProvider> logger
