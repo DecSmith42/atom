@@ -304,7 +304,7 @@ internal sealed class GithubWorkflowWriter(
                         {
                             foreach (var feedToAdd in feedsToAdd)
                                 WriteLine(
-                                    $$$"""{{{AddNugetFeedsStep.EnvVar(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                                    $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
                         }
 
                         WriteLine();
@@ -445,6 +445,7 @@ internal sealed class GithubWorkflowWriter(
                 .ToArray();
 
             if (requiredSecrets.Any(x => x.Attribute.IsSecret))
+            {
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
                     if (injectedSecret.Value is null)
@@ -463,20 +464,58 @@ internal sealed class GithubWorkflowWriter(
                             $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
 
+                foreach (var injectedEvVar in workflow.Options.OfType<WorkflowVaultEnvironmentInjection>())
+                {
+                    if (injectedEvVar.Value is null)
+                    {
+                        logger.LogWarning(
+                            "Workflow {WorkflowName} command {CommandName} has a vault environemnt variable injection with a null value",
+                            workflow.Name,
+                            commandStep.Name);
+
+                        continue;
+                    }
+
+                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEvVar.Value);
+
+                    if (paramDefinition is not null)
+                        env[paramDefinition.Attribute.ArgName] =
+                            $"${{{{ vars.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                }
+            }
+
             foreach (var requiredSecret in requiredSecrets)
             {
                 var injectedSecret = workflow
                     .Options
                     .Concat(commandStep.Options)
                     .OfType<WorkflowSecretInjection>()
-                    .FirstOrDefault(x => x.Param == requiredSecret.Name);
+                    .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
                 if (injectedSecret is not null)
                     env[requiredSecret.Attribute.ArgName] =
                         $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
+            var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();
             var paramInjections = workflow.Options.OfType<WorkflowParamInjection>();
+            environmentInjections = environmentInjections.Where(e => paramInjections.All(p => p.Name != e.Value));
+
+            foreach (var environmentInjection in environmentInjections.Where(e => e.Value is not null))
+            {
+                if (!buildDefinition.ParamDefinitions.TryGetValue(environmentInjection.Value!, out var paramDefinition))
+                {
+                    logger.LogWarning(
+                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
+                        workflow.Name,
+                        commandStep.Name,
+                        environmentInjection.Value);
+
+                    continue;
+                }
+
+                env[paramDefinition.Attribute.ArgName] = $"${{{{ vars.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+            }
 
             foreach (var paramInjection in paramInjections)
             {

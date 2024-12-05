@@ -1,9 +1,20 @@
 ﻿namespace DecSm.Atom.Paths;
 
 [PublicAPI]
-public interface ITransformMultiFileScope : IAsyncDisposable, IDisposable
+public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
 {
-    public static async Task<ITransformMultiFileScope> CreateAsync(IEnumerable<AbsolutePath> files, Func<string, string> transform)
+    private readonly IEnumerable<AbsolutePath> _files;
+    private readonly string?[] _initialContents;
+    private bool _cancelled;
+    private bool _disposed;
+
+    private TransformMultiFileScope(IEnumerable<AbsolutePath> files, string?[] initialContents)
+    {
+        _files = files;
+        _initialContents = initialContents;
+    }
+
+    public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<AbsolutePath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
 
@@ -29,7 +40,7 @@ public interface ITransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    public static ITransformMultiFileScope Create(IEnumerable<AbsolutePath> files, Func<string, string> transform)
+    public static TransformMultiFileScope Create(IEnumerable<AbsolutePath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
 
@@ -57,37 +68,21 @@ public interface ITransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    void CancelRestore();
-}
-
-internal class TransformMultiFileScope : ITransformMultiFileScope
-{
-    private readonly IEnumerable<AbsolutePath> _files;
-    private readonly string?[] _initialContents;
-    private bool _cancelled;
-    private bool _disposed;
-
-    internal TransformMultiFileScope(IEnumerable<AbsolutePath> files, string?[] initialContents)
-    {
-        _files = files;
-        _initialContents = initialContents;
-    }
-
     public void Dispose()
     {
         if (_disposed)
             return;
 
-        if (!_cancelled)
-            foreach (var (file, i) in _files.Select((x, i) => (x, i)))
-                if (_initialContents[i] is null)
-                    file.FileSystem.File.Delete(file);
-                else
-                    file.FileSystem.File.WriteAllText(file, _initialContents[i]);
-
         _disposed = true;
 
-        GC.SuppressFinalize(this);
+        if (_cancelled)
+            return;
+
+        foreach (var (file, i) in _files.Select((x, i) => (x, i)))
+            if (_initialContents[i] is null)
+                file.FileSystem.File.Delete(file);
+            else
+                file.FileSystem.File.WriteAllText(file, _initialContents[i]);
     }
 
     public async ValueTask DisposeAsync()
@@ -95,18 +90,18 @@ internal class TransformMultiFileScope : ITransformMultiFileScope
         if (_disposed)
             return;
 
-        if (!_cancelled)
-            await Task.WhenAll(_files.Select(async (x, i) =>
-            {
-                if (_initialContents[i] is null)
-                    x.FileSystem.File.Delete(x);
-                else
-                    await x.FileSystem.File.WriteAllTextAsync(x, _initialContents[i]);
-            }));
-
         _disposed = true;
 
-        GC.SuppressFinalize(this);
+        if (_cancelled)
+            return;
+
+        await Task.WhenAll(_files.Select(async (x, i) =>
+        {
+            if (_initialContents[i] is null)
+                x.FileSystem.File.Delete(x);
+            else
+                await x.FileSystem.File.WriteAllTextAsync(x, _initialContents[i]);
+        }));
     }
 
     public void CancelRestore() =>

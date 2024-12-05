@@ -20,7 +20,7 @@ public class BuildExecutorTests
         _workflowVariableService = A.Fake<IWorkflowVariableService>();
         _outcomeReporters = [];
         _console = new();
-        _reportService = A.Fake<IReportService>();
+        _reportService = new();
         _logger = A.Fake<ILogger<BuildExecutor>>();
     }
 
@@ -59,7 +59,7 @@ public class BuildExecutorTests
     private IReadOnlyList<IOutcomeReporter> _outcomeReporters;
     private TestConsole _console;
 
-    private IReportService _reportService;
+    private ReportService _reportService;
 
     private ILogger<BuildExecutor> _logger;
 

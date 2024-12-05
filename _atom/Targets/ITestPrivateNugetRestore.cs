@@ -5,7 +5,7 @@ internal partial interface ITestPrivateNugetRestore
 {
     public const string PrivateTestLibTesterProjectName = "PrivateTestLibTester";
 
-    IProcessRunner ProcessRunner => Services.GetRequiredService<IProcessRunner>();
+    ProcessRunner ProcessRunner => Services.GetRequiredService<ProcessRunner>();
 
     Target TestPrivateNugetRestore =>
         d => d.Executes(async () =>

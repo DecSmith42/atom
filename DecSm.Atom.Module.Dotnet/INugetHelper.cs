@@ -51,7 +51,7 @@ public partial interface INugetHelper : IVersionHelper
             return;
         }
 
-        await GetService<IProcessRunner>()
+        await GetService<ProcessRunner>()
             .RunAsync(new("dotnet", $"nuget push \"{packagePath}\" --source {feed} --api-key {apiKey}"));
 
         Logger.LogInformation("Package pushed");
@@ -104,8 +104,8 @@ public partial interface INugetHelper : IVersionHelper
         return response.StatusCode is HttpStatusCode.OK;
     }
 
-    async Task<ITransformFileScope> CreateNugetConfigOverwriteScope(string contents) =>
-        await ITransformFileScope.CreateAsync(NugetConfigPath, _ => contents);
+    async Task<TransformFileScope> CreateNugetConfigOverwriteScope(string contents) =>
+        await TransformFileScope.CreateAsync(NugetConfigPath, _ => contents);
 
     async Task CreateNugetConfigOverwriteScope(NugetFeed[] feeds, bool skipIfExists = false)
     {

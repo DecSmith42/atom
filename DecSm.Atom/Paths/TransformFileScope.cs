@@ -1,9 +1,20 @@
 ﻿namespace DecSm.Atom.Paths;
 
 [PublicAPI]
-public interface ITransformFileScope : IAsyncDisposable, IDisposable
+public sealed class TransformFileScope : IAsyncDisposable, IDisposable
 {
-    public static async Task<ITransformFileScope> CreateAsync(AbsolutePath file, Func<string, string> transform)
+    private readonly AbsolutePath _file;
+    private readonly string? _initialContent;
+    private bool _cancelled;
+    private bool _disposed;
+
+    private TransformFileScope(AbsolutePath file, string? initialContent)
+    {
+        _file = file;
+        _initialContent = initialContent;
+    }
+
+    public static async Task<TransformFileScope> CreateAsync(AbsolutePath file, Func<string, string> transform)
     {
         string? initialContent = null;
 
@@ -23,7 +34,7 @@ public interface ITransformFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    public static ITransformFileScope Create(AbsolutePath file, Func<string, string> transform)
+    public static TransformFileScope Create(AbsolutePath file, Func<string, string> transform)
     {
         string? initialContent = null;
 
@@ -43,36 +54,20 @@ public interface ITransformFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    void CancelRestore();
-}
-
-internal class TransformFileScope : ITransformFileScope
-{
-    private readonly AbsolutePath _file;
-    private readonly string? _initialContent;
-    private bool _cancelled;
-    private bool _disposed;
-
-    internal TransformFileScope(AbsolutePath file, string? initialContent)
-    {
-        _file = file;
-        _initialContent = initialContent;
-    }
-
     public void Dispose()
     {
         if (_disposed)
             return;
 
-        if (!_cancelled)
-            if (_initialContent is null)
-                _file.FileSystem.File.Delete(_file);
-            else
-                _file.FileSystem.File.WriteAllText(_file, _initialContent);
-
         _disposed = true;
 
-        GC.SuppressFinalize(this);
+        if (_cancelled)
+            return;
+
+        if (_initialContent is null)
+            _file.FileSystem.File.Delete(_file);
+        else
+            _file.FileSystem.File.WriteAllText(_file, _initialContent);
     }
 
     public async ValueTask DisposeAsync()
@@ -80,15 +75,15 @@ internal class TransformFileScope : ITransformFileScope
         if (_disposed)
             return;
 
-        if (!_cancelled)
-            if (_initialContent is null)
-                _file.FileSystem.File.Delete(_file);
-            else
-                await _file.FileSystem.File.WriteAllTextAsync(_file, _initialContent);
-
         _disposed = true;
 
-        GC.SuppressFinalize(this);
+        if (_cancelled)
+            return;
+
+        if (_initialContent is null)
+            _file.FileSystem.File.Delete(_file);
+        else
+            await _file.FileSystem.File.WriteAllTextAsync(_file, _initialContent);
     }
 
     public void CancelRestore() =>

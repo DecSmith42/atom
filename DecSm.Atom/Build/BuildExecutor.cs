@@ -1,10 +1,5 @@
 ﻿namespace DecSm.Atom.Build;
 
-internal interface IBuildExecutor
-{
-    Task Execute();
-}
-
 internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
@@ -13,9 +8,9 @@ internal sealed class BuildExecutor(
     IWorkflowVariableService variableService,
     IEnumerable<IOutcomeReporter> outcomeReporters,
     IAnsiConsole console,
-    IReportService reportService,
+    ReportService reportService,
     ILogger<BuildExecutor> logger
-) : IBuildExecutor
+)
 {
     public async Task Execute()
     {

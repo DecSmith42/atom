@@ -58,16 +58,62 @@ public sealed class AzureKeyVaultProvider(IBuildDefinition buildDefinition, Comm
                     buildDefinition.DefaultWorkflowOptions.Concat(buildDefinition.Workflows.SelectMany(x => x.Options))))
                 return [];
 
-            if (buildDefinition is not IAzureKeyVault)
+            if (buildDefinition is not IAzureKeyVault keyVaultDefinition)
                 throw new("The build definition must implement IAzureKeyVault to use Azure Key Vault");
 
-            return
-            [
-                WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)),
-                WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)),
-                WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)),
-                WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)),
-            ];
+            var injections = keyVaultDefinition.AzureKeyVaultValueInjections;
+
+            var valueInjections = new List<IWorkflowOption>();
+
+            switch (injections.Address)
+            {
+                case AzureKeyVaultValueInjectionType.EnvironmentVariable:
+                    valueInjections.Add(WorkflowVaultEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
+
+                    break;
+                case AzureKeyVaultValueInjectionType.Secret:
+                    valueInjections.Add(WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
+
+                    break;
+            }
+
+            switch (injections.TenantId)
+            {
+                case AzureKeyVaultValueInjectionType.EnvironmentVariable:
+                    valueInjections.Add(WorkflowVaultEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
+
+                    break;
+                case AzureKeyVaultValueInjectionType.Secret:
+                    valueInjections.Add(WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
+
+                    break;
+            }
+
+            switch (injections.AppId)
+            {
+                case AzureKeyVaultValueInjectionType.EnvironmentVariable:
+                    valueInjections.Add(WorkflowVaultEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)));
+
+                    break;
+                case AzureKeyVaultValueInjectionType.Secret:
+                    valueInjections.Add(WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)));
+
+                    break;
+            }
+
+            switch (injections.AppSecret)
+            {
+                case AzureKeyVaultValueInjectionType.EnvironmentVariable:
+                    valueInjections.Add(WorkflowVaultEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
+
+                    break;
+                case AzureKeyVaultValueInjectionType.Secret:
+                    valueInjections.Add(WorkflowVaultSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
+
+                    break;
+            }
+
+            return valueInjections;
         }
     }
 

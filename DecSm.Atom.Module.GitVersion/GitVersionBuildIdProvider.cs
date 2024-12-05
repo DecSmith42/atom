@@ -2,7 +2,7 @@
 
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolHelper dotnetToolHelper,
-    IProcessRunner processRunner,
+    ProcessRunner processRunner,
     IBuildDefinition buildDefinition
 ) : IBuildIdProvider
 {

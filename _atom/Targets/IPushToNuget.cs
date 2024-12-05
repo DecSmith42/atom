@@ -3,10 +3,10 @@
 [TargetDefinition]
 internal partial interface IPushToNuget : INugetHelper
 {
-    [ParamDefinition("nuget-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
+    [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
     string NugetFeed => GetParam(() => NugetFeed)!;
 
-    [SecretDefinition("nuget-api-key", "The API key to use to push to Nuget.")]
+    [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
     string NugetApiKey => GetParam(() => NugetApiKey)!;
 
     Target PushToNuget =>

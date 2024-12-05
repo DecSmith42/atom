@@ -9,6 +9,7 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
             .Select(x => x.Name)
             .ToArray();
 
+        // Whether to first execute dependencies of a target before the target itself
         var includeDependencies = !commandLineArgs.HasSkip;
 
         // Extract target definitions from build definition
@@ -22,6 +23,9 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 .ApplyExtensions(buildDefinition))
             .ToArray();
 
+        // Duplicate target names could result in undefined behavior
+        // So we fail early if any are found
+        // Note: This doesn't include overriden or extended targets
         var duplicateTargetNames = targetDefinitions
             .GroupBy(x => x.Name)
             .Where(x => x.Count() > 1)

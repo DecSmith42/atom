@@ -58,7 +58,7 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
         FileSystem.Directory.CreateDirectory(coverageResultsPublishDirectory);
 
         // Run test
-        await GetService<IProcessRunner>()
+        await GetService<ProcessRunner>()
             .RunAsync(new("dotnet",
             [
                 $"test {project.FullName}",
@@ -81,7 +81,7 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
         await InstallToolAsync("dotnet-reportgenerator-globaltool");
 
         // Run coverage report generator
-        await GetService<IProcessRunner>()
+        await GetService<ProcessRunner>()
             .RunAsync(new("reportgenerator",
             [
                 $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",

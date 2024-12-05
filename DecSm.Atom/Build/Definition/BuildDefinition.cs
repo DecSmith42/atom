@@ -66,6 +66,8 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup, IVali
     /// </summary>
     public virtual IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [];
 
+    // TODO: improve documentation for expression
+    //
     /// <summary>
     ///     Retrieves a parameter value using the specified expression, with an optional default value and converter.
     /// </summary>
@@ -74,8 +76,6 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup, IVali
     /// <param name="defaultValue">The default value to return if the parameter is not set.</param>
     /// <param name="converter">An optional function to convert the parameter value from a string.</param>
     /// <returns>The parameter value, or the default value if not set.</returns>
-
-    //TODO: improve documentation for expression
     public T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
@@ -98,6 +98,6 @@ public abstract class BuildDefinition(IServiceProvider services) : ISetup, IVali
     /// <param name="reportData">The report data to add.</param>
     public void AddReportData(IReportData reportData) =>
         Services
-            .GetRequiredService<IReportService>()
+            .GetRequiredService<ReportService>()
             .AddReportData(reportData);
 }

@@ -1,17 +1,10 @@
 ﻿namespace DecSm.Atom.Workflows;
 
-internal interface IWorkflowGenerator
-{
-    Task GenerateWorkflows();
-
-    Task<bool> WorkflowsDirty();
-}
-
 internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
     IEnumerable<IWorkflowWriter> writers,
     WorkflowResolver workflowResolver
-) : IWorkflowGenerator
+)
 {
     private readonly List<IWorkflowWriter> _writers = writers.ToList();
 

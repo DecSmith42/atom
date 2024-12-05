@@ -2,12 +2,12 @@
 
 internal sealed class AtomService(
     CommandLineArgs args,
-    IBuildExecutor executor,
+    BuildExecutor executor,
     BuildModel buildModel,
     IHostApplicationLifetime lifetime,
     ILogger<AtomService> logger,
-    ICheatsheetService cheatsheetService,
-    IWorkflowGenerator workflowGenerator
+    CheatsheetService cheatsheetService,
+    WorkflowGenerator workflowGenerator
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

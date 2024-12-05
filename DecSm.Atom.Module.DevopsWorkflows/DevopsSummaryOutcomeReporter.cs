@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
-internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, IReportService reportService) : IOutcomeReporter
+internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, ReportService reportService) : IOutcomeReporter
 {
     public async Task ReportRunOutcome()
     {

@@ -186,6 +186,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      #nullable enable
 
                      global using static {{classFull}};
+                     using Microsoft.Extensions.DependencyInjection;
 
                      {{namespaceLine}}
 
