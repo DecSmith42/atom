@@ -78,36 +78,35 @@ internal sealed class ParamService(
 
     private T? GetParam<T>(ParamDefinition paramDefinition, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
-        if (TryGetParamFromCache(paramDefinition, converter) is (true, { } cacheValue))
-            return cacheValue;
+        T? result;
 
-        if (TryGetParamFromArgs(paramDefinition, converter) is (true, { } argsValue))
-            return argsValue;
-
-        if (TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
-            return envVarValue;
-
-        if (TryGetParamFromConfig(paramDefinition, converter) is (true, { } configValue))
-            return configValue;
-
-        if (!paramDefinition.Attribute.IsSecret)
-        {
-            if (!NoCache)
-                _cache[paramDefinition] = defaultValue;
-
-            return defaultValue;
-        }
-
-        if (TryGetParamFromUserSecrets(paramDefinition, converter) is (true, { } userSecretsValue))
-            return userSecretsValue;
-
-        if (TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
-            return vaultValue;
+        if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Cache) &&
+            TryGetParamFromCache(paramDefinition, converter) is (true, { } cacheValue))
+            result = cacheValue;
+        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.CommandLineArgs) &&
+                 TryGetParamFromArgs(paramDefinition, converter) is (true, { } argsValue))
+            result = argsValue;
+        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
+                 TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
+            result = envVarValue;
+        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Configuration) &&
+                 TryGetParamFromConfig(paramDefinition, converter) is (true, { } configValue))
+            result = configValue;
+        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.UserSecrets) &&
+                 paramDefinition.Attribute.IsSecret &&
+                 TryGetParamFromUserSecrets(paramDefinition, converter) is (true, { } userSecretsValue))
+            result = userSecretsValue;
+        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Vault) &&
+                 paramDefinition.Attribute.IsSecret &&
+                 TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
+            result = vaultValue;
+        else
+            result = defaultValue;
 
         if (!NoCache)
-            _cache[paramDefinition] = defaultValue;
+            _cache[paramDefinition] = result;
 
-        return defaultValue;
+        return result;
     }
 
     private (bool HasValue, T? Value) TryGetParamFromCache<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
@@ -132,29 +131,27 @@ internal sealed class ParamService(
 
         var convertedMatchingArg = TypeUtils.Convert(matchingArg.ParamValue, converter);
 
-        if (!NoCache)
-            _cache[paramDefinition] = convertedMatchingArg;
-
         return (true, convertedMatchingArg);
     }
 
     private (bool HasValue, T? Value) TryGetParamFromEnvironmentVariables<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
     {
-        var envVar = Environment.GetEnvironmentVariable(paramDefinition.Name) ??
-                     Environment.GetEnvironmentVariable(paramDefinition.Attribute.ArgName) ??
-                     Environment.GetEnvironmentVariable(paramDefinition
-                         .Attribute
-                         .ArgName
-                         .ToUpperInvariant()
-                         .Replace('-', '_'));
+        var envVar = Environment.GetEnvironmentVariable(paramDefinition.Name);
 
-        if (envVar is null)
+        if (string.IsNullOrEmpty(envVar))
+            envVar = Environment.GetEnvironmentVariable(paramDefinition.Attribute.ArgName);
+
+        if (string.IsNullOrEmpty(envVar))
+            envVar = Environment.GetEnvironmentVariable(paramDefinition
+                .Attribute
+                .ArgName
+                .ToUpperInvariant()
+                .Replace('-', '_'));
+
+        if (string.IsNullOrEmpty(envVar))
             return (false, default);
 
         var convertedEnvVar = TypeUtils.Convert(envVar, converter);
-
-        if (!NoCache)
-            _cache[paramDefinition] = convertedEnvVar;
 
         return (true, convertedEnvVar);
     }
@@ -169,13 +166,9 @@ internal sealed class ParamService(
                                   .GetSection("Params")[paramDefinition.Attribute.ArgName],
                               converter);
 
-        if (configValue is null)
-            return (false, default);
-
-        if (!NoCache)
-            _cache[paramDefinition] = configValue;
-
-        return (true, configValue);
+        return configValue is null
+            ? (false, default)
+            : (true, configValue);
     }
 
     private (bool HasValue, T? Value) TryGetParamFromUserSecrets<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
@@ -191,13 +184,9 @@ internal sealed class ParamService(
         if (userSecretsConfigValue is string userSecretsString)
             _knownSecrets.Add(userSecretsString);
 
-        if (userSecretsConfigValue is null)
-            return (false, default);
-
-        if (!NoCache)
-            _cache[paramDefinition] = userSecretsConfigValue;
-
-        return (true, userSecretsConfigValue);
+        return userSecretsConfigValue is null
+            ? (false, default)
+            : (true, userSecretsConfigValue);
     }
 
     private (bool HasValue, T? Value) TryGetParamFromVault<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
@@ -212,9 +201,6 @@ internal sealed class ParamService(
             _knownSecrets.Add(vaultValue);
 
             var convertedVaultValue = TypeUtils.Convert(vaultValue, converter);
-
-            if (!NoCache)
-                _cache[paramDefinition] = convertedVaultValue;
 
             return (true, convertedVaultValue);
         }
