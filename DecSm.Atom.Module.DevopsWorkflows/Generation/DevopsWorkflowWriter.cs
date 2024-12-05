@@ -519,6 +519,7 @@ internal sealed partial class DevopsWorkflowWriter(
                 .ToArray();
 
             if (requiredSecrets.Any(x => x.Attribute.IsSecret))
+            {
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
                 {
                     if (injectedSecret.Value is null)
@@ -536,26 +537,63 @@ internal sealed partial class DevopsWorkflowWriter(
                         env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
                 }
 
+                foreach (var injectedEnvVar in workflow.Options.OfType<WorkflowVaultEnvironmentInjection>())
+                {
+                    if (injectedEnvVar.Value is null)
+                    {
+                        logger.LogWarning(
+                            "Workflow {WorkflowName} command {CommandName} has a vault environment variable injection with a null value",
+                            workflow.Name,
+                            commandStep.Name);
+
+                        continue;
+                    }
+
+                    var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEnvVar.Value);
+
+                    if (paramDefinition is not null)
+                        env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+                }
+            }
+
             foreach (var requiredSecret in requiredSecrets)
             {
                 var injectedSecret = workflow
                     .Options
                     .Concat(commandStep.Options)
                     .OfType<WorkflowSecretInjection>()
-                    .FirstOrDefault(x => x.Param == requiredSecret.Name);
+                    .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
                 if (injectedSecret is not null)
                     env[requiredSecret.Attribute.ArgName] = $"$({requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')})";
             }
 
+            var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();
             var paramInjections = workflow.Options.OfType<WorkflowParamInjection>();
+            environmentInjections = environmentInjections.Where(e => paramInjections.All(p => p.Name != e.Value));
+
+            foreach (var environmentInjection in environmentInjections.Where(e => e.Value is not null))
+            {
+                if (!buildDefinition.ParamDefinitions.TryGetValue(environmentInjection.Value!, out var paramDefinition))
+                {
+                    logger.LogWarning(
+                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
+                        workflow.Name,
+                        commandStep.Name,
+                        environmentInjection.Value);
+
+                    continue;
+                }
+
+                env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+            }
 
             foreach (var paramInjection in paramInjections)
             {
                 if (!buildDefinition.ParamDefinitions.TryGetValue(paramInjection.Name, out var paramDefinition))
                 {
                     logger.LogWarning(
-                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that is not consumed by the command",
+                        "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
                         commandStep.Name,
                         paramInjection.Name);

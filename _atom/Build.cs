@@ -110,7 +110,7 @@ internal partial class Build : BuildDefinition,
             [
                 Commands.Setup,
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
-                Commands.PushToPrivateNuget.WithAddedOptions(new WorkflowSecretInjection(Params.PrivateNugetApiKey)),
+                Commands.PushToPrivateNuget.WithAddedOptions(WorkflowSecretInjection.Create(Params.PrivateNugetApiKey)),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],

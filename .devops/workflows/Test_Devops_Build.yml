@@ -269,8 +269,8 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         name: PushToNuget
         env:
+          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
-          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           nuget-dry-run: true

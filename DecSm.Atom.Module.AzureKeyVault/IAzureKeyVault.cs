@@ -15,9 +15,25 @@ public partial interface IAzureKeyVault
     [ParamDefinition("azure-vault-app-secret", "Azure Secret for App Registration that has access to the Azure Vault")]
     string AzureVaultAppSecret => GetParam(() => AzureVaultAppSecret)!;
 
+    virtual AzureKeyVaultValueInjections AzureKeyVaultValueInjections => new();
+
     static void IBuildDefinition.Register(IServiceCollection services) =>
         services
             .AddSingleton<AzureKeyVaultProvider>()
             .AddSingleton<IVaultProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>())
             .AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
+}
+
+public sealed record AzureKeyVaultValueInjections(
+    AzureKeyVaultValueInjectionType Address = AzureKeyVaultValueInjectionType.EnvironmentVariable,
+    AzureKeyVaultValueInjectionType TenantId = AzureKeyVaultValueInjectionType.EnvironmentVariable,
+    AzureKeyVaultValueInjectionType AppId = AzureKeyVaultValueInjectionType.EnvironmentVariable,
+    AzureKeyVaultValueInjectionType AppSecret = AzureKeyVaultValueInjectionType.Secret
+);
+
+public enum AzureKeyVaultValueInjectionType
+{
+    None,
+    EnvironmentVariable,
+    Secret,
 }
