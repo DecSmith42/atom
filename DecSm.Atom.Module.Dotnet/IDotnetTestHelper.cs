@@ -3,33 +3,58 @@
 [TargetDefinition]
 public partial interface IDotnetTestHelper : IDotnetToolHelper
 {
-    async Task RunDotnetUnitTests(string projectName)
+    async Task RunDotnetUnitTests(DotnetTestOptions options)
     {
-        Logger.LogInformation("Running unit tests for Atom project {AtomProjectName}", projectName);
+        Logger.LogInformation("Running unit tests for Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / projectName / $"{projectName}.csproj");
+        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
+        var projectPath = new AbsolutePath(FileSystem, project.FullName);
 
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
 
-        var testOutputDirectory = FileSystem.AtomRootDirectory / projectName / "TestResults";
+        List<AbsolutePath> filesToTransform = [projectPath];
+
+        var dir = projectPath;
+
+        do
+        {
+            dir = dir.Parent;
+
+            if (dir is null)
+                break;
+
+            var file = dir / "Directory.Build.props";
+
+            if (file.FileExists)
+                filesToTransform.Add(file);
+        } while (dir != FileSystem.AtomRootDirectory);
+
+        var buildVersionProvider = GetService<IBuildVersionProvider>();
+
+        await using var setVersionScope = options.AutoSetVersion
+            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
+            : null;
+
+        var testOutputDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "TestResults";
 
         if (testOutputDirectory.DirectoryExists)
             FileSystem.Directory.Delete(testOutputDirectory, true);
 
         FileSystem.Directory.CreateDirectory(testOutputDirectory);
 
-        var projectPublishDirectory = FileSystem.AtomPublishDirectory / projectName;
+        var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
+        var publishDirectory = FileSystem.AtomPublishDirectory / outputArtifactName;
 
-        if (projectPublishDirectory.DirectoryExists)
-            FileSystem.Directory.Delete(projectPublishDirectory, true);
+        if (publishDirectory.DirectoryExists)
+            FileSystem.Directory.Delete(publishDirectory, true);
 
-        FileSystem.Directory.CreateDirectory(projectPublishDirectory);
+        FileSystem.Directory.CreateDirectory(publishDirectory);
 
-        var testResultsPublishDirectory = projectPublishDirectory / "test-results";
+        var testResultsPublishDirectory = publishDirectory / "test-results";
         FileSystem.Directory.CreateDirectory(testResultsPublishDirectory);
 
-        var coverageResultsPublishDirectory = projectPublishDirectory / "coverage-results";
+        var coverageResultsPublishDirectory = publishDirectory / "coverage-results";
         FileSystem.Directory.CreateDirectory(coverageResultsPublishDirectory);
 
         // Run test
@@ -37,9 +62,9 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
             .RunAsync(new("dotnet",
             [
                 $"test {project.FullName}",
-                "--configuration Release",
-                $"--logger \"trx;LogFileName={projectName}.trx\"",
-                $"--logger \"html;LogFileName={projectName}.html\"",
+                $"--configuration {options.Configuration}",
+                $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
+                $"--logger \"html;LogFileName={options.ProjectName}.html\"",
                 "--collect:\"XPlat Code Coverage\"",
             ])
             {
@@ -47,9 +72,10 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
             });
 
         // Copy html file to publish directory
-        FileSystem.File.Copy(testOutputDirectory / $"{projectName}.html", testResultsPublishDirectory / $"{projectName}.html");
+        FileSystem.File.Copy(testOutputDirectory / $"{options.ProjectName}.html",
+            testResultsPublishDirectory / $"{options.ProjectName}.html");
 
-        GenerateTestReport(projectName, testOutputDirectory / $"{projectName}.trx");
+        GenerateTestReport(options.ProjectName, testOutputDirectory / $"{options.ProjectName}.trx");
 
         // Install/update reportgenerator
         await InstallToolAsync("dotnet-reportgenerator-globaltool");
@@ -67,9 +93,9 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
                 AllowFailedResult = true,
             });
 
-        GenerateCoverageReport(projectName, coverageResultsPublishDirectory / "Summary.json");
+        GenerateCoverageReport(options.ProjectName, coverageResultsPublishDirectory / "Summary.json");
 
-        Logger.LogInformation("Ran unit tests for Atom project {AtomProjectName}", projectName);
+        Logger.LogInformation("Ran unit tests for Atom project {AtomProjectName}", options.ProjectName);
     }
 
     private void GenerateTestReport(string projectName, string trxFile)

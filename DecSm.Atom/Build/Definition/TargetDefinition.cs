@@ -176,6 +176,13 @@ public sealed class TargetDefinition
         return this;
     }
 
+    public TargetDefinition ProducesVariable(ParamDefinition parameter)
+    {
+        ProducedVariables.Add(parameter.Attribute.ArgName);
+
+        return this;
+    }
+
     public TargetDefinition ConsumesVariable(string commandName, string outputName)
     {
         ConsumedVariables.Add(new(commandName, outputName));
@@ -186,6 +193,13 @@ public sealed class TargetDefinition
     public TargetDefinition ConsumesVariable(CommandDefinition command, string outputName)
     {
         ConsumedVariables.Add(new(command.Name, outputName));
+
+        return this;
+    }
+
+    public TargetDefinition ConsumesVariable(CommandDefinition command, ParamDefinition parameter)
+    {
+        ConsumedVariables.Add(new(command.Name, parameter.Attribute.ArgName));
 
         return this;
     }

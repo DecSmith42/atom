@@ -56,7 +56,8 @@ public partial interface IDotnetPackHelper : IVersionHelper
         if (!packagePath.FileExists)
             throw new InvalidOperationException($"Package {packagePath} does not exist.");
 
-        var publishDir = FileSystem.AtomPublishDirectory / options.ProjectName;
+        var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
+        var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
 
         if (FileSystem.Directory.Exists(publishDir))

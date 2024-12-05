@@ -9,5 +9,5 @@ internal partial interface ITestAtom : IDotnetTestHelper
         d => d
             .WithDescription("Runs the DecSm.Atom.Tests unit tests project")
             .ProducesArtifact(AtomUnitTestsProjectName)
-            .Executes(() => RunDotnetUnitTests(AtomUnitTestsProjectName));
+            .Executes(() => RunDotnetUnitTests(new(AtomUnitTestsProjectName)));
 }
