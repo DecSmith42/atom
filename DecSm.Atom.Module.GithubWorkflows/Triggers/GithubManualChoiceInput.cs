@@ -9,10 +9,10 @@ public sealed record GithubManualChoiceInput(
     string? DefaultValue = null
 ) : ManualInput(Name, Description, Required)
 {
-    public static GithubManualChoiceInput ForParam(ParamDefinition paramDefinition, bool required, IReadOnlyList<string> choices) =>
+    public static GithubManualChoiceInput ForParam(ParamDefinition paramDefinition, IReadOnlyList<string> choices, bool? required = null) =>
         new(paramDefinition.Attribute.ArgName,
             paramDefinition.Attribute.Description,
-            required,
+            required ?? paramDefinition.Attribute.DefaultValue is not { Length: > 0 },
             choices,
             paramDefinition.Attribute.DefaultValue);
 }
