@@ -1,0 +1,26 @@
+name: Test_ManualParams
+
+on:
+  workflow_dispatch:
+    inputs:
+      test-string-param:
+        description: Test string parameter
+        required: True
+        type: string
+
+jobs:
+  
+  TestManualParams:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: TestManualParams
+        id: TestManualParams
+        run: dotnet run --project _atom/_atom.csproj TestManualParams --skip --headless
+        env:
+          test-string-param: ${{ inputs.test-string-param }}

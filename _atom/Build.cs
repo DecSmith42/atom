@@ -22,7 +22,8 @@ internal partial class Build : BuildDefinition,
     IPackPrivateTestLib,
     IPushToPrivateNuget,
     ITestPrivateNugetRestore,
-    IPublishTester
+    IPublishTester,
+    ITestManualParams
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -94,6 +95,22 @@ internal partial class Build : BuildDefinition,
         },
 
         // Test workflows
+        new("Test_ManualParams")
+        {
+            Triggers =
+            [
+                new GithubManualTrigger
+                {
+                    Inputs = [GithubManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
+                },
+                new DevopsManualTrigger
+                {
+                    Inputs = [DevopsManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
+                },
+            ],
+            StepDefinitions = [Commands.TestManualParams],
+            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+        },
         new("Test_ValidatePrivateNugetFeed")
         {
             Triggers = [Github.Triggers.PullIntoMain],

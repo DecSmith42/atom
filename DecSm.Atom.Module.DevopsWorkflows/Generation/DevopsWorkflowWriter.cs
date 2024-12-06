@@ -507,6 +507,18 @@ internal sealed partial class DevopsWorkflowWriter(
 
             var env = new Dictionary<string, string>();
 
+            foreach (var githubManualTrigger in workflow.Triggers.OfType<DevopsManualTrigger>())
+            {
+                if (githubManualTrigger.Inputs is null or [])
+                    continue;
+
+                foreach (var input in githubManualTrigger.Inputs.Where(i => target
+                             .RequiredParams
+                             .Select(p => buildDefinition.ParamDefinitions[p].Attribute.ArgName)
+                             .Any(p => p == i.Name)))
+                    env[input.Name] = $"${{{{ parameters.{input.Name} }}}}";
+            }
+
             foreach (var consumedVariable in target.ConsumedVariables)
                 env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
                     $"$({buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName})";

@@ -1,4 +1,4 @@
-﻿namespace Atom.Targets;
+﻿namespace Atom.Targets.Test;
 
 [TargetDefinition]
 internal partial interface ITestPrivateNugetRestore
