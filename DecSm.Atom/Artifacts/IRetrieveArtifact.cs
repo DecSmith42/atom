@@ -16,6 +16,7 @@ public partial interface IRetrieveArtifact : IArtifactHelper
             var artifactProvider = GetService<IArtifactProvider>();
 
             targetDefinition.IsHidden();
+            targetDefinition.WithDescription("Retrieves artifacts.");
 
             targetDefinition.ConsumesVariable(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId));
 

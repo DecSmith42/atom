@@ -16,6 +16,7 @@ public partial interface IStoreArtifact : IArtifactHelper
             var artifactProvider = GetService<IArtifactProvider>();
 
             targetDefinition.IsHidden();
+            targetDefinition.WithDescription("Stores artifacts.");
 
             targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
 

@@ -8,12 +8,14 @@ internal partial interface ITestPrivateNugetRestore
     ProcessRunner ProcessRunner => Services.GetRequiredService<ProcessRunner>();
 
     Target TestPrivateNugetRestore =>
-        d => d.Executes(async () =>
-        {
-            var runResult = await ProcessRunner.RunAsync(new("dotnet",
-                $"run --project {FileSystem.AtomRootDirectory}/{PrivateTestLibTesterProjectName}/{PrivateTestLibTesterProjectName}.csproj"));
+        d => d
+            .WithDescription("Restores the PrivateTestLibTester nuget package.")
+            .Executes(async () =>
+            {
+                var runResult = await ProcessRunner.RunAsync(new("dotnet",
+                    $"run --project {FileSystem.AtomRootDirectory}/{PrivateTestLibTesterProjectName}/{PrivateTestLibTesterProjectName}.csproj"));
 
-            if (runResult.ExitCode is not 0)
-                throw new($"Failed to run {PrivateTestLibTesterProjectName} package. Exit code: {runResult.ExitCode}");
-        });
+                if (runResult.ExitCode is not 0)
+                    throw new($"Failed to run {PrivateTestLibTesterProjectName} package. Exit code: {runResult.ExitCode}");
+            });
 }
