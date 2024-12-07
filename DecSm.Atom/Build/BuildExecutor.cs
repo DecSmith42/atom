@@ -46,6 +46,9 @@ internal sealed class BuildExecutor(
             {
                 logger.LogError(ex, "An error occurred while reporting run outcome");
             }
+
+        if (buildModel.TargetStates.Values.Any(state => state.Status is TargetRunState.Failed or TargetRunState.NotRun))
+            throw new StepFailedException("Build failed");
     }
 
     private void ValidateTargetParameters(TargetModel target)
