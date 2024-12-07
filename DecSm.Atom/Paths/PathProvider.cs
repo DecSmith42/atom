@@ -8,7 +8,7 @@ public interface IPathProvider
     AbsolutePath? Locate(string key, Func<string, AbsolutePath> locator);
 }
 
-internal sealed class PathProvider : IPathProvider
+public sealed class PathProvider : IPathProvider
 {
     public required Func<string, Func<string, AbsolutePath>, AbsolutePath?> Locator { get; init; }
 
