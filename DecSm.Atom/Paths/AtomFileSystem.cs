@@ -3,7 +3,7 @@
 [PublicAPI]
 public interface IAtomFileSystem : IFileSystem
 {
-    string ProjectName { get; init; }
+    string ProjectName { get; }
 
     public IFileSystem FileSystem { get; }
 
@@ -45,7 +45,8 @@ internal sealed class AtomFileSystem : IAtomFileSystem
 
     public required IReadOnlyList<IPathProvider> PathLocators { private get; init; }
 
-    public required string ProjectName { get; init; }
+    public string ProjectName { get; init; } = Assembly.GetEntryAssembly()!.GetName()
+        .Name!;
 
     public required IFileSystem FileSystem { get; init; }
 
@@ -92,7 +93,7 @@ internal sealed class AtomFileSystem : IAtomFileSystem
 
             if (FileSystem
                 .Directory
-                .EnumerateDirectories(currentDir, "_atom", SearchOption.TopDirectoryOnly)
+                .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
                 .Any())
                 return currentDir;
 

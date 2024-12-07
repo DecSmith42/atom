@@ -17,15 +17,14 @@ public static class HostExtensions
 
         builder
             .Services
+            .AddKeyedSingleton<IFileSystem>("RootFileSystem", new FileSystem())
             .AddSingleton<IAtomFileSystem>(x => new AtomFileSystem
             {
-                FileSystem = new FileSystem(),
+                FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
                 PathLocators = x
                     .GetServices<IPathProvider>()
                     .OrderByDescending(l => l.Priority)
                     .ToList(),
-                ProjectName = x.GetRequiredService<CommandLineArgs>()
-                    .ProjectName,
             })
             .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
 

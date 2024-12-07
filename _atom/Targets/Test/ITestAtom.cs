@@ -3,11 +3,11 @@
 [TargetDefinition]
 internal partial interface ITestAtom : IDotnetTestHelper
 {
-    public const string AtomUnitTestsProjectName = "DecSm.Atom.Tests";
+    public const string AtomTestsProjectName = "DecSm.Atom.Tests";
 
     Target TestAtom =>
         d => d
-            .WithDescription("Runs the DecSm.Atom.Tests unit tests project")
-            .ProducesArtifact(AtomUnitTestsProjectName)
-            .Executes(() => RunDotnetUnitTests(new(AtomUnitTestsProjectName)));
+            .WithDescription("Runs the DecSm.Atom.Tests project")
+            .ProducesArtifact(AtomTestsProjectName)
+            .Executes(() => RunDotnetUnitTests(new(AtomTestsProjectName)));
 }
