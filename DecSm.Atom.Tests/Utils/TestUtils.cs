@@ -6,6 +6,8 @@ public static class TestUtils
         TestConsole? console = null,
         MockFileSystem? fileSystem = null,
         CommandLineArgs? commandLineArgs = null,
+        TestBuildIdProvider? buildIdProvider = null,
+        TestBuildVersionProvider? buildVersionProvider = null,
         Action<HostApplicationBuilder>? configure = null)
         where T : BuildDefinition
     {
@@ -29,9 +31,15 @@ public static class TestUtils
 
         commandLineArgs ??= new(true, []);
 
+        buildIdProvider ??= new();
+
+        buildVersionProvider ??= new();
+
         builder.Services.AddSingleton<IAnsiConsole>(console);
         builder.Services.AddKeyedSingleton<IFileSystem>("RootFileSystem", fileSystem);
         builder.Services.AddSingleton(commandLineArgs);
+        builder.Services.AddSingleton(buildIdProvider);
+        builder.Services.AddSingleton(buildVersionProvider);
 
         configure?.Invoke(builder);
 
