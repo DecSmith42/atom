@@ -7,11 +7,11 @@ on:
 
 jobs:
   
-  Setup:
+  SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
-      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
-      atom-build-version: ${{ steps.Setup.outputs.atom-build-version }}
+      atom-build-id: ${{ steps.SetupBuildInfo.outputs.atom-build-id }}
+      atom-build-version: ${{ steps.SetupBuildInfo.outputs.atom-build-version }}
     steps:
       
       - name: Checkout
@@ -19,14 +19,14 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup
-        id: Setup
-        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+      - name: SetupBuildInfo
+        id: SetupBuildInfo
+        run: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         env:
           nuget-dry-run: true
   
   PackAtom:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -44,7 +44,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -53,7 +53,7 @@ jobs:
           atom-artifacts: DecSm.Atom
   
   PackAtomTool:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -71,7 +71,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -80,7 +80,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Tool
   
   PackAzureKeyVaultModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -98,7 +98,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -107,7 +107,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.AzureKeyVault
   
   PackAzureStorageModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -125,7 +125,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -134,7 +134,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.AzureStorage
   
   PackDevopsWorkflowsModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -152,7 +152,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -161,7 +161,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.DevopsWorkflows
   
   PackDotnetModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -179,7 +179,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -188,7 +188,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.Dotnet
   
   PackGithubWorkflowsModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -206,7 +206,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -215,7 +215,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.GithubWorkflows
   
   PackGitVersionModule:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -233,7 +233,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -242,7 +242,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.GitVersion
   
   TestAtom:
-    needs: [ Setup ]
+    needs: [ SetupBuildInfo ]
     strategy:
       matrix:
         job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -265,7 +265,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -275,7 +275,7 @@ jobs:
           matrix-slice: ${{ matrix.job-runs-on }}
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, Setup ]
+    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -287,7 +287,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.Setup.outputs.atom-build-id }}
+          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
