@@ -17,7 +17,7 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Reports;
-global using DecSm.Atom.Tests.BuildTests.Builds;
+global using DecSm.Atom.Tests.BuildTests.Core;
 global using DecSm.Atom.Tests.Utils;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;

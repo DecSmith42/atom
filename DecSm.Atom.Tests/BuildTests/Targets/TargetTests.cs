@@ -46,4 +46,118 @@ public class TargetTests
         // Assert
         executed.ShouldBeFalse();
     }
+
+    [Test]
+    public void TestDependencyTargetBuild_WithFirstTargetArg_ExecutesFirstTargetOnly()
+    {
+        // Arrange
+        var host = CreateTestHost<DependencyTargetBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IDependencyTarget1.DependencyTarget1))]));
+
+        var build = (DependencyTargetBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        build.DependencyTarget1Executed.ShouldBeTrue();
+        build.DependencyTarget2Executed.ShouldBeFalse();
+    }
+
+    [Test]
+    public void TestDependencyTargetBuild_WithSecondTargetArg_ExecutesBothTargets()
+    {
+        // Arrange
+        var host = CreateTestHost<DependencyTargetBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IDependencyTarget2.DependencyTarget2))]));
+
+        var build = (DependencyTargetBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        build.DependencyTarget1Executed.ShouldBeTrue();
+        build.DependencyTarget2Executed.ShouldBeTrue();
+    }
+
+    [Test]
+    public void TestDependencyTargetBuild_WithSecondTargetArg_AndFirstTargetFail_DoesNotExecuteSecondTarget()
+    {
+        // Arrange
+        var host = CreateTestHost<DependencyTargetBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IDependencyFailTarget2.DependencyFailTarget2))]));
+
+        var build = (DependencyTargetBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        build.DependencyTarget1Executed.ShouldBeFalse();
+        build.DependencyTarget2Executed.ShouldBeFalse();
+        build.DependencyFailTarget1Executed.ShouldBeTrue();
+        build.DependencyFailTarget2Executed.ShouldBeFalse();
+    }
+
+    [Test]
+    public void TestCircularDependency1TargetBuild_Throws_Exception()
+    {
+        // Arrange
+        var host = CreateTestHost<CircularTargetDependencyBuild>();
+        var buildDefinition = (CircularTargetDependencyBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act / Assert
+        Should.Throw<Exception>(() => host.RunAsync(), TimeSpan.FromSeconds(5));
+        buildDefinition.CircularTarget1Executed.ShouldBeFalse();
+        buildDefinition.CircularTarget2Executed.ShouldBeFalse();
+    }
+
+    [Test]
+    public void TestCircularDependency2TargetBuild_Throws_Exception()
+    {
+        // Arrange
+        var host = CreateTestHost<CircularTargetDependencyBuild2>();
+        var buildDefinition = (CircularTargetDependencyBuild2)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act / Assert
+        Should.Throw<Exception>(() => host.RunAsync(), TimeSpan.FromSeconds(5));
+        buildDefinition.CircularTarget3Executed.ShouldBeFalse();
+        buildDefinition.CircularTarget4Executed.ShouldBeFalse();
+        buildDefinition.CircularTarget5Executed.ShouldBeFalse();
+    }
+
+    [Test]
+    public void Target_Extension_ExecutesBaseTarget()
+    {
+        // Arrange
+        var host = CreateTestHost<ExtensionTargetBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IExtendedExtensionTarget.ExtendedExtensionTarget))]));
+
+        var build = (ExtensionTargetBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        build.BaseExtensionTargetExecuted.ShouldBeTrue();
+        build.ExtendedExtensionTargetExecuted.ShouldBeTrue();
+    }
+
+    [Test]
+    public void Target_Override_ExecutesOverrideTarget()
+    {
+        // Arrange
+        var host = CreateTestHost<TargetOverrideBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IBaseOverrideTarget.OverrideTarget))]));
+
+        var build = (TargetOverrideBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        build.BaseOverrideTargetExecuted.ShouldBeFalse();
+        build.OverrideOverrideTargetExecuted.ShouldBeTrue();
+    }
 }

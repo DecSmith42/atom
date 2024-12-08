@@ -1,16 +1,16 @@
-﻿namespace DecSm.Atom.Tests.BuildTests.BuildModel;
+﻿namespace DecSm.Atom.Tests.BuildTests.Core;
 
 [TestFixture]
-public class BuildModelTests
+public class CoreTests
 {
     [Test]
-    public void BuildModel_MinimalDefinition_IsEmpty()
+    public void MinimalDefinition_IsEmpty()
     {
         // Arrange
         var host = CreateTestHost<MinimalAtomBuild>();
 
         // Act
-        var buildModel = host.Services.GetRequiredService<Build.Model.BuildModel>();
+        var buildModel = host.Services.GetRequiredService<BuildModel>();
 
         // Assert
         buildModel.ShouldSatisfyAllConditions(b => b.Targets.ShouldBeEmpty(),
@@ -19,13 +19,13 @@ public class BuildModelTests
     }
 
     [Test]
-    public async Task BuildModel_DefaultBuildDefinition_HasDefaultTargets()
+    public async Task DefaultBuildDefinition_HasDefaultTargets()
     {
         // Arrange
         var host = CreateTestHost<DefaultAtomBuild>();
 
         // Act
-        var buildModel = host.Services.GetRequiredService<Build.Model.BuildModel>();
+        var buildModel = host.Services.GetRequiredService<BuildModel>();
 
         // Assert
         await Verify(buildModel);

@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Tests.BuildTests.Builds;
+﻿namespace DecSm.Atom.Tests.BuildTests.Core;
 
 [BuildDefinition]
 public partial class TestTargetAtomBuild : BuildDefinition, ITestTarget
