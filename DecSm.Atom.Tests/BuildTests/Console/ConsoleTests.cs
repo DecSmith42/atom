@@ -4,36 +4,30 @@
 public class ConsoleTests
 {
     [Test]
-    public void Minimal_BuildDefinition_Displays_DefaultConsoleMessage()
+    public async Task MinimalBuildDefinition_Displays_DefaultConsoleMessage()
     {
         // Arrange
         var testConsole = new TestConsole();
         var host = CreateTestHost<MinimalAtomBuild>(testConsole);
 
         // Act
-        host.Run();
+        await host.RunAsync();
 
         // Assert
-        testConsole.Output.ShouldBe("""
+        await Verify(testConsole.Output);
+    }
 
-                                    Usage
+    [Test]
+    public async Task DefaultBuildDefinition_Displays_DefaultConsoleMessage()
+    {
+        // Arrange
+        var testConsole = new TestConsole();
+        var host = CreateTestHost<DefaultAtomBuild>(testConsole);
 
-                                    atom [options]
-                                    atom [command/s] [parameters] [options]
+        // Act
+        await host.RunAsync();
 
-                                    Options
-                                    
-                                      -h,  --help      Show help
-                                      -g,  --gen       Generate build script
-                                      -s,  --skip      Skip dependency execution
-                                      -hl, --headless  Run in headless mode
-                                      -v,  --verbose   Show verbose output
-
-                                    Atom Commands
-
-                                    ValidateBuild | Checks the atom build for common issues.
-
-
-                                    """.Replace("\r\n", "\n"));
+        // Assert
+        await Verify(testConsole.Output);
     }
 }

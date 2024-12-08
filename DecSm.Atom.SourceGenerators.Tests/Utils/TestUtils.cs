@@ -1,6 +1,4 @@
-﻿using Basic.Reference.Assemblies;
-
-namespace DecSm.Atom.SourceGenerators.Tests;
+﻿namespace DecSm.Atom.SourceGenerators.Tests.Utils;
 
 public static class TestUtils
 {

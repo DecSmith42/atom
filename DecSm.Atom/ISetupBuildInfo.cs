@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public partial interface ISetup
+public partial interface ISetupBuildInfo
 {
     [ParamDefinition("atom-build-id", "Build/run ID")]
     string AtomBuildId => GetParam(() => AtomBuildId)!;
@@ -13,9 +13,9 @@ public partial interface ISetup
 
     IBuildVersionProvider BuildVersionProvider => GetService<IBuildVersionProvider>();
 
-    Target Setup =>
+    Target SetupBuildInfo =>
         d => d
-            .WithDescription("Sets up the build")
+            .WithDescription("Sets up the build ID and version")
             .IsHidden()
             .RequiresParam(AtomBuildName)
             .ProducesVariable(nameof(AtomBuildId))
@@ -39,11 +39,11 @@ public partial interface ISetup
                 });
 
                 Services
-                    .GetRequiredService<ILogger<ISetup>>()
+                    .GetRequiredService<ILogger<ISetupBuildInfo>>()
                     .LogInformation("Build ID: {BuildId}", buildId);
 
                 Services
-                    .GetRequiredService<ILogger<ISetup>>()
+                    .GetRequiredService<ILogger<ISetupBuildInfo>>()
                     .LogInformation("Build Version: {BuildVersion}", buildVersion);
             });
 }
