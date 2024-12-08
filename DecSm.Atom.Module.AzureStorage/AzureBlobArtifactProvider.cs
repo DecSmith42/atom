@@ -26,7 +26,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
@@ -86,7 +86,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
@@ -155,7 +155,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
@@ -226,7 +226,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         foreach (var buildId in buildIds)
@@ -251,7 +251,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetup.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         if (artifactName is { Length: > 0 })

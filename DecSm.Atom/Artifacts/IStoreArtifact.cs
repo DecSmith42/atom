@@ -18,7 +18,7 @@ public partial interface IStoreArtifact : IArtifactHelper
             targetDefinition.IsHidden();
             targetDefinition.WithDescription("Stores artifacts.");
 
-            targetDefinition.ConsumedVariables.Add(new(nameof(ISetup.Setup), nameof(ISetup.AtomBuildId)));
+            targetDefinition.ConsumedVariables.Add(new(nameof(ISetupBuildInfo.SetupBuildInfo), nameof(ISetupBuildInfo.AtomBuildId)));
 
             targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
             targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
