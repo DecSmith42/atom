@@ -22,8 +22,8 @@ partial class MinimalTestDefinition
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
     {
-        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name", (DecSm.Atom.Params.ParamSource)63)) },
-        { "MatrixSlice", new("MatrixSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("matrix-slice", "Unique identifier for the combination of matrix parameters for this job", null, (DecSm.Atom.Params.ParamSource)63)) },
+        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name", (DecSm.Atom.Params.ParamSource)47)) },
+        { "MatrixSlice", new("MatrixSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("matrix-slice", "Unique identifier for the combination of matrix parameters for this job", null, (DecSm.Atom.Params.ParamSource)47)) },
     };
 
     public static class Commands

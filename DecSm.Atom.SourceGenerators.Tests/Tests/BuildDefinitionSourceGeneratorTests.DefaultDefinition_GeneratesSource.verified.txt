@@ -23,10 +23,10 @@ partial class DefaultTestDefinition
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
     {
-        { "AtomBuildId", new("AtomBuildId", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-id", "Build/run ID", null, (DecSm.Atom.Params.ParamSource)63)) },
-        { "AtomBuildVersion", new("AtomBuildVersion", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-version", "Build version", null, (DecSm.Atom.Params.ParamSource)63)) },
-        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name", (DecSm.Atom.Params.ParamSource)63)) },
-        { "MatrixSlice", new("MatrixSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("matrix-slice", "Unique identifier for the combination of matrix parameters for this job", null, (DecSm.Atom.Params.ParamSource)63)) },
+        { "AtomBuildId", new("AtomBuildId", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-id", "Build/run ID", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "AtomBuildVersion", new("AtomBuildVersion", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-version", "Build version", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name", (DecSm.Atom.Params.ParamSource)47)) },
+        { "MatrixSlice", new("MatrixSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("matrix-slice", "Unique identifier for the combination of matrix parameters for this job", null, (DecSm.Atom.Params.ParamSource)47)) },
     };
 
     public static class Commands
@@ -52,6 +52,9 @@ partial class DefaultTestDefinition
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.ISetupBuildInfo>(services, static p => (DecSm.Atom.ISetupBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
 
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IValidateBuild>(services, static p => (DecSm.Atom.IValidateBuild)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.Vaults.IUserSecretsVault>(services, static p => (DecSm.Atom.Vaults.IUserSecretsVault)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        RegisterTarget<DecSm.Atom.Vaults.IUserSecretsVault>(services);
     }
 
     private static void RegisterTarget<T>(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
