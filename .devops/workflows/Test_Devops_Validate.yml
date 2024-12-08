@@ -133,3 +133,9 @@ jobs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+        inputs:
+          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
+      
