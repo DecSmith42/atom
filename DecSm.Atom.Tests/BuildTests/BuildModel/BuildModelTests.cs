@@ -17,4 +17,17 @@ public class BuildModelTests
             b => b.TargetStates.ShouldBeEmpty(),
             b => b.CurrentTarget.ShouldBeNull());
     }
+
+    [Test]
+    public async Task BuildModel_DefaultBuildDefinition_HasDefaultTargets()
+    {
+        // Arrange
+        var host = CreateTestHost<DefaultAtomBuild>();
+
+        // Act
+        var buildModel = host.Services.GetRequiredService<Build.Model.BuildModel>();
+
+        // Assert
+        await Verify(buildModel);
+    }
 }

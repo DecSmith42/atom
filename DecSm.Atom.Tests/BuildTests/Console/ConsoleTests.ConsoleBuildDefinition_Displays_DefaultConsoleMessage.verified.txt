@@ -1,0 +1,28 @@
+﻿
+Usage
+
+atom [options]
+atom [command/s] [parameters] [options]
+
+Options
+
+  -h,  --help      Show help
+  -g,  --gen       Generate build script
+  -s,  --skip      Skip dependency execution
+  -hl, --headless  Run in headless mode
+  -v,  --verbose   Show verbose output
+
+Atom Commands
+
+ValidateBuild | Checks the atom build for common issues.
+
+Project Commands
+
+ConsoleTarget | Console target
+├── Requires
+│   └── --required-param | Required param
+├── Options
+│   └── --default-param | Default param
+└── Secrets
+    └── --secret-param | Secret param
+
