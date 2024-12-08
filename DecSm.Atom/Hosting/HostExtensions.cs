@@ -14,6 +14,7 @@ public static class HostExtensions
 
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
+        builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) => AnsiConsole.Console);
 
         builder
             .Services
@@ -28,7 +29,6 @@ public static class HostExtensions
             })
             .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
 
-        builder.Services.AddSingleton<IAnsiConsole>(_ => AnsiConsole.Console);
         builder.Services.AddSingleton<BuildExecutor>();
         builder.Services.AddSingleton<WorkflowGenerator>();
         builder.Services.AddSingleton<ProcessRunner>();
