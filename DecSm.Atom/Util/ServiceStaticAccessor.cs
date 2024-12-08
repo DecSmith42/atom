@@ -21,7 +21,14 @@ internal static class ServiceAccessorExtensions
         where TService : class
         where TImplementation : class, TService =>
         services
-            .AddKeyedSingleton<TImplementation>("StaticAccess")
-            .AddSingleton<TService>(x =>
-                ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TImplementation>("StaticAccess"));
+            .AddKeyedSingleton<TService, TImplementation>("StaticAccess")
+            .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+
+    public static void AddSingletonWithStaticAccessor<TService>(
+        this IServiceCollection services,
+        Func<IServiceProvider, object?, TService> implementationFactory)
+        where TService : class =>
+        services
+            .AddKeyedSingleton("StaticAccess", implementationFactory)
+            .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
 }

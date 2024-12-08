@@ -112,7 +112,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             var columns = new Columns(new Text("                "),
                 new Markup($"[{messageStyle}]{message.EscapeMarkup()}[/]").LeftJustified()).Collapse();
 
-            AnsiConsole.Write(columns);
+            ServiceStaticAccessor<IAnsiConsole>.Service?.Write(columns);
 
             return;
         }
@@ -136,7 +136,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             table.AddRow(string.Empty);
         }
 
-        AnsiConsole.Write(table);
+        ServiceStaticAccessor<IAnsiConsole>.Service?.Write(table);
     }
 
     [GeneratedRegex("error|exception|fail", RegexOptions.IgnoreCase, "en-AU")]

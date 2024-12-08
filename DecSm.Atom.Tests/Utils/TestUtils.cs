@@ -35,7 +35,7 @@ public static class TestUtils
 
         buildVersionProvider ??= new();
 
-        builder.Services.AddSingleton<IAnsiConsole>(console);
+        builder.Services.AddKeyedSingleton<IAnsiConsole>("StaticAccess", console);
         builder.Services.AddKeyedSingleton<IFileSystem>("RootFileSystem", fileSystem);
         builder.Services.AddSingleton(commandLineArgs);
         builder.Services.AddSingleton(buildIdProvider);
