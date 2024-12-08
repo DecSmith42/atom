@@ -14,15 +14,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomRootDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\Atom\_atom");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/Atom/_atom");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\Atom\_atom"
+                : "/Atom/_atom");
     }
 
     [Test]
@@ -35,11 +31,9 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Root
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        #if Win32NT
-                        .CreateAbsolutePath(@"C:\CustomAtomRoot")
-                        #else
-                        .CreateAbsolutePath(@"/CustomAtomRoot")
-                        #endif
+                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                            ? @"C:\CustomAtomRoot"
+                            : "/CustomAtomRoot")
                     : null,
                 Priority = 0,
             }));
@@ -49,15 +43,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomRootDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\CustomAtomRoot");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/CustomAtomRoot");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\CustomAtomRoot"
+                : "/CustomAtomRoot");
     }
 
     [Test]
@@ -71,15 +61,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomArtifactsDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\Atom\_atom\atom-publish");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/Atom/_atom/atom-publish");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\Atom\_atom\atom-publish"
+                : "/Atom/_atom/atom-publish");
     }
 
     [Test]
@@ -92,11 +78,9 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Artifacts
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        #if Win32NT
-                        .CreateAbsolutePath(@"C:\CustomAtomArtifacts")
-                        #else
-                        .CreateAbsolutePath(@"/CustomAtomArtifacts")
-                        #endif
+                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                            ? @"C:\CustomAtomArtifacts"
+                            : "/CustomAtomArtifacts")
                     : null,
                 Priority = 0,
             }));
@@ -106,15 +90,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomArtifactsDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\CustomAtomArtifacts");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/CustomAtomArtifacts");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\CustomAtomArtifacts"
+                : "/CustomAtomArtifacts");
     }
 
     [Test]
@@ -128,15 +108,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomPublishDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\Atom\_atom\atom-publish");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/Atom/_atom/atom-publish");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\Atom\_atom\atom-publish"
+                : "/Atom/_atom/atom-publish");
     }
 
     [Test]
@@ -149,11 +125,9 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Publish
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        #if Win32NT
-                        .CreateAbsolutePath(@"C:\CustomAtomPublish")
-                        #else
-                        .CreateAbsolutePath(@"/CustomAtomPublish")
-                        #endif
+                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                            ? @"C:\CustomAtomPublish"
+                            : "/CustomAtomPublish")
                     : null,
                 Priority = 0,
             }));
@@ -163,15 +137,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomPublishDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\CustomAtomPublish");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/CustomAtomPublish");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\CustomAtomPublish"
+                : "/CustomAtomPublish");
     }
 
     [Test]
@@ -185,15 +155,11 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomTempDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\temp");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/temp");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\temp"
+                : "/temp");
     }
 
     [Test]
@@ -206,11 +172,9 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Temp
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        #if Win32NT
-                        .CreateAbsolutePath(@"C:\CustomAtomTemp")
-                        #else
-                        .CreateAbsolutePath(@"/CustomAtomTemp")
-                        #endif
+                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                            ? @"C:\CustomAtomTemp"
+                            : "/CustomAtomTemp")
                     : null,
                 Priority = 0,
             }));
@@ -220,14 +184,10 @@ public sealed class FileSystemTests
         var atomRootDirectory = atomFileSystem.AtomTempDirectory;
 
         // Assert
-        #if Win32NT
         atomRootDirectory
             .ToString()
-            .ShouldBe(@"C:\CustomAtomTemp");
-        #else
-        atomRootDirectory
-            .ToString()
-            .ShouldBe(@"/CustomAtomTemp");
-        #endif
+            .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
+                ? @"C:\CustomAtomTemp"
+                : "/CustomAtomTemp");
     }
 }

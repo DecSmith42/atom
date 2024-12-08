@@ -6,6 +6,8 @@ public static class TestUtils
         TestConsole? console = null,
         MockFileSystem? fileSystem = null,
         CommandLineArgs? commandLineArgs = null,
+        TestBuildIdProvider? buildIdProvider = null,
+        TestBuildVersionProvider? buildVersionProvider = null,
         Action<HostApplicationBuilder>? configure = null)
         where T : BuildDefinition
     {
@@ -13,27 +15,31 @@ public static class TestUtils
 
         console ??= new();
 
-        #if Win32NT
-        fileSystem ??= new(new Dictionary<string, MockFileData>
-            {
-                { @$"C:\Atom\Atom.sln", new(string.Empty) },
-                { @$"C:\Atom\_atom\_atom.csproj", new(string.Empty) },
-            },
-            @$"C:\Atom\_atom");
-        #else
-        fileSystem ??= new(new Dictionary<string, MockFileData>
-            {
-                { @"/Atom/Atom.sln", new(string.Empty) },
-                { @"/Atom/_atom/_atom.csproj", new(string.Empty) },
-            },
-            @"/Atom/_atom");
-        #endif
+        fileSystem ??= Environment.OSVersion.Platform is PlatformID.Win32NT
+            ? new(new Dictionary<string, MockFileData>
+                {
+                    { @"C:\Atom\Atom.sln", new(string.Empty) },
+                    { @"C:\Atom\_atom\_atom.csproj", new(string.Empty) },
+                },
+                @"C:\Atom\_atom")
+            : new(new Dictionary<string, MockFileData>
+                {
+                    { "/Atom/Atom.sln", new(string.Empty) },
+                    { "/Atom/_atom/_atom.csproj", new(string.Empty) },
+                },
+                "/Atom/_atom");
 
         commandLineArgs ??= new(true, []);
+
+        buildIdProvider ??= new();
+
+        buildVersionProvider ??= new();
 
         builder.Services.AddSingleton<IAnsiConsole>(console);
         builder.Services.AddKeyedSingleton<IFileSystem>("RootFileSystem", fileSystem);
         builder.Services.AddSingleton(commandLineArgs);
+        builder.Services.AddSingleton(buildIdProvider);
+        builder.Services.AddSingleton(buildVersionProvider);
 
         configure?.Invoke(builder);
 
