@@ -1,0 +1,24 @@
+﻿[
+  {
+    Name: workflow-1,
+    Triggers: [
+      {}
+    ],
+    Options: [
+      {
+        AllowMultiple: false
+      }
+    ],
+    Jobs: [
+      {
+        Name: WorkflowSingleTarget,
+        Steps: [
+          {
+            Name: WorkflowSingleTarget,
+            SuppressArtifactPublishing: false
+          }
+        ]
+      }
+    ]
+  }
+]
