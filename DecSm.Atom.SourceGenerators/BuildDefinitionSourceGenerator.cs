@@ -15,6 +15,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .SyntaxProvider
                 .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is ClassDeclarationSyntax,
                     static (context, _) => GetClassDeclaration(context))
+                .WithTrackingName("BuildDefinitionSourceGenerator")
                 .Where(static declarationResult => declarationResult.HasAttribute)
                 .Select(static (declarationResult, _) => declarationResult.Declaration)
                 .Collect()),
@@ -155,8 +156,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .Select(static a => a.Kind is TypedConstantKind.Enum
                         ? $"({a.Type!.ToDisplayString()}){a.Value}"
                         : a.Value is string s
-                        ? $"\"{s}\""
-                        : a.Value)
+                            ? $"\"{s}\""
+                            : a.Value)
                     .Select(static a => a ?? "null")
                     .Aggregate(static (a, b) => $"{a}, {b}"),
             })

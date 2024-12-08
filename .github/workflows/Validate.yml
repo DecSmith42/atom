@@ -165,3 +165,9 @@ jobs:
           name: DecSm.Atom.Tests-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
+      - name: Upload DecSm.Atom.SourceGenerators.Tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.SourceGenerators.Tests-${{ matrix.job-runs-on }}
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators.Tests"
+      
