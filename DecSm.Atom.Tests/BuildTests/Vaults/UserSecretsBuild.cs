@@ -1,13 +1,13 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Vaults;
 
 [BuildDefinition]
-public class UserSecretsBuild : BuildDefinition, IUserSecretsTarget, IUserSecretsVault
+public partial class UserSecretsBuild : BuildDefinition, IUserSecretsTarget, IUserSecretsVault
 {
     public string? ExecutionValue { get; set; }
 }
 
 [TargetDefinition]
-public interface IUserSecretsTarget
+public partial interface IUserSecretsTarget
 {
     [SecretDefinition("secret-1", "Secret 1")]
     string? Secret1 => GetParam(() => Secret1);
