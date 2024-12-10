@@ -2,5 +2,5 @@
 
 public class TestBuildIdProvider : IBuildIdProvider
 {
-    public string? BuildId { get; set; }
+    public string BuildId { get; set; } = "12345678";
 }

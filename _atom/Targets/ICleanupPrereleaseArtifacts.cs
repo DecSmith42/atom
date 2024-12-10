@@ -19,7 +19,7 @@ internal partial interface ICleanupPrereleaseArtifacts
                 }
 
                 var knownBuildIds = await GetService<IArtifactProvider>()
-                    .GetStoredBuildIds();
+                    .GetStoredRunIdentifiers();
 
                 var knownVersions = knownBuildIds
                     .Select(static x => SemVer.TryParse(x, out var semVer)

@@ -1,36 +1,36 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public partial interface ISetupBuildInfo
+public partial interface ISetupBuildInfo : IBuildInfo
 {
-    [ParamDefinition("atom-build-id", "Build/run ID")]
-    string AtomBuildId => GetParam(() => AtomBuildId)!;
-
-    [ParamDefinition("atom-build-version", "Build version")]
-    string AtomBuildVersion => GetParam(() => AtomBuildVersion)!;
-
     IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
 
     IBuildVersionProvider BuildVersionProvider => GetService<IBuildVersionProvider>();
 
+    IBuildTimestampProvider BuildTimestampProvider => GetService<IBuildTimestampProvider>();
+
     Target SetupBuildInfo =>
         d => d
-            .WithDescription("Sets up the build ID and version")
+            .WithDescription("Sets up the build ID, version, and timestamp")
             .IsHidden()
             .RequiresParam(AtomBuildName)
-            .ProducesVariable(nameof(AtomBuildId))
-            .ProducesVariable(nameof(AtomBuildVersion))
+            .ProducesVariable(nameof(BuildId))
+            .ProducesVariable(nameof(BuildVersion))
+            .ProducesVariable(nameof(BuildTimestamp))
             .Executes(async () =>
             {
-                var buildId = BuildIdProvider.BuildId ?? throw new StepFailedException("A build ID must be provided");
-                await WriteVariable(nameof(AtomBuildId), buildId);
+                var buildId = BuildIdProvider.BuildId;
+                await WriteVariable(nameof(BuildId), buildId);
 
                 var buildVersion = BuildVersionProvider.Version;
-                await WriteVariable(nameof(AtomBuildVersion), buildVersion);
+                await WriteVariable(nameof(BuildVersion), buildVersion);
+
+                var buildTimestamp = BuildTimestampProvider.Timestamp;
+                await WriteVariable(nameof(BuildTimestamp), buildTimestamp.ToString());
 
                 var reportedBuildId = buildId == buildVersion
                     ? buildId
-                    : $"{buildVersion} - {buildId}";
+                    : $"{buildVersion} - {buildId} [{buildTimestamp}]";
 
                 AddReportData(new TextReportData($"{AtomBuildName} | {reportedBuildId}")
                 {
@@ -38,12 +38,10 @@ public partial interface ISetupBuildInfo
                     BeforeStandardData = true,
                 });
 
-                Services
-                    .GetRequiredService<ILogger<ISetupBuildInfo>>()
-                    .LogInformation("Build ID: {BuildId}", buildId);
+                var logger = Services.GetRequiredService<ILogger<ISetupBuildInfo>>();
 
-                Services
-                    .GetRequiredService<ILogger<ISetupBuildInfo>>()
-                    .LogInformation("Build Version: {BuildVersion}", buildVersion);
+                logger.LogInformation("Build ID: {BuildId}", buildId);
+                logger.LogInformation("Build Version: {BuildVersion}", buildVersion);
+                logger.LogInformation("Build Timestamp: {BuildTimestamp}", buildTimestamp);
             });
 }

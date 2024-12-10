@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.ClassTests.Build;
 
 [TestFixture]
-public class AtomBuildVersionProviderTests
+public class DefaultBuildVersionProviderTests
 {
     private static readonly string OsAgnosticRoot = OperatingSystem.IsWindows()
         ? @"C:\Solution"
@@ -43,7 +43,7 @@ public class AtomBuildVersionProviderTests
             },
             OsAgnosticRoot));
 
-        var provider = new AtomBuildVersionProvider(fileSystem);
+        var provider = new DefaultBuildVersionProvider(fileSystem);
 
         // Act
         var version = provider.Version;
@@ -69,7 +69,7 @@ public class AtomBuildVersionProviderTests
             },
             OsAgnosticRoot));
 
-        var provider = new AtomBuildVersionProvider(fileSystem);
+        var provider = new DefaultBuildVersionProvider(fileSystem);
 
         // Act
         void Act()

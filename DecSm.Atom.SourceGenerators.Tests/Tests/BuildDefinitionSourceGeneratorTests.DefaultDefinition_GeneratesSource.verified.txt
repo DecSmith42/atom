@@ -23,10 +23,11 @@ partial class DefaultTestDefinition
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
     {
-        { "AtomBuildId", new("AtomBuildId", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-id", "Build/run ID", null, (DecSm.Atom.Params.ParamSource)47)) },
-        { "AtomBuildVersion", new("AtomBuildVersion", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-version", "Build version", null, (DecSm.Atom.Params.ParamSource)47)) },
-        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("atom-build-name", "Name of the build", "Solution name if provided, otherwise the root directory name", (DecSm.Atom.Params.ParamSource)47)) },
-        { "MatrixSlice", new("MatrixSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("matrix-slice", "Unique identifier for the combination of matrix parameters for this job", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "BuildId", new("BuildId", new DecSm.Atom.Params.ParamDefinitionAttribute("build-id", "Build/run ID", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "BuildVersion", new("BuildVersion", new DecSm.Atom.Params.ParamDefinitionAttribute("build-version", "Build version", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "BuildTimestamp", new("BuildTimestamp", new DecSm.Atom.Params.ParamDefinitionAttribute("build-timestamp", "Build timestamp (seconds since unix epoch)", null, (DecSm.Atom.Params.ParamSource)47)) },
+        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("build-name", "Name of the build", "{Solution name if provided, otherwise the root directory name}", (DecSm.Atom.Params.ParamSource)47)) },
+        { "BuildSlice", new("BuildSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("build-slice", "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs", null, (DecSm.Atom.Params.ParamSource)47)) },
     };
 
     public static class Commands
@@ -38,18 +39,22 @@ partial class DefaultTestDefinition
 
     public static class Params
     {
-        public static string AtomBuildId = "AtomBuildId";
+        public static string BuildId = "BuildId";
 
-        public static string AtomBuildVersion = "AtomBuildVersion";
+        public static string BuildVersion = "BuildVersion";
+
+        public static string BuildTimestamp = "BuildTimestamp";
 
         public static string AtomBuildName = "AtomBuildName";
 
-        public static string MatrixSlice = "MatrixSlice";
+        public static string BuildSlice = "BuildSlice";
     }
 
     static void DecSm.Atom.Build.Definition.IBuildDefinition.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
     {
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.ISetupBuildInfo>(services, static p => (DecSm.Atom.ISetupBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IBuildInfo>(services, static p => (DecSm.Atom.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
 
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IValidateBuild>(services, static p => (DecSm.Atom.IValidateBuild)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
 

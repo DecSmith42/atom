@@ -2,7 +2,7 @@
   Targets: [
     {
       Name: SetupBuildInfo,
-      Description: Sets up the build ID and version,
+      Description: Sets up the build ID, version, and timestamp,
       IsHidden: true,
       Tasks: [
         {
@@ -15,8 +15,9 @@
         AtomBuildName
       ],
       ProducedVariables: [
-        AtomBuildId,
-        AtomBuildVersion
+        BuildId,
+        BuildVersion,
+        BuildTimestamp
       ]
     },
     {
@@ -33,7 +34,7 @@
     }
   ],
   TargetStates: {
-    TargetModel { Name = SetupBuildInfo, Description = Sets up the build ID and version, IsHidden = True, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[System.String], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel] }: {
+    TargetModel { Name = SetupBuildInfo, Description = Sets up the build ID, version, and timestamp, IsHidden = True, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[System.String], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel] }: {
       Name: SetupBuildInfo,
       Status: Skipped
     },
