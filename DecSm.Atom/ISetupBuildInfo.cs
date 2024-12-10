@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface ISetupBuildInfo : IBuildInfo
 {
-    IBuildTimestampProvider BuildIdProvider => GetService<IBuildTimestampProvider>();
+    IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
 
     IBuildVersionProvider BuildVersionProvider => GetService<IBuildVersionProvider>();
 
@@ -19,8 +19,8 @@ public partial interface ISetupBuildInfo : IBuildInfo
             .ProducesVariable(nameof(BuildTimestamp))
             .Executes(async () =>
             {
-                var buildId = BuildIdProvider.Timestamp;
-                await WriteVariable(nameof(BuildId), buildId.ToString());
+                var buildId = BuildIdProvider.BuildId;
+                await WriteVariable(nameof(BuildId), buildId);
 
                 var buildVersion = BuildVersionProvider.Version;
                 await WriteVariable(nameof(BuildVersion), buildVersion);
@@ -28,8 +28,8 @@ public partial interface ISetupBuildInfo : IBuildInfo
                 var buildTimestamp = BuildTimestampProvider.Timestamp;
                 await WriteVariable(nameof(BuildTimestamp), buildTimestamp.ToString());
 
-                var reportedBuildId = (buildId.ToString() == buildVersion)
-                    ? buildId.ToString()
+                var reportedBuildId = buildId == buildVersion
+                    ? buildId
                     : $"{buildVersion} - {buildId} [{buildTimestamp}]";
 
                 AddReportData(new TextReportData($"{AtomBuildName} | {reportedBuildId}")
