@@ -15,11 +15,8 @@ public partial interface IGithubWorkflows : IJobRunsOn
             typeof(GithubVariableProvider),
             ServiceLifetime.Singleton));
 
-        services.AddSingleton<IBuildIdProvider, GithubBuildIdProvider>();
-
         if (Github.IsGithubActions)
             services
-                .AddSingleton<IBuildIdProvider, GithubBuildIdProvider>()
                 .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>()
                 .ProvidePath((key, locator) => Github.IsGithubActions
                     ? key switch

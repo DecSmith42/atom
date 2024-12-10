@@ -23,7 +23,8 @@ internal partial class Build : DefaultBuildDefinition,
     IPushToPrivateNuget,
     ITestPrivateNugetRestore,
     IPublishTester,
-    ITestManualParams
+    ITestManualParams,
+    ITestVault
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -42,7 +43,7 @@ internal partial class Build : DefaultBuildDefinition,
 
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -116,7 +117,9 @@ internal partial class Build : DefaultBuildDefinition,
             Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.SetupBuildInfo, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
+                Commands.SetupBuildInfo,
+                Commands.PackPrivateTestLib,
+                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },

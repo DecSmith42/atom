@@ -10,8 +10,9 @@ jobs:
   SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
-      atom-build-id: ${{ steps.SetupBuildInfo.outputs.atom-build-id }}
-      atom-build-version: ${{ steps.SetupBuildInfo.outputs.atom-build-version }}
+      build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
+      build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
+      build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
     steps:
       
       - name: Checkout
@@ -44,7 +45,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -71,7 +72,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -98,7 +99,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -125,7 +126,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -152,7 +153,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -179,7 +180,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -206,7 +207,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -233,7 +234,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
@@ -260,19 +261,19 @@ jobs:
         env:
           nuget-dry-run: true
           job-runs-on: ${{ matrix.job-runs-on }}
-          matrix-slice: ${{ matrix.job-runs-on }}
+          build-slice: ${{ matrix.job-runs-on }}
       
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
           nuget-dry-run: true
           atom-artifacts: DecSm.Atom.Tests,DecSm.Atom.SourceGenerators.Tests
-          matrix-slice: ${{ matrix.job-runs-on }}
+          build-slice: ${{ matrix.job-runs-on }}
   
   PushToNuget:
     needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
@@ -287,7 +288,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
         env:
-          atom-build-id: ${{ needs.SetupBuildInfo.outputs.atom-build-id }}
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}

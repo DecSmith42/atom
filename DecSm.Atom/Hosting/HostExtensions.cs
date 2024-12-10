@@ -16,6 +16,11 @@ public static class HostExtensions
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
         builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) => AnsiConsole.Console);
 
+        builder.Services.AddSingleton(TimeProvider.System);
+        builder.Services.AddSingleton<IBuildIdProvider, DefaultBuildIdProvider>();
+        builder.Services.AddSingleton<IBuildVersionProvider, DefaultBuildVersionProvider>();
+        builder.Services.AddSingleton<IBuildTimestampProvider, DefaultBuildTimestampProvider>();
+
         builder
             .Services
             .AddKeyedSingleton<IFileSystem>("RootFileSystem", new FileSystem())
@@ -36,8 +41,8 @@ public static class HostExtensions
         builder.Services.AddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
 
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
-        builder.Services.TryAddSingleton<IBuildIdProvider, AtomBuildIdProvider>();
-        builder.Services.TryAddSingleton<IBuildVersionProvider, AtomBuildVersionProvider>();
+        builder.Services.TryAddSingleton<IBuildTimestampProvider, DefaultBuildTimestampProvider>();
+        builder.Services.TryAddSingleton<IBuildVersionProvider, DefaultBuildVersionProvider>();
         builder.Services.TryAddSingleton<CheatsheetService>();
 
         builder.Services.AddSingleton<CommandLineArgsParser>();

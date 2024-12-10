@@ -10,8 +10,9 @@ jobs:
   SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
-      atom-build-id: ${{ steps.SetupBuildInfo.outputs.atom-build-id }}
-      atom-build-version: ${{ steps.SetupBuildInfo.outputs.atom-build-version }}
+      build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
+      build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
+      build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
     steps:
       
       - name: Checkout

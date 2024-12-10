@@ -8,12 +8,12 @@ internal sealed class GitVersionBuildIdProvider(
 {
     private string? _buildId;
 
-    public string? BuildId
+    public string BuildId
     {
         get
         {
-            if (!ProvideGitVersionAsWorkflowId.IsEnabled(IWorkflowOption.GetOptionsForCurrentTarget(buildDefinition)))
-                return null;
+            if (!UseGitVersionForBuildId.IsEnabled(IWorkflowOption.GetOptionsForCurrentTarget(buildDefinition)))
+                throw new InvalidOperationException("GitVersion is not enabled");
 
             if (_buildId is { Length: > 0 })
                 return _buildId;
@@ -35,7 +35,7 @@ internal sealed class GitVersionBuildIdProvider(
         }
     }
 
-    public string GetBuildIdPathPrefix(string buildId)
+    public string GetBuildIdGroup(string buildId)
     {
         if (!SemVer.TryParse(buildId, out var version))
             throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer");

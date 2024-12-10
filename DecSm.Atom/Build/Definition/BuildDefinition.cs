@@ -35,7 +35,7 @@ namespace DecSm.Atom.Build.Definition;
 /// </example>
 /// <param name="services">The service provider used to resolve dependencies.</param>
 [PublicAPI]
-public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinition
+public abstract class BuildDefinition(IServiceProvider services) : IBuildInfo
 {
     /// <summary>
     ///     Gets a dictionary of target definitions, where each target is identified by a unique name.

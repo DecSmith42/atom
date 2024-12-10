@@ -125,7 +125,7 @@ jobs:
         name: TestAtom
         env:
           job-runs-on: $(job-runs-on)
-          matrix-slice: $(job-runs-on)
+          build-slice: $(job-runs-on)
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tests-$(job-runs-on)

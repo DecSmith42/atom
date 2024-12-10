@@ -1,10 +1,9 @@
 ﻿namespace DecSm.Atom.Build;
 
-[PublicAPI]
 public interface IBuildIdProvider
 {
-    string? BuildId { get; }
+    string BuildId { get; }
 
-    string? GetBuildIdPathPrefix(string buildId) =>
+    string? GetBuildIdGroup(string buildId) =>
         null;
 }

@@ -14,24 +14,24 @@ public sealed class AzureBlobArtifactProvider(
         nameof(IAzureArtifactStorage.AzureArtifactStorageContainer), nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
     ];
 
-    public async Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
+    public async Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? slice = null)
     {
         buildId ??= buildIdProvider.BuildId;
 
         if (buildId is null)
-            throw new InvalidOperationException("Build ID is required to upload artifacts");
+            throw new InvalidOperationException("A run identifier is required to upload artifacts");
 
-        var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+        var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
-        var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+        slice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
         logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'",
             artifactNames,
@@ -41,8 +41,8 @@ public sealed class AzureBlobArtifactProvider(
         {
             var publishDir = fileSystem.AtomPublishDirectory / artifactName;
 
-            var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}"
+            var artifactBlobDir = slice is { Length: > 0 }
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{slice}"
                 : $"{buildName}/{buildIdPath}/{artifactName}";
 
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
@@ -74,24 +74,24 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null)
+    public async Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null)
     {
         buildId ??= buildIdProvider.BuildId;
 
         if (buildId is null)
             throw new InvalidOperationException("Build ID is required to upload artifacts");
 
-        var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+        var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
-        var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+        buildSlice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
         logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'",
             artifactNames,
@@ -107,8 +107,8 @@ public sealed class AzureBlobArtifactProvider(
             fileSystem.Directory.CreateDirectory(artifactDir);
 
             // Includes path separator at the end to prevent matching other directories with the same start of the name
-            var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}/"
+            var artifactBlobDir = buildSlice is { Length: > 0 }
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{buildSlice}/"
                 : $"{buildName}/{buildIdPath}/{artifactName}/";
 
             var hasAtLeastOneBlob = false;
@@ -151,7 +151,7 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task RetrieveArtifact(string artifactName, IReadOnlyList<string> buildIds)
+    public async Task RetrieveArtifact(string artifactName, IReadOnlyList<string> runIdentifiers, string? buildSlice = null)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
@@ -160,15 +160,15 @@ public sealed class AzureBlobArtifactProvider(
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
-        var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+        buildSlice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
         logger.LogInformation("Downloading artifact '{Artifacts}' from container '{Container}'",
             artifactName,
             container.SanitizeForLogging());
 
-        foreach (var buildId in buildIds)
+        foreach (var buildId in runIdentifiers)
         {
-            var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+            var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
             var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
             var artifactDir = fileSystem.AtomArtifactsDirectory / buildIdPath / artifactName;
@@ -178,8 +178,8 @@ public sealed class AzureBlobArtifactProvider(
 
             fileSystem.Directory.CreateDirectory(artifactDir);
 
-            var artifactBlobDir = matrixSlice is { Length: > 0 }
-                ? $"{buildName}/{buildIdPath}/{artifactName}/{matrixSlice}/"
+            var artifactBlobDir = buildSlice is { Length: > 0 }
+                ? $"{buildName}/{buildIdPath}/{artifactName}/{buildSlice}/"
                 : $"{buildName}/{buildIdPath}/{artifactName}/";
 
             var hasAtLeastOneBlob = false;
@@ -222,16 +222,16 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task Cleanup(IReadOnlyList<string> buildIds)
+    public async Task Cleanup(IReadOnlyList<string> runIdentifiers)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
-        foreach (var buildId in buildIds)
+        foreach (var buildId in runIdentifiers)
         {
-            var buildIdPathPrefix = buildIdProvider.GetBuildIdPathPrefix(buildId);
+            var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
             var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
             var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildIdPath}/");
@@ -247,7 +247,7 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task<IReadOnlyList<string>> GetStoredBuildIds(string? artifactName = null)
+    public async Task<IReadOnlyList<string>> GetStoredRunIdentifiers(string? artifactName = null, string? buildSlice = null)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
@@ -258,10 +258,10 @@ public sealed class AzureBlobArtifactProvider(
         {
             var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
             var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
-            var matrixSlice = pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildDefinition.MatrixSlice)) ?? string.Empty, "-");
+            buildSlice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
-            artifactName = matrixSlice is { Length: > 0 }
-                ? $"{artifactName}/{matrixSlice}/"
+            artifactName = buildSlice is { Length: > 0 }
+                ? $"{artifactName}/{buildSlice}/"
                 : $"{artifactName}/";
         }
 

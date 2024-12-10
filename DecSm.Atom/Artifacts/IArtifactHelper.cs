@@ -14,4 +14,7 @@ public partial interface IArtifactHelper
     /// </summary>
     [ParamDefinition("atom-artifacts", "The name of the artifact/s to work with, use ',' to separate multiple artifacts")]
     string[] AtomArtifacts => GetParam(() => AtomArtifacts, []);
+
+    [ParamDefinition("run-identifier", "The  run identifier to use for storing/retrieving artifacts [ BuildId, BuildVersion, <Custom> ]", "BuildId")]
+    string? RunIdentifier => GetParam(() => RunIdentifier);
 }
