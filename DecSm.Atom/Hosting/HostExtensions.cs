@@ -10,8 +10,6 @@ public static class HostExtensions
         builder.Services.AddHostedService<AtomService>();
         builder.Services.AddSingleton<IBuildDefinition, TBuild>();
 
-        TBuild.Register(builder.Services);
-
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
         builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) => AnsiConsole.Console);
@@ -78,6 +76,8 @@ public static class HostExtensions
             ("Microsoft.Extensions.Hosting.Internal.Host", < LogLevel.Warning) => false,
             _ => true,
         });
+
+        TBuild.Register(builder.Services);
 
         return builder;
     }
