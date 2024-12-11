@@ -1,5 +1,6 @@
-﻿namespace DecSm.Atom.Tests.Utils;
+﻿namespace DecSm.Atom.TestUtils;
 
+[PublicAPI]
 public class TestWorkflowWriter : IWorkflowWriter<TestWorkflowType>
 {
     public bool IsDirty { get; init; }

@@ -261,7 +261,7 @@ jobs:
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
           nuget-dry-run: true
-          atom-artifacts: DecSm.Atom.Tests,DecSm.Atom.SourceGenerators.Tests
+          atom-artifacts: DecSm.Atom.Tests,DecSm.Atom.SourceGenerators.Tests,DecSm.Atom.Module.GithubWorkflows.Tests
           build-slice: $(job-runs-on)
   
   - job: PushToNuget

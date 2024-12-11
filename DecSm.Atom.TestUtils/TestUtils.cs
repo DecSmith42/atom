@@ -1,5 +1,6 @@
-﻿namespace DecSm.Atom.Tests.Utils;
+﻿namespace DecSm.Atom.TestUtils;
 
+[PublicAPI]
 public static class TestUtils
 {
     public static IHost CreateTestHost<T>(
@@ -14,25 +15,19 @@ public static class TestUtils
         var builder = AtomHost.CreateAtomBuilder<T>([]);
 
         console ??= new();
-
-        fileSystem ??= Environment.OSVersion.Platform is PlatformID.Win32NT
-            ? new(new Dictionary<string, MockFileData>
-                {
-                    { @"C:\Atom\Atom.sln", new(string.Empty) },
-                    { @"C:\Atom\_atom\_atom.csproj", new(string.Empty) },
-                },
-                @"C:\Atom\_atom")
-            : new(new Dictionary<string, MockFileData>
-                {
-                    { "/Atom/Atom.sln", new(string.Empty) },
-                    { "/Atom/_atom/_atom.csproj", new(string.Empty) },
-                },
-                "/Atom/_atom");
-
+        fileSystem ??= FileSystemUtils.DefaultMockFileSystem;
         commandLineArgs ??= new(true, []);
 
-        buildIdProvider ??= new();
+        if (!commandLineArgs.HasProject)
+            commandLineArgs = commandLineArgs with
+            {
+                Args = commandLineArgs
+                    .Args
+                    .Append(new ProjectArg("AtomTest"))
+                    .ToArray(),
+            };
 
+        buildIdProvider ??= new();
         buildVersionProvider ??= new();
 
         builder.Services.AddKeyedSingleton<IAnsiConsole>("StaticAccess", console);

@@ -12,7 +12,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FakeItEasy" Version="8.3.0"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.0"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
     <PackageReference Include="NUnit" Version="4.2.2"/>
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0"/>
@@ -50,9 +50,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DecSm.Atom.TestUtils\DecSm.Atom.TestUtils.csproj" />
-    <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
+    <ProjectReference Include="..\DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj"/>
     <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\DecSm.Atom.TestUtils\DecSm.Atom.TestUtils.csproj" />
   </ItemGroup>
 
 </Project>

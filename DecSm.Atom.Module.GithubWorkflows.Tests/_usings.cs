@@ -1,0 +1,10 @@
+﻿global using DecSm.Atom.Args;
+global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.Module.GithubWorkflows.Generation;
+global using DecSm.Atom.Module.GithubWorkflows.Triggers;
+global using DecSm.Atom.TestUtils;
+global using DecSm.Atom.Workflows.Definition;
+global using Microsoft.Extensions.Hosting;
+global using Shouldly;
+global using static DecSm.Atom.TestUtils.TestUtils;
+global using Target = DecSm.Atom.Build.Definition.Target;

@@ -1,5 +1,6 @@
-﻿namespace DecSm.Atom.Tests.Utils;
+﻿namespace DecSm.Atom.TestUtils;
 
+[PublicAPI]
 public sealed class TestLogger : ILogger
 {
     public StringBuilder LogContent { get; } = new();

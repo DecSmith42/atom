@@ -497,10 +497,9 @@ internal sealed partial class DevopsWorkflowWriter(
         (string name, string value)[] extraParams,
         bool includeName)
     {
-        var assemblyName = Assembly.GetEntryAssembly()!.GetName()
-            .Name!;
+        var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection($"- script: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless"))
+        using (WriteSection($"- script: dotnet run --project {projectName}/{projectName}.csproj {commandStep.Name} --skip --headless"))
         {
             if (includeName)
                 WriteLine($"name: {commandStep.Name}");
