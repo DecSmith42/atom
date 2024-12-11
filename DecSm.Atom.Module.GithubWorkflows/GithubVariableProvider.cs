@@ -18,7 +18,7 @@ internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger
             variableValue,
             githubOutputPath);
 
-        await fileSystem.File.AppendAllTextAsync(githubOutputPath, $"{variableName}={variableValue}");
+        await fileSystem.File.AppendAllTextAsync(githubOutputPath, $"{variableName}={variableValue}{Environment.NewLine}");
 
         return true;
     }
