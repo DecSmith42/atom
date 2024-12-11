@@ -6,7 +6,7 @@ trigger: none
 
 jobs:
   
-  - job: Setup
+  - job: SetupBuildInfo
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -14,8 +14,8 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
-      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
-        name: Setup
+      - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
+        name: SetupBuildInfo
   
   - job: PackAtom
     pool:
@@ -125,11 +125,17 @@ jobs:
         name: TestAtom
         env:
           job-runs-on: $(job-runs-on)
-          matrix-slice: $(job-runs-on)
+          build-slice: $(job-runs-on)
       
       - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+        inputs:
+          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
       

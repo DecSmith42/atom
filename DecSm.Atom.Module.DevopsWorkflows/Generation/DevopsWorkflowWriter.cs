@@ -342,11 +342,11 @@ internal sealed partial class DevopsWorkflowWriter(
                     .Select(name => (Name: name, Value: $"$({name})"))
                     .ToArray();
 
-                var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+                var buildSlice = (Name: "build-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
 
-                if (!string.IsNullOrWhiteSpace(matrixSlice.Value))
+                if (!string.IsNullOrWhiteSpace(buildSlice.Value))
                     matrixParams = matrixParams
-                        .Append(matrixSlice)
+                        .Append(buildSlice)
                         .ToArray();
 
                 var setupNugetSteps = workflow
@@ -408,8 +408,8 @@ internal sealed partial class DevopsWorkflowWriter(
                             buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                    ? matrixSlice
+                                !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
                                     : default,
                             ],
                             false);
@@ -420,8 +420,8 @@ internal sealed partial class DevopsWorkflowWriter(
                     {
                         foreach (var artifact in commandStepTarget.ConsumedArtifacts)
                         {
-                            var name = !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                ? $"{artifact.ArtifactName}-{matrixSlice.Value}"
+                            var name = !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                ? $"{artifact.ArtifactName}-{buildSlice.Value}"
                                 : artifact.ArtifactName;
 
                             using (WriteSection("- task: DownloadPipelineArtifact@2"))
@@ -453,8 +453,8 @@ internal sealed partial class DevopsWorkflowWriter(
                             buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                    ? matrixSlice
+                                !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
                                     : default,
                             ],
                             false);
@@ -466,8 +466,8 @@ internal sealed partial class DevopsWorkflowWriter(
 
                         foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
-                            var name = !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                ? $"{artifact.ArtifactName}-{matrixSlice.Value}"
+                            var name = !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                ? $"{artifact.ArtifactName}-{buildSlice.Value}"
                                 : artifact.ArtifactName;
 
                             using (WriteSection("- task: PublishPipelineArtifact@1"))

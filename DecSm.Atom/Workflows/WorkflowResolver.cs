@@ -62,7 +62,7 @@ internal sealed class WorkflowResolver(
                 {
                     JobDependencies = job
                         .JobDependencies
-                        .Append(nameof(ISetup.Setup))
+                        .Append(nameof(ISetupBuildInfo.SetupBuildInfo))
                         .ToList(),
                 }
                 : job);

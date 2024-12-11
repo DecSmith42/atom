@@ -1,0 +1,46 @@
+﻿{
+  Targets: [
+    {
+      Name: SetupBuildInfo,
+      Description: Sets up the build ID, version, and timestamp,
+      IsHidden: true,
+      Tasks: [
+        {
+          Type: Func<Task>,
+          Target: ISetupBuildInfo,
+          Method: System.Threading.Tasks.Task get_SetupBuildInfo()
+        }
+      ],
+      RequiredParams: [
+        AtomBuildName
+      ],
+      ProducedVariables: [
+        BuildId,
+        BuildVersion,
+        BuildTimestamp
+      ]
+    },
+    {
+      Name: ValidateBuild,
+      Description: Checks the atom build for common issues.,
+      IsHidden: false,
+      Tasks: [
+        {
+          Type: Func<Task>,
+          Target: IValidateBuild,
+          Method: System.Threading.Tasks.Task get_ValidateBuild()
+        }
+      ]
+    }
+  ],
+  TargetStates: {
+    TargetModel { Name = SetupBuildInfo, Description = Sets up the build ID, version, and timestamp, IsHidden = True, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[System.String], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel] }: {
+      Name: SetupBuildInfo,
+      Status: Skipped
+    },
+    TargetModel { Name = ValidateBuild, Description = Checks the atom build for common issues., IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[System.String], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel] }: {
+      Name: ValidateBuild,
+      Status: Skipped
+    }
+  }
+}

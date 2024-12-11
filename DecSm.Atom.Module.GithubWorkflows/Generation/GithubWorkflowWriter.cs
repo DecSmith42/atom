@@ -263,11 +263,11 @@ internal sealed class GithubWorkflowWriter(
                     .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
                     .ToArray();
 
-                var matrixSlice = (Name: "matrix-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+                var buildSlice = (Name: "build-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
 
-                if (!string.IsNullOrWhiteSpace(matrixSlice.Value))
+                if (!string.IsNullOrWhiteSpace(buildSlice.Value))
                     matrixParams = matrixParams
-                        .Append(matrixSlice)
+                        .Append(buildSlice)
                         .ToArray();
 
                 var setupNugetSteps = workflow
@@ -334,8 +334,8 @@ internal sealed class GithubWorkflowWriter(
                             buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                    ? matrixSlice
+                                !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
                                     : default,
                             ],
                             false);
@@ -352,8 +352,8 @@ internal sealed class GithubWorkflowWriter(
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine(!string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                        ? $"name: {artifact.ArtifactName}-{matrixSlice.Value}"
+                                    WriteLine(!string.IsNullOrWhiteSpace(buildSlice.Value)
+                                        ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
                                         : $"name: {artifact.ArtifactName}");
 
                                     WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
@@ -378,8 +378,8 @@ internal sealed class GithubWorkflowWriter(
                             buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                    ? matrixSlice
+                                !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
                                     : default,
                             ],
                             false);
@@ -397,8 +397,8 @@ internal sealed class GithubWorkflowWriter(
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine(!string.IsNullOrWhiteSpace(matrixSlice.Value)
-                                        ? $"name: {artifact.ArtifactName}-{matrixSlice.Value}"
+                                    WriteLine(!string.IsNullOrWhiteSpace(buildSlice.Value)
+                                        ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
                                         : $"name: {artifact.ArtifactName}");
 
                                     WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");

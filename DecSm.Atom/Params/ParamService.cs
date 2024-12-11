@@ -92,10 +92,6 @@ internal sealed class ParamService(
         else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Configuration) &&
                  TryGetParamFromConfig(paramDefinition, converter) is (true, { } configValue))
             result = configValue;
-        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.UserSecrets) &&
-                 paramDefinition.Attribute.IsSecret &&
-                 TryGetParamFromUserSecrets(paramDefinition, converter) is (true, { } userSecretsValue))
-            result = userSecretsValue;
         else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Vault) &&
                  paramDefinition.Attribute.IsSecret &&
                  TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
@@ -169,24 +165,6 @@ internal sealed class ParamService(
         return configValue is null
             ? (false, default)
             : (true, configValue);
-    }
-
-    private (bool HasValue, T? Value) TryGetParamFromUserSecrets<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
-    {
-        var userSecretsConfigValue = config
-                                         .GetSection("Secrets")
-                                         .GetSection(paramDefinition.Attribute.ArgName)
-                                         .Get<T>() ??
-                                     TypeUtil.Convert(config
-                                             .GetSection("Secrets")[paramDefinition.Attribute.ArgName],
-                                         converter);
-
-        if (userSecretsConfigValue is string userSecretsString)
-            _knownSecrets.Add(userSecretsString);
-
-        return userSecretsConfigValue is null
-            ? (false, default)
-            : (true, userSecretsConfigValue);
     }
 
     private (bool HasValue, T? Value) TryGetParamFromVault<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)

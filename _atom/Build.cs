@@ -2,7 +2,7 @@
 
 [BuildDefinition]
 [GenerateEntryPoint]
-internal partial class Build : BuildDefinition,
+internal partial class Build : DefaultBuildDefinition,
     IAzureKeyVault,
     IAzureArtifactStorage,
     IDevopsWorkflows,
@@ -23,7 +23,8 @@ internal partial class Build : BuildDefinition,
     IPushToPrivateNuget,
     ITestPrivateNugetRestore,
     IPublishTester,
-    ITestManualParams
+    ITestManualParams,
+    ITestVault
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -42,7 +43,7 @@ internal partial class Build : BuildDefinition,
 
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, ProvideGitVersionAsWorkflowId.Enabled, new DevopsVariableGroup("Atom"),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -53,7 +54,7 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.PackAtom.WithSuppressedArtifactPublishing,
                 Commands.PackAtomTool.WithSuppressedArtifactPublishing,
                 Commands.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
@@ -76,7 +77,7 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.PushToMain],
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.PackAtom,
                 Commands.PackAtomTool,
                 Commands.PackAzureKeyVaultModule,
@@ -116,7 +117,9 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.Setup, Commands.PackPrivateTestLib, Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
+                Commands.SetupBuildInfo,
+                Commands.PackPrivateTestLib,
+                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
         },
@@ -125,7 +128,7 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
                 Commands.PushToPrivateNuget.WithAddedOptions(WorkflowSecretInjection.Create(Params.PrivateNugetApiKey)),
             ],
@@ -136,7 +139,7 @@ internal partial class Build : BuildDefinition,
         {
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.PackAtom.WithSuppressedArtifactPublishing,
                 Commands.PackAtomTool.WithSuppressedArtifactPublishing,
                 Commands.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
@@ -157,7 +160,7 @@ internal partial class Build : BuildDefinition,
         {
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.PackAtom,
                 Commands.PackAtomTool,
                 Commands.PackAzureKeyVaultModule,
@@ -179,7 +182,7 @@ internal partial class Build : BuildDefinition,
             Triggers = [Github.Triggers.PullIntoMain],
             StepDefinitions =
             [
-                Commands.Setup,
+                Commands.SetupBuildInfo,
                 Commands.PackAtom,
                 Commands.PackAtomTool,
                 Commands.PackAzureKeyVaultModule,

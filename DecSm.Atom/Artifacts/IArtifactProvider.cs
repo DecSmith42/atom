@@ -26,9 +26,10 @@ public interface IArtifactProvider
     ///     Artifacts to be stored will be in <see cref="IAtomFileSystem.AtomPublishDirectory" />.
     /// </remarks>
     /// <param name="artifactNames">The names of the artifacts to upload.</param>
-    /// <param name="buildId">The build ID associated with the artifacts. If not provided, a default build ID will be used.</param>
+    /// <param name="buildId">The build ID associated with the artifacts. If not provided, the current run will be used.</param>
+    /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null);
+    Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null);
 
     /// <summary>
     ///     Downloads the specified artifacts from the storage.
@@ -37,9 +38,10 @@ public interface IArtifactProvider
     ///     Artifacts to be retrieved are expected to be placed in <see cref="IAtomFileSystem.AtomArtifactsDirectory" />.
     /// </remarks>
     /// <param name="artifactNames">The names of the artifacts to download.</param>
-    /// <param name="buildId">The build ID associated with the artifacts. If not provided, a default build ID will be used.</param>
+    /// <param name="buildId">The build ID associated with the artifacts. If not provided, the current run will be used.</param>
+    /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null);
+    Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null);
 
     /// <summary>
     ///     Downloads a specific artifact for the given build IDs.
@@ -48,21 +50,23 @@ public interface IArtifactProvider
     ///     Artifacts to be retrieved are expected to be placed in <see cref="IAtomFileSystem.AtomArtifactsDirectory" />.
     /// </remarks>
     /// <param name="artifactName">The name of the artifact to download.</param>
-    /// <param name="buildIds">The list of build IDs to download the artifact for.</param>
+    /// <param name="runIdentifiers">The list of run identifiers to download the artifact for.</param>
+    /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task RetrieveArtifact(string artifactName, IReadOnlyList<string> buildIds);
+    Task RetrieveArtifact(string artifactName, IReadOnlyList<string> runIdentifiers, string? buildSlice = null);
 
     /// <summary>
     ///     Cleans up artifacts for the specified build IDs.
     /// </summary>
-    /// <param name="buildIds">The list of build IDs to clean up artifacts for.</param>
+    /// <param name="runIdentifiers">The list of run identifiers to clean up artifacts for.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task Cleanup(IReadOnlyList<string> buildIds);
+    Task Cleanup(IReadOnlyList<string> runIdentifiers);
 
     /// <summary>
-    ///     Retrieves the stored build IDs from the storage.
+    ///     Retrieves the stored run identifiers from the storage.
     /// </summary>
-    /// <param name="artifactName">The name of the artifact to filter the build IDs by. If not provided, all build IDs will be retrieved.</param>
-    /// <returns>A task representing the asynchronous operation, with a list of stored build IDs as the result.</returns>
-    Task<IReadOnlyList<string>> GetStoredBuildIds(string? artifactName = null);
+    /// <param name="artifactName">The name of the artifact to filter the run identifiers by. If not provided, all run identifiers will be retrieved.</param>
+    /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
+    /// <returns>A task representing the asynchronous operation, with a list of stored run identifiers as the result.</returns>
+    Task<IReadOnlyList<string>> GetStoredRunIdentifiers(string? artifactName = null, string? buildSlice = null);
 }

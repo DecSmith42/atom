@@ -78,7 +78,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IBuildIdProvider>()
+                .GetService<IBuildTimestampProvider>()
                 .ShouldNotBeNull();
 
             serviceProvider

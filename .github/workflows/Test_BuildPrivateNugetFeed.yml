@@ -7,11 +7,12 @@ on:
 
 jobs:
   
-  Setup:
+  SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
-      atom-build-id: ${{ steps.Setup.outputs.atom-build-id }}
-      atom-build-version: ${{ steps.Setup.outputs.atom-build-version }}
+      build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
+      build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
+      build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
     steps:
       
       - name: Checkout
@@ -19,9 +20,9 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: Setup
-        id: Setup
-        run: dotnet run --project _atom/_atom.csproj Setup --skip --headless
+      - name: SetupBuildInfo
+        id: SetupBuildInfo
+        run: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         env:
           nuget-dry-run: true
   

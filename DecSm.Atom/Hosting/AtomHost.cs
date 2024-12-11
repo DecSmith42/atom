@@ -12,8 +12,10 @@ public static class AtomHost
             Args = args,
         });
 
+        var environment = builder.Environment.EnvironmentName;
+
         builder.Configuration.AddJsonFile("appsettings.json", true, true);
-        builder.Configuration.AddUserSecrets(Assembly.GetEntryAssembly()!);
+        builder.Configuration.AddJsonFile($"appsettings.{environment}.json", true, true);
 
         builder.AddAtom<HostApplicationBuilder, T>(args);
 

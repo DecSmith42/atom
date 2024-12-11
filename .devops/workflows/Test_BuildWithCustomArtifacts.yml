@@ -6,7 +6,7 @@ trigger: none
 
 jobs:
   
-  - job: Setup
+  - job: SetupBuildInfo
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -14,17 +14,17 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
-      - script: dotnet run --project _atom/_atom.csproj Setup --skip --headless
-        name: Setup
+      - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
+        name: SetupBuildInfo
         env:
           nuget-dry-run: true
   
   - job: PackAtom
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -37,7 +37,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -46,11 +46,11 @@ jobs:
           atom-artifacts: DecSm.Atom
   
   - job: PackAtomTool
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -63,7 +63,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -72,11 +72,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Tool
   
   - job: PackAzureKeyVaultModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -89,7 +89,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -98,11 +98,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.AzureKeyVault
   
   - job: PackAzureStorageModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -115,7 +115,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -124,11 +124,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.AzureStorage
   
   - job: PackDevopsWorkflowsModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -141,7 +141,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -150,11 +150,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.DevopsWorkflows
   
   - job: PackDotnetModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -167,7 +167,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -176,11 +176,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.Dotnet
   
   - job: PackGithubWorkflowsModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -193,7 +193,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -202,11 +202,11 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.GithubWorkflows
   
   - job: PackGitVersionModule
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -219,7 +219,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
@@ -228,7 +228,7 @@ jobs:
           atom-artifacts: DecSm.Atom.Module.GitVersion
   
   - job: TestAtom
-    dependsOn: [ Setup ]
+    dependsOn: [ SetupBuildInfo ]
     strategy:
       matrix:
         001_windows-latest:
@@ -240,7 +240,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -251,25 +251,25 @@ jobs:
         env:
           nuget-dry-run: true
           job-runs-on: $(job-runs-on)
-          matrix-slice: $(job-runs-on)
+          build-slice: $(job-runs-on)
       
       - script: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
           azure-vault-app-id: $(AZURE_VAULT_APP_ID)
           nuget-dry-run: true
-          atom-artifacts: DecSm.Atom.Tests
-          matrix-slice: $(job-runs-on)
+          atom-artifacts: DecSm.Atom.Tests,DecSm.Atom.SourceGenerators.Tests
+          build-slice: $(job-runs-on)
   
   - job: PushToNuget
-    dependsOn: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, Setup ]
+    dependsOn: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
-      atom-build-id: $[ dependencies.Setup.outputs['Setup.atom-build-id'] ]
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -277,7 +277,7 @@ jobs:
       
       - script: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
         env:
-          atom-build-id: $(atom-build-id)
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)

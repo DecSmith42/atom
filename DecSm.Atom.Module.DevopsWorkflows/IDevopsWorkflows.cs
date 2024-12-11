@@ -11,11 +11,8 @@ public partial interface IDevopsWorkflows : IJobRunsOn
             typeof(DevopsVariableProvider),
             ServiceLifetime.Singleton));
 
-        services.AddSingleton<IBuildIdProvider, DevopsBuildIdProvider>();
-
         if (Devops.IsDevopsPipelines)
             services
-                .AddSingleton<IBuildIdProvider, DevopsBuildIdProvider>()
                 .AddSingleton<IOutcomeReporter, DevopsSummaryOutcomeReporter>()
                 .ProvidePath((key, locator) => Devops.IsDevopsPipelines
                     ? key switch

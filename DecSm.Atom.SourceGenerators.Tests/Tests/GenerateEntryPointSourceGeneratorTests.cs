@@ -1,0 +1,25 @@
+﻿namespace DecSm.Atom.SourceGenerators.Tests.Tests;
+
+public class GenerateEntryPointSourceGeneratorTests
+{
+    [Test]
+    public async Task EmptyDefinition_GeneratesDefaultSource()
+    {
+        // Arrange
+        const string source = """
+                              using DecSm.Atom.Build.Definition;
+
+                              namespace TestNamespace;
+
+                              [GenerateEntryPoint]
+                              [BuildDefinition]
+                              public partial class TestBuildDefinition : BuildDefinition;
+                              """;
+
+        // Act
+        var generatedText = TestUtils.GetGeneratedSource<GenerateEntryPointSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+
+        // Assert
+        await Verify(generatedText);
+    }
+}

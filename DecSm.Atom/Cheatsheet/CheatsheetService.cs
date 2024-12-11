@@ -142,7 +142,13 @@ internal sealed class CheatsheetService(
             var reqTree = tree.AddNode("[dim bold red]Requires[/]");
 
             foreach (var requiredParam in requiredParams)
-                reqTree.AddNode($"--{requiredParam.Attribute.ArgName} [dim][[{requiredParam.Attribute.Description}]][/]");
+            {
+                var descriptionDisplay = requiredParam.Attribute.Description is { Length: > 0 }
+                    ? $"[dim] | {requiredParam.Attribute.Description}[/]"
+                    : string.Empty;
+
+                reqTree.AddNode($"--{requiredParam.Attribute.ArgName}{descriptionDisplay}");
+            }
         }
 
         if (optionalParams.Count > 0)
@@ -159,14 +165,18 @@ internal sealed class CheatsheetService(
                 var defaultDisplay = (defaultValue, configuredValue) switch
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
-                        $"[dim][[Default/Configured: {defaultValue}]][/]",
-                    ({ Length: > 0 }, { Length: > 0 }) => $"[dim][[Default: {defaultValue}]][/][dim][[Configured: {configuredValue}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim][[Default: {defaultValue}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim][[Configured: {configuredValue}]][/]",
+                        $"[dim] [[Default/Configured: {defaultValue}]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) => $"[dim] [[Default: {defaultValue}]][/][dim][[Configured: {configuredValue}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue}]][/]",
                     _ => string.Empty,
                 };
 
-                optTree.AddNode($"--{optionalParam.Attribute.ArgName} {defaultDisplay}");
+                var descriptionDisplay = optionalParam.Attribute.Description is { Length: > 0 }
+                    ? $"[dim] | {optionalParam.Attribute.Description}[/]"
+                    : string.Empty;
+
+                optTree.AddNode($"--{optionalParam.Attribute.ArgName}{defaultDisplay}{descriptionDisplay}");
             }
         }
 
@@ -175,7 +185,13 @@ internal sealed class CheatsheetService(
             var secTree = tree.AddNode("[dim bold purple]Secrets[/]");
 
             foreach (var secret in secrets)
-                secTree.AddNode($"--{secret.Attribute.ArgName}");
+            {
+                var descriptionDisplay = secret.Attribute.Description is { Length: > 0 }
+                    ? $"[dim] | {secret.Attribute.Description}[/]"
+                    : string.Empty;
+
+                secTree.AddNode($"--{secret.Attribute.ArgName}{descriptionDisplay}");
+            }
         }
 
         console.Write(tree);
