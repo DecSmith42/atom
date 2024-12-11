@@ -14,11 +14,18 @@ public class WorkflowTests
         build.Run();
 
         // Assert
-        fileSystem
-            .DirectoryInfo
-            .New(@"C:\Atom\_atom\.github\workflows")
-            .Exists
-            .ShouldBeFalse();
+        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
+            fileSystem
+                .DirectoryInfo
+                .New(@"C:\Atom\_atom\.github\workflows")
+                .Exists
+                .ShouldBeFalse();
+        else
+            fileSystem
+                .DirectoryInfo
+                .New("/Atom/_atom/.github/workflows")
+                .Exists
+                .ShouldBeFalse();
     }
 
     [Test]
@@ -32,13 +39,23 @@ public class WorkflowTests
         await build.RunAsync();
 
         // Assert
-        fileSystem
-            .DirectoryInfo
-            .New(@"C:\Atom\_atom\.github\workflows")
-            .Exists
-            .ShouldBeTrue();
+        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
+            fileSystem
+                .DirectoryInfo
+                .New(@"C:\Atom\_atom\.github\workflows")
+                .Exists
+                .ShouldBeTrue();
+        else
+            fileSystem
+                .DirectoryInfo
+                .New("/Atom/_atom/.github/workflows")
+                .Exists
+                .ShouldBeTrue();
 
-        var workflow = await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\simple-build.yml");
+        var workflow = Environment.OSVersion.Platform is PlatformID.Win32NT
+            ? await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\simple-build.yml")
+            : await fileSystem.File.ReadAllTextAsync("/Atom/_atom/.github/workflows/simple-build.yml");
+
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);
     }
@@ -54,13 +71,23 @@ public class WorkflowTests
         await build.RunAsync();
 
         // Assert
-        fileSystem
-            .DirectoryInfo
-            .New(@"C:\Atom\_atom\.github\workflows")
-            .Exists
-            .ShouldBeTrue();
+        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
+            fileSystem
+                .DirectoryInfo
+                .New(@"C:\Atom\_atom\.github\workflows")
+                .Exists
+                .ShouldBeTrue();
+        else
+            fileSystem
+                .DirectoryInfo
+                .New("/Atom/_atom/.github/workflows")
+                .Exists
+                .ShouldBeTrue();
 
-        var workflow = await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\dependent-build.yml");
+        var workflow = Environment.OSVersion.Platform is PlatformID.Win32NT
+            ? await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\dependent-build.yml")
+            : await fileSystem.File.ReadAllTextAsync("/Atom/_atom/.github/workflows/dependent-build.yml");
+
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);
     }
