@@ -15,8 +15,13 @@ internal partial interface ITestAtom : IDotnetTestHelper
             .ProducesArtifact(AtomGithubWorkflowsTestsProjectName)
             .Executes(async () =>
             {
-                await RunDotnetUnitTests(new(AtomTestsProjectName));
-                await RunDotnetUnitTests(new(AtomSourceGeneratorTestsProjectName));
-                await RunDotnetUnitTests(new(AtomGithubWorkflowsTestsProjectName));
+                var exitCode = 0;
+
+                exitCode += await RunDotnetUnitTests(new(AtomTestsProjectName));
+                exitCode += await RunDotnetUnitTests(new(AtomSourceGeneratorTestsProjectName));
+                exitCode += await RunDotnetUnitTests(new(AtomGithubWorkflowsTestsProjectName));
+
+                if (exitCode != 0)
+                    throw new StepFailedException("One or more unit tests failed");
             });
 }
