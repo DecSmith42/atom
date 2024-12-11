@@ -44,18 +44,6 @@ public interface IArtifactProvider
     Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null);
 
     /// <summary>
-    ///     Downloads a specific artifact for the given build IDs.
-    /// </summary>
-    /// <remarks>
-    ///     Artifacts to be retrieved are expected to be placed in <see cref="IAtomFileSystem.AtomArtifactsDirectory" />.
-    /// </remarks>
-    /// <param name="artifactName">The name of the artifact to download.</param>
-    /// <param name="runIdentifiers">The list of run identifiers to download the artifact for.</param>
-    /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    Task RetrieveArtifact(string artifactName, IReadOnlyList<string> runIdentifiers, string? buildSlice = null);
-
-    /// <summary>
     ///     Cleans up artifacts for the specified build IDs.
     /// </summary>
     /// <param name="runIdentifiers">The list of run identifiers to clean up artifacts for.</param>
