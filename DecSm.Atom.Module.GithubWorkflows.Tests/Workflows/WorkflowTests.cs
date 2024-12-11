@@ -3,6 +3,11 @@
 [TestFixture]
 public class WorkflowTests
 {
+    private static string WorkflowDir =>
+        Environment.OSVersion.Platform is PlatformID.Win32NT
+            ? @"C:\Atom\_atom\.github\workflows\"
+            : "/Atom/_atom/.github/workflows/";
+
     [Test]
     public void MinimalBuild_GeneratesNoWorkflows()
     {
@@ -14,18 +19,11 @@ public class WorkflowTests
         build.Run();
 
         // Assert
-        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
-            fileSystem
-                .DirectoryInfo
-                .New(@"C:\Atom\_atom\.github\workflows")
-                .Exists
-                .ShouldBeFalse();
-        else
-            fileSystem
-                .DirectoryInfo
-                .New("/Atom/_atom/.github/workflows")
-                .Exists
-                .ShouldBeFalse();
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeFalse();
     }
 
     [Test]
@@ -39,22 +37,13 @@ public class WorkflowTests
         await build.RunAsync();
 
         // Assert
-        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
-            fileSystem
-                .DirectoryInfo
-                .New(@"C:\Atom\_atom\.github\workflows")
-                .Exists
-                .ShouldBeTrue();
-        else
-            fileSystem
-                .DirectoryInfo
-                .New("/Atom/_atom/.github/workflows")
-                .Exists
-                .ShouldBeTrue();
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
 
-        var workflow = Environment.OSVersion.Platform is PlatformID.Win32NT
-            ? await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\simple-build.yml")
-            : await fileSystem.File.ReadAllTextAsync("/Atom/_atom/.github/workflows/simple-build.yml");
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}simple-workflow.yml");
 
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);
@@ -71,22 +60,65 @@ public class WorkflowTests
         await build.RunAsync();
 
         // Assert
-        if (Environment.OSVersion.Platform is PlatformID.Win32NT)
-            fileSystem
-                .DirectoryInfo
-                .New(@"C:\Atom\_atom\.github\workflows")
-                .Exists
-                .ShouldBeTrue();
-        else
-            fileSystem
-                .DirectoryInfo
-                .New("/Atom/_atom/.github/workflows")
-                .Exists
-                .ShouldBeTrue();
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
 
-        var workflow = Environment.OSVersion.Platform is PlatformID.Win32NT
-            ? await fileSystem.File.ReadAllTextAsync(@"C:\Atom\_atom\.github\workflows\dependent-build.yml")
-            : await fileSystem.File.ReadAllTextAsync("/Atom/_atom/.github/workflows/dependent-build.yml");
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}dependent-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task ArtifactBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+        var console = new TestConsole();
+        var build = CreateTestHost<ArtifactBuild>(console, fileSystem, new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue(console.Output);
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}artifact-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task CustomArtifactBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+        var console = new TestConsole();
+
+        var build = CreateTestHost<CustomArtifactBuild>(console,
+            fileSystem,
+            new(true, [new GenArg()]),
+            configure: builder => builder.Services.AddSingleton<IArtifactProvider, TestArtifactProvider>());
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue(console.Output);
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}custom-artifact-workflow.yml");
 
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);

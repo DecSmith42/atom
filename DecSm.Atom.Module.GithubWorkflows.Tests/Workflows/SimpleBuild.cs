@@ -5,7 +5,7 @@ public partial class SimpleBuild : BuildDefinition, IGithubWorkflows, ISimpleTar
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
-        new("simple-build")
+        new("simple-workflow")
         {
             Triggers =
             [

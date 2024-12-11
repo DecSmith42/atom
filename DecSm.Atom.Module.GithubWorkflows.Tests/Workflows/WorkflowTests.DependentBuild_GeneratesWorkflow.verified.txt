@@ -1,4 +1,4 @@
-﻿name: dependent-build
+﻿name: dependent-workflow
 
 on:
   pull_request:
