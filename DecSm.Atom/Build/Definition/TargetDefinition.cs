@@ -148,23 +148,23 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ProducesArtifact(string artifactName)
+    public TargetDefinition ProducesArtifact(string artifactName, string? buildSlice = null)
     {
-        ProducedArtifacts.Add(new(artifactName));
+        ProducedArtifacts.Add(new(artifactName, buildSlice));
 
         return this;
     }
 
-    public TargetDefinition ConsumesArtifact(string commandName, string artifactName)
+    public TargetDefinition ConsumesArtifact(string commandName, string artifactName, string? buildSlice = null)
     {
-        ConsumedArtifacts.Add(new(commandName, artifactName));
+        ConsumedArtifacts.Add(new(commandName, artifactName, buildSlice));
 
         return this;
     }
 
-    public TargetDefinition ConsumesArtifact(CommandDefinition command, string artifactName)
+    public TargetDefinition ConsumesArtifact(CommandDefinition command, string artifactName, string? buildSlice = null)
     {
-        ConsumedArtifacts.Add(new(command.Name, artifactName));
+        ConsumedArtifacts.Add(new(command.Name, artifactName, buildSlice));
 
         return this;
     }

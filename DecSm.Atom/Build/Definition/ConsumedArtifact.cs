@@ -6,4 +6,4 @@ namespace DecSm.Atom.Build.Definition;
 /// <param name="TargetName">The name of the target that produced the artifact.</param>
 /// <param name="ArtifactName">The name of the artifact being consumed.</param>
 [PublicAPI]
-public sealed record ConsumedArtifact(string TargetName, string ArtifactName);
+public sealed record ConsumedArtifact(string TargetName, string ArtifactName, string? BuildSlice = null);
