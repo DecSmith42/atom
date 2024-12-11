@@ -1,5 +1,6 @@
-﻿namespace DecSm.Atom.Tests.Utils;
+﻿namespace DecSm.Atom.TestUtils;
 
+[PublicAPI]
 public static partial class ConsoleOutputUtils
 {
     [GeneratedRegex(@"^\d\d-\d\d-\d\d [+\-]\d\d:\d\d")]
