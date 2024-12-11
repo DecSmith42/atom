@@ -159,7 +159,7 @@ public sealed class FileSystemTests
             .ToString()
             .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
                 ? @"C:\temp\"
-                : "/temp");
+                : "/temp/");
     }
 
     [Test]
