@@ -126,8 +126,8 @@ public sealed class AzureBlobArtifactProvider(
                 var blobDownloadInfo = await blobClient.DownloadAsync();
                 var blobName = blobItem.Blob.Name;
 
-                if (blobName.StartsWith($"{buildName}/{buildIdPath}/{artifactName}/"))
-                    blobName = blobName[$"{buildName}/{buildIdPath}/{artifactName}/".Length..];
+                if (blobName.StartsWith(artifactBlobDir))
+                    blobName = blobName[artifactBlobDir.Length..];
                 else
                     throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
 
@@ -197,8 +197,8 @@ public sealed class AzureBlobArtifactProvider(
                 var blobDownloadInfo = await blobClient.DownloadAsync();
                 var blobName = blobItem.Blob.Name;
 
-                if (blobName.StartsWith($"{buildName}/{buildIdPath}/{artifactName}/"))
-                    blobName = blobName[$"{buildName}/{buildIdPath}/{artifactName}/".Length..];
+                if (blobName.StartsWith(artifactBlobDir))
+                    blobName = blobName[artifactBlobDir.Length..];
                 else
                     throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
 
