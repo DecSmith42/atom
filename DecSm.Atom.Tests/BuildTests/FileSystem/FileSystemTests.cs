@@ -158,7 +158,7 @@ public sealed class FileSystemTests
         atomRootDirectory
             .ToString()
             .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
-                ? @"C:\temp"
+                ? @"C:\temp\"
                 : "/temp");
     }
 
