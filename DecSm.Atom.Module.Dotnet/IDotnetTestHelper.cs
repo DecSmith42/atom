@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IDotnetTestHelper : IDotnetToolHelper
 {
-    async Task RunDotnetUnitTests(DotnetTestOptions options)
+    async Task<int> RunDotnetUnitTests(DotnetTestOptions options)
     {
         Logger.LogInformation("Running unit tests for Atom project {AtomProjectName}", options.ProjectName);
 
@@ -58,7 +58,7 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
         FileSystem.Directory.CreateDirectory(coverageResultsPublishDirectory);
 
         // Run test
-        await GetService<ProcessRunner>()
+        var result = await GetService<ProcessRunner>()
             .RunAsync(new("dotnet",
             [
                 $"test {project.FullName}",
@@ -96,6 +96,8 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
         GenerateCoverageReport(options.ProjectName, coverageResultsPublishDirectory / "Summary.json");
 
         Logger.LogInformation("Ran unit tests for Atom project {AtomProjectName}", options.ProjectName);
+
+        return result.ExitCode;
     }
 
     private void GenerateTestReport(string projectName, string trxFile)
