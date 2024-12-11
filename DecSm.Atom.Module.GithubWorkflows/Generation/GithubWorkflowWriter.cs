@@ -253,8 +253,6 @@ internal sealed class GithubWorkflowWriter(
                         WriteLine("fetch-depth: 0");
                 }
 
-                WriteLine();
-
                 var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
 
                 var matrixParams = job
@@ -306,8 +304,6 @@ internal sealed class GithubWorkflowWriter(
                                 WriteLine(
                                     $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
                         }
-
-                        WriteLine();
                     }
                 }
 
@@ -329,83 +325,101 @@ internal sealed class GithubWorkflowWriter(
 
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
-                        WriteCommandStep(workflow,
-                            new(nameof(IRetrieveArtifact.RetrieveArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
-                            [
-                                ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                    ? buildSlice
-                                    : default,
-                            ],
-                            false);
+                        foreach (var slice in commandStepTarget.ConsumedArtifacts.GroupBy(a => a.BuildSlice))
+                        {
+                            WriteLine();
 
-                        WriteLine();
+                            WriteCommandStep(workflow,
+                                new(nameof(IRetrieveArtifact.RetrieveArtifact)),
+                                buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
+                                [
+                                    ("atom-artifacts", string.Join(",",
+                                        slice
+                                            .AsEnumerable()
+                                            .Select(x => x.ArtifactName))),
+                                    slice.Key is { Length: > 0 }
+                                        ? (Name: "build-slice", Value: slice.Key)
+                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                            ? buildSlice
+                                            : default,
+                                ],
+                                false);
+                        }
                     }
                     else
                     {
                         foreach (var artifact in commandStepTarget.ConsumedArtifacts)
                         {
+                            WriteLine();
+
                             using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                             {
                                 WriteLine("uses: actions/download-artifact@v4");
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine(!string.IsNullOrWhiteSpace(buildSlice.Value)
-                                        ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
-                                        : $"name: {artifact.ArtifactName}");
+                                    WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                        ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                            ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
+                                            : $"name: {artifact.ArtifactName}");
 
                                     WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
                                 }
                             }
-
-                            WriteLine();
                         }
                     }
                 }
 
+                WriteLine();
                 WriteCommandStep(workflow, commandStep, commandStepTarget, matrixParams, true);
 
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
                     {
-                        WriteLine();
+                        foreach (var slice in commandStepTarget.ProducedArtifacts.GroupBy(a => a.BuildSlice))
+                        {
+                            WriteLine();
 
-                        WriteCommandStep(workflow,
-                            new(nameof(IStoreArtifact.StoreArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
-                            [
-                                ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
-                                !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                    ? buildSlice
-                                    : default,
-                            ],
-                            false);
+                            WriteCommandStep(workflow,
+                                new(nameof(IStoreArtifact.StoreArtifact)),
+                                buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
+                                [
+                                    ("atom-artifacts", string.Join(",",
+                                        slice
+                                            .AsEnumerable()
+                                            .Select(x => x.ArtifactName))),
+                                    slice.Key is { Length: > 0 }
+                                        ? (Name: "build-slice", Value: slice.Key)
+                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                            ? buildSlice
+                                            : default,
+                                ],
+                                false);
+                        }
                     }
                     else
                     {
-                        if (commandStepTarget.ProducedArtifacts.Count > 0)
-                            WriteLine();
-
                         foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
+                            WriteLine();
+
                             using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
                             {
                                 WriteLine("uses: actions/upload-artifact@v4");
 
                                 using (WriteSection("with:"))
                                 {
-                                    WriteLine(!string.IsNullOrWhiteSpace(buildSlice.Value)
-                                        ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
-                                        : $"name: {artifact.ArtifactName}");
+                                    WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                        ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                            ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
+                                            : $"name: {artifact.ArtifactName}");
 
                                     WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
                                 }
                             }
-
-                            WriteLine();
                         }
                     }
                 }

@@ -1,4 +1,4 @@
 namespace DecSm.Atom.Build.Definition;
 
 [PublicAPI]
-public sealed record ProducedArtifact(string ArtifactName);
+public sealed record ProducedArtifact(string ArtifactName, string? BuildSlice = null);

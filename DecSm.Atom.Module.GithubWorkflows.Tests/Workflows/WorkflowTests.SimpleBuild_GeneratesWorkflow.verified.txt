@@ -1,4 +1,4 @@
-﻿name: simple-build
+﻿name: simple-workflow
 
 on:
   pull_request:

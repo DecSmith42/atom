@@ -5,7 +5,7 @@ public partial class DependentBuild : BuildDefinition, IGithubWorkflows, IDepend
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
-        new("dependent-build")
+        new("dependent-workflow")
         {
             Triggers =
             [

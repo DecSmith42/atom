@@ -42,7 +42,6 @@ jobs:
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
-      
   
   PackAtomTool:
     runs-on: ubuntu-latest
@@ -62,7 +61,6 @@ jobs:
         with:
           name: DecSm.Atom.Tool
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
-      
   
   PackAzureKeyVaultModule:
     runs-on: ubuntu-latest
@@ -82,7 +80,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.AzureKeyVault
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureKeyVault"
-      
   
   PackAzureStorageModule:
     runs-on: ubuntu-latest
@@ -102,7 +99,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.AzureStorage
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureStorage"
-      
   
   PackDevopsWorkflowsModule:
     runs-on: ubuntu-latest
@@ -122,7 +118,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.DevopsWorkflows
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.DevopsWorkflows"
-      
   
   PackDotnetModule:
     runs-on: ubuntu-latest
@@ -142,7 +137,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.Dotnet"
-      
   
   PackGithubWorkflowsModule:
     runs-on: ubuntu-latest
@@ -162,7 +156,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.GithubWorkflows
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows"
-      
   
   PackGitVersionModule:
     runs-on: ubuntu-latest
@@ -182,7 +175,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.GitVersion
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GitVersion"
-      
   
   PackPrivateTestLib:
     runs-on: ubuntu-latest
@@ -202,7 +194,6 @@ jobs:
         with:
           name: PrivateTestLib
           path: "${{ github.workspace }}/.github/publish/PrivateTestLib"
-      
   
   TestAtom:
     strategy:
@@ -240,7 +231,6 @@ jobs:
         with:
           name: DecSm.Atom.Module.GithubWorkflows.Tests-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
-      
   
   PushToNuget:
     needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
