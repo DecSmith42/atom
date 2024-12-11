@@ -5,52 +5,101 @@ assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{PreReleaseNumber}'
 tag-prefix: '[vV]?'
 version-in-branch-pattern: (?<version>[vV]?\d+(\.\d+)?(\.\d+)?).*
 next-version: 1.0.0
-major-version-bump-message: '\+semver:\s?(breaking|major)'
-minor-version-bump-message: '\+semver:\s?(feature|minor)'
-patch-version-bump-message: '\+semver:\s?(fix|patch)'
-no-bump-message: '\+semver:\s?(none|skip)'
+major-version-bump-message: '^(breaking|major)\(?[A-Za-z0-9\-]*\)?:'
+minor-version-bump-message: '^(feat|feature|minor)\(?[A-Za-z0-9\-]*\)?:'
+patch-version-bump-message: '^(fix|patch)\(?[A-Za-z0-9\-]*\)?:'
+no-bump-message: '^(semver-none|semver-skip)'
 tag-pre-release-weight: 60000
 commit-date-format: yyyy-MM-dd
 merge-message-formats: { }
 update-build-number: true
 semantic-version-format: Strict
 strategies:
-    - Fallback
-    - ConfiguredNextVersion
-    - MergeMessage
-    - TaggedCommit
-    - TrackReleaseBranches
-    - VersionInBranchName
+  - Fallback
+  - ConfiguredNextVersion
+  - MergeMessage
+  - TaggedCommit
+  - TrackReleaseBranches
+  - VersionInBranchName
 branches:
-    develop:
-        mode: ContinuousDelivery
-        label: alpha
-        increment: Minor
-        prevent-increment:
-            when-current-commit-tagged: false
-        track-merge-target: true
-        track-merge-message: true
-        regex: ^dev(elop)?(ment)?$
-        source-branches:
-            - main
-        is-source-branch-for: [ ]
-        tracks-release-branches: true
-        is-release-branch: false
-        is-main-branch: false
-        pre-release-weight: 0
-    main:
-        label: 'rc'
-        increment: Patch
-        prevent-increment:
-            of-merged-branch: true
-        track-merge-target: false
-        track-merge-message: true
-        regex: ^master$|^main$
-        source-branches: [ ]
-        is-source-branch-for: [ ]
-        tracks-release-branches: false
-        is-release-branch: false
-        is-main-branch: true
-        pre-release-weight: 55000
+  main:
+    label: 'rc'
+    increment: Minor
+    prevent-increment:
+      of-merged-branch: true
+    track-merge-target: false
+    track-merge-message: true
+    regex: ^master$|^main$
+    source-branches: [ ]
+    is-source-branch-for: [ ]
+    tracks-release-branches: false
+    is-release-branch: false
+    is-main-branch: true
+    pre-release-weight: 40000
+  develop:
+    mode: ContinuousDelivery
+    label: 'preview'
+    increment: Minor
+    prevent-increment:
+      when-current-commit-tagged: false
+    track-merge-target: true
+    track-merge-message: true
+    regex: ^dev(elop)?(ment)?$
+    source-branches:
+      - main
+    is-source-branch-for: [ ]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+    pre-release-weight: 30000
+  pull-request:
+    mode: ContinuousDelivery
+    label: 'pr'
+    increment: Inherit
+    prevent-increment:
+      of-merged-branch: true
+      when-current-commit-tagged: false
+    label-number-pattern: '[/-](?<number>\d+)'
+    track-merge-message: true
+    regex: ^(pull|pull\-requests|pr)[/-]
+    source-branches:
+      - main
+      - develop
+    is-source-branch-for: [ ]
+    pre-release-weight: 20000
+  beta:
+    mode: ContinuousDelivery
+    label: beta.{BranchName}
+    increment: Minor
+    prevent-increment:
+      when-current-commit-tagged: false
+    track-merge-target: true
+    track-merge-message: true
+    regex: ^(feat|feature|features|fix|patch)?[/-](?<BranchName>.+)
+    source-branches:
+      - main
+      - develop
+    is-source-branch-for: [ ]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+    pre-release-weight: 10000
+  alpha:
+    mode: ContinuousDelivery
+    label: alpha.{BranchName}
+    increment: Minor
+    prevent-increment:
+      when-current-commit-tagged: false
+    track-merge-target: true
+    track-merge-message: true
+    regex: (?<BranchName>.+)
+    source-branches:
+      - main
+      - develop
+    is-source-branch-for: [ ]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+    pre-release-weight: 0
 ignore:
-    sha: [ ]
+  sha: [ ]

@@ -8,7 +8,7 @@ public sealed class TestArtifactProvider : IArtifactProvider
     public Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null) =>
         throw new NotImplementedException();
 
-    public Task RetrieveArtifact(string artifactName, IReadOnlyList<string> runIdentifiers, string? buildSlice = null) =>
+    public Task RetrieveArtifact(string artifactName, IReadOnlyList<string> buildIds, string? buildSlice = null) =>
         throw new NotImplementedException();
 
     public Task Cleanup(IReadOnlyList<string> runIdentifiers) =>
