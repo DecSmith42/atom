@@ -21,7 +21,7 @@ internal sealed class AtomService(
                 return;
             }
 
-            if (args.Args is { Count: 0 } or [VerboseArg])
+            if (args is { HasHelp: false, HasHeadless: false, HasGen: false, Commands.Count: 0, Params.Count: 0 })
             {
                 await workflowGenerator.GenerateWorkflows();
                 cheatsheetService.ShowCheatsheet();

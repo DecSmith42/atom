@@ -29,6 +29,11 @@ public static class HostExtensions
                     .GetServices<IPathProvider>()
                     .OrderByDescending(l => l.Priority)
                     .ToList(),
+                ProjectName = x.GetRequiredService<CommandLineArgs>()
+                    .ProjectName is { Length: > 0 } p
+                    ? p
+                    : Assembly.GetEntryAssembly()!.GetName()
+                        .Name!,
             })
             .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
 

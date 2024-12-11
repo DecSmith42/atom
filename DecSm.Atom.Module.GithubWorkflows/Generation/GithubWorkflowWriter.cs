@@ -421,15 +421,14 @@ internal sealed class GithubWorkflowWriter(
         (string name, string value)[] extraParams,
         bool includeId)
     {
-        var assemblyName = Assembly.GetEntryAssembly()!.GetName()
-            .Name!;
+        var projectName = _fileSystem.ProjectName;
 
         using (WriteSection($"- name: {commandStep.Name}"))
         {
             if (includeId)
                 WriteLine($"id: {commandStep.Name}");
 
-            WriteLine($"run: dotnet run --project {assemblyName}/{assemblyName}.csproj {commandStep.Name} --skip --headless");
+            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {commandStep.Name} --skip --headless");
 
             var env = new Dictionary<string, string>();
 

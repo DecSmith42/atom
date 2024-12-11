@@ -17,6 +17,16 @@ public static class TestUtils
         console ??= new();
         fileSystem ??= FileSystemUtils.DefaultMockFileSystem;
         commandLineArgs ??= new(true, []);
+
+        if (!commandLineArgs.HasProject)
+            commandLineArgs = commandLineArgs with
+            {
+                Args = commandLineArgs
+                    .Args
+                    .Append(new ProjectArg("AtomTest"))
+                    .ToArray(),
+            };
+
         buildIdProvider ??= new();
         buildVersionProvider ??= new();
 
