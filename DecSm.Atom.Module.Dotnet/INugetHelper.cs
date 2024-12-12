@@ -6,14 +6,14 @@ public partial interface INugetHelper : IVersionHelper
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
 
-    AbsolutePath NugetConfigPath
+    RootedPath NugetConfigPath
     {
         get
         {
             // Windows: %APPDATA%\NuGet\NuGet.Config
             // Linux: $HOME/.nuget/NuGet.Config
             // Mac: $HOME/.nuget/NuGet.Config
-            var appDataPath = FileSystem.CreateAbsolutePath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            var appDataPath = FileSystem.CreateRootedPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
             return Environment.OSVersion.Platform switch
             {
@@ -40,7 +40,7 @@ public partial interface INugetHelper : IVersionHelper
         await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
     }
 
-    async Task PushPackageToNuget(AbsolutePath packagePath, string feed, string apiKey, string? configFile = null)
+    async Task PushPackageToNuget(RootedPath packagePath, string feed, string apiKey, string? configFile = null)
     {
         Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
 

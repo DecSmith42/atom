@@ -31,7 +31,7 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Root
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                        .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
                             ? @"C:\CustomAtomRoot"
                             : "/CustomAtomRoot")
                     : null,
@@ -78,7 +78,7 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Artifacts
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                        .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
                             ? @"C:\CustomAtomArtifacts"
                             : "/CustomAtomArtifacts")
                     : null,
@@ -125,7 +125,7 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Publish
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                        .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
                             ? @"C:\CustomAtomPublish"
                             : "/CustomAtomPublish")
                     : null,
@@ -172,7 +172,7 @@ public sealed class FileSystemTests
                 Locator = (key, _) => key is AtomPaths.Temp
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
-                        .CreateAbsolutePath(Environment.OSVersion.Platform is PlatformID.Win32NT
+                        .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
                             ? @"C:\CustomAtomTemp"
                             : "/CustomAtomTemp")
                     : null,

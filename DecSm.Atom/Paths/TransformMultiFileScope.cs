@@ -3,18 +3,18 @@
 [PublicAPI]
 public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
 {
-    private readonly IEnumerable<AbsolutePath> _files;
+    private readonly IEnumerable<RootedPath> _files;
     private readonly string?[] _initialContents;
     private bool _cancelled;
     private bool _disposed;
 
-    private TransformMultiFileScope(IEnumerable<AbsolutePath> files, string?[] initialContents)
+    private TransformMultiFileScope(IEnumerable<RootedPath> files, string?[] initialContents)
     {
         _files = files;
         _initialContents = initialContents;
     }
 
-    public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<AbsolutePath> files, Func<string, string> transform)
+    public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
 
@@ -40,7 +40,7 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    public static TransformMultiFileScope Create(IEnumerable<AbsolutePath> files, Func<string, string> transform)
+    public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
 

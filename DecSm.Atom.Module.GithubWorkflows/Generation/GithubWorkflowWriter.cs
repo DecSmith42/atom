@@ -13,7 +13,7 @@ internal sealed class GithubWorkflowWriter(
 
     protected override int TabSize => 2;
 
-    protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".github" / "workflows";
+    protected override RootedPath FileLocation => _fileSystem.AtomRootDirectory / ".github" / "workflows";
 
     protected override void WriteWorkflow(WorkflowModel workflow)
     {

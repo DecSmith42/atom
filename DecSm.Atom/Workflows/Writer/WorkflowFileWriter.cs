@@ -10,7 +10,7 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
 
     protected virtual int TabSize => 2;
 
-    protected virtual AbsolutePath FileLocation => fileSystem.AtomRootDirectory;
+    protected virtual RootedPath FileLocation => fileSystem.AtomRootDirectory;
 
     protected abstract string FileExtension { get; }
 

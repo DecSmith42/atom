@@ -13,7 +13,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
     protected override int TabSize => 2;
 
-    protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".devops" / "workflows";
+    protected override RootedPath FileLocation => _fileSystem.AtomRootDirectory / ".devops" / "workflows";
 
     [GeneratedRegex("-+")]
     private static partial Regex HyphenReductionRegex();

@@ -8,12 +8,12 @@ public partial interface IDotnetPublishHelper : IVersionHelper
         Logger.LogInformation("Publishing Atom project {AtomProjectName}", options.ProjectName);
 
         var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
-        var projectPath = new AbsolutePath(FileSystem, project.FullName);
+        var projectPath = new RootedPath(FileSystem, project.FullName);
 
         if (!project.Exists)
             throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
 
-        List<AbsolutePath> filesToTransform = [projectPath];
+        List<RootedPath> filesToTransform = [projectPath];
 
         var dir = projectPath;
 

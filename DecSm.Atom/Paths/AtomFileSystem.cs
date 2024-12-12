@@ -7,15 +7,15 @@ public interface IAtomFileSystem : IFileSystem
 
     public IFileSystem FileSystem { get; }
 
-    AbsolutePath AtomRootDirectory => GetPath(AtomPaths.Root);
+    RootedPath AtomRootDirectory => GetPath(AtomPaths.Root);
 
-    AbsolutePath AtomArtifactsDirectory => GetPath(AtomPaths.Artifacts);
+    RootedPath AtomArtifactsDirectory => GetPath(AtomPaths.Artifacts);
 
-    AbsolutePath AtomPublishDirectory => GetPath(AtomPaths.Publish);
+    RootedPath AtomPublishDirectory => GetPath(AtomPaths.Publish);
 
-    AbsolutePath AtomTempDirectory => GetPath(AtomPaths.Temp);
+    RootedPath AtomTempDirectory => GetPath(AtomPaths.Temp);
 
-    AbsolutePath CurrentDirectory => new(this, FileSystem.Directory.GetCurrentDirectory());
+    RootedPath CurrentDirectory => new(this, FileSystem.Directory.GetCurrentDirectory());
 
     IDirectory IFileSystem.Directory => FileSystem.Directory;
 
@@ -33,15 +33,15 @@ public interface IAtomFileSystem : IFileSystem
 
     IPath IFileSystem.Path => FileSystem.Path;
 
-    AbsolutePath GetPath(string key);
+    RootedPath GetPath(string key);
 
-    AbsolutePath CreateAbsolutePath(string path) =>
+    RootedPath CreateRootedPath(string path) =>
         new(this, path);
 }
 
 internal sealed class AtomFileSystem : IAtomFileSystem
 {
-    private readonly Dictionary<string, AbsolutePath> _pathCache = [];
+    private readonly Dictionary<string, RootedPath> _pathCache = [];
 
     public required IReadOnlyList<IPathProvider> PathLocators { private get; init; }
 
@@ -50,7 +50,7 @@ internal sealed class AtomFileSystem : IAtomFileSystem
 
     public required IFileSystem FileSystem { get; init; }
 
-    public AbsolutePath GetPath(string key)
+    public RootedPath GetPath(string key)
     {
         if (_pathCache.TryGetValue(key, out var path))
             return path;
@@ -83,7 +83,7 @@ internal sealed class AtomFileSystem : IAtomFileSystem
     internal void ClearCache() =>
         _pathCache.Clear();
 
-    private AbsolutePath GetRoot()
+    private RootedPath GetRoot()
     {
         var currentDir = ((IAtomFileSystem)this).CurrentDirectory;
 
@@ -113,12 +113,12 @@ internal sealed class AtomFileSystem : IAtomFileSystem
         return ((IAtomFileSystem)this).CurrentDirectory;
     }
 
-    private AbsolutePath GetArtifacts() =>
+    private RootedPath GetArtifacts() =>
         GetPath(AtomPaths.Root) / "atom-publish";
 
-    private AbsolutePath GetPublish() =>
+    private RootedPath GetPublish() =>
         GetPath(AtomPaths.Root) / "atom-publish";
 
-    private AbsolutePath GetTemp() =>
+    private RootedPath GetTemp() =>
         new(this, FileSystem.Path.GetTempPath());
 }

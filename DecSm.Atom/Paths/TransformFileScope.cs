@@ -3,18 +3,18 @@
 [PublicAPI]
 public sealed class TransformFileScope : IAsyncDisposable, IDisposable
 {
-    private readonly AbsolutePath _file;
+    private readonly RootedPath _file;
     private readonly string? _initialContent;
     private bool _cancelled;
     private bool _disposed;
 
-    private TransformFileScope(AbsolutePath file, string? initialContent)
+    private TransformFileScope(RootedPath file, string? initialContent)
     {
         _file = file;
         _initialContent = initialContent;
     }
 
-    public static async Task<TransformFileScope> CreateAsync(AbsolutePath file, Func<string, string> transform)
+    public static async Task<TransformFileScope> CreateAsync(RootedPath file, Func<string, string> transform)
     {
         string? initialContent = null;
 
@@ -34,7 +34,7 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
-    public static TransformFileScope Create(AbsolutePath file, Func<string, string> transform)
+    public static TransformFileScope Create(RootedPath file, Func<string, string> transform)
     {
         string? initialContent = null;
 

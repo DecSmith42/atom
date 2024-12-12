@@ -1,9 +1,9 @@
 ﻿namespace DecSm.Atom.Paths;
 
 [PublicAPI]
-public sealed record AbsolutePath(IAtomFileSystem FileSystem, string Path)
+public sealed record RootedPath(IAtomFileSystem FileSystem, string Path)
 {
-    public AbsolutePath? Parent
+    public RootedPath? Parent
     {
         get
         {
@@ -48,13 +48,13 @@ public sealed record AbsolutePath(IAtomFileSystem FileSystem, string Path)
             ? FileSystem.Path.GetDirectoryName(Path)
             : null;
 
-    public static AbsolutePath operator /(AbsolutePath left, string right) =>
+    public static RootedPath operator /(RootedPath left, string right) =>
         left with
         {
             Path = left.FileSystem.Path.Combine(left.Path, right),
         };
 
-    public static implicit operator string(AbsolutePath path) =>
+    public static implicit operator string(RootedPath path) =>
         path.Path;
 
     public override string ToString() =>
