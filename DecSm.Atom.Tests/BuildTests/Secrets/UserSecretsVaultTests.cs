@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Tests.BuildTests.Vaults;
+﻿namespace DecSm.Atom.Tests.BuildTests.Secrets;
 
 [TestFixture]
 public class UserSecretsVaultTests
@@ -18,7 +18,7 @@ public class UserSecretsVaultTests
 
             var userSecretsBuild = (UserSecretsBuild)host.Services.GetRequiredService<IBuildDefinition>();
 
-            ((UserSecretsVaultProvider)host.Services.GetRequiredService<IVaultProvider>()).SecretsAssembly =
+            ((DotnetUserSecretsProvider)host.Services.GetRequiredService<ISecretsProvider>()).SecretsAssembly =
                 typeof(UserSecretsVaultTests).Assembly;
 
             // Act
@@ -44,7 +44,7 @@ public class UserSecretsVaultTests
 
         var userSecretsBuild = (UserSecretsBuild)host.Services.GetRequiredService<IBuildDefinition>();
 
-        ((UserSecretsVaultProvider)host.Services.GetRequiredService<IVaultProvider>()).SecretsAssembly =
+        ((DotnetUserSecretsProvider)host.Services.GetRequiredService<ISecretsProvider>()).SecretsAssembly =
             typeof(UserSecretsVaultTests).Assembly;
 
         // Act

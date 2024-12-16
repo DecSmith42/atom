@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Workflows.Model;
 
 [PublicAPI]
-public interface IWorkflowStepModel
+public interface IWorkflowTargetModel
 {
     string Name { get; }
 }

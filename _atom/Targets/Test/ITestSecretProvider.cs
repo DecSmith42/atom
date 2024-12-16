@@ -1,12 +1,12 @@
 ﻿namespace Atom.Targets.Test;
 
 [TargetDefinition]
-public partial interface ITestVault
+public partial interface ITestSecretProvider
 {
     [SecretDefinition("test-secret", "Test Secret")]
     string TestSecret => GetParam(() => TestSecret)!;
 
-    Target TestVault =>
+    Target TestSecretProvider =>
         d => d
             .WithDescription("Test Vault")
             .RequiresParam(nameof(TestSecret));

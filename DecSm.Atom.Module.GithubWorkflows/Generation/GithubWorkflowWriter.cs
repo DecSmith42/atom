@@ -24,7 +24,7 @@ internal sealed class GithubWorkflowWriter(
         {
             var manualTrigger = workflow
                 .Triggers
-                .OfType<GithubManualTrigger>()
+                .OfType<ManualTrigger>()
                 .FirstOrDefault();
 
             if (manualTrigger is not null)
@@ -41,7 +41,7 @@ internal sealed class GithubWorkflowWriter(
 
                                     switch (input)
                                     {
-                                        case GithubManualBoolInput boolInput:
+                                        case ManualBoolInput boolInput:
 
                                             WriteLine("type: bool");
 
@@ -50,7 +50,7 @@ internal sealed class GithubWorkflowWriter(
 
                                             break;
 
-                                        case GithubManualStringInput stringInput:
+                                        case ManualStringInput stringInput:
 
                                             WriteLine("type: string");
 
@@ -59,7 +59,7 @@ internal sealed class GithubWorkflowWriter(
 
                                             break;
 
-                                        case GithubManualChoiceInput choiceInput:
+                                        case ManualChoiceInput choiceInput:
 
                                             WriteLine("type: string");
 
@@ -78,7 +78,7 @@ internal sealed class GithubWorkflowWriter(
                         }
                 }
 
-            foreach (var pullRequestTrigger in workflow.Triggers.OfType<GithubPullRequestTrigger>())
+            foreach (var pullRequestTrigger in workflow.Triggers.OfType<GitPullRequestTrigger>())
                 using (WriteSection("pull_request:"))
                 {
                     if (pullRequestTrigger.IncludedBranches.Count > 0)
@@ -117,7 +117,7 @@ internal sealed class GithubWorkflowWriter(
                         }
                 }
 
-            foreach (var pushTrigger in workflow.Triggers.OfType<GithubPushTrigger>())
+            foreach (var pushTrigger in workflow.Triggers.OfType<GitPushTrigger>())
                 using (WriteSection("push:"))
                 {
                     if (pushTrigger.IncludedBranches.Count > 0)
@@ -190,8 +190,7 @@ internal sealed class GithubWorkflowWriter(
                 using (WriteSection("matrix:"))
                 {
                     foreach (var dimension in job.MatrixDimensions)
-                        WriteLine(
-                            $"{buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName}: [ {string.Join(", ", dimension.Values)} ]");
+                        WriteLine($"{buildDefinition.ParamDefinitions[dimension.Name].ArgName}: [ {string.Join(", ", dimension.Values)} ]");
                 }
 
             var githubPlatformOption = job
@@ -216,8 +215,8 @@ internal sealed class GithubWorkflowWriter(
 
             var outputs = new List<string>();
 
-            foreach (var step in job.Steps.OfType<CommandWorkflowStep>())
-                outputs.AddRange(buildModel.Targets.Single(t => t.Name == step.Name)
+            foreach (var step in job.Steps.OfType<WorkflowCommandModel>())
+                outputs.AddRange(buildModel.GetTarget(step.Name)
                     .ProducedVariables);
 
             if (outputs.Count > 0)
@@ -225,7 +224,7 @@ internal sealed class GithubWorkflowWriter(
                 {
                     foreach (var output in outputs)
                         WriteLine(
-                            $"{buildDefinition.ParamDefinitions[output].Attribute.ArgName}: ${{{{ steps.{job.Name}.outputs.{buildDefinition.ParamDefinitions[output].Attribute.ArgName} }}}}");
+                            $"{buildDefinition.ParamDefinitions[output].ArgName}: ${{{{ steps.{job.Name}.outputs.{buildDefinition.ParamDefinitions[output].ArgName} }}}}");
                 }
 
             using (WriteSection("steps:"))
@@ -239,11 +238,11 @@ internal sealed class GithubWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, IWorkflowTargetModel step, WorkflowJobModel job)
     {
         switch (step)
         {
-            case CommandWorkflowStep commandStep:
+            case WorkflowCommandModel commandStep:
 
                 using (WriteSection("- name: Checkout"))
                 {
@@ -253,11 +252,11 @@ internal sealed class GithubWorkflowWriter(
                         WriteLine("fetch-depth: 0");
                 }
 
-                var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
+                var commandStepTarget = buildModel.GetTarget(commandStep.Name);
 
                 var matrixParams = job
                     .MatrixDimensions
-                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
+                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].ArgName)
                     .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
                     .ToArray();
 
@@ -313,7 +312,7 @@ internal sealed class GithubWorkflowWriter(
                         if (workflow
                             .Jobs
                             .SelectMany(x => x.Steps)
-                            .OfType<CommandWorkflowStep>()
+                            .OfType<WorkflowCommandModel>()
                             .Single(x => x.Name == consumedArtifact.TargetName)
                             .SuppressArtifactPublishing)
                             logger.LogWarning(
@@ -331,7 +330,7 @@ internal sealed class GithubWorkflowWriter(
 
                             WriteCommandStep(workflow,
                                 new(nameof(IRetrieveArtifact.RetrieveArtifact)),
-                                buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
+                                buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)),
                                 [
                                     ("atom-artifacts", string.Join(",",
                                         slice
@@ -384,7 +383,7 @@ internal sealed class GithubWorkflowWriter(
 
                             WriteCommandStep(workflow,
                                 new(nameof(IStoreArtifact.StoreArtifact)),
-                                buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
+                                buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)),
                                 [
                                     ("atom-artifacts", string.Join(",",
                                         slice
@@ -430,54 +429,53 @@ internal sealed class GithubWorkflowWriter(
 
     private void WriteCommandStep(
         WorkflowModel workflow,
-        CommandWorkflowStep commandStep,
+        WorkflowCommandModel workflowCommandStep,
         TargetModel target,
         (string name, string value)[] extraParams,
         bool includeId)
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection($"- name: {commandStep.Name}"))
+        using (WriteSection($"- name: {workflowCommandStep.Name}"))
         {
             if (includeId)
-                WriteLine($"id: {commandStep.Name}");
+                WriteLine($"id: {workflowCommandStep.Name}");
 
-            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {commandStep.Name} --skip --headless");
+            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {workflowCommandStep.Name} --skip --headless");
 
             var env = new Dictionary<string, string>();
 
-            foreach (var githubManualTrigger in workflow.Triggers.OfType<GithubManualTrigger>())
+            foreach (var githubManualTrigger in workflow.Triggers.OfType<ManualTrigger>())
             {
                 if (githubManualTrigger.Inputs is null or [])
                     continue;
 
                 foreach (var input in githubManualTrigger.Inputs.Where(i => target
                              .RequiredParams
-                             .Select(p => buildDefinition.ParamDefinitions[p].Attribute.ArgName)
+                             .Select(p => p.ArgName)
                              .Any(p => p == i.Name)))
                     env[input.Name] = $"${{{{ inputs.{input.Name} }}}}";
             }
 
             foreach (var consumedVariable in target.ConsumedVariables)
-                env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
-                    $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName} }}}}";
+                env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName] =
+                    $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName} }}}}";
 
             var requiredSecrets = target
                 .RequiredParams
-                .Select(x => buildDefinition.ParamDefinitions[x])
-                .Where(x => x.Attribute.IsSecret)
+                .Where(x => x.IsSecret)
                 .Select(x => x)
                 .ToArray();
 
-            if (requiredSecrets.Any(x => x.Attribute.IsSecret))
+            if (requiredSecrets.Any(x => x.IsSecret))
             {
-                foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
+                foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretsSecretInjection>())
                 {
                     if (injectedSecret.Value is null)
                     {
-                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a vault secret injection with a null value",
+                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
-                            commandStep.Name);
+                            workflowCommandStep.Name);
 
                         continue;
                     }
@@ -485,18 +483,17 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.Attribute.ArgName] =
-                            $"${{{{ secrets.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] = $"${{{{ secrets.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
 
-                foreach (var injectedEvVar in workflow.Options.OfType<WorkflowVaultEnvironmentInjection>())
+                foreach (var injectedEvVar in workflow.Options.OfType<WorkflowSecretsEnvironmentInjection>())
                 {
                     if (injectedEvVar.Value is null)
                     {
                         logger.LogWarning(
-                            "Workflow {WorkflowName} command {CommandName} has a vault environemnt variable injection with a null value",
+                            "Workflow {WorkflowName} command {CommandName} has a secret provider environment variable injection with a null value",
                             workflow.Name,
-                            commandStep.Name);
+                            workflowCommandStep.Name);
 
                         continue;
                     }
@@ -504,8 +501,7 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEvVar.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.Attribute.ArgName] =
-                            $"${{{{ vars.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] = $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
             }
 
@@ -513,13 +509,12 @@ internal sealed class GithubWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
-                    .Concat(commandStep.Options)
+                    .Concat(workflowCommandStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.Attribute.ArgName] =
-                        $"${{{{ secrets.{requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    env[requiredSecret.ArgName] = $"${{{{ secrets.{requiredSecret.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();
@@ -533,13 +528,13 @@ internal sealed class GithubWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        commandStep.Name,
+                        workflowCommandStep.Name,
                         environmentInjection.Value);
 
                     continue;
                 }
 
-                env[paramDefinition.Attribute.ArgName] = $"${{{{ vars.{paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                env[paramDefinition.ArgName] = $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
             foreach (var paramInjection in paramInjections)
@@ -549,13 +544,13 @@ internal sealed class GithubWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that is not consumed by the command",
                         workflow.Name,
-                        commandStep.Name,
+                        workflowCommandStep.Name,
                         paramInjection.Name);
 
                     continue;
                 }
 
-                env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
+                env[paramDefinition.ArgName] = paramInjection.Value;
             }
 
             var validEnv = env

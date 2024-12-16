@@ -25,7 +25,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
         var manualTrigger = workflow
             .Triggers
-            .OfType<DevopsManualTrigger>()
+            .OfType<ManualTrigger>()
             .FirstOrDefault();
 
         if (manualTrigger is { Inputs.Count: > 0 })
@@ -38,7 +38,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
                         switch (input)
                         {
-                            case DevopsManualBoolInput boolInput:
+                            case ManualBoolInput boolInput:
 
                                 WriteLine("type: boolean");
 
@@ -47,7 +47,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
                                 break;
 
-                            case DevopsManualStringInput stringInput:
+                            case ManualStringInput stringInput:
 
                                 WriteLine("type: string");
 
@@ -56,7 +56,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
                                 break;
 
-                            case DevopsManualChoiceInput choiceInput:
+                            case ManualChoiceInput choiceInput:
 
                                 WriteLine("type: string");
 
@@ -91,7 +91,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
         var pushTriggers = workflow
             .Triggers
-            .OfType<DevopsPushTrigger>()
+            .OfType<GitPushTrigger>()
             .ToArray();
 
         if (pushTriggers.Length > 0)
@@ -230,7 +230,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         {
                             for (var i = 0; i < dimensions.Length; i++)
                                 WriteLine(
-                                    $"{buildDefinition.ParamDefinitions[dimensionNames[i]].Attribute.ArgName}: '{dimensionValues[i][dimensionValueIndices[i]]}'");
+                                    $"{buildDefinition.ParamDefinitions[dimensionNames[i]].ArgName}: '{dimensionValues[i][dimensionValueIndices[i]]}'");
                         }
 
                         var dimensionIndex = 0;
@@ -279,26 +279,24 @@ internal sealed partial class DevopsWorkflowWriter(
 
             var targetsForConsumedVariableDeclaration = new List<TargetModel>();
 
-            foreach (var commandStep in job.Steps.OfType<CommandWorkflowStep>())
+            foreach (var commandStep in job.Steps.OfType<WorkflowCommandModel>())
             {
-                var target = buildModel.Targets.Single(t => t.Name == commandStep.Name);
+                var target = buildModel.GetTarget(commandStep.Name);
                 targetsForConsumedVariableDeclaration.Add(target);
 
                 if (UseCustomArtifactProvider.IsEnabled(workflow.Options) && !commandStep.SuppressArtifactPublishing)
                 {
                     if (target.ConsumedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.Targets.Single(t =>
-                            t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)));
+                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
 
                     if (target.ProducedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.Targets.Single(t =>
-                            t.Name == nameof(IStoreArtifact.StoreArtifact)));
+                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
                 }
             }
 
             foreach (var consumedVariable in targetsForConsumedVariableDeclaration.SelectMany(x => x.ConsumedVariables))
             {
-                var variableName = buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName;
+                var variableName = buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName;
 
                 variables[variableName] =
                     $"$[ dependencies.{consumedVariable.TargetName}.outputs['{consumedVariable.TargetName}.{variableName}'] ]";
@@ -323,22 +321,22 @@ internal sealed partial class DevopsWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, IWorkflowTargetModel step, WorkflowJobModel job)
     {
         switch (step)
         {
-            case CommandWorkflowStep commandStep:
+            case WorkflowCommandModel commandStep:
 
                 using (WriteSection("- checkout: self"))
                     WriteLine("fetchDepth: 0");
 
                 WriteLine();
 
-                var commandStepTarget = buildModel.Targets.Single(t => t.Name == commandStep.Name);
+                var commandStepTarget = buildModel.GetTarget(commandStep.Name);
 
                 var matrixParams = job
                     .MatrixDimensions
-                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].Attribute.ArgName)
+                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].ArgName)
                     .Select(name => (Name: name, Value: $"$({name})"))
                     .ToArray();
 
@@ -391,7 +389,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         if (workflow
                             .Jobs
                             .SelectMany(x => x.Steps)
-                            .OfType<CommandWorkflowStep>()
+                            .OfType<WorkflowCommandModel>()
                             .Single(x => x.Name == consumedArtifact.TargetName)
                             .SuppressArtifactPublishing)
                             logger.LogWarning(
@@ -405,7 +403,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     {
                         WriteCommandStep(workflow,
                             new(nameof(IRetrieveArtifact.RetrieveArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IRetrieveArtifact.RetrieveArtifact)),
+                            buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(buildSlice.Value)
@@ -450,7 +448,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
                         WriteCommandStep(workflow,
                             new(nameof(IStoreArtifact.StoreArtifact)),
-                            buildModel.Targets.Single(t => t.Name == nameof(IStoreArtifact.StoreArtifact)),
+                            buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)),
                             [
                                 ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                                 !string.IsNullOrWhiteSpace(buildSlice.Value)
@@ -492,52 +490,52 @@ internal sealed partial class DevopsWorkflowWriter(
 
     private void WriteCommandStep(
         WorkflowModel workflow,
-        CommandWorkflowStep commandStep,
+        WorkflowCommandModel workflowCommandStep,
         TargetModel target,
         (string name, string value)[] extraParams,
         bool includeName)
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection($"- script: dotnet run --project {projectName}/{projectName}.csproj {commandStep.Name} --skip --headless"))
+        using (WriteSection(
+                   $"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowCommandStep.Name} --skip --headless"))
         {
             if (includeName)
-                WriteLine($"name: {commandStep.Name}");
+                WriteLine($"name: {workflowCommandStep.Name}");
 
             var env = new Dictionary<string, string>();
 
-            foreach (var githubManualTrigger in workflow.Triggers.OfType<DevopsManualTrigger>())
+            foreach (var githubManualTrigger in workflow.Triggers.OfType<ManualTrigger>())
             {
                 if (githubManualTrigger.Inputs is null or [])
                     continue;
 
                 foreach (var input in githubManualTrigger.Inputs.Where(i => target
                              .RequiredParams
-                             .Select(p => buildDefinition.ParamDefinitions[p].Attribute.ArgName)
+                             .Select(p => p.ArgName)
                              .Any(p => p == i.Name)))
                     env[input.Name] = $"${{{{ parameters.{input.Name} }}}}";
             }
 
             foreach (var consumedVariable in target.ConsumedVariables)
-                env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName] =
-                    $"$({buildDefinition.ParamDefinitions[consumedVariable.VariableName].Attribute.ArgName})";
+                env[buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName] =
+                    $"$({buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName})";
 
             var requiredSecrets = target
                 .RequiredParams
-                .Select(x => buildDefinition.ParamDefinitions[x])
-                .Where(x => x.Attribute.IsSecret)
+                .Where(x => x.IsSecret)
                 .Select(x => x)
                 .ToArray();
 
-            if (requiredSecrets.Any(x => x.Attribute.IsSecret))
+            if (requiredSecrets.Any(x => x.IsSecret))
             {
-                foreach (var injectedSecret in workflow.Options.OfType<WorkflowVaultSecretInjection>())
+                foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretsSecretInjection>())
                 {
                     if (injectedSecret.Value is null)
                     {
-                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a vault secret injection with a null value",
+                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
-                            commandStep.Name);
+                            workflowCommandStep.Name);
 
                         continue;
                     }
@@ -545,17 +543,17 @@ internal sealed partial class DevopsWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+                        env[paramDefinition.ArgName] = $"$({paramDefinition.ArgName.ToUpper().Replace('-', '_')})";
                 }
 
-                foreach (var injectedEnvVar in workflow.Options.OfType<WorkflowVaultEnvironmentInjection>())
+                foreach (var injectedEnvVar in workflow.Options.OfType<WorkflowSecretsEnvironmentInjection>())
                 {
                     if (injectedEnvVar.Value is null)
                     {
                         logger.LogWarning(
-                            "Workflow {WorkflowName} command {CommandName} has a vault environment variable injection with a null value",
+                            "Workflow {WorkflowName} command {CommandName} has a secret environment variable injection with a null value",
                             workflow.Name,
-                            commandStep.Name);
+                            workflowCommandStep.Name);
 
                         continue;
                     }
@@ -563,7 +561,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEnvVar.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+                        env[paramDefinition.ArgName] = $"$({paramDefinition.ArgName.ToUpper().Replace('-', '_')})";
                 }
             }
 
@@ -571,12 +569,12 @@ internal sealed partial class DevopsWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
-                    .Concat(commandStep.Options)
+                    .Concat(workflowCommandStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.Attribute.ArgName] = $"$({requiredSecret.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+                    env[requiredSecret.ArgName] = $"$({requiredSecret.ArgName.ToUpper().Replace('-', '_')})";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();
@@ -590,13 +588,13 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        commandStep.Name,
+                        workflowCommandStep.Name,
                         environmentInjection.Value);
 
                     continue;
                 }
 
-                env[paramDefinition.Attribute.ArgName] = $"$({paramDefinition.Attribute.ArgName.ToUpper().Replace('-', '_')})";
+                env[paramDefinition.ArgName] = $"$({paramDefinition.ArgName.ToUpper().Replace('-', '_')})";
             }
 
             foreach (var paramInjection in paramInjections)
@@ -606,13 +604,13 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        commandStep.Name,
+                        workflowCommandStep.Name,
                         paramInjection.Name);
 
                     continue;
                 }
 
-                env[paramDefinition.Attribute.ArgName] = paramInjection.Value;
+                env[paramDefinition.ArgName] = paramInjection.Value;
             }
 
             var validEnv = env

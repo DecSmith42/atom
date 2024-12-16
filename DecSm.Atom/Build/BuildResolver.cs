@@ -4,6 +4,18 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
 {
     public BuildModel Resolve()
     {
+        var paramModels = buildDefinition
+            .ParamDefinitions
+            .Select(x => new ParamModel(x.Key)
+            {
+                ArgName = x.Value.ArgName,
+                Description = x.Value.Description,
+                DefaultValue = x.Value.DefaultValue,
+                Sources = x.Value.Sources,
+                IsSecret = x.Value.IsSecret,
+            })
+            .ToDictionary(x => x.Name);
+
         var specifiedTargets = commandLineArgs
             .Commands
             .Select(x => x.Name)
@@ -49,12 +61,13 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 return new TargetModel(x.Name, x.Description, x.Hidden)
                 {
                     Tasks = x.Tasks,
-                    RequiredParams = x.RequiredParams,
+                    RequiredParams = x.RequiredParams.ConvertAll(p => paramModels[p]),
                     ConsumedArtifacts = x.ConsumedArtifacts,
                     ProducedArtifacts = x.ProducedArtifacts,
                     ConsumedVariables = x.ConsumedVariables,
                     ProducedVariables = x.ProducedVariables,
                     Dependencies = dependencies,
+                    DeclaringAssembly = buildDefinition.TargetDefinitions[x.Name].Method.ReflectedType!.Assembly,
                 };
             })
             .ToArray();
@@ -143,6 +156,8 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
         {
             Targets = depthFirstTargets,
             TargetStates = targetStates,
+            DeclaringAssembly = buildDefinition.GetType()
+                .Assembly,
         };
 
         void Visit(TargetModel target)

@@ -19,9 +19,9 @@ public partial interface IAzureKeyVault
 
     static void IBuildDefinition.Register(IServiceCollection services) =>
         services
-            .AddSingleton<AzureKeyVaultProvider>()
-            .AddSingleton<IVaultProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>())
-            .AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeyVaultProvider>());
+            .AddSingleton<AzureKeySecretsProvider>()
+            .AddSingleton<ISecretsProvider>(x => x.GetRequiredService<AzureKeySecretsProvider>())
+            .AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeySecretsProvider>());
 }
 
 public sealed record AzureKeyVaultValueInjections(

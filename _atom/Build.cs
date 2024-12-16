@@ -1,4 +1,6 @@
-﻿namespace Atom;
+﻿using DecSm.Atom.Workflows.Definition.Triggers;
+
+namespace Atom;
 
 [BuildDefinition]
 [GenerateEntryPoint]
@@ -24,7 +26,7 @@ internal partial class Build : DefaultBuildDefinition,
     ITestPrivateNugetRestore,
     IPublishTester,
     ITestManualParams,
-    ITestVault
+    ITestSecretProvider
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -51,7 +53,7 @@ internal partial class Build : DefaultBuildDefinition,
         // Real workflows
         new("Validate")
         {
-            Triggers = [Github.Triggers.PullIntoMain],
+            Triggers = [GitPullRequestTrigger.IntoMain],
             StepDefinitions =
             [
                 Commands.SetupBuildInfo,
@@ -74,7 +76,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Build")
         {
-            Triggers = [Github.Triggers.PushToMain],
+            Triggers = [GitPushTrigger.ToMain],
             StepDefinitions =
             [
                 Commands.SetupBuildInfo,
@@ -100,13 +102,9 @@ internal partial class Build : DefaultBuildDefinition,
         {
             Triggers =
             [
-                new GithubManualTrigger
+                new ManualTrigger
                 {
-                    Inputs = [GithubManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
-                },
-                new DevopsManualTrigger
-                {
-                    Inputs = [DevopsManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
+                    Inputs = [ManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
                 },
             ],
             StepDefinitions = [Commands.TestManualParams],
@@ -114,7 +112,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Test_ValidatePrivateNugetFeed")
         {
-            Triggers = [Github.Triggers.PullIntoMain],
+            Triggers = [GitPullRequestTrigger.IntoMain],
             StepDefinitions =
             [
                 Commands.SetupBuildInfo,
@@ -125,7 +123,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Test_BuildPrivateNugetFeed")
         {
-            Triggers = [Github.Triggers.PullIntoMain],
+            Triggers = [GitPullRequestTrigger.IntoMain],
             StepDefinitions =
             [
                 Commands.SetupBuildInfo,
@@ -179,7 +177,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Test_BuildWithCustomArtifacts")
         {
-            Triggers = [Github.Triggers.PullIntoMain],
+            Triggers = [GitPullRequestTrigger.IntoMain],
             StepDefinitions =
             [
                 Commands.SetupBuildInfo,
@@ -203,8 +201,8 @@ internal partial class Build : DefaultBuildDefinition,
         {
             Triggers =
             [
-                Github.Triggers.Manual,
-                new GithubPushTrigger
+                ManualTrigger.Empty,
+                new GitPushTrigger
                 {
                     IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
                 },

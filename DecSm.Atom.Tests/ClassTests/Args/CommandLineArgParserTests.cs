@@ -173,9 +173,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         var parser = new CommandLineArgsParser(build, console);
@@ -206,9 +227,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         var parser = new CommandLineArgsParser(build, console);
@@ -229,9 +271,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         var parser = new CommandLineArgsParser(build, console);
@@ -318,9 +381,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         A
@@ -368,9 +452,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         A
@@ -418,9 +523,30 @@ public class CommandLineArgParserTests
             .CallTo(() => build.ParamDefinitions)
             .Returns(new Dictionary<string, ParamDefinition>
             {
-                ["Param1"] = new("Param1", new("param1", "Param 1")),
-                ["Param2"] = new("Param2", new("param2", "Param 2")),
-                ["Param3"] = new("Param3", new("param3", "Param 3")),
+                ["Param1"] = new("Param1")
+                {
+                    ArgName = "param1",
+                    Description = "Param 1",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param2"] = new("Param2")
+                {
+                    ArgName = "param2",
+                    Description = "Param 2",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
+                ["Param3"] = new("Param3")
+                {
+                    ArgName = "param3",
+                    Description = "Param 3",
+                    DefaultValue = null,
+                    Sources = ParamSource.All,
+                    IsSecret = false,
+                },
             });
 
         A

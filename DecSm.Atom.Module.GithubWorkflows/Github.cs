@@ -88,22 +88,6 @@ public static class Github
     }
 
     [PublicAPI]
-    public static class Triggers
-    {
-        public static GithubManualTrigger Manual { get; } = new();
-
-        public static GithubPushTrigger PushToMain { get; } = new()
-        {
-            IncludedBranches = ["main"],
-        };
-
-        public static GithubPullRequestTrigger PullIntoMain { get; } = new()
-        {
-            IncludedBranches = ["main"],
-        };
-    }
-
-    [PublicAPI]
     public static class Variables
     {
         /// <summary>

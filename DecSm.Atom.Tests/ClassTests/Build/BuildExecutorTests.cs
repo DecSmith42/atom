@@ -12,6 +12,7 @@ public class BuildExecutorTests
         {
             Targets = [],
             TargetStates = new Dictionary<TargetModel, TargetState>(),
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         _buildDefinition = new TestBuildDefinition();
@@ -69,7 +70,6 @@ public class BuildExecutorTests
         // Arrange
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,
-            _buildDefinition,
             _paramService,
             _workflowVariableService,
             _outcomeReporters,
@@ -114,6 +114,7 @@ public class BuildExecutorTests
             ConsumedVariables = [],
             ProducedVariables = [],
             Dependencies = [],
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         _buildModel = new()
@@ -129,11 +130,11 @@ public class BuildExecutorTests
                     }
                 },
             },
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         var buildExecutor = new BuildExecutor(_commandLineArgs,
             _buildModel,
-            _buildDefinition,
             _paramService,
             _workflowVariableService,
             _outcomeReporters,

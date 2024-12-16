@@ -3,7 +3,6 @@
 internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
-    IBuildDefinition buildDefinition,
     IParamService paramService,
     IWorkflowVariableService variableService,
     IEnumerable<IOutcomeReporter> outcomeReporters,
@@ -53,28 +52,28 @@ internal sealed class BuildExecutor(
 
     private void ValidateTargetParameters(TargetModel target)
     {
-        foreach (var requirement in target.RequiredParams)
+        foreach (var requiredParam in target.RequiredParams)
         {
-            string? defaultValue = null;
-
-            if (buildDefinition.ParamDefinitions.TryGetValue(requirement, out var paramDefinition))
-                if (paramDefinition.Attribute.DefaultValue is { Length: > 0 })
-                    defaultValue = paramDefinition.Attribute.DefaultValue;
+            var defaultValue = requiredParam.DefaultValue is { Length: > 0 }
+                ? requiredParam.DefaultValue
+                : null;
 
             string? value;
 
-            if (paramDefinition is { Attribute.IsSecret: true })
-                value = paramService.GetParam(requirement, defaultValue, x => x);
+            if (requiredParam.IsSecret)
+                value = paramService.GetParam(requiredParam.Name, defaultValue, x => x);
             else
             {
                 using var _ = paramService.CreateNoCacheScope();
-                value = paramService.GetParam(requirement, defaultValue);
+                value = paramService.GetParam(requiredParam.Name, defaultValue);
             }
 
             if (value is { Length: > 0 })
                 continue;
 
-            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}", requirement, target.Name);
+            logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
+                requiredParam.ArgName,
+                target.Name);
 
             buildModel.TargetStates[target].Status = TargetRunState.Failed;
 

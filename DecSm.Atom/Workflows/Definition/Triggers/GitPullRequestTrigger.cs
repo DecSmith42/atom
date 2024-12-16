@@ -1,7 +1,7 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Triggers;
+﻿namespace DecSm.Atom.Workflows.Definition.Triggers;
 
 [PublicAPI]
-public sealed record GithubPullRequestTrigger : IWorkflowTrigger
+public sealed record GitPullRequestTrigger : IWorkflowTrigger
 {
     public IReadOnlyList<string> IncludedBranches { get; init; } = [];
 
@@ -12,4 +12,9 @@ public sealed record GithubPullRequestTrigger : IWorkflowTrigger
     public IReadOnlyList<string> ExcludedPaths { get; init; } = [];
 
     public IReadOnlyList<string> Types { get; init; } = [];
+
+    public static GitPullRequestTrigger IntoMain { get; } = new()
+    {
+        IncludedBranches = ["main"],
+    };
 }

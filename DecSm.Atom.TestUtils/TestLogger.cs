@@ -16,7 +16,7 @@ public sealed class TestLogger : ILogger
     public bool IsEnabled(LogLevel logLevel) =>
         true;
 
-    public IDisposable? BeginScope<TState>(TState state)
+    public IDisposable BeginScope<TState>(TState state)
         where TState : notnull =>
-        new DisposableAction(() => { });
+        new DisposableAction();
 }

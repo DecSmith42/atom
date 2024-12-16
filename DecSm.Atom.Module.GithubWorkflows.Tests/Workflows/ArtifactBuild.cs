@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
+﻿using DecSm.Atom.Workflows.Definition.Triggers;
+
+namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
 [BuildDefinition]
 public partial class ArtifactBuild : BuildDefinition,
@@ -14,7 +16,7 @@ public partial class ArtifactBuild : BuildDefinition,
         {
             Triggers =
             [
-                new GithubPullRequestTrigger
+                new GitPullRequestTrigger
                 {
                     IncludedBranches = ["main"],
                 },
@@ -49,7 +51,7 @@ public partial class CustomArtifactBuild : BuildDefinition,
         {
             Triggers =
             [
-                new GithubPullRequestTrigger
+                new GitPullRequestTrigger
                 {
                     IncludedBranches = ["main"],
                 },

@@ -1,7 +1,7 @@
-namespace DecSm.Atom.Module.DevopsWorkflows.Triggers;
+﻿namespace DecSm.Atom.Workflows.Definition.Triggers;
 
 [PublicAPI]
-public sealed record DevopsPushTrigger : IWorkflowTrigger
+public sealed record GitPushTrigger : IWorkflowTrigger
 {
     public IReadOnlyList<string> IncludedBranches { get; init; } = [];
 
@@ -14,4 +14,9 @@ public sealed record DevopsPushTrigger : IWorkflowTrigger
     public IReadOnlyList<string> IncludedTags { get; init; } = [];
 
     public IReadOnlyList<string> ExcludedTags { get; init; } = [];
+
+    public static GitPushTrigger ToMain { get; } = new()
+    {
+        IncludedBranches = ["main"],
+    };
 }

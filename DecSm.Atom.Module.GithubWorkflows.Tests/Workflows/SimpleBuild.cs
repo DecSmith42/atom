@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
+﻿using DecSm.Atom.Workflows.Definition.Triggers;
+
+namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
 [BuildDefinition]
 public partial class SimpleBuild : BuildDefinition, IGithubWorkflows, ISimpleTarget
@@ -9,7 +11,7 @@ public partial class SimpleBuild : BuildDefinition, IGithubWorkflows, ISimpleTar
         {
             Triggers =
             [
-                new GithubPullRequestTrigger
+                new GitPullRequestTrigger
                 {
                     IncludedBranches = ["main"],
                 },

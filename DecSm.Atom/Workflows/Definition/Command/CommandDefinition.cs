@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Command;
 
 [PublicAPI]
-public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
+public sealed record CommandDefinition(string Name) : IWorkflowTargetDefinition
 {
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
 
@@ -15,8 +15,8 @@ public sealed record CommandDefinition(string Name) : IWorkflowStepDefinition
             SuppressArtifactPublishing = true,
         };
 
-    public IWorkflowStepModel CreateStep() =>
-        new CommandWorkflowStep(Name)
+    public IWorkflowTargetModel CreateModel() =>
+        new WorkflowCommandModel(Name)
         {
             MatrixDimensions = MatrixDimensions,
             SuppressArtifactPublishing = SuppressArtifactPublishing,

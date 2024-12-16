@@ -22,7 +22,7 @@ internal sealed class ParamService(
     IBuildDefinition buildDefinition,
     CommandLineArgs args,
     IConfiguration config,
-    IEnumerable<IVaultProvider> vaultProviders
+    IEnumerable<ISecretsProvider> vaultProviders
 ) : IParamService
 {
     private readonly record struct NoCacheScope : IDisposable
@@ -41,7 +41,7 @@ internal sealed class ParamService(
 
     private readonly Dictionary<ParamDefinition, object?> _cache = [];
     private readonly List<string> _knownSecrets = [];
-    private readonly IVaultProvider[] _vaultProviders = vaultProviders.ToArray();
+    private readonly ISecretsProvider[] _vaultProviders = vaultProviders.ToArray();
 
     private bool NoCache { get; set; }
 
@@ -80,20 +80,20 @@ internal sealed class ParamService(
     {
         T? result;
 
-        if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Cache) &&
+        if (paramDefinition.Sources.HasFlag(ParamSource.Cache) &&
             TryGetParamFromCache(paramDefinition, converter) is (true, { } cacheValue))
             result = cacheValue;
-        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.CommandLineArgs) &&
+        else if (paramDefinition.Sources.HasFlag(ParamSource.CommandLineArgs) &&
                  TryGetParamFromArgs(paramDefinition, converter) is (true, { } argsValue))
             result = argsValue;
-        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
+        else if (paramDefinition.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
                  TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
             result = envVarValue;
-        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Configuration) &&
+        else if (paramDefinition.Sources.HasFlag(ParamSource.Configuration) &&
                  TryGetParamFromConfig(paramDefinition, converter) is (true, { } configValue))
             result = configValue;
-        else if (paramDefinition.Attribute.Sources.HasFlag(ParamSource.Vault) &&
-                 paramDefinition.Attribute.IsSecret &&
+        else if (paramDefinition.Sources.HasFlag(ParamSource.Secrets) &&
+                 paramDefinition.IsSecret &&
                  TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
             result = vaultValue;
         else
@@ -135,11 +135,11 @@ internal sealed class ParamService(
         var envVar = Environment.GetEnvironmentVariable(paramDefinition.Name);
 
         if (string.IsNullOrEmpty(envVar))
-            envVar = Environment.GetEnvironmentVariable(paramDefinition.Attribute.ArgName);
+            envVar = Environment.GetEnvironmentVariable(paramDefinition.ArgName);
 
         if (string.IsNullOrEmpty(envVar))
             envVar = Environment.GetEnvironmentVariable(paramDefinition
-                .Attribute
+
                 .ArgName
                 .ToUpperInvariant()
                 .Replace('-', '_'));
@@ -156,10 +156,10 @@ internal sealed class ParamService(
     {
         var configValue = config
                               .GetSection("Params")
-                              .GetSection(paramDefinition.Attribute.ArgName)
+                              .GetSection(paramDefinition.ArgName)
                               .Get<T>() ??
                           TypeUtil.Convert(config
-                                  .GetSection("Params")[paramDefinition.Attribute.ArgName],
+                                  .GetSection("Params")[paramDefinition.ArgName],
                               converter);
 
         return configValue is null
@@ -171,7 +171,7 @@ internal sealed class ParamService(
     {
         foreach (var vaultProvider in _vaultProviders)
         {
-            var vaultValue = vaultProvider.GetSecret(paramDefinition.Attribute.ArgName);
+            var vaultValue = vaultProvider.GetSecret(paramDefinition.ArgName);
 
             if (vaultValue is null)
                 continue;

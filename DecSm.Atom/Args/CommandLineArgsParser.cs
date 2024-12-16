@@ -35,7 +35,7 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
                 var matchedParam = false;
 
                 foreach (var buildParam in buildDefinition.ParamDefinitions.Where(buildParam =>
-                             string.Equals(argParam, buildParam.Value.Attribute.ArgName, StringComparison.OrdinalIgnoreCase)))
+                             string.Equals(argParam, buildParam.Value.ArgName, StringComparison.OrdinalIgnoreCase)))
                 {
                     if (i == rawArgs.Count - 1)
                         throw new ArgumentException($"Missing value for parameter '{argParam}'");
@@ -45,7 +45,7 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
                     if (nextArg.StartsWith("--"))
                         throw new ArgumentException($"Missing value for parameter '{argParam}'");
 
-                    args.Add(new ParamArg(buildParam.Value.Attribute.ArgName, buildParam.Key, nextArg));
+                    args.Add(new ParamArg(buildParam.Value.ArgName, buildParam.Key, nextArg));
                     i++;
                     matchedParam = true;
 
@@ -85,7 +85,7 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
             var paramMatches = buildDefinition
                 .ParamDefinitions
                 .Values
-                .Select(paramDefinition => paramDefinition.Attribute.ArgName)
+                .Select(paramDefinition => paramDefinition.ArgName)
                 .OrderBy(paramDefinition => paramDefinition.GetLevenshteinDistance(rawArg))
                 .Take(3)
                 .ToList();

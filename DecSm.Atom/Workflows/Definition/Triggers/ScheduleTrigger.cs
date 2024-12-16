@@ -1,4 +1,4 @@
-namespace DecSm.Atom.Module.GithubWorkflows.Triggers;
+﻿namespace DecSm.Atom.Workflows.Definition.Triggers;
 
 [PublicAPI]
 public sealed record GithubScheduleTrigger(string CronExpression) : IWorkflowTrigger;

@@ -1,6 +1,6 @@
-﻿namespace DecSm.Atom.Vaults;
+﻿namespace DecSm.Atom.Secrets;
 
-public class UserSecretsVaultProvider : IVaultProvider
+public class DotnetUserSecretsProvider : ISecretsProvider
 {
     public Assembly? SecretsAssembly { get; set; }
 

@@ -7,6 +7,8 @@ public sealed record BuildModel
 
     public required IReadOnlyDictionary<TargetModel, TargetState> TargetStates { get; init; }
 
+    public required Assembly DeclaringAssembly { get; init; }
+
     public TargetModel? CurrentTarget =>
         Targets.FirstOrDefault(targetModel => TargetStates[targetModel] is { Status: TargetRunState.Running });
 

@@ -1,0 +1,40 @@
+﻿{
+  Targets: [
+    {
+      Name: UnspecifiedTarget1,
+      Description: Unspecified target 1,
+      IsHidden: false
+    },
+    {
+      Name: UnspecifiedTarget3,
+      Description: Unspecified target 3,
+      IsHidden: false
+    },
+    {
+      Name: UnspecifiedTarget2,
+      Description: Unspecified target 2,
+      IsHidden: false,
+      Dependencies: [
+        {
+          Name: UnspecifiedTarget3,
+          Description: Unspecified target 3,
+          IsHidden: false
+        }
+      ]
+    }
+  ],
+  TargetStates: {
+    TargetModel { Name = UnspecifiedTarget1, Description = Unspecified target 1, IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
+      Name: UnspecifiedTarget1,
+      Status: Skipped
+    },
+    TargetModel { Name = UnspecifiedTarget3, Description = Unspecified target 3, IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
+      Name: UnspecifiedTarget3,
+      Status: PendingRun
+    },
+    TargetModel { Name = UnspecifiedTarget2, Description = Unspecified target 2, IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Definition.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom.Tests, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
+      Name: UnspecifiedTarget2,
+      Status: PendingRun
+    }
+  }
+}

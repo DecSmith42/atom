@@ -22,11 +22,56 @@ partial class MinimalTestDefinition
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
     {
-        { "BuildId", new("BuildId", new DecSm.Atom.Params.ParamDefinitionAttribute("build-id", "Build/run ID", "{From IBuildIdProvider}", (DecSm.Atom.Params.ParamSource)47)) },
-        { "BuildVersion", new("BuildVersion", new DecSm.Atom.Params.ParamDefinitionAttribute("build-version", "Build version", "{From IBuildVersionProvider}", (DecSm.Atom.Params.ParamSource)47)) },
-        { "BuildTimestamp", new("BuildTimestamp", new DecSm.Atom.Params.ParamDefinitionAttribute("build-timestamp", "Build timestamp (seconds since unix epoch)", "{From IBuildTimestampProvider}", (DecSm.Atom.Params.ParamSource)47)) },
-        { "AtomBuildName", new("AtomBuildName", new DecSm.Atom.Params.ParamDefinitionAttribute("build-name", "Name of the build", "{Solution name if provided, otherwise the root directory name}", (DecSm.Atom.Params.ParamSource)47)) },
-        { "BuildSlice", new("BuildSlice", new DecSm.Atom.Params.ParamDefinitionAttribute("build-slice", "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs", null, (DecSm.Atom.Params.ParamSource)47)) },
+        {
+            "BuildId", new("BuildId")
+            {
+                ArgName = "build-id",
+                Description = "Build/run ID",
+                DefaultValue = "{From IBuildIdProvider}",
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
+        {
+            "BuildVersion", new("BuildVersion")
+            {
+                ArgName = "build-version",
+                Description = "Build version",
+                DefaultValue = "{From IBuildVersionProvider}",
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
+        {
+            "BuildTimestamp", new("BuildTimestamp")
+            {
+                ArgName = "build-timestamp",
+                Description = "Build timestamp (seconds since unix epoch)",
+                DefaultValue = "{From IBuildTimestampProvider}",
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
+        {
+            "AtomBuildName", new("AtomBuildName")
+            {
+                ArgName = "build-name",
+                Description = "Name of the build",
+                DefaultValue = "{Solution name if provided, otherwise the root directory name}",
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
+        {
+            "BuildSlice", new("BuildSlice")
+            {
+                ArgName = "build-slice",
+                Description = "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs",
+                DefaultValue = null,
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
     };
 
     public static class Commands

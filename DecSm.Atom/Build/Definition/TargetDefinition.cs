@@ -178,7 +178,7 @@ public sealed class TargetDefinition
 
     public TargetDefinition ProducesVariable(ParamDefinition parameter)
     {
-        ProducedVariables.Add(parameter.Attribute.ArgName);
+        ProducedVariables.Add(parameter.ArgName);
 
         return this;
     }
@@ -199,7 +199,7 @@ public sealed class TargetDefinition
 
     public TargetDefinition ConsumesVariable(CommandDefinition command, ParamDefinition parameter)
     {
-        ConsumedVariables.Add(new(command.Name, parameter.Attribute.ArgName));
+        ConsumedVariables.Add(new(command.Name, parameter.ArgName));
 
         return this;
     }
