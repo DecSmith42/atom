@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Command;
 
 [PublicAPI]
-public sealed record CommandWorkflowStep(string Name) : IWorkflowStepModel
+public sealed record WorkflowCommandModel(string Name) : IWorkflowTargetModel
 {
     public bool SuppressArtifactPublishing { get; init; }
 

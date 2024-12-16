@@ -3,9 +3,9 @@
 [PublicAPI]
 public static class TransformProjectVersionScope
 {
-    public static TransformFileScope Create(AbsolutePath file, SemVer version) =>
+    public static TransformFileScope Create(RootedPath file, SemVer version) =>
         TransformFileScope.Create(file, text => MsBuildUtil.SetVersionInfo(text, version));
 
-    public static TransformMultiFileScope Create(IEnumerable<AbsolutePath> files, SemVer version) =>
+    public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, SemVer version) =>
         TransformMultiFileScope.Create(files, text => MsBuildUtil.SetVersionInfo(text, version));
 }

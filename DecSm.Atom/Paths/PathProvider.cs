@@ -5,15 +5,15 @@ public interface IPathProvider
 {
     int Priority { get; }
 
-    AbsolutePath? Locate(string key, Func<string, AbsolutePath> locator);
+    RootedPath? Locate(string key, Func<string, RootedPath> locator);
 }
 
 public sealed class PathProvider : IPathProvider
 {
-    public required Func<string, Func<string, AbsolutePath>, AbsolutePath?> Locator { get; init; }
+    public required Func<string, Func<string, RootedPath>, RootedPath?> Locator { get; init; }
 
     public required int Priority { get; init; }
 
-    public AbsolutePath? Locate(string key, Func<string, AbsolutePath> locator) =>
+    public RootedPath? Locate(string key, Func<string, RootedPath> locator) =>
         Locator(key, locator);
 }

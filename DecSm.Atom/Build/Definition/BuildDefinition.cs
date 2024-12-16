@@ -39,7 +39,7 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildInfo
 {
     /// <summary>
     ///     Gets a dictionary of target definitions, where each target is identified by a unique name.
-    ///     Targets define specific build steps or actions that can be executed.
+    ///     TargetDefinitions define specific build steps or actions that can be executed.
     /// </summary>
     public abstract IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
 

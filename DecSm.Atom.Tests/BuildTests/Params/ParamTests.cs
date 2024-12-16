@@ -53,6 +53,6 @@ public class ParamTests
             .Logger
             .LogContent
             .ToString()
-            .ShouldContain("Missing required parameter 'Param2' for target ParamTarget2");
+            .ShouldContain("Missing required parameter 'param-2' for target ParamTarget2");
     }
 }

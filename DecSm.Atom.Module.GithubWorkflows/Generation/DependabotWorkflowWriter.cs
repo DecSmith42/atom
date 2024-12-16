@@ -9,7 +9,7 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
 
     protected override int TabSize => 2;
 
-    protected override AbsolutePath FileLocation => _fileSystem.AtomRootDirectory / ".github";
+    protected override RootedPath FileLocation => _fileSystem.AtomRootDirectory / ".github";
 
     protected override void WriteWorkflow(WorkflowModel workflow)
     {

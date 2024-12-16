@@ -3,13 +3,7 @@
 /// <summary>
 ///     Service for displaying a cheatsheet of available commands and options.
 /// </summary>
-internal sealed class CheatsheetService(
-    IAnsiConsole console,
-    CommandLineArgs args,
-    IBuildDefinition buildDefinition,
-    BuildModel buildModel,
-    IConfiguration config
-)
+internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs args, BuildModel buildModel, IConfiguration config)
 {
     /// <summary>
     ///     Displays a cheatsheet of available commands and options.
@@ -51,8 +45,7 @@ internal sealed class CheatsheetService(
 
         var atomAssembly = typeof(CheatsheetService).Assembly;
 
-        var projectAssembly = buildDefinition.GetType()
-            .Assembly;
+        var projectAssembly = buildModel.DeclaringAssembly;
 
         var atomTargets = new List<TargetModel>(targets.Count);
         var libraryTargets = new List<TargetModel>(targets.Count);
@@ -60,7 +53,7 @@ internal sealed class CheatsheetService(
 
         foreach (var target in targets)
         {
-            var assembly = buildDefinition.TargetDefinitions[target.Name].Method.ReflectedType!.Assembly;
+            var assembly = target.DeclaringAssembly;
 
             if (assembly == atomAssembly)
                 atomTargets.Add(target);
@@ -116,23 +109,21 @@ internal sealed class CheatsheetService(
                 depTree.AddNode($"[dim]{dependency.Name}[/]");
         }
 
-        var allParams = target
+        var secrets = target
             .RequiredParams
-            .Select(x => buildDefinition.ParamDefinitions[x])
+            .Where(x => x.IsSecret)
             .ToList();
 
-        var secrets = allParams
-            .Where(x => x.Attribute.IsSecret)
-            .ToList();
-
-        var optionalParams = allParams
+        var optionalParams = target
+            .RequiredParams
             .Except(secrets)
-            .Where(x => x.Attribute.DefaultValue is { Length: > 0 } ||
+            .Where(x => x.DefaultValue is { Length: > 0 } ||
                         config
-                            .GetSection("Params")[x.Attribute.ArgName] is { Length: > 0 })
+                            .GetSection("Params")[x.ArgName] is { Length: > 0 })
             .ToList();
 
-        var requiredParams = allParams
+        var requiredParams = target
+            .RequiredParams
             .Except(secrets)
             .Except(optionalParams)
             .ToList();
@@ -143,11 +134,11 @@ internal sealed class CheatsheetService(
 
             foreach (var requiredParam in requiredParams)
             {
-                var descriptionDisplay = requiredParam.Attribute.Description is { Length: > 0 }
-                    ? $"[dim] | {requiredParam.Attribute.Description}[/]"
+                var descriptionDisplay = requiredParam.Description is { Length: > 0 }
+                    ? $"[dim] | {requiredParam.Description}[/]"
                     : string.Empty;
 
-                reqTree.AddNode($"--{requiredParam.Attribute.ArgName}{descriptionDisplay}");
+                reqTree.AddNode($"--{requiredParam.ArgName}{descriptionDisplay}");
             }
         }
 
@@ -157,10 +148,10 @@ internal sealed class CheatsheetService(
 
             foreach (var optionalParam in optionalParams)
             {
-                var defaultValue = optionalParam.Attribute.DefaultValue;
+                var defaultValue = optionalParam.DefaultValue;
 
                 var configuredValue = config
-                    .GetSection("Params")[optionalParam.Attribute.ArgName];
+                    .GetSection("Params")[optionalParam.ArgName];
 
                 var defaultDisplay = (defaultValue, configuredValue) switch
                 {
@@ -172,11 +163,11 @@ internal sealed class CheatsheetService(
                     _ => string.Empty,
                 };
 
-                var descriptionDisplay = optionalParam.Attribute.Description is { Length: > 0 }
-                    ? $"[dim] | {optionalParam.Attribute.Description}[/]"
+                var descriptionDisplay = optionalParam.Description is { Length: > 0 }
+                    ? $"[dim] | {optionalParam.Description}[/]"
                     : string.Empty;
 
-                optTree.AddNode($"--{optionalParam.Attribute.ArgName}{defaultDisplay}{descriptionDisplay}");
+                optTree.AddNode($"--{optionalParam.ArgName}{defaultDisplay}{descriptionDisplay}");
             }
         }
 
@@ -186,11 +177,11 @@ internal sealed class CheatsheetService(
 
             foreach (var secret in secrets)
             {
-                var descriptionDisplay = secret.Attribute.Description is { Length: > 0 }
-                    ? $"[dim] | {secret.Attribute.Description}[/]"
+                var descriptionDisplay = secret.Description is { Length: > 0 }
+                    ? $"[dim] | {secret.Description}[/]"
                     : string.Empty;
 
-                secTree.AddNode($"--{secret.Attribute.ArgName}{descriptionDisplay}");
+                secTree.AddNode($"--{secret.ArgName}{descriptionDisplay}");
             }
         }
 

@@ -1,7 +1,7 @@
-﻿namespace DecSm.Atom.Tests.BuildTests.Vaults;
+﻿namespace DecSm.Atom.Tests.BuildTests.Secrets;
 
 [BuildDefinition]
-public partial class UserSecretsBuild : BuildDefinition, IUserSecretsTarget, IUserSecretsVault
+public partial class UserSecretsBuild : BuildDefinition, IUserSecretsTarget, IDotnetUserSecrets
 {
     public string? ExecutionValue { get; set; }
 }

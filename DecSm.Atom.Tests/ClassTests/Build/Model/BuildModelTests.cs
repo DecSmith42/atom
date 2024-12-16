@@ -11,6 +11,7 @@ public class BuildModelTests
         {
             Targets = [],
             TargetStates = new Dictionary<TargetModel, TargetState>(),
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act
@@ -30,6 +31,7 @@ public class BuildModelTests
             ConsumedVariables = [],
             ProducedVariables = [],
             Dependencies = [],
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
     [Test]
@@ -53,6 +55,7 @@ public class BuildModelTests
                     }
                 },
             },
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act
@@ -83,6 +86,7 @@ public class BuildModelTests
                     }
                 },
             },
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act
@@ -125,6 +129,7 @@ public class BuildModelTests
                     }
                 },
             },
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act
@@ -147,6 +152,7 @@ public class BuildModelTests
                 targetModel,
             },
             TargetStates = new Dictionary<TargetModel, TargetState>(),
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act
@@ -170,6 +176,7 @@ public class BuildModelTests
                 targetModel,
             },
             TargetStates = new Dictionary<TargetModel, TargetState>(),
+            DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
         // Act

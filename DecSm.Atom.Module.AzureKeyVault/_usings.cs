@@ -4,7 +4,7 @@ global using Azure.Security.KeyVault.Secrets;
 global using DecSm.Atom.Args;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Params;
-global using DecSm.Atom.Vaults;
+global using DecSm.Atom.Secrets;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition.Options;
 global using JetBrains.Annotations;

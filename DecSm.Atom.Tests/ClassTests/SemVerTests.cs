@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Tests.ClassTests;
+﻿using System.Text.Json;
+
+namespace DecSm.Atom.Tests.ClassTests;
 
 [TestFixture]
 internal sealed class SemVerTests
@@ -250,5 +252,19 @@ internal sealed class SemVerTests
         string actualString = semVer;
 
         actualString.ShouldBe(expectedString);
+    }
+
+    [TestCase("1.0.0", "1.0.0")]
+    [TestCase("1.0.0-alpha", "1.0.0-alpha")]
+    [TestCase("1.0.0+build", "1.0.0+build")]
+    [TestCase("1.0.0-alpha+build", "1.0.0-alpha+build")]
+    public void Serialize_Deserialize_Json(string versionString, string expectedString)
+    {
+        var semVer = SemVer.Parse(versionString);
+
+        var json = JsonSerializer.Serialize(semVer, JsonSerializerOptions.Default);
+        var actual = JsonSerializer.Deserialize<SemVer>(json, JsonSerializerOptions.Default);
+
+        actual.ShouldBe(semVer);
     }
 }

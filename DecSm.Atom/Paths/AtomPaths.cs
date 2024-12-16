@@ -10,7 +10,7 @@ public static class AtomPaths
 
     public static void ProvidePath(
         this IServiceCollection services,
-        Func<string, Func<string, AbsolutePath>, AbsolutePath?> locate,
+        Func<string, Func<string, RootedPath>, RootedPath?> locate,
         int priority = 1) =>
         services.AddSingleton<IPathProvider>(new PathProvider
         {

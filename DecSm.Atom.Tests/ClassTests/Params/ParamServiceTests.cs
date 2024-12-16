@@ -11,9 +11,9 @@ public class ParamServiceTests
         _args = new(true, Array.Empty<CommandArg>());
         _config = A.Fake<IConfiguration>();
 
-        _vaultProviders = new List<IVaultProvider>
+        _vaultProviders = new List<ISecretsProvider>
         {
-            A.Fake<IVaultProvider>(),
+            A.Fake<ISecretsProvider>(),
         };
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
@@ -26,7 +26,7 @@ public class ParamServiceTests
     private IBuildDefinition _buildDefinition;
     private CommandLineArgs _args;
     private IConfiguration _config;
-    private IEnumerable<IVaultProvider> _vaultProviders;
+    private IEnumerable<ISecretsProvider> _vaultProviders;
     private ParamService _paramService;
 
     private static string TestParam => "TestParam";
@@ -35,7 +35,14 @@ public class ParamServiceTests
     public void GetParam_WithExpression_ReturnsExpectedValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
 
         _config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -64,7 +71,14 @@ public class ParamServiceTests
     public void GetParam_WithString_ReturnsExpectedValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
 
         _config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -93,7 +107,14 @@ public class ParamServiceTests
     public void GetParam_WithEnvironmentVariable_ReturnsExpectedValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
 
         _config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -124,9 +145,16 @@ public class ParamServiceTests
     public void GetParam_WithVaultValue_ReturnsExpectedValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new SecretDefinitionAttribute("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = true,
+        };
 
-        var vaultProvider = A.Fake<IVaultProvider>();
+        var vaultProvider = A.Fake<ISecretsProvider>();
         _config = new ConfigurationBuilder().Build();
         _paramService = new(_buildDefinition, _args, _config, [vaultProvider]);
 
@@ -152,9 +180,16 @@ public class ParamServiceTests
     public void GetParam_WithVaultValueButNotSecret_ReturnsDefaultValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
 
-        var vaultProvider = A.Fake<IVaultProvider>();
+        var vaultProvider = A.Fake<ISecretsProvider>();
         _config = new ConfigurationBuilder().Build();
         _paramService = new(_buildDefinition, _args, _config, [vaultProvider]);
 
@@ -180,7 +215,15 @@ public class ParamServiceTests
     public void MaskSecrets_WithSecretsInText_MasksSecrets()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new SecretDefinitionAttribute("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = true,
+        };
+
         _config = new ConfigurationBuilder().Build();
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -210,7 +253,14 @@ public class ParamServiceTests
     public void MaskSecrets_WithSecretsInTextButNotSecretAttribute_DoesNotMaskSecrets()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
         _config = new ConfigurationBuilder().Build();
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -240,7 +290,14 @@ public class ParamServiceTests
     public void GetParam_WithNoCacheScope_DoesNotCacheValue()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter"));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
 
         _config = new ConfigurationBuilder().Build();
 
@@ -278,7 +335,14 @@ public class ParamServiceTests
     public void GetParam_WithNoneFilter_IncludesNone()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.None));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.None,
+            IsSecret = false,
+        };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -290,7 +354,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -312,7 +376,14 @@ public class ParamServiceTests
     public void GetParam_WithCommandLineArgsFilter_IncludesCommandLineArgs()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.CommandLineArgs));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.CommandLineArgs,
+            IsSecret = false,
+        };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -324,7 +395,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -346,7 +417,14 @@ public class ParamServiceTests
     public void GetParam_WithEnvironmentVariablesFilter_IncludesEnvironmentVariables()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.EnvironmentVariables));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.EnvironmentVariables,
+            IsSecret = false,
+        };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -358,7 +436,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -380,7 +458,14 @@ public class ParamServiceTests
     public void GetParam_WithConfigurationFilter_IncludesConfiguration()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam", new("test-param", "Test parameter", null, ParamSource.Configuration));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.Configuration,
+            IsSecret = false,
+        };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -392,7 +477,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -414,8 +499,14 @@ public class ParamServiceTests
     public void GetParam_WithVaultFilter_IncludesVault()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam",
-            new SecretDefinitionAttribute("test-param", "Test parameter", null, ParamSource.Vault));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.Secrets,
+            IsSecret = true,
+        };
 
         _args = new(true, [new ParamArg("test-param", "NotTestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -427,7 +518,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -449,8 +540,14 @@ public class ParamServiceTests
     public void GetParam_WithSecretsFilter_IncludesVault()
     {
         // Arrange
-        var paramDefinition = new ParamDefinition("TestParam",
-            new SecretDefinitionAttribute("test-param", "Test parameter", null, ParamSource.Vault));
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.Secrets,
+            IsSecret = true,
+        };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
         Environment.SetEnvironmentVariable("test-param", "EnvValue");
@@ -462,7 +559,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _vaultProviders = [new TestVaultProvider()];
+        _vaultProviders = [new TestSecretsProvider()];
 
         _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
 
@@ -480,7 +577,7 @@ public class ParamServiceTests
         result.ShouldBe("VaultValue");
     }
 
-    private class TestVaultProvider : IVaultProvider
+    private class TestSecretsProvider : ISecretsProvider
     {
         public string GetSecret(string secretName) =>
             "VaultValue";

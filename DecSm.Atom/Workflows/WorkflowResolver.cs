@@ -30,19 +30,18 @@ internal sealed class WorkflowResolver(
         // Transform all step definitions into steps
         var definedSteps = definition
             .StepDefinitions
-            .Select(stepDefinition => stepDefinition.CreateStep())
+            .Select(targetDefinition => targetDefinition.CreateModel())
             .ToList();
 
         // Turn command steps into jobs
         var definedCommandJobs = definedSteps
-            .OfType<CommandWorkflowStep>()
+            .OfType<WorkflowCommandModel>()
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
                 Options = step.Options,
                 MatrixDimensions = step.MatrixDimensions,
                 JobDependencies = buildModel
-                    .Targets
-                    .Single(target => target.Name == step.Name)
+                    .GetTarget(step.Name)
                     .Dependencies
                     .Select(x => x.Name)
                     .ToList(),
@@ -55,8 +54,8 @@ internal sealed class WorkflowResolver(
         if (UseCustomArtifactProvider.IsEnabled(workflowOptions))
             definedCommandJobs = definedCommandJobs.ConvertAll(job => job
                 .Steps
-                .Where(step => step is CommandWorkflowStep { SuppressArtifactPublishing: false })
-                .Select(step => buildModel.Targets.Single(target => target.Name == step.Name))
+                .Where(step => step is WorkflowCommandModel { SuppressArtifactPublishing: false })
+                .Select(step => buildModel.GetTarget(step.Name))
                 .Any(target => target.ConsumedArtifacts.Count > 0 || target.ProducedArtifacts.Count > 0)
                 ? job with
                 {
@@ -70,11 +69,11 @@ internal sealed class WorkflowResolver(
         // Check that all consumed variables are produced by the target they are consumed from to avoid errors later on
         foreach (var job in definedCommandJobs)
         {
-            var target = buildModel.Targets.Single(x => x.Name == job.Name);
+            var target = buildModel.GetTarget(job.Name);
 
             foreach (var consumedVariable in target.ConsumedVariables)
             {
-                var consumedTarget = buildModel.Targets.Single(x => x.Name == consumedVariable.TargetName);
+                var consumedTarget = buildModel.GetTarget(consumedVariable.TargetName);
                 var jobOutput = consumedTarget.ProducedVariables.SingleOrDefault(x => x == consumedVariable.VariableName);
 
                 if (jobOutput is null)
@@ -89,7 +88,7 @@ internal sealed class WorkflowResolver(
                 .Targets
                 .Select(target => target.Name)
                 .Where(targetName => definedCommandJobs.All(job => job.Name != targetName))
-                .Select(targetName => new WorkflowJobModel(targetName, [new CommandWorkflowStep(targetName)])
+                .Select(targetName => new WorkflowJobModel(targetName, [new WorkflowCommandModel(targetName)])
                 {
                     JobDependencies = [],
                     Options = [],
@@ -122,7 +121,7 @@ internal sealed class WorkflowResolver(
 
         // Turn non-command steps into jobs and combine with ordered command jobs
         var allJobs = definedSteps
-            .Where(step => step is not CommandWorkflowStep)
+            .Where(step => step is not WorkflowCommandModel)
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
                 JobDependencies = [],

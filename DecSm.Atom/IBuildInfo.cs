@@ -40,6 +40,6 @@ public partial interface IBuildInfo
             .Directory
             .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
             .FirstOrDefault() is { } solutionFile
-            ? new AbsolutePath(FileSystem, solutionFile).FileName![..^4]
+            ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
             : FileSystem.AtomRootDirectory.DirectoryName!;
 }

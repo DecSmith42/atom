@@ -160,4 +160,18 @@ public class TargetTests
         build.BaseOverrideTargetExecuted.ShouldBeFalse();
         build.OverrideOverrideTargetExecuted.ShouldBeTrue();
     }
+
+    [Test]
+    public async Task Build_WithUnspecifiedTargets_IncludesUnspecifiedTargets()
+    {
+        // Arrange
+        var host = CreateTestHost<UnspecifiedTargetsBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IUnspecifiedTarget2.UnspecifiedTarget2))]));
+
+        // Act
+        var build = host.Services.GetRequiredService<BuildModel>();
+
+        // Assert
+        await Verify(build);
+    }
 }

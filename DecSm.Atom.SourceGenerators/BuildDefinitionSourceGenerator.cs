@@ -149,19 +149,45 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Select(static x => new
             {
                 x.Property.Name,
-                AttrubuteName = x.Attribute.AttributeClass!.ToDisplayString(),
-                AttributeArgs = x
+                ArgName = (string)x.Attribute.ConstructorArguments.First()
+                    .Value!,
+                Description = (string)x
                     .Attribute
                     .ConstructorArguments
-                    .Select(static a => a.Kind is TypedConstantKind.Enum
-                        ? $"({a.Type!.ToDisplayString()}){a.Value}"
-                        : a.Value is string s
-                            ? $"\"{s}\""
-                            : a.Value)
-                    .Select(static a => a ?? "null")
-                    .Aggregate(static (a, b) => $"{a}, {b}"),
+                    .Skip(1)
+                    .First()
+                    .Value!,
+                DefaultValue = x
+                    .Attribute
+                    .ConstructorArguments
+                    .Skip(2)
+                    .First()
+                    .Value is string s
+                    ? $"\"{s}\""
+                    : "null",
+                Sources = $"({x
+                    .Attribute
+                    .ConstructorArguments
+                    .Skip(3)
+                    .First().Type!.ToDisplayString()}){x
+                    .Attribute
+                    .ConstructorArguments
+                    .Skip(3)
+                    .First().Value}",
+                IsSecret = x.Attribute.AttributeClass?.Name is SecretDefinitionAttribute,
             })
-            .Select(static p => $$"""        { "{{p.Name}}", new("{{p.Name}}", new {{p.AttrubuteName}}({{p.AttributeArgs}})) },""");
+            .Select(static p => $$"""
+                                          {
+                                              "{{p.Name}}", new("{{p.Name}}")
+                                              {
+                                                  ArgName = "{{p.ArgName}}",
+                                                  Description = "{{p.Description}}",
+                                                  DefaultValue = {{p.DefaultValue}},
+                                                  Sources = {{p.Sources}},
+                                                  IsSecret = {{p.IsSecret.ToString().ToLower()}},
+                                              }
+                                          },
+                                  """);
 
         var commandDefsPropertiesLines = interfacesWithTargets.Select(static p =>
             $"""        public static {CommandDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""");

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 [PublicAPI]
-public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
+public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
     public int Major { get; private init; }
 
@@ -9,17 +9,31 @@ public sealed partial class SemVer : ISpanParsable<SemVer>, IComparable<SemVer>,
 
     public int Patch { get; private init; }
 
+    [JsonIgnore]
     public string Prefix => $"{Major}.{Minor}.{Patch}";
 
     public string? PreRelease { get; private init; }
 
+    [JsonIgnore]
     public bool IsPreRelease => PreRelease != null;
 
+    [JsonIgnore]
     public int BuildNumberFromPreRelease => ExtractBuildNumber(PreRelease);
 
     public string? Metadata { get; private init; }
 
+    [JsonIgnore]
     public int BuildNumberFromMetadata => ExtractBuildNumber(Metadata);
+
+    [JsonConstructor]
+    private SemVer(int major, int minor, int patch, string? preRelease, string? metadata) : this()
+    {
+        Major = major;
+        Minor = minor;
+        Patch = patch;
+        PreRelease = preRelease;
+        Metadata = metadata;
+    }
 
     public int CompareTo(SemVer? other)
     {

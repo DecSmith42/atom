@@ -2,4 +2,4 @@
 
 [PublicAPI]
 public abstract class DefaultBuildDefinition(IServiceProvider services)
-    : BuildDefinition(services), ISetupBuildInfo, IValidateBuild, IUserSecretsVault;
+    : BuildDefinition(services), ISetupBuildInfo, IValidateBuild, IDotnetUserSecrets;

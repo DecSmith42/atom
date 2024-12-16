@@ -102,17 +102,6 @@ public static class Devops
     }
 
     [PublicAPI]
-    public static class Triggers
-    {
-        public static DevopsManualTrigger Manual { get; } = new();
-
-        public static DevopsPushTrigger PushToMain { get; } = new()
-        {
-            IncludedBranches = ["main"],
-        };
-    }
-
-    [PublicAPI]
     public static class Variables
     {
         /// <summary>

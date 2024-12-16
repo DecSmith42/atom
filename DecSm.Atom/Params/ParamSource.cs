@@ -9,6 +9,6 @@ public enum ParamSource
     CommandLineArgs = 2,
     EnvironmentVariables = 4,
     Configuration = 8,
-    Vault = 32,
-    All = Cache | CommandLineArgs | EnvironmentVariables | Configuration | Vault,
+    Secrets = 32,
+    All = Cache | CommandLineArgs | EnvironmentVariables | Configuration | Secrets,
 }

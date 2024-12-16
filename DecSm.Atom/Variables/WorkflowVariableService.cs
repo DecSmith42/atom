@@ -25,7 +25,7 @@ internal sealed class WorkflowVariableService(
 
     public async Task WriteVariable(string variableName, string variableValue)
     {
-        var variableArgName = buildDefinition.ParamDefinitions[variableName].Attribute.ArgName;
+        var variableArgName = buildDefinition.ParamDefinitions[variableName].ArgName;
 
         foreach (var provider in _customProviders)
             if (await provider.WriteVariable(variableArgName, variableValue))
@@ -36,7 +36,7 @@ internal sealed class WorkflowVariableService(
 
     public async Task ReadVariable(string jobName, string variableName)
     {
-        var variableArgName = buildDefinition.ParamDefinitions[variableName].Attribute.ArgName;
+        var variableArgName = buildDefinition.ParamDefinitions[variableName].ArgName;
 
         foreach (var provider in _customProviders)
             if (await provider.ReadVariable(jobName, variableArgName))
