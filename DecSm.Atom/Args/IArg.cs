@@ -64,3 +64,10 @@ public sealed record VerboseArg : IArg;
 /// <param name="ProjectName">The name of the project.</param>
 [PublicAPI]
 public sealed record ProjectArg(string ProjectName) : IArg;
+
+/// <summary>
+///     Instructs the build to run in interactive mode.
+///     Typically used to allow user input during the build.
+/// </summary>
+[PublicAPI]
+public sealed record InteractiveArg : IArg;
