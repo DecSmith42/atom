@@ -10,13 +10,14 @@ public class ParamServiceTests
         _buildDefinition = A.Fake<IBuildDefinition>();
         _args = new(true, Array.Empty<CommandArg>());
         _config = A.Fake<IConfiguration>();
+        _console = A.Fake<IAnsiConsole>();
 
         _vaultProviders = new List<ISecretsProvider>
         {
             A.Fake<ISecretsProvider>(),
         };
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
     }
 
     [TearDown]
@@ -26,6 +27,7 @@ public class ParamServiceTests
     private IBuildDefinition _buildDefinition;
     private CommandLineArgs _args;
     private IConfiguration _config;
+    private IAnsiConsole _console;
     private IEnumerable<ISecretsProvider> _vaultProviders;
     private ParamService _paramService;
 
@@ -51,7 +53,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -87,7 +89,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -123,7 +125,7 @@ public class ParamServiceTests
             })
             .Build();
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -156,7 +158,7 @@ public class ParamServiceTests
 
         var vaultProvider = A.Fake<ISecretsProvider>();
         _config = new ConfigurationBuilder().Build();
-        _paramService = new(_buildDefinition, _args, _config, [vaultProvider]);
+        _paramService = new(_buildDefinition, _args, _console, _config, [vaultProvider]);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -191,7 +193,7 @@ public class ParamServiceTests
 
         var vaultProvider = A.Fake<ISecretsProvider>();
         _config = new ConfigurationBuilder().Build();
-        _paramService = new(_buildDefinition, _args, _config, [vaultProvider]);
+        _paramService = new(_buildDefinition, _args, _console, _config, [vaultProvider]);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -225,7 +227,7 @@ public class ParamServiceTests
         };
 
         _config = new ConfigurationBuilder().Build();
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -261,8 +263,9 @@ public class ParamServiceTests
             Sources = ParamSource.All,
             IsSecret = false,
         };
+
         _config = new ConfigurationBuilder().Build();
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -301,7 +304,7 @@ public class ParamServiceTests
 
         _config = new ConfigurationBuilder().Build();
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -356,7 +359,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -397,7 +400,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -438,7 +441,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -479,7 +482,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -520,7 +523,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)
@@ -561,7 +564,7 @@ public class ParamServiceTests
 
         _vaultProviders = [new TestSecretsProvider()];
 
-        _paramService = new(_buildDefinition, _args, _config, _vaultProviders);
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
 
         A
             .CallTo(() => _buildDefinition.ParamDefinitions)

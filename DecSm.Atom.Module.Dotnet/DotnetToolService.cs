@@ -47,7 +47,7 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         GetService<ProcessRunner>()
-            .Run(new("dotnet", $"tool install {toolName} {versionFlag} {globalFlag}")
+            .Run(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
             {
                 InvocationLogLevel = LogLevel.Debug,
             });
@@ -97,7 +97,7 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         await GetService<ProcessRunner>()
-            .RunAsync(new("dotnet", $"tool install {toolName} {versionFlag} {globalFlag}")
+            .RunAsync(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
             {
                 InvocationLogLevel = LogLevel.Debug,
             });

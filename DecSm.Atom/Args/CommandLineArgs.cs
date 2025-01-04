@@ -51,6 +51,12 @@ public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
     public bool HasProject => Args.Any(arg => arg is ProjectArg);
 
     /// <summary>
+    ///     Whether the -i / --interactive argument was provided.
+    ///     <see cref="InteractiveArg" />
+    /// </summary>
+    public bool HasInteractive => Args.Any(arg => arg is InteractiveArg);
+
+    /// <summary>
     ///     The list of parameter arguments provided.
     ///     <see cref="ParamArg" />
     /// </summary>

@@ -33,6 +33,8 @@ public interface IAtomFileSystem : IFileSystem
 
     IPath IFileSystem.Path => FileSystem.Path;
 
+    IFileVersionInfoFactory IFileSystem.FileVersionInfo => FileSystem.FileVersionInfo;
+
     RootedPath GetPath(string key);
 
     RootedPath CreateRootedPath(string path) =>

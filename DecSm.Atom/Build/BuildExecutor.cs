@@ -24,17 +24,28 @@ internal sealed class BuildExecutor(
 
         logger.LogInformation("Executing build");
 
-        await console
-            .Status()
-            .StartAsync("Executing build...",
-                async context =>
-                {
-                    foreach (var command in commands)
-                        ValidateTargetParameters(buildModel.GetTarget(command.Name));
+        if (args.HasInteractive)
+        {
+            foreach (var command in commands)
+                ValidateTargetParameters(buildModel.GetTarget(command.Name));
 
-                    foreach (var command in commands)
-                        await ExecuteTarget(buildModel.GetTarget(command.Name), context);
-                });
+            foreach (var command in commands)
+                await ExecuteTarget(buildModel.GetTarget(command.Name), null);
+        }
+        else
+        {
+            await console
+                .Status()
+                .StartAsync("Executing build...",
+                    async context =>
+                    {
+                        foreach (var command in commands)
+                            ValidateTargetParameters(buildModel.GetTarget(command.Name));
+
+                        foreach (var command in commands)
+                            await ExecuteTarget(buildModel.GetTarget(command.Name), context);
+                    });
+        }
 
         foreach (var outcomeReporter in outcomeReporters)
             try
@@ -81,7 +92,7 @@ internal sealed class BuildExecutor(
         }
     }
 
-    private async Task ExecuteTarget(TargetModel target, StatusContext context)
+    private async Task ExecuteTarget(TargetModel target, StatusContext? context)
     {
         if (buildModel.TargetStates[target].Status is TargetRunState.NotRun
             or TargetRunState.Skipped
@@ -129,9 +140,19 @@ internal sealed class BuildExecutor(
         buildModel.TargetStates[target].Status = TargetRunState.Running;
 
         var startTime = Stopwatch.GetTimestamp();
-        context.Status($"Executing [bold]{target.Name}[/]...");
-        context.Spinner(Spinner.Known.Star);
-        context.SpinnerStyle(Style.Parse("green"));
+
+        if (context is not null)
+        {
+            context.Status($"Executing [bold]{target.Name}[/]...");
+            context.Spinner(Spinner.Known.Star);
+            context.SpinnerStyle(Style.Parse("green"));
+        }
+        else
+        {
+            console.WriteLine();
+            console.Write(new Markup($"Executing target [bold]{target.Name}[/]...\n"));
+            console.WriteLine();
+        }
 
         using (logger.BeginScope(new Dictionary<string, object>
                {

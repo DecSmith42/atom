@@ -116,6 +116,7 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
             "-hl" or "--headless" => new HeadlessArg(),
             "-v" or "--verbose" => new VerboseArg(),
             "-p" or "--project" => new ProjectArg(string.Empty),
+            "-i" or "--interactive" => new InteractiveArg(),
             _ => null,
         };
 

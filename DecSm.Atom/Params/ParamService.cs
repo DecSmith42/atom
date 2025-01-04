@@ -21,6 +21,7 @@ public interface IParamService
 internal sealed class ParamService(
     IBuildDefinition buildDefinition,
     CommandLineArgs args,
+    IAnsiConsole console,
     IConfiguration config,
     IEnumerable<ISecretsProvider> vaultProviders
 ) : IParamService
@@ -96,6 +97,9 @@ internal sealed class ParamService(
                  paramDefinition.IsSecret &&
                  TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
             result = vaultValue;
+        else if (args is { HasHeadless: false, HasInteractive: true, HasHelp: false } &&
+                 TryGetParamFromUser(paramDefinition, converter) is (true, { } userValue))
+            result = userValue;
         else
             result = defaultValue;
 
@@ -139,7 +143,6 @@ internal sealed class ParamService(
 
         if (string.IsNullOrEmpty(envVar))
             envVar = Environment.GetEnvironmentVariable(paramDefinition
-
                 .ArgName
                 .ToUpperInvariant()
                 .Replace('-', '_'));
@@ -184,5 +187,26 @@ internal sealed class ParamService(
         }
 
         return (false, default);
+    }
+
+    private (bool HasValue, T? Value) TryGetParamFromUser<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    {
+        var result = console.Prompt(new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
+        {
+            IsSecret = paramDefinition.IsSecret,
+            Mask = '*',
+            ShowDefaultValue = paramDefinition.DefaultValue is { Length: > 0 },
+            AllowEmpty = paramDefinition.DefaultValue is { Length: > 0 },
+        });
+
+        if (result is not { Length: > 0 })
+            return (false, default);
+
+        var convertedResult = TypeUtil.Convert(result, converter);
+
+        // Force cache as it is a user input
+        _cache[paramDefinition] = convertedResult;
+
+        return (true, convertedResult);
     }
 }
