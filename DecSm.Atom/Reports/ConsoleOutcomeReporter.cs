@@ -129,7 +129,8 @@ public partial class ConsoleOutcomeReporter(CommandLineArgs args, IAnsiConsole c
 
         foreach (var log in reportData)
         {
-            var messageLines = log.Message.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            var splitPattern = new[] { '\r', '\n' };
+            var messageLines = log.Message.Split(splitPattern, StringSplitOptions.RemoveEmptyEntries);
 
             var rows = new List<IRenderable>
             {
