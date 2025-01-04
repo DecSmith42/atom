@@ -27,7 +27,7 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
-      - script: dotnet tool install --global DecSm.Atom.Tool --prerelease
+      - script: dotnet tool update --global DecSm.Atom.Tool --prerelease
         displayName: 'Install atom tool'
       
       - script: |
