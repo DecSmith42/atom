@@ -202,9 +202,11 @@ internal sealed class ParamService(
         if (result is not { Length: > 0 })
             return (false, default);
 
-        // Force cache as it is a user input
-        _cache[paramDefinition] = result;
+        var convertedResult = TypeUtil.Convert(result, converter);
 
-        return (true, TypeUtil.Convert(result, converter));
+        // Force cache as it is a user input
+        _cache[paramDefinition] = convertedResult;
+
+        return (true, convertedResult);
     }
 }
