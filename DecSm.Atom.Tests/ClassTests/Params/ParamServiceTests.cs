@@ -580,6 +580,63 @@ public class ParamServiceTests
         result.ShouldBe("VaultValue");
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void GetParam_BoolType_WithDefault_NoMatch_ReturnsDefault(bool defaultValue)
+    {
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
+
+        _config = new ConfigurationBuilder().Build();
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        var result = _paramService.GetParam("TestParam", defaultValue);
+
+        result.ShouldBe(defaultValue);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    [TestCase(null)]
+    public void GetParam_NullableBool_WithDefault_NoMatch_ReturnsDefault(bool? defaultValue)
+    {
+        var paramDefinition = new ParamDefinition("TestParam")
+        {
+            ArgName = "test-param",
+            Description = "Test parameter",
+            DefaultValue = null,
+            Sources = ParamSource.All,
+            IsSecret = false,
+        };
+
+        _config = new ConfigurationBuilder().Build();
+        _paramService = new(_buildDefinition, _args, _console, _config, _vaultProviders);
+
+        A
+            .CallTo(() => _buildDefinition.ParamDefinitions)
+            .Returns(new Dictionary<string, ParamDefinition>
+            {
+                { "TestParam", paramDefinition },
+            });
+
+        var result = _paramService.GetParam("TestParam", defaultValue);
+
+        result.ShouldBe(defaultValue);
+    }
+
     private class TestSecretsProvider : ISecretsProvider
     {
         public string GetSecret(string secretName) =>
