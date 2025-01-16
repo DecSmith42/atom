@@ -157,17 +157,15 @@ internal sealed class ParamService(
 
     private (bool HasValue, T? Value) TryGetParamFromConfig<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
     {
-        var configValue = config
-                              .GetSection("Params")
-                              .GetSection(paramDefinition.ArgName)
-                              .Get<T>() ??
-                          TypeUtil.Convert(config
-                                  .GetSection("Params")[paramDefinition.ArgName],
-                              converter);
+        var configSection = config
+            .GetSection("Params")
+            .GetSection(paramDefinition.ArgName);
 
-        return configValue is null
-            ? (false, default)
-            : (true, configValue);
+        var configValue = configSection.Exists()
+            ? configSection.Get<T?>() ?? TypeUtil.Convert(configSection.Value, converter)
+            : default;
+
+        return (configSection.Exists(), configValue);
     }
 
     private (bool HasValue, T? Value) TryGetParamFromVault<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
