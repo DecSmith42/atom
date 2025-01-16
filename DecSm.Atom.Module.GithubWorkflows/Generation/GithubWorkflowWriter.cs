@@ -37,16 +37,16 @@ internal sealed class GithubWorkflowWriter(
                                 using (WriteSection($"{input.Name}:"))
                                 {
                                     WriteLine($"description: {input.Description}");
-                                    WriteLine($"required: {input.Required}");
+                                    WriteLine($"required: {input.Required.ToString().ToLower()}");
 
                                     switch (input)
                                     {
                                         case ManualBoolInput boolInput:
 
-                                            WriteLine("type: bool");
+                                            WriteLine("type: boolean");
 
                                             if (boolInput.DefaultValue is not null)
-                                                WriteLine($"default: {boolInput.DefaultValue}");
+                                                WriteLine($"default: {boolInput.DefaultValue.ToString()?.ToLower()}");
 
                                             break;
 
@@ -61,7 +61,7 @@ internal sealed class GithubWorkflowWriter(
 
                                         case ManualChoiceInput choiceInput:
 
-                                            WriteLine("type: string");
+                                            WriteLine("type: choice");
 
                                             using (WriteSection("options:"))
                                             {

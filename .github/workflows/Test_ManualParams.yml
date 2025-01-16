@@ -5,7 +5,7 @@ on:
     inputs:
       test-string-param:
         description: Test string parameter
-        required: True
+        required: true
         type: string
 
 jobs:
