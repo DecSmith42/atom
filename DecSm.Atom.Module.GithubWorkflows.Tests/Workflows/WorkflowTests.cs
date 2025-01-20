@@ -146,4 +146,27 @@ public class WorkflowTests
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);
     }
+
+    [Test]
+    public async Task SetupDotnetBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+        var build = CreateTestHost<SetupDotnetBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}setup-dotnet.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
 }

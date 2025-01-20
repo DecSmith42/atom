@@ -267,6 +267,21 @@ internal sealed class GithubWorkflowWriter(
                         .Append(buildSlice)
                         .ToArray();
 
+                var setupDotnetSteps = workflow
+                    .Options
+                    .Concat(commandStep.Options)
+                    .OfType<SetupDotnetStep>()
+                    .ToList();
+
+                if (setupDotnetSteps.Count > 0)
+                    foreach (var setupDotnetStep in setupDotnetSteps)
+                        using (WriteSection("- uses: actions/setup-dotnet@v4"))
+                        {
+                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
+                                using (WriteSection("with:"))
+                                    WriteLine($"dotnet-version: '{setupDotnetSteps[0].DotnetVersion}'");
+                        }
+
                 var setupNugetSteps = workflow
                     .Options
                     .Concat(commandStep.Options)
