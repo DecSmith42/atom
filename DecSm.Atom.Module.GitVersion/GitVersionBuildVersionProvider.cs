@@ -37,7 +37,9 @@ internal sealed class GitVersionBuildVersionProvider(IDotnetToolHelper dotnetToo
                 .GetProperty("PreReleaseTag")
                 .GetString()!;
 
-            return _version = SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}");
+            return _version = preReleaseTagProp is { Length: > 0 }
+                ? SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}")
+                : SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}");
         }
     }
 }
