@@ -1,3 +1,4 @@
+global using System.IO.Compression;
 global using System.Reflection;
 global using System.Text;
 global using DecSm.Atom.Artifacts;
@@ -22,3 +23,5 @@ global using JetBrains.Annotations;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
+global using Octokit;
+global using Octokit.Internal;

@@ -7,4 +7,7 @@ public static class Extensions
         commandDefinition
             .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn), labels))
             .WithAddedOptions(GithubRunsOn.SetByMatrix);
+
+    public static CommandDefinition WithGithubTokenInjection(this CommandDefinition commandDefinition) =>
+        commandDefinition.WithAddedOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
 }
