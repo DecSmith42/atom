@@ -78,6 +78,19 @@ internal sealed class GithubWorkflowWriter(
                         }
                 }
 
+            var releaseTriggers = workflow
+                .Triggers
+                .OfType<GithubReleaseTrigger>()
+                .ToList();
+
+            if (releaseTriggers.Count > 0)
+            {
+                using (WriteSection("release:"))
+                    WriteLine($"types: [ {string.Join(", ", releaseTriggers.SelectMany(x => x.Types).Distinct())} ]");
+
+                WriteLine();
+            }
+
             foreach (var pullRequestTrigger in workflow.Triggers.OfType<GitPullRequestTrigger>())
                 using (WriteSection("pull_request:"))
                 {
