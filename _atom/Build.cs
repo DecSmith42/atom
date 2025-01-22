@@ -26,7 +26,8 @@ internal partial class Build : DefaultBuildDefinition,
     ITestPrivateNugetRestore,
     IPublishTester,
     ITestManualParams,
-    ITestSecretProvider
+    ITestSecretProvider,
+    ITestGithubReleaseAssetUpload
 {
     private static AddNugetFeedsStep AddNugetFeedsStep =>
         new()
@@ -98,6 +99,12 @@ internal partial class Build : DefaultBuildDefinition,
         },
 
         // Test workflows
+        new("Test_ReleaseArtifact_Upload")
+        {
+            Triggers = [ManualTrigger.Empty],
+            StepDefinitions = [Commands.TestGithubReleaseAssetUpload.WithGithubTokenInjection()],
+            WorkflowTypes = [Github.WorkflowType],
+        },
         new("Test_ManualParams")
         {
             Triggers =
