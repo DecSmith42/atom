@@ -20,7 +20,7 @@ public partial interface IGithubReleaseHelper : IGithubHelper
 
         var assetFile = FileSystem.FileInfo.New(assetPath);
 
-        if (assetFile.FullName.EndsWith(".zip"))
+        if (!assetFile.FullName.EndsWith(".zip"))
         {
             // zip the file
             var zipPath = FileSystem.CreateRootedPath($"{assetPath}.zip");
@@ -32,7 +32,7 @@ public partial interface IGithubReleaseHelper : IGithubHelper
 
         await using var stream = assetFile.OpenRead();
 
-        var asset = new ReleaseAssetUpload(assetFile.Name, "application/zip", stream, TimeSpan.FromMinutes(5));
+        var asset = new ReleaseAssetUpload(assetPath.FileName, "application/zip", stream, TimeSpan.FromMinutes(5));
         await client.Repository.Release.UploadAsset(release, asset);
     }
 }
