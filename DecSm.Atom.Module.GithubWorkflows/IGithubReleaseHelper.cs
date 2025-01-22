@@ -1,8 +1,17 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
 [TargetDefinition]
-public partial interface IGithubReleaseHelper : IGithubHelper
+public partial interface IGithubReleaseHelper : IGithubHelper, IVersionHelper
 {
+    async Task UploadArtifactToRelease(string artifactName)
+    {
+        var version = Version;
+        var releaseTag = $"v{version}";
+        var artifactPath = FileSystem.AtomArtifactsDirectory / artifactName;
+
+        await UploadAssetToRelease(releaseTag, artifactPath);
+    }
+
     async Task UploadAssetToRelease(string releaseTag, RootedPath assetPath)
     {
         var client = new GitHubClient(new("DecSm.Atom"), new InMemoryCredentialStore(new(GithubToken)));
