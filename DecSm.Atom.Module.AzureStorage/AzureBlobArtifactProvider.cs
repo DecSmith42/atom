@@ -27,7 +27,17 @@ public sealed class AzureBlobArtifactProvider(
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
-        var containerClient = new BlobContainerClient(connectionString, container);
+
+        var serviceClient = new BlobServiceClient(connectionString,
+            new()
+            {
+                Retry =
+                {
+                    NetworkTimeout = TimeSpan.FromMinutes(3),
+                },
+            });
+
+        var containerClient = serviceClient.GetBlobContainerClient(container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
@@ -87,7 +97,18 @@ public sealed class AzureBlobArtifactProvider(
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
-        var containerClient = new BlobContainerClient(connectionString, container);
+
+
+        var serviceClient = new BlobServiceClient(connectionString,
+            new()
+            {
+                Retry =
+                {
+                    NetworkTimeout = TimeSpan.FromMinutes(3),
+                },
+            });
+
+        var containerClient = serviceClient.GetBlobContainerClient(container);
 
         var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
