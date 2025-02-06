@@ -44,14 +44,18 @@ public partial interface IDotnetPackHelper : IVersionHelper
         await GetService<ProcessRunner>()
             .RunAsync(new("dotnet", $"pack {project.FullName} -c {options.Configuration}"));
 
-        var packageName = FileSystem
+        var packageFilePattern = options.CustomPackageId is { Length: > 0 }
+            ? $"{options.CustomPackageId}.*.nupkg"
+            : $"{options.ProjectName}.*.nupkg";
+
+        var packageFileName = FileSystem
             .Directory
-            .GetFiles(FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration, $"{options.ProjectName}.*.nupkg")
+            .GetFiles(FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration, packageFilePattern)
             .OrderByDescending(x => x)
             .First();
 
         // Move package to publish directory
-        var packagePath = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration / $"{packageName}";
+        var packagePath = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration / $"{packageFileName}";
 
         if (!packagePath.FileExists)
             throw new InvalidOperationException($"Package {packagePath} does not exist.");
