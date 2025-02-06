@@ -8,4 +8,6 @@ public sealed record DotnetPackOptions(string ProjectName)
     public string Configuration { get; init; } = "Release";
 
     public string? OutputArtifactName { get; init; }
+
+    public string? CustomPackageId { get; init; }
 }
