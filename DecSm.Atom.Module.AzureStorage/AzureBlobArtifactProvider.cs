@@ -98,7 +98,6 @@ public sealed class AzureBlobArtifactProvider(
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
 
-
         var serviceClient = new BlobServiceClient(connectionString,
             new()
             {

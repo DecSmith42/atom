@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
+[PublicAPI]
 public sealed record DotnetPublishOptions(string ProjectName)
 {
     public bool AutoSetVersion { get; init; } = true;

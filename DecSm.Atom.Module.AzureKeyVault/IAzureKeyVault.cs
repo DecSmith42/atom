@@ -31,6 +31,7 @@ public sealed record AzureKeyVaultValueInjections(
     AzureKeyVaultValueInjectionType AppSecret = AzureKeyVaultValueInjectionType.Secret
 );
 
+[PublicAPI]
 public enum AzureKeyVaultValueInjectionType
 {
     None,

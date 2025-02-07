@@ -3,6 +3,16 @@
 [PublicAPI]
 public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
+    [JsonConstructor]
+    private SemVer(int major, int minor, int patch, string? preRelease, string? metadata) : this()
+    {
+        Major = major;
+        Minor = minor;
+        Patch = patch;
+        PreRelease = preRelease;
+        Metadata = metadata;
+    }
+
     public int Major { get; private init; }
 
     public int Minor { get; private init; }
@@ -24,16 +34,6 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
 
     [JsonIgnore]
     public int BuildNumberFromMetadata => ExtractBuildNumber(Metadata);
-
-    [JsonConstructor]
-    private SemVer(int major, int minor, int patch, string? preRelease, string? metadata) : this()
-    {
-        Major = major;
-        Minor = minor;
-        Patch = patch;
-        PreRelease = preRelease;
-        Metadata = metadata;
-    }
 
     public int CompareTo(SemVer? other)
     {
