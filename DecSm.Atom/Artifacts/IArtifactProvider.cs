@@ -53,7 +53,10 @@ public interface IArtifactProvider
     /// <summary>
     ///     Retrieves the stored run identifiers from the storage.
     /// </summary>
-    /// <param name="artifactName">The name of the artifact to filter the run identifiers by. If not provided, all run identifiers will be retrieved.</param>
+    /// <param name="artifactName">
+    ///     The name of the artifact to filter the run identifiers by. If not provided, all run identifiers will be
+    ///     retrieved.
+    /// </param>
     /// <param name="buildSlice">The build slice associated with the artifacts. If not provided, the current run will be used.</param>
     /// <returns>A task representing the asynchronous operation, with a list of stored run identifiers as the result.</returns>
     Task<IReadOnlyList<string>> GetStoredRunIdentifiers(string? artifactName = null, string? buildSlice = null);

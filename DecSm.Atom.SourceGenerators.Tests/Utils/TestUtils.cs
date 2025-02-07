@@ -23,7 +23,7 @@ public static class TestUtils
         return generatedText;
     }
 
-    public static CSharpCompilation CreateCompilation(string source, Assembly[] additionalAssemblies)
+    private static CSharpCompilation CreateCompilation(string source, Assembly[] additionalAssemblies)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
@@ -34,7 +34,7 @@ public static class TestUtils
         return compilation;
     }
 
-    public static GeneratorDriver CreateDriver<TSourceGenerator>()
+    private static GeneratorDriver CreateDriver<TSourceGenerator>()
         where TSourceGenerator : IIncrementalGenerator, new() =>
         CSharpGeneratorDriver.Create(new TSourceGenerator());
 }

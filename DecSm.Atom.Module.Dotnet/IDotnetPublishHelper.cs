@@ -7,34 +7,27 @@ public partial interface IDotnetPublishHelper : IVersionHelper
     {
         Logger.LogInformation("Publishing Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
-        var projectPath = new RootedPath(FileSystem, project.FullName);
+        var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
-        if (!project.Exists)
-            throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
-
-        List<RootedPath> filesToTransform = [projectPath];
-
-        var dir = projectPath;
-
-        do
+        await using var transformFilesScope = (options.AutoSetVersion, options.CustomPropertiesTransform) switch
         {
-            dir = dir.Parent;
+            (true, not null) => await TransformProjectVersionScope
+                .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                    GetService<IBuildVersionProvider>()
+                        .Version)
+                .AddAsync(options.CustomPropertiesTransform),
 
-            if (dir is null)
-                break;
+            (true, null) => await TransformProjectVersionScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                GetService<IBuildVersionProvider>()
+                    .Version),
 
-            var file = dir / "Directory.Build.props";
+            (false, not null) => await TransformMultiFileScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                options.CustomPropertiesTransform!),
 
-            if (file.FileExists)
-                filesToTransform.Add(file);
-        } while (dir != FileSystem.AtomRootDirectory);
-
-        var buildVersionProvider = GetService<IBuildVersionProvider>();
-
-        await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
-            : null;
+            _ => null,
+        };
 
         var buildDir = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.ProjectName;
 
@@ -42,7 +35,7 @@ public partial interface IDotnetPublishHelper : IVersionHelper
             FileSystem.Directory.Delete(buildDir, true);
 
         await GetService<ProcessRunner>()
-            .RunAsync(new("dotnet", $"publish {project.FullName} -c {options.Configuration} -o {buildDir}"));
+            .RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"));
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;

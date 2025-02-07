@@ -7,34 +7,27 @@ public partial interface IDotnetPackHelper : IVersionHelper
     {
         Logger.LogInformation("Packing Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
-        var projectPath = new RootedPath(FileSystem, project.FullName);
+        var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
-        if (!project.Exists)
-            throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
-
-        List<RootedPath> filesToTransform = [projectPath];
-
-        var dir = projectPath;
-
-        do
+        await using var transformFilesScope = (options.AutoSetVersion, options.CustomPropertiesTransform) switch
         {
-            dir = dir.Parent;
+            (true, not null) => await TransformProjectVersionScope
+                .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                    GetService<IBuildVersionProvider>()
+                        .Version)
+                .AddAsync(options.CustomPropertiesTransform),
 
-            if (dir is null)
-                break;
+            (true, null) => await TransformProjectVersionScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                GetService<IBuildVersionProvider>()
+                    .Version),
 
-            var file = dir / "Directory.Build.props";
+            (false, not null) => await TransformMultiFileScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                options.CustomPropertiesTransform!),
 
-            if (file.FileExists)
-                filesToTransform.Add(file);
-        } while (dir != FileSystem.AtomRootDirectory);
-
-        var buildVersionProvider = GetService<IBuildVersionProvider>();
-
-        await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
-            : null;
+            _ => null,
+        };
 
         var packDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration;
 
@@ -42,7 +35,7 @@ public partial interface IDotnetPackHelper : IVersionHelper
             FileSystem.Directory.Delete(packDirectory, true);
 
         await GetService<ProcessRunner>()
-            .RunAsync(new("dotnet", $"pack {project.FullName} -c {options.Configuration}"));
+            .RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"));
 
         var packageFilePattern = options.CustomPackageId is { Length: > 0 }
             ? $"{options.CustomPackageId}.*.nupkg"

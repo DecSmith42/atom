@@ -72,7 +72,9 @@ internal sealed class BuildExecutor(
             string? value;
 
             if (requiredParam.IsSecret)
+            {
                 value = paramService.GetParam(requiredParam.Name, defaultValue, x => x);
+            }
             else
             {
                 using var _ = paramService.CreateNoCacheScope();

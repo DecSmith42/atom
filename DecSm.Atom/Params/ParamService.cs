@@ -10,7 +10,7 @@ public interface IParamService
     T? GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null);
 
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    string? GetParam(string paramName, string? defaultValue = default) =>
+    string? GetParam(string paramName, string? defaultValue = null) =>
         GetParam<string>(paramName, defaultValue);
 
     string MaskSecrets(string text);
@@ -26,20 +26,6 @@ internal sealed class ParamService(
     IEnumerable<ISecretsProvider> vaultProviders
 ) : IParamService
 {
-    private readonly record struct NoCacheScope : IDisposable
-    {
-        private readonly ParamService _paramService;
-
-        public NoCacheScope(ParamService paramService)
-        {
-            _paramService = paramService;
-            paramService.NoCache = true;
-        }
-
-        public void Dispose() =>
-            _paramService.NoCache = false;
-    }
-
     private readonly Dictionary<ParamDefinition, object?> _cache = [];
     private readonly List<string> _knownSecrets = [];
     private readonly ISecretsProvider[] _vaultProviders = vaultProviders.ToArray();
@@ -206,5 +192,19 @@ internal sealed class ParamService(
         _cache[paramDefinition] = convertedResult;
 
         return (true, convertedResult);
+    }
+
+    private readonly record struct NoCacheScope : IDisposable
+    {
+        private readonly ParamService _paramService;
+
+        public NoCacheScope(ParamService paramService)
+        {
+            _paramService = paramService;
+            paramService.NoCache = true;
+        }
+
+        public void Dispose() =>
+            _paramService.NoCache = false;
     }
 }

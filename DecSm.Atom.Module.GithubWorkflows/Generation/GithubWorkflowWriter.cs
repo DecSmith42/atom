@@ -320,8 +320,10 @@ internal sealed class GithubWorkflowWriter(
                     using (WriteSection("- name: Setup NuGet"))
                     {
                         using (WriteSection("run: |"))
+                        {
                             foreach (var feedToAdd in feedsToAdd)
                                 WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                        }
 
                         WriteLine("shell: bash");
 
@@ -351,7 +353,6 @@ internal sealed class GithubWorkflowWriter(
                                 consumedArtifact.TargetName);
 
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
-                    {
                         foreach (var slice in commandStepTarget.ConsumedArtifacts.GroupBy(a => a.BuildSlice))
                         {
                             WriteLine();
@@ -372,9 +373,7 @@ internal sealed class GithubWorkflowWriter(
                                 ],
                                 false);
                         }
-                    }
                     else
-                    {
                         foreach (var artifact in commandStepTarget.ConsumedArtifacts)
                         {
                             WriteLine();
@@ -395,7 +394,6 @@ internal sealed class GithubWorkflowWriter(
                                 }
                             }
                         }
-                    }
                 }
 
                 WriteLine();
@@ -404,7 +402,6 @@ internal sealed class GithubWorkflowWriter(
                 if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
                 {
                     if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
-                    {
                         foreach (var slice in commandStepTarget.ProducedArtifacts.GroupBy(a => a.BuildSlice))
                         {
                             WriteLine();
@@ -425,9 +422,7 @@ internal sealed class GithubWorkflowWriter(
                                 ],
                                 false);
                         }
-                    }
                     else
-                    {
                         foreach (var artifact in commandStepTarget.ProducedArtifacts)
                         {
                             WriteLine();
@@ -448,7 +443,6 @@ internal sealed class GithubWorkflowWriter(
                                 }
                             }
                         }
-                    }
                 }
 
                 break;

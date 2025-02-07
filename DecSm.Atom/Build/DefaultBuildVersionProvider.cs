@@ -1,11 +1,7 @@
 ﻿namespace DecSm.Atom.Build;
 
-internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSystem)
-    : IBuildVersionProvider
+internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSystem) : IBuildVersionProvider
 {
-    [GeneratedRegex("<(Version|VersionPrefix|VersionSuffix|PackageVersion|InformationalVersion)>(?<value>.+)</\\1>")]
-    private static partial Regex VersionTagRegex();
-
     public SemVer Version
     {
         get
@@ -72,4 +68,7 @@ internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSy
                                 : throw new InvalidOperationException($"Unable to determine version from {directoryBuildProps}");
         }
     }
+
+    [GeneratedRegex("<(Version|VersionPrefix|VersionSuffix|PackageVersion|InformationalVersion)>(?<value>.+)</\\1>")]
+    private static partial Regex VersionTagRegex();
 }

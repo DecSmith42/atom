@@ -7,11 +7,11 @@ public partial class DependencyTargetBuild : BuildDefinition,
     IDependencyFailTarget1,
     IDependencyFailTarget2
 {
-    public bool DependencyTarget1Executed { get; set; }
-
     public bool DependencyFailTarget1Executed { get; set; }
 
     public bool DependencyFailTarget2Executed { get; set; }
+
+    public bool DependencyTarget1Executed { get; set; }
 
     public bool DependencyTarget2Executed { get; set; }
 }
