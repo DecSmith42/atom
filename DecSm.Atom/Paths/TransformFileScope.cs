@@ -14,6 +14,38 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         _initialContent = initialContent;
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
+        if (_cancelled)
+            return;
+
+        if (_initialContent is null)
+            _file.FileSystem.File.Delete(_file);
+        else
+            await _file.FileSystem.File.WriteAllTextAsync(_file, _initialContent);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
+        if (_cancelled)
+            return;
+
+        if (_initialContent is null)
+            _file.FileSystem.File.Delete(_file);
+        else
+            _file.FileSystem.File.WriteAllText(_file, _initialContent);
+    }
+
     public static async Task<TransformFileScope> CreateAsync(RootedPath file, Func<string, string> transform)
     {
         string? initialContent = null;
@@ -41,7 +73,8 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return this;
 
-        await _file.FileSystem.File.WriteAllTextAsync(_file, transform(_initialContent ?? string.Empty));
+        var currentContent = await _file.FileSystem.File.ReadAllTextAsync(_file);
+        await _file.FileSystem.File.WriteAllTextAsync(_file, transform(currentContent));
 
         return this;
     }
@@ -73,41 +106,10 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return this;
 
-        _file.FileSystem.File.WriteAllText(_file, transform(_initialContent ?? string.Empty));
+        var currentContent = _file.FileSystem.File.ReadAllText(_file);
+        _file.FileSystem.File.WriteAllText(_file, transform(currentContent));
 
         return this;
-    }
-
-    public void Dispose()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
-        if (_cancelled)
-            return;
-
-        if (_initialContent is null)
-            _file.FileSystem.File.Delete(_file);
-        else
-            _file.FileSystem.File.WriteAllText(_file, _initialContent);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
-        if (_cancelled)
-            return;
-
-        if (_initialContent is null)
-            _file.FileSystem.File.Delete(_file);
-        else
-            await _file.FileSystem.File.WriteAllTextAsync(_file, _initialContent);
     }
 
     public void CancelRestore() =>

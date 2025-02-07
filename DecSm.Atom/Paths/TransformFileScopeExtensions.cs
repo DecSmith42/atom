@@ -1,5 +1,6 @@
 namespace DecSm.Atom.Paths;
 
+[PublicAPI]
 public static class TransformFileScopeExtensions
 {
     public static async Task<TransformMultiFileScope> AddAsync(

@@ -14,6 +14,42 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         _initialContents = initialContents;
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
+        if (_cancelled)
+            return;
+
+        await Task.WhenAll(_files.Select(async (x, i) =>
+        {
+            if (_initialContents[i] is null)
+                x.FileSystem.File.Delete(x);
+            else
+                await x.FileSystem.File.WriteAllTextAsync(x, _initialContents[i]);
+        }));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
+        if (_cancelled)
+            return;
+
+        foreach (var (file, i) in _files.Select((x, i) => (x, i)))
+            if (_initialContents[i] is null)
+                file.FileSystem.File.Delete(file);
+            else
+                file.FileSystem.File.WriteAllText(file, _initialContents[i]);
+    }
+
     public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
@@ -47,7 +83,11 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return this;
 
-        await Task.WhenAll(_files.Select((x, i) => x.FileSystem.File.WriteAllTextAsync(x, transform(_initialContents[i] ?? string.Empty))));
+        await Task.WhenAll(_files.Select(async x =>
+        {
+            var currentContent = await x.FileSystem.File.ReadAllTextAsync(x);
+            await x.FileSystem.File.WriteAllTextAsync(x, transform(currentContent));
+        }));
 
         return this;
     }
@@ -87,46 +127,13 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return this;
 
-        foreach (var (file, i) in _files.Select((x, i) => (x, i)))
-            file.FileSystem.File.WriteAllText(file, transform(_initialContents[i] ?? string.Empty));
+        foreach (var file in _files)
+        {
+            var currentContent = file.FileSystem.File.ReadAllText(file);
+            file.FileSystem.File.WriteAllText(file, transform(currentContent));
+        }
 
         return this;
-    }
-
-    public void Dispose()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
-        if (_cancelled)
-            return;
-
-        foreach (var (file, i) in _files.Select((x, i) => (x, i)))
-            if (_initialContents[i] is null)
-                file.FileSystem.File.Delete(file);
-            else
-                file.FileSystem.File.WriteAllText(file, _initialContents[i]);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
-        if (_cancelled)
-            return;
-
-        await Task.WhenAll(_files.Select(async (x, i) =>
-        {
-            if (_initialContents[i] is null)
-                x.FileSystem.File.Delete(x);
-            else
-                await x.FileSystem.File.WriteAllTextAsync(x, _initialContents[i]);
-        }));
     }
 
     public void CancelRestore() =>
