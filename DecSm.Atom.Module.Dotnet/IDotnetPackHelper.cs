@@ -7,33 +7,12 @@ public partial interface IDotnetPackHelper : IVersionHelper
     {
         Logger.LogInformation("Packing Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
-        var projectPath = new RootedPath(FileSystem, project.FullName);
-
-        if (!project.Exists)
-            throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
-
-        List<RootedPath> filesToTransform = [projectPath];
-
-        var dir = projectPath;
-
-        do
-        {
-            dir = dir.Parent;
-
-            if (dir is null)
-                break;
-
-            var file = dir / "Directory.Build.props";
-
-            if (file.FileExists)
-                filesToTransform.Add(file);
-        } while (dir != FileSystem.AtomRootDirectory);
-
-        var buildVersionProvider = GetService<IBuildVersionProvider>();
+        var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
         await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
+            ? TransformProjectVersionScope.Create(DotnetFileUtils.GetBuildPropsForProjectFile(projectPath, FileSystem.AtomRootDirectory),
+                GetService<IBuildVersionProvider>()
+                    .Version)
             : null;
 
         var packDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration;
@@ -42,7 +21,7 @@ public partial interface IDotnetPackHelper : IVersionHelper
             FileSystem.Directory.Delete(packDirectory, true);
 
         await GetService<ProcessRunner>()
-            .RunAsync(new("dotnet", $"pack {project.FullName} -c {options.Configuration}"));
+            .RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"));
 
         var packageFilePattern = options.CustomPackageId is { Length: > 0 }
             ? $"{options.CustomPackageId}.*.nupkg"

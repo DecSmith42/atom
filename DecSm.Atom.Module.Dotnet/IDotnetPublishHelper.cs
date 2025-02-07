@@ -7,33 +7,12 @@ public partial interface IDotnetPublishHelper : IVersionHelper
     {
         Logger.LogInformation("Publishing Atom project {AtomProjectName}", options.ProjectName);
 
-        var project = FileSystem.FileInfo.New(FileSystem.AtomRootDirectory / options.ProjectName / $"{options.ProjectName}.csproj");
-        var projectPath = new RootedPath(FileSystem, project.FullName);
-
-        if (!project.Exists)
-            throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
-
-        List<RootedPath> filesToTransform = [projectPath];
-
-        var dir = projectPath;
-
-        do
-        {
-            dir = dir.Parent;
-
-            if (dir is null)
-                break;
-
-            var file = dir / "Directory.Build.props";
-
-            if (file.FileExists)
-                filesToTransform.Add(file);
-        } while (dir != FileSystem.AtomRootDirectory);
-
-        var buildVersionProvider = GetService<IBuildVersionProvider>();
+        var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
         await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(filesToTransform, buildVersionProvider.Version)
+            ? TransformProjectVersionScope.Create(DotnetFileUtils.GetBuildPropsForProjectFile(projectPath, FileSystem.AtomRootDirectory),
+                GetService<IBuildVersionProvider>()
+                    .Version)
             : null;
 
         var buildDir = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.ProjectName;
@@ -42,7 +21,7 @@ public partial interface IDotnetPublishHelper : IVersionHelper
             FileSystem.Directory.Delete(buildDir, true);
 
         await GetService<ProcessRunner>()
-            .RunAsync(new("dotnet", $"publish {project.FullName} -c {options.Configuration} -o {buildDir}"));
+            .RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"));
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;
