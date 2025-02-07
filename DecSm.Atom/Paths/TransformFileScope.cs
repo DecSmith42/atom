@@ -34,6 +34,18 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
+    public async Task<TransformFileScope> AddAsync(Func<string, string> transform)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (_cancelled)
+            return this;
+
+        await _file.FileSystem.File.WriteAllTextAsync(_file, transform(_initialContent ?? string.Empty));
+
+        return this;
+    }
+
     public static TransformFileScope Create(RootedPath file, Func<string, string> transform)
     {
         string? initialContent = null;
@@ -52,6 +64,18 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         file.FileSystem.File.WriteAllText(file, transform(initialContent ?? string.Empty));
 
         return scope;
+    }
+
+    public TransformFileScope Add(Func<string, string> transform)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (_cancelled)
+            return this;
+
+        _file.FileSystem.File.WriteAllText(_file, transform(_initialContent ?? string.Empty));
+
+        return this;
     }
 
     public void Dispose()

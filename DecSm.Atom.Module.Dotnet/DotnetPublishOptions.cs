@@ -7,4 +7,6 @@ public sealed record DotnetPublishOptions(string ProjectName)
     public string Configuration { get; init; } = "Release";
 
     public string? OutputArtifactName { get; init; }
+
+    public Func<string, string>? CustomPropertiesTransform { get; init; }
 }

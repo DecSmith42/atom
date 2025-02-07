@@ -9,11 +9,25 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper
 
         var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
-        await using var setVersionScope = options.AutoSetVersion
-            ? TransformProjectVersionScope.Create(DotnetFileUtils.GetBuildPropsForProjectFile(projectPath, FileSystem.AtomRootDirectory),
+        await using var transformFilesScope = (options.AutoSetVersion, options.CustomPropertiesTransform) switch
+        {
+            (true, not null) => await TransformProjectVersionScope
+                .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                    GetService<IBuildVersionProvider>()
+                        .Version)
+                .AddAsync(options.CustomPropertiesTransform),
+
+            (true, null) => await TransformProjectVersionScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
                 GetService<IBuildVersionProvider>()
-                    .Version)
-            : null;
+                    .Version),
+
+            (false, not null) => await TransformMultiFileScope.CreateAsync(
+                DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
+                options.CustomPropertiesTransform!),
+
+            _ => null,
+        };
 
         var testOutputDirectory = FileSystem.AtomRootDirectory / options.ProjectName / "TestResults";
 

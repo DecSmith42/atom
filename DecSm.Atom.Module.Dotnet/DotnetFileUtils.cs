@@ -9,7 +9,7 @@ public static class DotnetFileUtils
     /// <param name="projectFilePath">The full path to the project file.</param>
     /// <param name="rootPath">The root path for the operation. Directories above this path will not be searched.</param>
     /// <returns>The project file as well as any Directory.Build.props files that apply to it.</returns>
-    public static IEnumerable<RootedPath> GetBuildPropsForProjectFile(RootedPath projectFilePath, RootedPath rootPath)
+    public static IEnumerable<RootedPath> GetPropertyFilesForProject(RootedPath projectFilePath, RootedPath rootPath)
     {
         List<RootedPath> filesToTransform = [projectFilePath];
 

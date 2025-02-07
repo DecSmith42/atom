@@ -9,5 +9,7 @@ public sealed record DotnetPackOptions(string ProjectName)
 
     public string? OutputArtifactName { get; init; }
 
+    public Func<string, string>? CustomPropertiesTransform { get; init; }
+
     public string? CustomPackageId { get; init; }
 }

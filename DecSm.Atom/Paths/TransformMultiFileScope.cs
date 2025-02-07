@@ -40,6 +40,18 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
+    public async Task<TransformMultiFileScope> AddAsync(Func<string, string> transform)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (_cancelled)
+            return this;
+
+        await Task.WhenAll(_files.Select((x, i) => x.FileSystem.File.WriteAllTextAsync(x, transform(_initialContents[i] ?? string.Empty))));
+
+        return this;
+    }
+
     public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
@@ -66,6 +78,19 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
             file.FileSystem.File.WriteAllText(file, transform(initialContents[i] ?? string.Empty));
 
         return scope;
+    }
+
+    public TransformMultiFileScope Add(Func<string, string> transform)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        if (_cancelled)
+            return this;
+
+        foreach (var (file, i) in _files.Select((x, i) => (x, i)))
+            file.FileSystem.File.WriteAllText(file, transform(_initialContents[i] ?? string.Empty));
+
+        return this;
     }
 
     public void Dispose()
