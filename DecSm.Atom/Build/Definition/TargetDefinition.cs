@@ -1,5 +1,8 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
+/// <summary>
+///     Defines a target that can be run
+/// </summary>
 [PublicAPI]
 public sealed class TargetDefinition
 {
