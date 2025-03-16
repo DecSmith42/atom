@@ -92,18 +92,18 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             },
             state);
 
+        var message = formatter(state, exception);
+
+        if (message is "(null)")
+            return;
+
+        // If the text contains any secrets, we don't want to log it
+        message = ServiceStaticAccessor<IParamService>.Service?.MaskSecrets(message) ?? message;
+
+        message = message.EscapeMarkup();
+
         if (processOutput)
         {
-            var message = formatter(state, exception);
-
-            if (message is "(null)")
-                return;
-
-            message = message.EscapeMarkup();
-
-            // If the text contains any secrets, we don't want to log it
-            message = ServiceStaticAccessor<IParamService>.Service?.MaskSecrets(message) ?? message;
-
             messageStyle = ErrorTypeRegex()
                 .IsMatch(message)
                 ? "red"
@@ -123,8 +123,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             .AddColumn("Info")
             .AddColumn("Message")
             .AddRow($"[dim]{time:yy-MM-dd zzz}[/]", $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
-            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]",
-                $"[{messageStyle}]{formatter(state, exception).EscapeMarkup()}[/]")
+            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]", $"[{messageStyle}]{message}[/]")
             .AddRow(string.Empty);
 
         if (exception != null)
