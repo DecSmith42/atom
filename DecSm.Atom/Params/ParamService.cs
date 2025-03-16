@@ -36,7 +36,10 @@ internal sealed class ParamService(
         new NoCacheScope(this);
 
     public string MaskSecrets(string text) =>
-        _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
+        _knownSecrets.Aggregate(text,
+            (current, knownSecret) => knownSecret is { Length: > 0 }
+                ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
+                : knownSecret);
 
     public T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
