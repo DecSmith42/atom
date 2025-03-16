@@ -26,7 +26,7 @@ internal sealed class ParamService(
     IEnumerable<ISecretsProvider> vaultProviders
 ) : IParamService
 {
-    private readonly Dictionary<ParamDefinition, object?> _cache = [];
+    private readonly Dictionary<string, object?> _cache = [];
     private readonly List<string> _knownSecrets = [];
     private readonly ISecretsProvider[] _vaultProviders = vaultProviders.ToArray();
 
@@ -36,7 +36,10 @@ internal sealed class ParamService(
         new NoCacheScope(this);
 
     public string MaskSecrets(string text) =>
-        _knownSecrets.Aggregate(text, (current, knownSecret) => current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase));
+        _knownSecrets.Aggregate(text,
+            (current, knownSecret) => knownSecret is { Length: > 0 }
+                ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
+                : knownSecret);
 
     public T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
@@ -90,14 +93,17 @@ internal sealed class ParamService(
             result = defaultValue;
 
         if (!NoCache)
-            _cache[paramDefinition] = result;
+            _cache[paramDefinition.Name] = result;
+
+        if (paramDefinition.IsSecret)
+            _knownSecrets.Add(result?.ToString() ?? string.Empty);
 
         return result;
     }
 
     private (bool HasValue, T? Value) TryGetParamFromCache<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
     {
-        if (_cache.TryGetValue(paramDefinition, out var value))
+        if (_cache.TryGetValue(paramDefinition.Name, out var value))
             return (true, value switch
             {
                 T valueAsT => valueAsT,
@@ -163,8 +169,6 @@ internal sealed class ParamService(
             if (vaultValue is null)
                 continue;
 
-            _knownSecrets.Add(vaultValue);
-
             var convertedVaultValue = TypeUtil.Convert(vaultValue, converter);
 
             return (true, convertedVaultValue);
@@ -189,7 +193,7 @@ internal sealed class ParamService(
         var convertedResult = TypeUtil.Convert(result, converter);
 
         // Force cache as it is a user input
-        _cache[paramDefinition] = convertedResult;
+        _cache[paramDefinition.Name] = convertedResult;
 
         return (true, convertedResult);
     }

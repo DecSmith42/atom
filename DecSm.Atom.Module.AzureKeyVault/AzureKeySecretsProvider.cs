@@ -29,18 +29,8 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
         try
         {
             var client = _secretClient ??= new(new(definition.AzureVaultAddress), GetCredential(definition));
-            var value = client.GetSecret(key);
 
-            if (value.HasValue)
-            {
-                logger.LogTrace("Got secret '{Key}' from Azure Vault: ***", key);
-
-                return value.Value.Value;
-            }
-
-            logger.LogTrace("Did not find secret '{Key}' in Azure Vault", key);
-
-            return null;
+            return GetSecret(client, key);
         }
         catch (Exception ex)
         {
@@ -75,6 +65,12 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
                     valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
 
                     break;
+                case AzureKeyVaultValueInjectionType.None:
+
+                    break;
+                default:
+
+                    throw new ArgumentOutOfRangeException();
             }
 
             switch (injections.TenantId)
@@ -87,6 +83,12 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
                     valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
 
                     break;
+                case AzureKeyVaultValueInjectionType.None:
+
+                    break;
+                default:
+
+                    throw new ArgumentOutOfRangeException();
             }
 
             switch (injections.AppId)
@@ -99,6 +101,12 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
                     valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)));
 
                     break;
+                case AzureKeyVaultValueInjectionType.None:
+
+                    break;
+                default:
+
+                    throw new ArgumentOutOfRangeException();
             }
 
             switch (injections.AppSecret)
@@ -111,6 +119,12 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
                     valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
 
                     break;
+                case AzureKeyVaultValueInjectionType.None:
+
+                    break;
+                default:
+
+                    throw new ArgumentOutOfRangeException();
             }
 
             return valueInjections;
@@ -119,42 +133,47 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
 
     private TokenCredential GetCredential(IAzureKeyVault definition)
     {
-        if (definition.AzureVaultTenantId is null or "" ||
-            definition.AzureVaultAppId is null or "" ||
-            definition.AzureVaultAppSecret is null or "")
-        {
-            if (args.HasHeadless)
-                throw new(
-                    "When running in headless mode, Azure Vault parameters must be set: azure-vault-address, azure-vault-tenant-id, azure-vault-app-id");
+        if (definition is { AzureVaultTenantId.Length: > 0, AzureVaultAppId.Length: > 0, AzureVaultAppSecret.Length: > 0 })
+            return new ClientSecretCredential(definition.AzureVaultTenantId, definition.AzureVaultAppId, definition.AzureVaultAppSecret);
 
-            return GetUserCredential(definition.AzureVaultTenantId);
-        }
+        if (args.HasHeadless)
+            throw new(
+                "When running in headless mode, Azure Vault parameters must be set: azure-vault-address, azure-vault-tenant-id, azure-vault-app-id");
 
-        return new ClientSecretCredential(definition.AzureVaultTenantId, definition.AzureVaultAppId, definition.AzureVaultAppSecret);
-    }
-
-    private InteractiveBrowserCredential GetUserCredential(string? tenantId)
-    {
-        logger.LogInformation(
-            "Getting Azure Vault credentials interactively, please log in to Azure with a user that has access to the Vault");
-
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
-
-        var cred = new InteractiveBrowserCredential(new InteractiveBrowserCredentialOptions
+        return new InteractiveBrowserCredential(new InteractiveBrowserCredentialOptions
         {
             AdditionallyAllowedTenants =
             {
-                tenantId ?? "*",
+                definition.AzureVaultTenantId ?? "*",
             },
         });
+    }
+
+    private string? GetSecret(SecretClient client, string key)
+    {
+        logger.LogInformation(
+            "Getting Azure Vault secret. If login is prompted, please log in to Azure with a user that has access to the Vault");
+
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(120));
 
         try
         {
-            cred.Authenticate(cts.Token);
+            var response = client.GetSecret(key, cancellationToken: cts.Token);
+
+            if (response.HasValue)
+            {
+                logger.LogTrace("Got secret '{Key}' from Azure Vault: ***", key);
+
+                return response.Value.Value;
+            }
+
+            logger.LogWarning("Secret '{Key}' not found in Azure Vault", key);
+
+            return null;
         }
         catch (TaskCanceledException)
         {
-            logger.LogWarning("Login timed out. Secrets will not be available from Azure Key Vault");
+            logger.LogWarning("Vault request timed out");
         }
         catch (AuthenticationFailedException authenticationFailed)
         {
@@ -166,6 +185,6 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
             logger.LogError(ex, "Failed to login. Secrets will not be available from Azure Key Vault");
         }
 
-        return cred;
+        return null;
     }
 }

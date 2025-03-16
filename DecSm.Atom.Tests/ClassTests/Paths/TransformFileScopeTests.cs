@@ -48,7 +48,7 @@ internal sealed class TransformFileScopeTests
             { "file.txt", new("existing-content") },
         });
 
-        await using var scope = await TransformFileScope.CreateAsync(fs.CreateRootedPath("file.txt"), _ => "test-text");
+        var scope = await TransformFileScope.CreateAsync(fs.CreateRootedPath("file.txt"), _ => "test-text");
 
         // Act
         await scope

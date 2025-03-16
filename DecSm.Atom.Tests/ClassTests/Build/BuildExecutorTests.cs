@@ -15,8 +15,6 @@ public class BuildExecutorTests
             DeclaringAssembly = Assembly.GetExecutingAssembly(),
         };
 
-        _buildDefinition = new TestBuildDefinition();
-
         _paramService = A.Fake<IParamService>();
         _workflowVariableService = A.Fake<IWorkflowVariableService>();
         _outcomeReporters = [];
@@ -29,29 +27,8 @@ public class BuildExecutorTests
     public void TearDown() =>
         _console.Dispose();
 
-    private class TestBuildDefinition : IBuildDefinition
-    {
-        public IReadOnlyDictionary<string, Target> TargetDefinitions { get; } = new Dictionary<string, Target>();
-
-        public IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; } = new Dictionary<string, ParamDefinition>();
-
-        public IServiceProvider Services { get; } = new ServiceCollection().BuildServiceProvider();
-
-        [return: NotNullIfNotNull("defaultValue")]
-        public T GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
-            throw new NotImplementedException();
-
-        public Task WriteVariable(string name, string value) =>
-            throw new NotImplementedException();
-
-        public void AddReportData(IReportData reportData) =>
-            throw new NotImplementedException();
-    }
-
     private CommandLineArgs _commandLineArgs;
     private BuildModel _buildModel;
-
-    private IBuildDefinition _buildDefinition;
 
     private IParamService _paramService;
 

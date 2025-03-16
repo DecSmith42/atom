@@ -94,8 +94,8 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
     private void WriteCommand(TargetModel target)
     {
         var title = target.Description is { Length: > 0 }
-            ? $"[bold navy]{target.Name}[/] [dim]| {target.Description}[/]"
-            : $"[bold navy]{target.Name}[/]";
+            ? $"[bold navy]{target.Name.EscapeMarkup()}[/] [dim]| {target.Description.EscapeMarkup()}[/]"
+            : $"[bold navy]{target.Name.EscapeMarkup()}[/]";
 
         var tree = new Tree(title);
 
@@ -135,10 +135,10 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
             foreach (var requiredParam in requiredParams)
             {
                 var descriptionDisplay = requiredParam.Description is { Length: > 0 }
-                    ? $"[dim] | {requiredParam.Description}[/]"
+                    ? $"[dim] | {requiredParam.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                reqTree.AddNode($"--{requiredParam.ArgName}{descriptionDisplay}");
+                reqTree.AddNode($"--{requiredParam.ArgName.EscapeMarkup()}{descriptionDisplay}");
             }
         }
 
@@ -156,18 +156,19 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
                 var defaultDisplay = (defaultValue, configuredValue) switch
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
-                        $"[dim] [[Default/Configured: {defaultValue}]][/]",
-                    ({ Length: > 0 }, { Length: > 0 }) => $"[dim] [[Default: {defaultValue}]][/][dim][[Configured: {configuredValue}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue}]][/]",
+                        $"[dim] [[Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) =>
+                        $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/][dim][[Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue.EscapeMarkup()}]][/]",
                     _ => string.Empty,
                 };
 
                 var descriptionDisplay = optionalParam.Description is { Length: > 0 }
-                    ? $"[dim] | {optionalParam.Description}[/]"
+                    ? $"[dim] | {optionalParam.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                optTree.AddNode($"--{optionalParam.ArgName}{defaultDisplay}{descriptionDisplay}");
+                optTree.AddNode($"--{optionalParam.ArgName.EscapeMarkup()}{defaultDisplay}{descriptionDisplay}");
             }
         }
 
@@ -178,10 +179,10 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
             foreach (var secret in secrets)
             {
                 var descriptionDisplay = secret.Description is { Length: > 0 }
-                    ? $"[dim] | {secret.Description}[/]"
+                    ? $"[dim] | {secret.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                secTree.AddNode($"--{secret.ArgName}{descriptionDisplay}");
+                secTree.AddNode($"--{secret.ArgName.EscapeMarkup()}{descriptionDisplay}");
             }
         }
 
