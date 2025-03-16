@@ -40,10 +40,10 @@ public partial interface IManualInputTarget
     string StringParamWithDefault => GetParam(() => StringParamWithDefault)!;
 
     [ParamDefinition("bool-param-without-default", "Bool param")]
-    bool BoolParamWithoutDefault => GetParam(() => BoolParamWithoutDefault)!;
+    bool BoolParamWithoutDefault => GetParam(() => BoolParamWithoutDefault);
 
     [ParamDefinition("bool-param-with-default", "Bool param", "true")]
-    bool BoolParamWithDefault => GetParam(() => BoolParamWithDefault)!;
+    bool BoolParamWithDefault => GetParam(() => BoolParamWithDefault);
 
     [ParamDefinition("choice-param-without-default", "Choice param")]
     string ChoiceParamWithoutDefault => GetParam(() => ChoiceParamWithoutDefault)!;

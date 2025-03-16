@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Params;
 
+[PublicAPI]
 public sealed record ParamModel(string Name)
 {
     public required string ArgName { get; init; }
