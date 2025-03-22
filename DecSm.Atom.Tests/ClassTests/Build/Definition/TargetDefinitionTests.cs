@@ -8,7 +8,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string description = "description";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.WithDescription(description);
@@ -22,7 +26,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         var task = Task.CompletedTask;
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.Executes(() => task);
@@ -40,7 +48,11 @@ public class TargetDefinitionTests
         // Arrange
         var task1 = Task.CompletedTask;
         var task2 = Task.Delay(1);
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition
@@ -61,7 +73,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         var task = Task.CompletedTask;
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition
@@ -88,7 +104,10 @@ public class TargetDefinitionTests
     public void DependsOn_AddsDependency()
     {
         // Arrange
-        var targetDefinition = new TargetDefinition();
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.DependsOn(nameof(ITestTarget.TestTarget));
@@ -105,7 +124,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string paramName = "NotExpected";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.RequiresParam(paramName);
@@ -122,7 +145,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string artifactName = "ArtifactName";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.ProducesArtifact(artifactName);
@@ -140,7 +167,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string artifactName = "ArtifactName";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.ConsumesArtifact(nameof(ITestTarget.TestTarget), artifactName);
@@ -161,7 +192,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string variableName = "VariableName";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.ProducesVariable(variableName);
@@ -178,7 +213,11 @@ public class TargetDefinitionTests
     {
         // Arrange
         const string variableName = "VariableName";
-        var targetDefinition = new TargetDefinition();
+
+        var targetDefinition = new TargetDefinition
+        {
+            Name = "name",
+        };
 
         // Act
         targetDefinition.ConsumesVariable(nameof(ITestTarget.TestTarget), variableName);
