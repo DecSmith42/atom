@@ -19,6 +19,7 @@ global using DecSm.Atom.Process;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Command;
 global using DecSm.Atom.Workflows.Definition.Options;
+global using DecSm.Atom.Workflows.Definition.Triggers;
 global using DecSm.Atom.Workflows.Options;
 global using IPublishTester = Atom.Targets.Test.IPublishTester;
 global using IPushToPrivateNuget = Atom.Targets.Test.IPushToPrivateNuget;

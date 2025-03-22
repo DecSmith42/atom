@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Workflows.Definition.Triggers;
-
-namespace Atom;
+﻿namespace Atom;
 
 [BuildDefinition]
 [GenerateEntryPoint]
