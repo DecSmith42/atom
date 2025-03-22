@@ -12,14 +12,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FakeItEasy" Version="8.3.0"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.3" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageReference Include="NUnit" Version="4.3.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
-    <PackageReference Include="Shouldly" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.3"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
+    <PackageReference Include="NUnit" Version="4.3.2"/>
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0"/>
+    <PackageReference Include="Shouldly" Version="4.3.0"/>
     <PackageReference Include="Spectre.Console.Testing" Version="0.49.1"/>
-    <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="22.0.12" />
-    <PackageReference Include="Verify.NUnit" Version="28.15.0" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="22.0.12"/>
+    <PackageReference Include="Verify.NUnit" Version="28.16.0"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DecSm.Atom.TestUtils\DecSm.Atom.TestUtils.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.TestUtils\DecSm.Atom.TestUtils.csproj"/>
     <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
     <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
   </ItemGroup>
