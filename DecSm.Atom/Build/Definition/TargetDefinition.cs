@@ -58,7 +58,7 @@ public sealed class TargetDefinition
     public List<ProducedArtifact> ProducedArtifacts { get; private set; } = [];
 
     /// <summary>
-    ///     Variables that must be produced by other targets (see <see cref="ProducedVariables" /> before this target can be executed.
+    ///     Variables that must be produced by other targets (see <see cref="ProducedVariables" />) before this target can be executed.
     /// </summary>
     /// <remarks>
     ///     By default, Atom will automatically acquire the variables from the workflow host or a custom variable provider.
