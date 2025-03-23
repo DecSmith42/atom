@@ -1,5 +1,8 @@
 ﻿namespace DecSm.Atom.Params;
 
+/// <summary>
+///     See <see cref="ParamDefinition" />.
+/// </summary>
 [PublicAPI]
 public sealed record ParamModel(string Name)
 {
