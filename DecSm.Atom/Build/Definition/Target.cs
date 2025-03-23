@@ -1,7 +1,7 @@
 namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     A delegate that returns a <see cref="TargetDefinition" />.
+///     A delegate that can apply configuration to (build) a target definition.
 /// </summary>
 [PublicAPI]
 public delegate TargetDefinition Target(TargetDefinition definition);
