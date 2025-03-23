@@ -13,7 +13,7 @@ public interface IParamService
     string? GetParam(string paramName, string? defaultValue = null) =>
         GetParam<string>(paramName, defaultValue);
 
-    string MaskSecrets(string text);
+    string MaskMatchingSecrets(string text);
 
     IDisposable CreateNoCacheScope();
 }
@@ -35,7 +35,7 @@ internal sealed class ParamService(
     public IDisposable CreateNoCacheScope() =>
         new NoCacheScope(this);
 
-    public string MaskSecrets(string text) =>
+    public string MaskMatchingSecrets(string text) =>
         _knownSecrets.Aggregate(text,
             (current, knownSecret) => knownSecret is { Length: > 0 }
                 ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)

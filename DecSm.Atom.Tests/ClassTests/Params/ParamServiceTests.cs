@@ -245,7 +245,7 @@ public class ParamServiceTests
         _paramService.GetParam("TestParam", "DefaultValue");
 
         // Act
-        var result = _paramService.MaskSecrets("This is a SecretValue in the text.");
+        var result = _paramService.MaskMatchingSecrets("This is a SecretValue in the text.");
 
         // Assert
         result.ShouldBe("This is a ***** in the text.");
@@ -283,7 +283,7 @@ public class ParamServiceTests
         _paramService.GetParam("TestParam", "DefaultValue");
 
         // Act
-        var result = _paramService.MaskSecrets("This is a NotSecretValue in the text.");
+        var result = _paramService.MaskMatchingSecrets("This is a NotSecretValue in the text.");
 
         // Assert
         result.ShouldBe("This is a NotSecretValue in the text.");

@@ -98,7 +98,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             return;
 
         // If the text contains any secrets, we don't want to log it
-        message = ServiceStaticAccessor<IParamService>.Service?.MaskSecrets(message) ?? message;
+        message = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(message) ?? message;
 
         message = message.EscapeMarkup();
 
