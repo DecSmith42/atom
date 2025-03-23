@@ -1,8 +1,44 @@
 ﻿namespace DecSm.Atom.Hosting;
 
+/// <summary>
+///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
+/// </summary>
+/// <remarks>
+///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent configuration
+///     of required services, logging providers, dependency injections, and system defaults for Atom-based hosts.
+/// </remarks>
+/// <example>
+///     Example usage:
+///     <code>
+/// builder.AddAtom&lt;HostApplicationBuilder, MyBuildDefinition&gt;(args);
+/// </code>
+/// </example>
 [PublicAPI]
 public static class HostExtensions
 {
+    /// <summary>
+    ///     Configures services, dependencies, logging, and default settings required by the Atom application framework.
+    /// </summary>
+    /// <typeparam name="TBuilder">
+    ///     Type of the host application builder to configure.
+    /// </typeparam>
+    /// <typeparam name="TBuild">
+    ///     Type of the build definition, which must implement <see cref="IBuildDefinition" />.
+    ///     Provides custom registrations and overrides specific to the build.
+    /// </typeparam>
+    /// <param name="builder">
+    ///     The host application builder instance to configure.
+    /// </param>
+    /// <param name="args">
+    ///     Command-line arguments provided to the application.
+    /// </param>
+    /// <returns>
+    ///     The configured host application builder instance.
+    /// </returns>
+    /// <remarks>
+    ///     Calls the <see cref="IBuildDefinition.Register" /> method of the provided <typeparamref name="TBuild" /> type to allow
+    ///     customization of services. Also registers logging, console output providers, build-related metadata, and file system access.
+    /// </remarks>
     public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)
         where TBuilder : IHostApplicationBuilder
         where TBuild : BuildDefinition, IBuildDefinition

@@ -1,8 +1,32 @@
 ﻿namespace DecSm.Atom.Hosting;
 
+/// <summary>
+///     Provides methods for creating and running Atom-based host applications.
+/// </summary>
+/// <remarks>
+///     This class simplifies the setup of an Atom host environment, configuring
+///     essential application settings and initialization based on provided build definitions.
+/// </remarks>
+/// <example>
+///     Example usage:
+///     <code>
+/// AtomHost.Run&lt;MyBuildDefinition&gt;(args);
+/// </code>
+/// </example>
 [PublicAPI]
 public static class AtomHost
 {
+    /// <summary>
+    ///     Creates and configures an instance of <see cref="HostApplicationBuilder" />
+    ///     tailored for Atom applications with the specified build definition.
+    /// </summary>
+    /// <typeparam name="T">
+    ///     The type of <see cref="BuildDefinition" /> used to configure the Atom host.
+    /// </typeparam>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>
+    ///     A configured <see cref="HostApplicationBuilder" /> ready to build and run the application.
+    /// </returns>
     public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args)
         where T : BuildDefinition
     {
@@ -22,6 +46,22 @@ public static class AtomHost
         return builder;
     }
 
+    /// <summary>
+    ///     Builds and runs an Atom-based application using the specified build definition.
+    /// </summary>
+    /// <typeparam name="T">
+    ///     The type of <see cref="BuildDefinition" /> used to configure and run the Atom application.
+    /// </typeparam>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <remarks>
+    ///     This method configures, builds, and immediately runs the host application.
+    /// </remarks>
+    /// <example>
+    ///     Example usage:
+    ///     <code>
+    /// AtomHost.Run&lt;MyBuildDefinition&gt;(args);
+    /// </code>
+    /// </example>
     public static void Run<T>(string[] args)
         where T : BuildDefinition =>
         CreateAtomBuilder<T>(args)
