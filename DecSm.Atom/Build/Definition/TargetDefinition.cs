@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     Defines a target that can be run
+///     Defines a target that can be modelled as <see cref="TargetModel" /> and executed.
 /// </summary>
 [PublicAPI]
 public sealed class TargetDefinition
