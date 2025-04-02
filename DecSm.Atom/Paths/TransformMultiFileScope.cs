@@ -1,5 +1,8 @@
 ﻿namespace DecSm.Atom.Paths;
 
+/// <summary>
+///     Similar to <see cref="TransformFileScope" />, but for multiple files.
+/// </summary>
 [PublicAPI]
 public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
 {
@@ -50,6 +53,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
                 file.FileSystem.File.WriteAllText(file, _initialContents[i]);
     }
 
+    /// <summary>
+    ///     See <see cref="TransformFileScope.CreateAsync(RootedPath, Func{string, string})" />
+    /// </summary>
     public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
@@ -76,6 +82,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
+    /// <summary>
+    ///     See <see cref="TransformFileScope.Create(RootedPath, Func{string, string})" />
+    /// </summary>
     public async Task<TransformMultiFileScope> AddAsync(Func<string, string> transform)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -92,6 +101,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return this;
     }
 
+    /// <summary>
+    ///     Creates a new <see cref="TransformMultiFileScope" /> for the given files.
+    /// </summary>
     public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
@@ -120,6 +132,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return scope;
     }
 
+    /// <summary>
+    ///     See <see cref="TransformFileScope.AddAsync(Func{string, string})" />
+    /// </summary>
     public TransformMultiFileScope Add(Func<string, string> transform)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -136,6 +151,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         return this;
     }
 
+    /// <summary>
+    ///     Cancels the restore operation.
+    /// </summary>
     public void CancelRestore() =>
         _cancelled = true;
 }
