@@ -59,7 +59,6 @@ branches:
     prevent-increment:
       of-merged-branch: true
       when-current-commit-tagged: false
-    label-number-pattern: '[/-](?<number>\d+)'
     track-merge-message: true
     regex: ^(pull|pull\-requests|pr)[/-]
     source-branches:
@@ -67,7 +66,7 @@ branches:
       - develop
     is-source-branch-for: [ ]
     pre-release-weight: 20000
-  beta:
+  beta-minor:
     mode: ContinuousDelivery
     label: beta.{BranchName}
     increment: Minor
@@ -75,7 +74,24 @@ branches:
       when-current-commit-tagged: false
     track-merge-target: true
     track-merge-message: true
-    regex: ^(feat|feature|features|fix|patch)?[/-](?<BranchName>.+)
+    regex: ^(feat|feature|features|improvement|chore)?[/-](?<BranchName>.+)
+    source-branches:
+      - main
+      - develop
+    is-source-branch-for: [ ]
+    tracks-release-branches: true
+    is-release-branch: false
+    is-main-branch: false
+    pre-release-weight: 10000
+  beta-patch:
+    mode: ContinuousDelivery
+    label: beta.{BranchName}
+    increment: Patch
+    prevent-increment:
+      when-current-commit-tagged: false
+    track-merge-target: true
+    track-merge-message: true
+    regex: ^(fix|bugfix|hotfix|patch)?[/-](?<BranchName>.+)
     source-branches:
       - main
       - develop
