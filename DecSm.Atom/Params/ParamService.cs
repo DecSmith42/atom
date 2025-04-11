@@ -39,7 +39,7 @@ internal sealed class ParamService(
         _knownSecrets.Aggregate(text,
             (current, knownSecret) => knownSecret is { Length: > 0 }
                 ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
-                : knownSecret);
+                : current);
 
     public T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
