@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Util;
 
-internal static class ServiceStaticAccessor<T>
+public static class ServiceStaticAccessor<T>
     where T : notnull
 {
     public static T? Service { get; set; }
@@ -24,7 +24,7 @@ internal static class ServiceAccessorExtensions
             .AddKeyedSingleton<TService, TImplementation>("StaticAccess")
             .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
 
-    public static void AddSingletonWithStaticAccessor<TService>(
+    public static IServiceCollection AddSingletonWithStaticAccessor<TService>(
         this IServiceCollection services,
         Func<IServiceProvider, object?, TService> implementationFactory)
         where TService : class =>
