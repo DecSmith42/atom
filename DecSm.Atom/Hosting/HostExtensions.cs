@@ -58,7 +58,7 @@ public static class HostExtensions
         builder
             .Services
             .AddKeyedSingleton<IFileSystem>("RootFileSystem", new FileSystem())
-            .AddSingleton<IAtomFileSystem>(x => new AtomFileSystem
+            .AddSingletonWithStaticAccessor<IAtomFileSystem>((x, _) => new AtomFileSystem
             {
                 FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
                 PathLocators = x
@@ -71,7 +71,7 @@ public static class HostExtensions
                     : Assembly.GetEntryAssembly()!.GetName()
                         .Name!,
             })
-            .AddSingleton<IFileSystem>(x => x.GetRequiredService<IAtomFileSystem>());
+            .AddSingletonWithStaticAccessor<IFileSystem>((x, _) => x.GetRequiredService<IAtomFileSystem>());
 
         builder.Services.AddSingleton<BuildExecutor>();
         builder.Services.AddSingleton<WorkflowGenerator>();
