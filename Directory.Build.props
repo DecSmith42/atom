@@ -3,6 +3,7 @@
     <Product>Atom</Product>
     <Authors>Declan Smith</Authors>
 
+    <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageDescription>An opinionated task and build automation framework#</PackageDescription>
     <EnablePackageValidation>true</EnablePackageValidation>
@@ -17,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\readme.md" Pack="true" PackagePath="\"/>
+    <None Include="../images/icon.png" Pack="true" PackagePath="\"/>
+    <None Include="../readme.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
