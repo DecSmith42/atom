@@ -34,6 +34,8 @@ public static class AtomHost
         {
             DisableDefaults = true,
             Args = args,
+            EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
+                              Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
         });
 
         var environment = builder.Environment.EnvironmentName;
