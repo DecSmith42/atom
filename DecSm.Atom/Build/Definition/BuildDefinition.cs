@@ -19,7 +19,7 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildInfo
     /// <inheritdoc cref="IBuildDefinition.DefaultWorkflowOptions" />
     public virtual IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [];
 
-    /// <inheritdoc cref="IBuildDefinition.GetParam{T}(Expression{Func{T}}, T?, Func{string?, T?})" />
+    /// <inheritdoc />
     public T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
