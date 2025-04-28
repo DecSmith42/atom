@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '9.0.x'
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
       
       - name: SetupBuildInfo
         id: SetupBuildInfo
@@ -45,7 +45,7 @@ jobs:
           dotnet-version: '9.0.x'
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
       - name: Install atom tool
         run: dotnet tool update --global DecSm.Atom.Tool --prerelease
         shell: bash
@@ -76,7 +76,7 @@ jobs:
           dotnet-version: '9.0.x'
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
       
       - name: PackPrivateTestLib
         id: PackPrivateTestLib
@@ -104,7 +104,7 @@ jobs:
           dotnet-version: '9.0.x'
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '8.0.x'
       
       - name: Download PrivateTestLib
         uses: actions/download-artifact@v4

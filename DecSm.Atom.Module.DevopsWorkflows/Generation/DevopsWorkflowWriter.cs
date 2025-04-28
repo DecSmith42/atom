@@ -359,7 +359,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         {
                             if (setupDotnetStep.DotnetVersion is { Length: > 0 })
                                 using (WriteSection("inputs:"))
-                                    WriteLine($"version: '{setupDotnetSteps[0].DotnetVersion}'\n");
+                                    WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
                         }
 
                 var setupNugetSteps = workflow
