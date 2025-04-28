@@ -118,6 +118,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            Options = [new SetupDotnetStep("8.0.x")],
         },
         new("Test_BuildPrivateNugetFeed")
         {
