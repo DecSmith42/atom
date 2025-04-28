@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>Atom</RootNamespace>
     <UserSecretsId>661f5aa6-694c-4890-85c0-9b72f0bea988</UserSecretsId>
   </PropertyGroup>
