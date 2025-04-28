@@ -18,6 +18,10 @@ jobs:
         inputs:
           version: '9.0.x'
 
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
         env:
@@ -31,6 +35,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - task: UseDotNet@2
         inputs:
           version: '9.0.x'
@@ -61,6 +69,10 @@ jobs:
         inputs:
           version: '9.0.x'
 
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
         name: PackPrivateTestLib
         env:
@@ -82,6 +94,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - task: UseDotNet@2
         inputs:
           version: '9.0.x'

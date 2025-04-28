@@ -64,7 +64,10 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
         if (existingText == newText)
             return false;
 
-        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}", filePath);
+        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}\nExisting:\n{Existing}\nNew:\n{New}:",
+            filePath,
+            existingText,
+            newText);
 
         return true;
     }

@@ -129,7 +129,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.PushToPrivateNuget.WithAddedOptions(WorkflowSecretInjection.Create(Params.PrivateNugetApiKey)),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
+            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new SetupDotnetStep("8.0.x")],
         },
         new("Test_Devops_Validate")
         {
