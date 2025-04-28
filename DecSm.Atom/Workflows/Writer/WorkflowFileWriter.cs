@@ -54,17 +54,22 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
 
         WriteWorkflow(workflow);
 
-        var newText = _stringBuilder.ToString();
+        var newText = _stringBuilder
+            .ToString()
+            .ReplaceLineEndings();
+
         _stringBuilder.Clear();
 
         var existingText = fileSystem.File.Exists(filePath)
             ? await fileSystem.File.ReadAllTextAsync(filePath)
             : string.Empty;
 
-        if (existingText == newText)
+        if (existingText
+            .ReplaceLineEndings()
+            .Equals(newText.ReplaceLineEndings(), StringComparison.CurrentCulture))
             return false;
 
-        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}\nExisting:\n{Existing}\nNew:\n{New}:",
+        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}\nExisting:\n{Existing}\nNew:\n{New}",
             filePath,
             existingText,
             newText);
