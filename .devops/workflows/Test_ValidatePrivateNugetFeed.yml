@@ -14,6 +14,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
   
@@ -25,6 +29,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackPrivateTestLib --skip --headless
         name: PackPrivateTestLib
       
@@ -43,6 +51,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet tool update --global DecSm.Atom.Tool --prerelease
         displayName: 'Install atom tool'
       

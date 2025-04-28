@@ -14,6 +14,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
   
@@ -25,6 +29,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
   
@@ -36,6 +44,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
   
@@ -47,6 +59,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
         name: PackAzureKeyVaultModule
   
@@ -58,6 +74,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
         name: PackAzureStorageModule
   
@@ -69,6 +89,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
         name: PackDevopsWorkflowsModule
   
@@ -80,6 +104,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
         name: PackDotnetModule
   
@@ -91,6 +119,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
         name: PackGithubWorkflowsModule
   
@@ -102,6 +134,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
         name: PackGitVersionModule
   
@@ -121,6 +157,10 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
         env:
