@@ -43,7 +43,7 @@ internal partial class Build : DefaultBuildDefinition,
 
     public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("9.0.x"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -118,6 +118,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
+            Options = [new SetupDotnetStep("8.0.x")],
         },
         new("Test_BuildPrivateNugetFeed")
         {
@@ -129,7 +130,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.PushToPrivateNuget.WithAddedOptions(WorkflowSecretInjection.Create(Params.PrivateNugetApiKey)),
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
+            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new SetupDotnetStep("8.0.x")],
         },
         new("Test_Devops_Validate")
         {

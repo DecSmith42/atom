@@ -292,7 +292,7 @@ internal sealed class GithubWorkflowWriter(
                         {
                             if (setupDotnetStep.DotnetVersion is { Length: > 0 })
                                 using (WriteSection("with:"))
-                                    WriteLine($"dotnet-version: '{setupDotnetSteps[0].DotnetVersion}'");
+                                    WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
                         }
 
                 var setupNugetSteps = workflow

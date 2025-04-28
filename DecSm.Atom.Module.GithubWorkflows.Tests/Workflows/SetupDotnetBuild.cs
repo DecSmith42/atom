@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
+﻿using DecSm.Atom.Workflows.Options;
+
+namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
 [BuildDefinition]
 public partial class SetupDotnetBuild : BuildDefinition, IGithubWorkflows, ISetupDotnetTarget

@@ -347,6 +347,21 @@ internal sealed partial class DevopsWorkflowWriter(
                         .Append(buildSlice)
                         .ToArray();
 
+                var setupDotnetSteps = workflow
+                    .Options
+                    .Concat(commandStep.Options)
+                    .OfType<SetupDotnetStep>()
+                    .ToList();
+
+                if (setupDotnetSteps.Count > 0)
+                    foreach (var setupDotnetStep in setupDotnetSteps)
+                        using (WriteSection("- task: UseDotNet@2"))
+                        {
+                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
+                                using (WriteSection("inputs:"))
+                                    WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
+                        }
+
                 var setupNugetSteps = workflow
                     .Options
                     .Concat(commandStep.Options)
