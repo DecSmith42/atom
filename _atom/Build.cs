@@ -19,7 +19,6 @@ internal partial class Build : DefaultBuildDefinition,
     IPushToNuget,
     ITestAtom,
     ICleanupPrereleaseArtifacts,
-    IPackPrivateTestLib,
     ITestManualParams,
     ITestSecretProvider
 {
@@ -82,7 +81,6 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.PackDotnetModule,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
-                Commands.PackPrivateTestLib,
                 Commands.TestAtom.WithGithubRunnerMatrix([
                     IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
                 ]),
