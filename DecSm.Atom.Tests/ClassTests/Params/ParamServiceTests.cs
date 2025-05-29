@@ -8,7 +8,7 @@ public class ParamServiceTests
     public void Setup()
     {
         _buildDefinition = A.Fake<IBuildDefinition>();
-        _args = new(true, Array.Empty<CommandArg>());
+        _args = new(true, []);
         _config = A.Fake<IConfiguration>();
         _console = A.Fake<IAnsiConsole>();
 

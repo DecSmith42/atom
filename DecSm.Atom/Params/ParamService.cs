@@ -23,12 +23,12 @@ internal sealed class ParamService(
     CommandLineArgs args,
     IAnsiConsole console,
     IConfiguration config,
-    IEnumerable<ISecretsProvider> vaultProviders
+    IEnumerable<ISecretsProvider> secretsProviders
 ) : IParamService
 {
     private readonly Dictionary<string, object?> _cache = [];
     private readonly List<string> _knownSecrets = [];
-    private readonly ISecretsProvider[] _vaultProviders = vaultProviders.ToArray();
+    private readonly ISecretsProvider[] _secretsProviders = secretsProviders.ToArray();
 
     private bool NoCache { get; set; }
 
@@ -71,23 +71,23 @@ internal sealed class ParamService(
         T? result;
 
         if (paramDefinition.Sources.HasFlag(ParamSource.Cache) &&
-            TryGetParamFromCache(paramDefinition, converter) is (true, { } cacheValue))
+            TryGetParamFromCache(paramDefinition, _cache, converter) is (true, { } cacheValue))
             result = cacheValue;
         else if (paramDefinition.Sources.HasFlag(ParamSource.CommandLineArgs) &&
-                 TryGetParamFromArgs(paramDefinition, converter) is (true, { } argsValue))
+                 TryGetParamFromArgs(paramDefinition, args, converter) is (true, { } argsValue))
             result = argsValue;
         else if (paramDefinition.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
                  TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
             result = envVarValue;
         else if (paramDefinition.Sources.HasFlag(ParamSource.Configuration) &&
-                 TryGetParamFromConfig(paramDefinition, converter) is (true, { } configValue))
+                 TryGetParamFromConfig(paramDefinition, config, converter) is (true, { } configValue))
             result = configValue;
         else if (paramDefinition.Sources.HasFlag(ParamSource.Secrets) &&
                  paramDefinition.IsSecret &&
-                 TryGetParamFromVault(paramDefinition, converter) is (true, { } vaultValue))
-            result = vaultValue;
+                 TryGetParamFromSecrets(paramDefinition, _secretsProviders, converter) is (true, { } secretValue))
+            result = secretValue;
         else if (args is { HasHeadless: false, HasInteractive: true, HasHelp: false } &&
-                 TryGetParamFromUser(paramDefinition, converter) is (true, { } userValue))
+                 TryGetParamFromConsole(paramDefinition, console, _cache, converter) is (true, { } userValue))
             result = userValue;
         else
             result = defaultValue;
@@ -101,9 +101,12 @@ internal sealed class ParamService(
         return result;
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromCache<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value) TryGetParamFromCache<T>(
+        ParamDefinition paramDefinition,
+        Dictionary<string, object?> cache,
+        Func<string?, T?>? converter)
     {
-        if (_cache.TryGetValue(paramDefinition.Name, out var value))
+        if (cache.TryGetValue(paramDefinition.Name, out var value))
             return (true, value switch
             {
                 T valueAsT => valueAsT,
@@ -114,9 +117,12 @@ internal sealed class ParamService(
         return (false, default);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromArgs<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value) TryGetParamFromArgs<T>(
+        ParamDefinition paramDefinition,
+        CommandLineArgs commandLineArgs,
+        Func<string?, T?>? converter)
     {
-        var matchingArg = args.Params.FirstOrDefault(x => x.ParamName == paramDefinition.Name);
+        var matchingArg = commandLineArgs.Params.FirstOrDefault(x => x.ParamName == paramDefinition.Name);
 
         if (matchingArg is null)
             return (false, default);
@@ -126,7 +132,9 @@ internal sealed class ParamService(
         return (true, convertedMatchingArg);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromEnvironmentVariables<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value) TryGetParamFromEnvironmentVariables<T>(
+        ParamDefinition paramDefinition,
+        Func<string?, T?>? converter)
     {
         var envVar = Environment.GetEnvironmentVariable(paramDefinition.Name);
 
@@ -147,9 +155,12 @@ internal sealed class ParamService(
         return (true, convertedEnvVar);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromConfig<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private (bool HasValue, T? Value) TryGetParamFromConfig<T>(
+        ParamDefinition paramDefinition,
+        IConfiguration configuration,
+        Func<string?, T?>? converter)
     {
-        var configSection = config
+        var configSection = configuration
             .GetSection("Params")
             .GetSection(paramDefinition.ArgName);
 
@@ -160,9 +171,12 @@ internal sealed class ParamService(
         return (configSection.Exists(), configValue);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromVault<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value) TryGetParamFromSecrets<T>(
+        ParamDefinition paramDefinition,
+        ISecretsProvider[] vaultProviders,
+        Func<string?, T?>? converter)
     {
-        foreach (var vaultProvider in _vaultProviders)
+        foreach (var vaultProvider in vaultProviders)
         {
             var vaultValue = vaultProvider.GetSecret(paramDefinition.ArgName);
 
@@ -177,9 +191,13 @@ internal sealed class ParamService(
         return (false, default);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromUser<T>(ParamDefinition paramDefinition, Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value) TryGetParamFromConsole<T>(
+        ParamDefinition paramDefinition,
+        IAnsiConsole ansiConsole,
+        Dictionary<string, object?> cache,
+        Func<string?, T?>? converter)
     {
-        var result = console.Prompt(new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
+        var result = ansiConsole.Prompt(new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
         {
             IsSecret = paramDefinition.IsSecret,
             Mask = '*',
@@ -193,7 +211,7 @@ internal sealed class ParamService(
         var convertedResult = TypeUtil.Convert(result, converter);
 
         // Force cache as it is a user input
-        _cache[paramDefinition.Name] = convertedResult;
+        cache[paramDefinition.Name] = convertedResult;
 
         return (true, convertedResult);
     }

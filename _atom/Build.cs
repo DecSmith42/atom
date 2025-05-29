@@ -19,10 +19,6 @@ internal partial class Build : DefaultBuildDefinition,
     IPushToNuget,
     ITestAtom,
     ICleanupPrereleaseArtifacts,
-    IPackPrivateTestLib,
-    IPushToPrivateNuget,
-    ITestPrivateNugetRestore,
-    IPublishTester,
     ITestManualParams,
     ITestSecretProvider
 {
@@ -63,7 +59,6 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Commands.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Commands.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Commands.PublishTester.WithSuppressedArtifactPublishing,
                 Commands
                     .TestAtom
                     .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
@@ -86,7 +81,6 @@ internal partial class Build : DefaultBuildDefinition,
                 Commands.PackDotnetModule,
                 Commands.PackGithubWorkflowsModule,
                 Commands.PackGitVersionModule,
-                Commands.PackPrivateTestLib,
                 Commands.TestAtom.WithGithubRunnerMatrix([
                     IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
                 ]),
@@ -107,30 +101,6 @@ internal partial class Build : DefaultBuildDefinition,
             ],
             StepDefinitions = [Commands.TestManualParams],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-        },
-        new("Test_ValidatePrivateNugetFeed")
-        {
-            Triggers = [GitPullRequestTrigger.IntoMain],
-            StepDefinitions =
-            [
-                Commands.SetupBuildInfo,
-                Commands.PackPrivateTestLib,
-                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
-            ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [new SetupDotnetStep("8.0.x")],
-        },
-        new("Test_BuildPrivateNugetFeed")
-        {
-            Triggers = [GitPullRequestTrigger.IntoMain],
-            StepDefinitions =
-            [
-                Commands.SetupBuildInfo,
-                Commands.TestPrivateNugetRestore.WithAddedOptions(AddNugetFeedsStep),
-                Commands.PushToPrivateNuget.WithAddedOptions(WorkflowSecretInjection.Create(Params.PrivateNugetApiKey)),
-            ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new SetupDotnetStep("8.0.x")],
         },
         new("Test_Devops_Validate")
         {
