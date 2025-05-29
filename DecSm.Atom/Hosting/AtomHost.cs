@@ -36,6 +36,7 @@ public static class AtomHost
             Args = args,
             EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
                               Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            ApplicationName = "Atom",
         });
 
         var environment = builder.Environment.EnvironmentName;
