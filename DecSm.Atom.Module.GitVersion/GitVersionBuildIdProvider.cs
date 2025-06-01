@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GitVersion;
+﻿using DecSm.Atom.BuildInfo;
+
+namespace DecSm.Atom.Module.GitVersion;
 
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolHelper dotnetToolHelper,

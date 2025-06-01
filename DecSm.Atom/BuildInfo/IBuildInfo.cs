@@ -1,7 +1,6 @@
-﻿namespace DecSm.Atom;
+﻿namespace DecSm.Atom.BuildInfo;
 
-[TargetDefinition]
-public partial interface IBuildInfo
+public interface IBuildInfo : IBuildAccessor
 {
     [ParamDefinition("build-id", "Build/run ID", "{From IBuildIdProvider}")]
     string BuildId => GetParam(() => BuildId, DefaultBuildId);

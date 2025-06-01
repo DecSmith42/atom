@@ -1,6 +1,8 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows;
+﻿using DecSm.Atom.Hosting;
 
-[ConfigureBuilder]
+namespace DecSm.Atom.Module.GithubWorkflows;
+
+[ConfigureHostBuilder]
 public partial interface IGithubWorkflows : IJobRunsOn
 {
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder)
@@ -20,7 +22,7 @@ public partial interface IGithubWorkflows : IJobRunsOn
         if (Github.IsGithubActions)
             builder
                 .Services
-                .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>()
+                .AddSingleton<IOutcomeReportWriter, GithubSummaryOutcomeReportWriter>()
                 .ProvidePath((key, locator) => Github.IsGithubActions
                     ? key switch
                     {

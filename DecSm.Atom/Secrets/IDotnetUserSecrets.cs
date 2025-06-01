@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Secrets;
 
-[ConfigureBuilder]
+[ConfigureHostBuilder]
 public partial interface IDotnetUserSecrets
 {
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>

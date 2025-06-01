@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.AzureKeyVault;
 
-[ConfigureBuilder]
+[ConfigureHostBuilder]
 [TargetDefinition]
 public partial interface IAzureKeyVault
 {

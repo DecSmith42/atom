@@ -14,7 +14,7 @@ public partial class DependentBuild : BuildDefinition, IGithubWorkflows, IDepend
                     IncludedBranches = ["main"],
                 },
             ],
-            StepDefinitions = [Commands.DependentTarget1, Commands.DependentTarget2],
+            StepDefinitions = [Targets.DependentTarget1, Targets.DependentTarget2],
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];

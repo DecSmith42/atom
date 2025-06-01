@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public partial interface ISetupBuildInfo : IBuildInfo
+public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReportsHelper
 {
     IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
 

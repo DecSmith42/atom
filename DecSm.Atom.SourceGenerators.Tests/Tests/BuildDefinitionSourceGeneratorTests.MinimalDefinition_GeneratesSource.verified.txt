@@ -10,95 +10,19 @@ namespace TestNamespace;
 [JetBrains.Annotations.PublicAPI]
 partial class MinimalTestDefinition : DecSm.Atom.Build.Definition.IBuildDefinition
 {
-    private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
-    private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition>? _paramDefinitions;
+    // Build has no defined targets
 
     public MinimalTestDefinition(System.IServiceProvider services) : base(services) { }
 
-    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Build.Definition.Target>
-    {
+    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Build.Definition.Target>();
 
-    };
+    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>();
 
-    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
-    {
-        {
-            "BuildId", new("BuildId")
-            {
-                ArgName = "build-id",
-                Description = "Build/run ID",
-                DefaultValue = "{From IBuildIdProvider}",
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-        {
-            "BuildVersion", new("BuildVersion")
-            {
-                ArgName = "build-version",
-                Description = "Build version",
-                DefaultValue = "{From IBuildVersionProvider}",
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-        {
-            "BuildTimestamp", new("BuildTimestamp")
-            {
-                ArgName = "build-timestamp",
-                Description = "Build timestamp (seconds since unix epoch)",
-                DefaultValue = "{From IBuildTimestampProvider}",
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-        {
-            "AtomBuildName", new("AtomBuildName")
-            {
-                ArgName = "build-name",
-                Description = "Name of the build",
-                DefaultValue = "{Solution name if provided, otherwise the root directory name}",
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-        {
-            "BuildSlice", new("BuildSlice")
-            {
-                ArgName = "build-slice",
-                Description = "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs",
-                DefaultValue = null,
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-    };
+    // Build has no defined targets
 
-    public static class Commands
-    {
+    // Build has no defined params
 
-    }
+    // Build has no defined HostBuilder configuration
 
-    public static class Params
-    {
-        public static string BuildId = "BuildId";
-
-        public static string BuildVersion = "BuildVersion";
-
-        public static string BuildTimestamp = "BuildTimestamp";
-
-        public static string AtomBuildName = "AtomBuildName";
-
-        public static string BuildSlice = "BuildSlice";
-    }
-
-    public override void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
-    {
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IBuildInfo>(builder.Services, static p => (DecSm.Atom.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
-    }
-
-    public override void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
-    {
-
-    }
+    // Build has no defined Host configuration
 }

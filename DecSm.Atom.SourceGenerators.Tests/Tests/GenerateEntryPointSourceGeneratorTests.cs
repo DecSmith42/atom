@@ -8,6 +8,7 @@ public class GenerateEntryPointSourceGeneratorTests
         // Arrange
         const string source = """
                               using DecSm.Atom.Build.Definition;
+                              using DecSm.Atom.Hosting;
 
                               namespace TestNamespace;
 

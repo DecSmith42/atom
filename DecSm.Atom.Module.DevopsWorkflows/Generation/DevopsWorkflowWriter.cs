@@ -279,7 +279,7 @@ internal sealed partial class DevopsWorkflowWriter(
 
             var targetsForConsumedVariableDeclaration = new List<TargetModel>();
 
-            foreach (var commandStep in job.Steps.OfType<WorkflowCommandModel>())
+            foreach (var commandStep in job.Steps.OfType<WorkflowStepModel>())
             {
                 var target = buildModel.GetTarget(commandStep.Name);
                 targetsForConsumedVariableDeclaration.Add(target);
@@ -321,11 +321,11 @@ internal sealed partial class DevopsWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowTargetModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
     {
         switch (step)
         {
-            case WorkflowCommandModel commandStep:
+            case WorkflowStepModel commandStep:
 
                 using (WriteSection("- checkout: self"))
                     WriteLine("fetchDepth: 0");
@@ -404,7 +404,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         if (workflow
                             .Jobs
                             .SelectMany(x => x.Steps)
-                            .OfType<WorkflowCommandModel>()
+                            .OfType<WorkflowStepModel>()
                             .Single(x => x.Name == consumedArtifact.TargetName)
                             .SuppressArtifactPublishing)
                             logger.LogWarning(
@@ -505,18 +505,17 @@ internal sealed partial class DevopsWorkflowWriter(
 
     private void WriteCommandStep(
         WorkflowModel workflow,
-        WorkflowCommandModel workflowCommandStep,
+        WorkflowStepModel workflowStep,
         TargetModel target,
         (string name, string value)[] extraParams,
         bool includeName)
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection(
-                   $"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowCommandStep.Name} --skip --headless"))
+        using (WriteSection($"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless"))
         {
             if (includeName)
-                WriteLine($"name: {workflowCommandStep.Name}");
+                WriteLine($"name: {workflowStep.Name}");
 
             var env = new Dictionary<string, string>();
 
@@ -550,7 +549,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     {
                         logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -568,7 +567,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         logger.LogWarning(
                             "Workflow {WorkflowName} command {CommandName} has a secret environment variable injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -584,7 +583,7 @@ internal sealed partial class DevopsWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
-                    .Concat(workflowCommandStep.Options)
+                    .Concat(workflowStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
@@ -603,7 +602,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         environmentInjection.Value);
 
                     continue;
@@ -619,7 +618,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         paramInjection.Name);
 
                     continue;

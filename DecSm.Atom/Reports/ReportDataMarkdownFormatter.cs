@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Reports;
 
 [PublicAPI]
-public static class ReportDataMarkdownWriter
+public static class ReportDataMarkdownFormatter
 {
     public static string Write(IReadOnlyList<IReportData> reportData)
     {

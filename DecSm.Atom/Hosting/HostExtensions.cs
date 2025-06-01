@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Hosting;
+﻿using DefaultBuildVersionProvider = DecSm.Atom.BuildInfo.DefaultBuildVersionProvider;
+
+namespace DecSm.Atom.Hosting;
 
 /// <summary>
 ///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
@@ -35,16 +37,17 @@ public static class HostExtensions
     /// <returns>
     ///     The configured host application builder instance.
     /// </returns>
-    /// <remarks>
-    ///     Calls the <see cref="IBuildDefinition.Register" /> method of the provided <typeparamref name="TBuild" /> type to allow
-    ///     customization of services. Also registers logging, console output providers, build-related metadata, and file system access.
-    /// </remarks>
     public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)
         where TBuilder : IHostApplicationBuilder
-        where TBuild : BuildDefinition, IBuildDefinition
+        where TBuild : BuildDefinition
     {
         builder.Services.AddHostedService<AtomService>();
-        builder.Services.AddSingleton<IBuildDefinition, TBuild>();
+        builder.Services.AddSingleton<BuildDefinition, TBuild>();
+        builder.Services.AddSingleton<IBuildDefinition>(x => x.GetRequiredService<BuildDefinition>());
+
+        // ReSharper disable once SuspiciousTypeConversion.Global - Checked before casting
+        if (typeof(TBuild).IsAssignableTo(typeof(IConfigureHost)))
+            builder.Services.AddSingleton<IConfigureHost>(x => (IConfigureHost)x.GetRequiredService<BuildDefinition>());
 
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
@@ -76,7 +79,7 @@ public static class HostExtensions
         builder.Services.AddSingleton<BuildExecutor>();
         builder.Services.AddSingleton<WorkflowGenerator>();
         builder.Services.AddSingleton<ProcessRunner>();
-        builder.Services.AddSingleton<IOutcomeReporter, ConsoleOutcomeReporter>();
+        builder.Services.AddSingleton<IOutcomeReportWriter, ConsoleOutcomeReportWriter>();
         builder.Services.AddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
 
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
@@ -118,22 +121,21 @@ public static class HostExtensions
             _ => true,
         });
 
-        TBuild.Register(builder.Services);
-
         using var tempBuild = builder.Services.BuildServiceProvider();
 
         tempBuild
-            .GetRequiredService<IBuildDefinition>()
-            .ConfigureBuildHostBuilder(builder);
+            .GetService<IConfigureHost>()
+            ?.ConfigureBuildHostBuilder(builder);
 
         return builder;
     }
 
     public static IHost UseAtom(this IHost host)
     {
-        var build = host.Services.GetRequiredService<IBuildDefinition>();
-
-        build.ConfigureBuildHost(host);
+        host
+            .Services
+            .GetService<IConfigureHost>()
+            ?.ConfigureBuildHost(host);
 
         return host;
     }

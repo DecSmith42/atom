@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.AzureStorage;
 
-[ConfigureBuilder]
+[ConfigureHostBuilder]
 [TargetDefinition]
 public partial interface IAzureArtifactStorage : IStoreArtifact, IRetrieveArtifact
 {

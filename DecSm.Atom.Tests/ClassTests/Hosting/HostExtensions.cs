@@ -66,7 +66,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<IOutcomeReporter>()
+                .GetService<IOutcomeReportWriter>()
                 .ShouldNotBeNull();
 
             serviceProvider

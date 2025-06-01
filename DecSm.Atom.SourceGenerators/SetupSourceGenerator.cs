@@ -40,7 +40,7 @@ public class SetupSourceGenerator : IIncrementalGenerator
 
             switch (attributeName)
             {
-                case ConfigureBuilderAttributeFull:
+                case ConfigureHostBuilderAttributeFull:
                     hasConfigureBuilder = true;
 
                     break;
@@ -85,7 +85,7 @@ public class SetupSourceGenerator : IIncrementalGenerator
 
         var hasConfigureBuilder = interfaceSymbol
             .GetAttributes()
-            .Any(attr => attr.AttributeClass?.ToDisplayString() == ConfigureBuilderAttributeFull);
+            .Any(attr => attr.AttributeClass?.ToDisplayString() == ConfigureHostBuilderAttributeFull);
 
         var hasConfigureHost = interfaceSymbol
             .GetAttributes()
@@ -129,8 +129,8 @@ public class SetupSourceGenerator : IIncrementalGenerator
 
     // ReSharper disable InconsistentNaming
 
-    private const string ConfigureBuilderAttributeFull = "DecSm.Atom.Build.Definition.ConfigureBuilderAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Build.Definition.ConfigureHostAttribute";
+    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
+    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
 
     // ReSharper restore InconsistentNaming
 }

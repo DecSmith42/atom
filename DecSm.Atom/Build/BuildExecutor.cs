@@ -5,7 +5,7 @@ internal sealed class BuildExecutor(
     BuildModel buildModel,
     IParamService paramService,
     IWorkflowVariableService variableService,
-    IEnumerable<IOutcomeReporter> outcomeReporters,
+    IEnumerable<IOutcomeReportWriter> outcomeReporters,
     IAnsiConsole console,
     ReportService reportService,
     ILogger<BuildExecutor> logger
@@ -24,28 +24,11 @@ internal sealed class BuildExecutor(
 
         logger.LogInformation("Executing build");
 
-        if (args.HasInteractive)
-        {
-            foreach (var command in commands)
-                ValidateTargetParameters(buildModel.GetTarget(command.Name));
+        foreach (var command in commands)
+            ValidateTargetParameters(buildModel.GetTarget(command.Name));
 
-            foreach (var command in commands)
-                await ExecuteTarget(buildModel.GetTarget(command.Name), null);
-        }
-        else
-        {
-            await console
-                .Status()
-                .StartAsync("Executing build...",
-                    async context =>
-                    {
-                        foreach (var command in commands)
-                            ValidateTargetParameters(buildModel.GetTarget(command.Name));
-
-                        foreach (var command in commands)
-                            await ExecuteTarget(buildModel.GetTarget(command.Name), context);
-                    });
-        }
+        foreach (var command in commands)
+            await ExecuteTarget(buildModel.GetTarget(command.Name));
 
         foreach (var outcomeReporter in outcomeReporters)
             try
@@ -94,7 +77,7 @@ internal sealed class BuildExecutor(
         }
     }
 
-    private async Task ExecuteTarget(TargetModel target, StatusContext? context)
+    private async Task ExecuteTarget(TargetModel target)
     {
         if (buildModel.TargetStates[target].Status is TargetRunState.NotRun
             or TargetRunState.Skipped
@@ -112,7 +95,7 @@ internal sealed class BuildExecutor(
         }
 
         foreach (var dependency in target.Dependencies)
-            await ExecuteTarget(dependency, context);
+            await ExecuteTarget(dependency);
 
         if (target.Dependencies.Any(depTarget => buildModel.TargetStates[depTarget].Status is TargetRunState.Failed))
         {
@@ -143,18 +126,9 @@ internal sealed class BuildExecutor(
 
         var startTime = Stopwatch.GetTimestamp();
 
-        if (context is not null)
-        {
-            context.Status($"Executing [bold]{target.Name}[/]...");
-            context.Spinner(Spinner.Known.Star);
-            context.SpinnerStyle(Style.Parse("green"));
-        }
-        else
-        {
-            console.WriteLine();
-            console.Write(new Markup($"Executing target [bold]{target.Name}[/]...\n"));
-            console.WriteLine();
-        }
+        console.WriteLine();
+        console.Write(new Markup($"Executing target [bold]{target.Name}[/]...\n"));
+        console.WriteLine();
 
         using (logger.BeginScope(new Dictionary<string, object>
                {

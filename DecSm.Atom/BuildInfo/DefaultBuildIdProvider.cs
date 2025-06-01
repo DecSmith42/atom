@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Build;
+﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
 ///     Default Build ID provider, used if no custom implementation is provided.

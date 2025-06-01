@@ -146,7 +146,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .AllInterfaces
             .Where(static @interface => @interface
                     .GetAttributes()
-                    .FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureBuilderAttributeFull) is not
+                    .FirstOrDefault(static attribute =>
+                        attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull) is not
                 null)
             .ToArray();
 
@@ -157,8 +158,23 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull) is not null)
             .ToArray();
 
-        var targetDefinitionsPropertyBodyLines = interfacesWithTargets.Select(static p =>
-            $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""");
+        var targetDefinitionsPropertyBodyLines = interfacesWithTargets
+            .Select(static p =>
+                $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""")
+            .ToArray();
+
+        var targetDefinitionsField = targetDefinitionsPropertyBodyLines.Any()
+            ? $"    private System.Collections.Generic.IReadOnlyDictionary<string, {TargetFull}>? _targetDefinitions;"
+            : "    // Build has no defined targets";
+
+        var targetDefinitionsProperty = targetDefinitionsPropertyBodyLines.Any()
+            ? $$"""
+                    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, {{TargetFull}}>
+                    {
+                {{string.Join("\n", targetDefinitionsPropertyBodyLines)}}
+                    };
+                """
+            : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{TargetFull}}>();""";
 
         var paramDefinitionsPropertyBodyLines = interfacesWithParams
             .Select(static x => new
@@ -201,13 +217,53 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                                                   IsSecret = {{p.IsSecret.ToString().ToLower()}},
                                               }
                                           },
-                                  """);
+                                  """)
+            .ToArray();
 
-        var commandDefsPropertiesLines = interfacesWithTargets.Select(static p =>
-            $"""        public static {CommandDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""");
+        var paramDefinitionsProperty = paramDefinitionsPropertyBodyLines.Any()
+            ? $$"""
+                    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>
+                    {
+                {{string.Join("\n", paramDefinitionsPropertyBodyLines)}}
+                    };
+                """
+            : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
 
-        var paramsPropertiesLines = interfacesWithParams.Select(static p =>
-            $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""");
+
+        var targetsPropertiesLines = interfacesWithTargets
+            .Select(static p =>
+                $"""        public static {WorkflowTargetDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""")
+            .ToArray();
+
+        var targetsClass = targetsPropertiesLines.Any()
+            ? $$"""
+                    [JetBrains.Annotations.PublicAPI]
+                    private static class Targets
+                    {
+                {{string.Join("\n", targetsPropertiesLines)}}
+                    }
+
+                    private static {{WorkflowTargetDefinitionFull}} Target(string name) => name switch
+                    {
+                {{string.Join("\n", interfacesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
+                        _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name)),
+                    };
+                """
+            : "    // Build has no defined targets";
+
+        var paramsPropertiesLines = interfacesWithParams
+            .Select(static p => $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
+            .ToArray();
+
+        var paramsClass = paramsPropertiesLines.Any()
+            ? $$"""
+                    [JetBrains.Annotations.PublicAPI]
+                    private static class Params
+                    {
+                {{string.Join("\n", paramsPropertiesLines)}}
+                    }
+                """
+            : "    // Build has no defined params";
 
         var registerTargetsToServicesLines = classSymbol
             .AllInterfaces
@@ -216,6 +272,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .GetMembers($"{IBuildDefinitionFull}.{Register}")
                 .Any()
                 ? $"""
+
                            Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{@interface}>(builder.Services, static p => ({@interface})p.GetRequiredService<{IBuildDefinitionFull}>());
                            {RegisterTarget}<{@interface}>(services);
                    """
@@ -224,10 +281,35 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
         var configureBuildHostBuilderLines = interfacesWithConfigureBuilder.Select(static @interface =>
             $"        {@interface}.ConfigureBuilder(builder);");
 
-        var configureBuildHostBuilderMethodBodyLines = registerTargetsToServicesLines.Concat(configureBuildHostBuilderLines);
+        var configureBuildHostBuilderMethodBodyLines = registerTargetsToServicesLines
+            .Concat(configureBuildHostBuilderLines)
+            .ToArray();
 
-        var configureBuildHostMethodBodyLines = interfacesWithConfigureHost.Select(static @interface =>
-            $"        {@interface}.ConfigureHost(builder);");
+        var configureBuildHostMethodBodyLines = interfacesWithConfigureHost
+            .Select(static @interface => $"        {@interface}.ConfigureHost(builder);")
+            .ToArray();
+
+        var configureBuildHostBuilderMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+            ? $$"""
+                    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
+                    {
+                {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
+                    }
+                """
+            : "    // Build has no defined HostBuilder configuration";
+
+        var configureBuildHostMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+            ? $$"""
+                    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
+                    {
+                {{string.Join("\n", configureBuildHostMethodBodyLines)}}
+                    }
+                """
+            : "    // Build has no defined Host configuration";
+
+        var configureHostInherit = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+            ? ", DecSm.Atom.Hosting.IConfigureHost"
+            : string.Empty;
 
         var code = $$"""
                      // <auto-generated/>
@@ -240,42 +322,23 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {{namespaceLine}}
 
                      [JetBrains.Annotations.PublicAPI]
-                     partial class {{@class}} : {{IBuildDefinitionFull}}
+                     partial class {{@class}} : {{IBuildDefinitionFull}}{{configureHostInherit}}
                      {
-                         private System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}>? _targetDefinitions;
-                         private System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}>? _paramDefinitions;
+                     {{targetDefinitionsField}}
 
                          public {{@class}}(System.IServiceProvider services) : base(services) { }
 
-                         public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, {{TargetFull}}>
-                         {
-                     {{string.Join("\n", targetDefinitionsPropertyBodyLines)}}
-                         };
+                     {{targetDefinitionsProperty}}
 
-                         public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>
-                         {
-                     {{string.Join("\n", paramDefinitionsPropertyBodyLines)}}
-                         };
+                     {{paramDefinitionsProperty}}
 
-                         public static class Commands
-                         {
-                     {{string.Join("\n\n", commandDefsPropertiesLines)}}
-                         }
+                     {{targetsClass}}
 
-                         public static class Params
-                         {
-                     {{string.Join("\n\n", paramsPropertiesLines)}}
-                         }
+                     {{paramsClass}}
 
-                         public override void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
-                         {
-                     {{string.Join("\n\n", configureBuildHostBuilderMethodBodyLines)}}
-                         }
+                     {{configureBuildHostBuilderMethod}}
 
-                         public override void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
-                         {
-                     {{string.Join("\n", configureBuildHostMethodBodyLines)}}
-                         }
+                     {{configureBuildHostMethod}}
                      }
 
                      """;
@@ -290,9 +353,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
     private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
     private const string Target = "Target";
     private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
-    private const string ConfigureBuilderAttributeFull = "DecSm.Atom.Build.Definition.ConfigureBuilderAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Build.Definition.ConfigureHostAttribute";
-    private const string CommandDefinitionFull = "DecSm.Atom.Workflows.Definition.Command.CommandDefinition";
+    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
+    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
+    private const string WorkflowTargetDefinitionFull = "DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition";
     private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
     private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
     private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
 [TargetDefinition]
-public partial interface IDotnetTestHelper : IDotnetToolHelper
+public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
 {
     async Task<int> RunDotnetUnitTests(DotnetTestOptions options)
     {

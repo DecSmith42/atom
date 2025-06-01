@@ -4,6 +4,7 @@ global using Azure.Storage.Blobs.Models;
 global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
 global using DecSm.Atom.Reports;

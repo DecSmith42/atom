@@ -8,7 +8,7 @@ public partial class ReleaseTriggerBuild : BuildDefinition, IGithubWorkflows, IR
         new("releasetrigger-workflow")
         {
             Triggers = [GithubReleaseTrigger.OnReleased],
-            StepDefinitions = [Commands.ReleaseTriggerTarget],
+            StepDefinitions = [Targets.ReleaseTriggerTarget],
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];

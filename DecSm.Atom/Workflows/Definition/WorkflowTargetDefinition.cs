@@ -1,7 +1,7 @@
-﻿namespace DecSm.Atom.Workflows.Definition.Command;
+﻿namespace DecSm.Atom.Workflows.Definition;
 
 [PublicAPI]
-public sealed record CommandDefinition(string Name) : IWorkflowTargetDefinition
+public sealed record WorkflowTargetDefinition(string Name)
 {
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
 
@@ -9,27 +9,27 @@ public sealed record CommandDefinition(string Name) : IWorkflowTargetDefinition
 
     public bool SuppressArtifactPublishing { get; init; }
 
-    public CommandDefinition WithSuppressedArtifactPublishing =>
+    public WorkflowTargetDefinition WithSuppressedArtifactPublishing =>
         this with
         {
             SuppressArtifactPublishing = true,
         };
 
-    public IWorkflowTargetModel CreateModel() =>
-        new WorkflowCommandModel(Name)
+    public IWorkflowStepModel CreateModel() =>
+        new WorkflowStepModel(Name)
         {
             MatrixDimensions = MatrixDimensions,
             SuppressArtifactPublishing = SuppressArtifactPublishing,
             Options = Options,
         };
 
-    public CommandDefinition WithMatrixDimensions(params MatrixDimension[] dimensions) =>
+    public WorkflowTargetDefinition WithMatrixDimensions(params MatrixDimension[] dimensions) =>
         this with
         {
             MatrixDimensions = dimensions,
         };
 
-    public CommandDefinition WithAddedMatrixDimensions(params MatrixDimension[] dimensions) =>
+    public WorkflowTargetDefinition WithAddedMatrixDimensions(params MatrixDimension[] dimensions) =>
         this with
         {
             MatrixDimensions = MatrixDimensions
@@ -37,13 +37,13 @@ public sealed record CommandDefinition(string Name) : IWorkflowTargetDefinition
                 .ToList(),
         };
 
-    public CommandDefinition WithOptions(params IWorkflowOption[] options) =>
+    public WorkflowTargetDefinition WithOptions(params IWorkflowOption[] options) =>
         this with
         {
             Options = options,
         };
 
-    public CommandDefinition WithAddedOptions(params IWorkflowOption[] options) =>
+    public WorkflowTargetDefinition WithAddedOptions(params IWorkflowOption[] options) =>
         this with
         {
             Options = Options

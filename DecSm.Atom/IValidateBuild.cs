@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public partial interface IValidateBuild
+public partial interface IValidateBuild : IReportsHelper
 {
     Target ValidateBuild =>
         t => t

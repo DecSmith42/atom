@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.AzureStorage;
+﻿using DecSm.Atom.BuildInfo;
+
+namespace DecSm.Atom.Module.AzureStorage;
 
 [PublicAPI]
 public sealed class AzureBlobArtifactProvider(

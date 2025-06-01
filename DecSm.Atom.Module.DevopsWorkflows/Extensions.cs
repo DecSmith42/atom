@@ -3,8 +3,10 @@
 [PublicAPI]
 public static class Extensions
 {
-    public static CommandDefinition WithDevopsRunnerMatrix(this CommandDefinition commandDefinition, string[] labels) =>
-        commandDefinition
+    public static WorkflowTargetDefinition WithDevopsRunnerMatrix(
+        this WorkflowTargetDefinition workflowTargetDefinition,
+        string[] labels) =>
+        workflowTargetDefinition
             .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn), labels))
             .WithAddedOptions(DevopsPool.SetByMatrix);
 }

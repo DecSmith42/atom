@@ -7,7 +7,7 @@ public sealed record WorkflowDefinition(string Name)
 
     public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
 
-    public IReadOnlyList<IWorkflowTargetDefinition> StepDefinitions { get; init; } = [];
+    public IReadOnlyList<WorkflowTargetDefinition> StepDefinitions { get; init; } = [];
 
     public IReadOnlyList<IWorkflowType> WorkflowTypes { get; init; } = [];
 }

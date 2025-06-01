@@ -14,7 +14,7 @@ internal partial interface IUnspecifiedTarget2
 {
     Target UnspecifiedTarget2 =>
         d => d
-            .DependsOn(UnspecifiedTargetsBuild.Commands.UnspecifiedTarget3)
+            .DependsOn(nameof(IUnspecifiedTarget3.UnspecifiedTarget3))
             .WithDescription("Unspecified target 2");
 }
 

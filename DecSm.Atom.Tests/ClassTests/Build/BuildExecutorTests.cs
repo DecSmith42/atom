@@ -34,7 +34,7 @@ public class BuildExecutorTests
 
     private IWorkflowVariableService _workflowVariableService;
 
-    private IReadOnlyList<IOutcomeReporter> _outcomeReporters;
+    private IReadOnlyList<IOutcomeReportWriter> _outcomeReporters;
     private TestConsole _console;
 
     private ReportService _reportService;

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Reports;
 
 [PublicAPI]
-public interface IOutcomeReporter
+public interface IOutcomeReportWriter
 {
     Task ReportRunOutcome();
 }

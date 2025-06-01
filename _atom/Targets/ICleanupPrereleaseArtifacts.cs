@@ -1,17 +1,16 @@
-﻿namespace Atom.Targets;
+﻿using DecSm.Atom.BuildInfo;
+
+namespace Atom.Targets;
 
 [TargetDefinition]
-internal partial interface ICleanupPrereleaseArtifacts
+internal partial interface ICleanupPrereleaseArtifacts : IBuildInfo
 {
     Target CleanupPrereleaseArtifacts =>
         t => t
             .WithDescription("Cleans up stored artifacts from prerelease builds up to the second-most recent stable build.")
             .Executes(async () =>
             {
-                var currentVersion = GetService<IBuildVersionProvider>()
-                    .Version;
-
-                if (currentVersion.IsPreRelease)
+                if (BuildVersion.IsPreRelease)
                 {
                     Logger.LogInformation("Current version is prerelease, no cleanup will be performed");
 

@@ -1,6 +1,8 @@
-﻿namespace DecSm.Atom.Module.DevopsWorkflows;
+﻿using DecSm.Atom.Hosting;
 
-[ConfigureBuilder]
+namespace DecSm.Atom.Module.DevopsWorkflows;
+
+[ConfigureHostBuilder]
 public partial interface IDevopsWorkflows : IJobRunsOn
 {
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder)
@@ -16,7 +18,7 @@ public partial interface IDevopsWorkflows : IJobRunsOn
         if (Devops.IsDevopsPipelines)
             builder
                 .Services
-                .AddSingleton<IOutcomeReporter, DevopsSummaryOutcomeReporter>()
+                .AddSingleton<IOutcomeReportWriter, DevopsSummaryOutcomeReportWriter>()
                 .ProvidePath((key, locator) => Devops.IsDevopsPipelines
                     ? key switch
                     {

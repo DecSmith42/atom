@@ -8,30 +8,23 @@
 ///     When creating a custom provider for storing artifacts, add this interface to the build.
 /// </remarks>
 [TargetDefinition]
-public partial interface IStoreArtifact : IArtifactHelper, IBuildInfo
+public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
 {
+    private IArtifactProvider ArtifactProvider => GetService<IArtifactProvider>();
+
     Target StoreArtifact =>
-        targetDefinition =>
-        {
-            var artifactProvider = GetService<IArtifactProvider>();
-
-            targetDefinition.IsHidden();
-            targetDefinition.WithDescription("Stores artifacts.");
-
-            targetDefinition.ConsumedVariables.Add(new(nameof(ISetupBuildInfo.SetupBuildInfo), nameof(BuildId)));
-
-            targetDefinition.RequiredParams.Add(nameof(AtomArtifacts));
-            targetDefinition.RequiredParams.AddRange(artifactProvider.RequiredParams);
-
-            targetDefinition.Executes(async () =>
+        d => d
+            .IsHidden()
+            .WithDescription("Stores artifacts.")
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
+            .RequiresParam(nameof(AtomArtifacts))
+            .RequiresParams(ArtifactProvider.RequiredParams)
+            .Executes(async () =>
             {
                 Logger.LogInformation("Using artifact provider: {Provider}",
-                    artifactProvider.GetType()
+                    ArtifactProvider.GetType()
                         .Name);
 
-                await artifactProvider.StoreArtifacts(AtomArtifacts);
+                await ArtifactProvider.StoreArtifacts(AtomArtifacts);
             });
-
-            return targetDefinition;
-        };
 }

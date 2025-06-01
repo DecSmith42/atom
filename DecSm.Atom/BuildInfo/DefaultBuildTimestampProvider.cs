@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Build;
+﻿namespace DecSm.Atom.BuildInfo;
 
 internal sealed class DefaultBuildTimestampProvider(TimeProvider timeProvider) : IBuildTimestampProvider
 {

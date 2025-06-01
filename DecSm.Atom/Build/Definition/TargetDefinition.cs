@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     Defines a target that can be modelled as <see cref="TargetModel" /> and executed.
+///     Defines a target that can be modeled as <see cref="TargetModel" /> and executed.
 /// </summary>
 [PublicAPI]
 public sealed class TargetDefinition
@@ -210,11 +210,11 @@ public sealed class TargetDefinition
     /// <summary>
     ///     Adds a dependency on another defined command target.
     /// </summary>
-    /// <param name="command">The target or command instance defining the dependency.</param>
+    /// <param name="workflowTarget">The target or command instance defining the dependency.</param>
     /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
-    public TargetDefinition DependsOn(CommandDefinition command)
+    public TargetDefinition DependsOn(WorkflowTargetDefinition workflowTarget)
     {
-        Dependencies.Add(command.Name);
+        Dependencies.Add(workflowTarget.Name);
 
         return this;
     }
@@ -222,19 +222,35 @@ public sealed class TargetDefinition
     /// <summary>
     ///     Specifies a parameter required by this target before execution can proceed.
     /// </summary>
-    /// <param name="param">The parameter name required by this target.</param>
-    /// <param name="_">Internal parameter; auto-completes as caller-expression. Do not set manually.</param>
+    /// <param name="paramName">The parameter name required by this target.</param>
     /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
-    public TargetDefinition RequiresParam(
-        [SuppressMessage("Roslynator", "RCS1163:Unused parameter")] string? param,
-        [CallerArgumentExpression("param")] string _ = null!)
+    /// <example>
+    ///     You can pass in the `nameof` expression of the parameter, which will be automatically resolved to the parameter name.
+    ///     Or you can pass the parameter name as a string.
+    ///     <code>
+    ///     string Param1 => GetParam(() => Param1, "default value");
+    ///     string Param2 => GetParam(() => Param2, "default value");
+    ///     Target MyTarget => d => d
+    ///         .RequiresParam(nameof(Param1))
+    ///         .RequiresParam("Param2")
+    ///         .Executes(() => { ... });
+    /// </code>
+    /// </example>
+    public TargetDefinition RequiresParam(string paramName)
     {
-        if (_.StartsWith("nameof("))
-            RequiredParams.Add(_[7..^1]);
-        else
-            RequiredParams.Add(_
-                .Split('.')
-                .Last());
+        RequiredParams.Add(paramName);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Specifies that this target requires the provided parameters to be defined for execution.
+    /// </summary>
+    /// <param name="paramNames">An array of parameter names that are required by the target.</param>
+    /// <returns>This target definition.</returns>
+    public TargetDefinition RequiresParams(params IEnumerable<string> paramNames)
+    {
+        RequiredParams.AddRange(paramNames);
 
         return this;
     }
@@ -259,9 +275,9 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ConsumesArtifact(CommandDefinition command, string artifactName, string? buildSlice = null)
+    public TargetDefinition ConsumesArtifact(WorkflowTargetDefinition workflowTarget, string artifactName, string? buildSlice = null)
     {
-        ConsumedArtifacts.Add(new(command.Name, artifactName, buildSlice));
+        ConsumedArtifacts.Add(new(workflowTarget.Name, artifactName, buildSlice));
 
         return this;
     }
@@ -287,16 +303,16 @@ public sealed class TargetDefinition
         return this;
     }
 
-    public TargetDefinition ConsumesVariable(CommandDefinition command, string outputName)
+    public TargetDefinition ConsumesVariable(WorkflowTargetDefinition workflowTarget, string outputName)
     {
-        ConsumedVariables.Add(new(command.Name, outputName));
+        ConsumedVariables.Add(new(workflowTarget.Name, outputName));
 
         return this;
     }
 
-    public TargetDefinition ConsumesVariable(CommandDefinition command, ParamDefinition parameter)
+    public TargetDefinition ConsumesVariable(WorkflowTargetDefinition workflowTarget, ParamDefinition parameter)
     {
-        ConsumedVariables.Add(new(command.Name, parameter.ArgName));
+        ConsumedVariables.Add(new(workflowTarget.Name, parameter.ArgName));
 
         return this;
     }

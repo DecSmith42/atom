@@ -21,10 +21,10 @@ public partial class ArtifactBuild : BuildDefinition,
             ],
             StepDefinitions =
             [
-                Commands.ArtifactTarget1,
-                Commands.ArtifactTarget2,
-                Commands.ArtifactTarget3,
-                Commands.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice),
+                Targets.ArtifactTarget1,
+                Targets.ArtifactTarget2,
+                Targets.ArtifactTarget3,
+                Targets.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice),
                     [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2])),
             ],
             WorkflowTypes = [new GithubWorkflowType()],
@@ -56,11 +56,11 @@ public partial class CustomArtifactBuild : BuildDefinition,
             ],
             StepDefinitions =
             [
-                Commands.SetupBuildInfo,
-                Commands.ArtifactTarget1,
-                Commands.ArtifactTarget2,
-                Commands.ArtifactTarget3,
-                Commands.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice),
+                Targets.SetupBuildInfo,
+                Targets.ArtifactTarget1,
+                Targets.ArtifactTarget2,
+                Targets.ArtifactTarget3,
+                Targets.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice),
                     [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2])),
             ],
             WorkflowTypes = [new GithubWorkflowType()],
@@ -98,7 +98,7 @@ public partial interface IArtifactTarget2 : IArtifactSliceTarget1
     Target ArtifactTarget2 =>
         d => d
             .WithDescription("Artifact Target 2")
-            .ConsumesArtifact(ArtifactBuild.Commands.ArtifactTarget1, IArtifactTarget1.Artifact1)
+            .ConsumesArtifact(nameof(IArtifactTarget1.ArtifactTarget1), IArtifactTarget1.Artifact1)
             .ProducesArtifact(Artifact2, Slice1)
             .ProducesArtifact(Artifact2, Slice2);
 }
@@ -109,9 +109,9 @@ public partial interface IArtifactTarget3 : IArtifactSliceTarget1
     Target ArtifactTarget3 =>
         d => d
             .WithDescription("Artifact Target 3")
-            .ConsumesArtifact(ArtifactBuild.Commands.ArtifactTarget1, IArtifactTarget1.Artifact1)
-            .ConsumesArtifact(ArtifactBuild.Commands.ArtifactTarget2, IArtifactTarget2.Artifact2, Slice1)
-            .ConsumesArtifact(ArtifactBuild.Commands.ArtifactTarget2, IArtifactTarget2.Artifact2, Slice2);
+            .ConsumesArtifact(nameof(IArtifactTarget1.ArtifactTarget1), IArtifactTarget1.Artifact1)
+            .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2, Slice1)
+            .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2, Slice2);
 }
 
 [TargetDefinition]
@@ -120,5 +120,5 @@ public partial interface IArtifactTarget4
     Target ArtifactTarget4 =>
         d => d
             .WithDescription("Artifact Target 4")
-            .ConsumesArtifact(ArtifactBuild.Commands.ArtifactTarget2, IArtifactTarget2.Artifact2);
+            .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2);
 }

@@ -2,42 +2,20 @@
 
 /// <inheritdoc cref="IBuildDefinition" />
 [PublicAPI]
-public abstract class BuildDefinition(IServiceProvider services) : IBuildInfo
+public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinition
 {
+    /// <inheritdoc cref="IBuildAccessor.Services" />
+    public IServiceProvider Services => services;
+
     /// <inheritdoc cref="IBuildDefinition.TargetDefinitions" />
     public abstract IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
 
     /// <inheritdoc cref="IBuildDefinition.ParamDefinitions" />
     public abstract IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; }
 
-    /// <inheritdoc cref="IBuildDefinition.Services" />
-    public IServiceProvider Services => services;
-
     /// <inheritdoc cref="IBuildDefinition.Workflows" />
     public virtual IReadOnlyList<WorkflowDefinition> Workflows => [];
 
     /// <inheritdoc cref="IBuildDefinition.DefaultWorkflowOptions" />
     public virtual IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [];
-
-    /// <inheritdoc />
-    public T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
-        Services
-            .GetRequiredService<IParamService>()
-            .GetParam(parameterExpression, defaultValue, converter);
-
-    /// <inheritdoc cref="IBuildDefinition.WriteVariable" />
-    public Task WriteVariable(string name, string value) =>
-        Services
-            .GetRequiredService<IWorkflowVariableService>()
-            .WriteVariable(name, value);
-
-    /// <inheritdoc cref="IBuildDefinition.AddReportData" />
-    public void AddReportData(IReportData reportData) =>
-        Services
-            .GetRequiredService<ReportService>()
-            .AddReportData(reportData);
-
-    public virtual void ConfigureBuildHostBuilder(IHostApplicationBuilder builder) { }
-
-    public virtual void ConfigureBuildHost(IHost host) { }
 }

@@ -8,14 +8,14 @@ public partial class ConfigureBuilderAndHostBuild : BuildDefinition,
     public bool IsSetupExecuted2 { get; set; }
 }
 
-[ConfigureBuilder]
+[ConfigureHostBuilder]
 public partial interface ITargetWithConfigureBuilder
 {
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
         builder.Configuration.AddInMemoryCollection([new("SetupExecuted1", "true")]);
 }
 
-[ConfigureBuilder]
+[ConfigureHostBuilder]
 [ConfigureHost]
 public partial interface ITargetWithConfigureBuilderAndConfigureHost
 {
