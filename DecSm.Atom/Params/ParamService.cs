@@ -155,7 +155,7 @@ internal sealed class ParamService(
         return (true, convertedEnvVar);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromConfig<T>(
+    private static (bool HasValue, T? Value) TryGetParamFromConfig<T>(
         ParamDefinition paramDefinition,
         IConfiguration configuration,
         Func<string?, T?>? converter)

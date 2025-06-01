@@ -8,7 +8,7 @@ public static class TestUtils
         var compilation = CreateCompilation(source, additionalAssemblies);
         var driver = CreateDriver<TSourceGenerator>();
 
-        driver = driver.RunGenerators(compilation);
+        driver = (CSharpGeneratorDriver)driver.RunGenerators(compilation);
 
         var generatedText = driver
             .GetRunResult()
@@ -34,7 +34,7 @@ public static class TestUtils
         return compilation;
     }
 
-    private static GeneratorDriver CreateDriver<TSourceGenerator>()
+    private static CSharpGeneratorDriver CreateDriver<TSourceGenerator>()
         where TSourceGenerator : IIncrementalGenerator, new() =>
         CSharpGeneratorDriver.Create(new TSourceGenerator());
 }

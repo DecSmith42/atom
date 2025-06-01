@@ -133,21 +133,17 @@ internal sealed class AtomFileSystem : IAtomFileSystem
             currentDir = currentDir.Parent;
 
             if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
-                .Any())
-                return currentDir;
-
-            if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, "*.git")
-                .Any())
-                return currentDir;
-
-            if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, "*.sln")
-                .Any())
+                    .Directory
+                    .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
+                    .Any() ||
+                FileSystem
+                    .Directory
+                    .EnumerateDirectories(currentDir, "*.git")
+                    .Any() ||
+                FileSystem
+                    .Directory
+                    .EnumerateDirectories(currentDir, "*.sln")
+                    .Any())
                 return currentDir;
         }
 

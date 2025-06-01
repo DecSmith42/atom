@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Build;
 
+[PublicAPI]
 public interface IBuildAccessor
 {
     /// <summary>

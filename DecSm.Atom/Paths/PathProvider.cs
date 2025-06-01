@@ -24,21 +24,20 @@ public interface IPathProvider
     /// </returns>
     /// <example>
     ///     <code lang="csharp">
-    ///  class MyPathProvider : IPathProvider
-    ///  {
-    ///      public int Priority => 1;
-    /// 
-    ///      public RootedPath? Locate(string key, Func&lt;string, RootedPath&gt; locator)
-    ///      {
-    ///          // Example logic to locate a path based on the key
-    ///          if (key == "example")
-    ///          {
-    ///              return locator("example/path");
-    ///          }
-    ///          return null; // No path found for the given key
-    ///      }
-    /// }
-    ///  </code>
+    ///     class MyPathProvider : IPathProvider
+    ///     {
+    ///         public int Priority => 1;
+    ///         public RootedPath? Locate(string key, Func&lt;string, RootedPath&gt; locator)
+    ///         {
+    ///             // Example logic to locate a path based on the key
+    ///             if (key == "example")
+    ///             {
+    ///                 return locator("example/path");
+    ///             }
+    ///             return null; // No path found for the given key
+    ///         }
+    ///     }
+    ///     </code>
     /// </example>
     RootedPath? Locate(string key, Func<string, RootedPath> locator);
 }

@@ -28,6 +28,7 @@ public class SetupSourceGenerator : IIncrementalGenerator
         var hasConfigureBuilder = false;
         var hasConfigureHost = false;
 
+        // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
         foreach (var attributeListSyntax in interfaceDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
         {

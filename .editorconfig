@@ -1,17 +1,23 @@
 ﻿root = true
 
 [*]
-
 # Default properties
 charset = utf-8
 end_of_line = crlf
 trim_trailing_whitespace = false
 insert_final_newline = false
+
+[*settings.json]
+# Configuration file properties
+indent_style = space
+indent_size = 2
+
+[{*.csproj,*.sln,*.Build.props}]
+# Project file properties
 indent_style = space
 indent_size = 2
 
 [{*.cs,*.cshtml,*.razor}]
-
 # CSharp properties
 trim_trailing_whitespace = true
 insert_final_newline = true
@@ -45,6 +51,7 @@ resharper_blank_lines_before_block_statements = 1
 resharper_blank_lines_before_control_transfer_statements = 1
 resharper_blank_lines_before_multiline_statements = 1
 resharper_blank_lines_before_single_line_comment = 1
+resharper_braces_for_ifelse = not_required_for_both # actually behaves as `required for either`
 resharper_braces_for_using = required_for_multiline
 resharper_braces_for_while = required_for_multiline
 resharper_csharp_blank_lines_around_single_line_invocable = 1
@@ -85,8 +92,8 @@ resharper_wrap_chained_binary_patterns = chop_if_long
 resharper_wrap_chained_method_calls = chop_always
 resharper_wrap_list_pattern = chop_if_long
 
-# Verify settings
 [*.{received,verified}.{txt,xml,json}]
+# Verify settings
 end_of_line = lf
 indent_size = unset
 indent_style = unset

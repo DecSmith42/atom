@@ -122,6 +122,7 @@ internal sealed class GithubWorkflowWriter(
                                 WriteLine($"- '{path}'");
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pullRequestTrigger.Types.Count > 0)
                         using (WriteSection("types:"))
                         {
@@ -168,6 +169,7 @@ internal sealed class GithubWorkflowWriter(
                                 WriteLine($"- '{tag}'");
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pushTrigger.ExcludedTags.Count > 0)
                         using (WriteSection("tags-ignore:"))
                         {
@@ -290,9 +292,11 @@ internal sealed class GithubWorkflowWriter(
                     foreach (var setupDotnetStep in setupDotnetSteps)
                         using (WriteSection("- uses: actions/setup-dotnet@v4"))
                         {
-                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
-                                using (WriteSection("with:"))
-                                    WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
+                            if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
+                                continue;
+
+                            using (WriteSection("with:"))
+                                WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
                         }
 
                 var setupNugetSteps = workflow
@@ -583,6 +587,7 @@ internal sealed class GithubWorkflowWriter(
                 .Where(static x => x.value is { Length: > 0 })
                 .ToList();
 
+            // ReSharper disable once InvertIf
             if (validEnv.Count > 0 || validExtraParams.Count > 0)
                 using (WriteSection("env:"))
                 {

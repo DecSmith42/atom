@@ -123,7 +123,7 @@ public class TargetDefinitionTests
     public void RequiresParam_AddsRequiredParam()
     {
         // Arrange
-        const string paramName = "NotExpected";
+        const string paramName = "ParamName";
 
         var targetDefinition = new TargetDefinition
         {
@@ -137,7 +137,7 @@ public class TargetDefinitionTests
         targetDefinition.RequiredParams.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
             x => x.Count.ShouldBe(1),
             x => x[0]
-                .ShouldBe(nameof(paramName)));
+                .ShouldBe(paramName));
     }
 
     [Test]

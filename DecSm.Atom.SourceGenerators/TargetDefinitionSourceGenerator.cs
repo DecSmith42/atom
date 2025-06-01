@@ -5,6 +5,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax Declaration, bool HasAttribute);
 
+// Resharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
+
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]

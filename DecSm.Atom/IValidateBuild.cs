@@ -26,6 +26,7 @@ public partial interface IValidateBuild : IReportsHelper
                         Title = "Warnings",
                     });
 
+                // ReSharper disable once InvertIf
                 if (errors.Count > 0)
                 {
                     AddReportData(new ListReportData(errors)

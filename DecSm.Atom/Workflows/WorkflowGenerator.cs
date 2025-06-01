@@ -14,9 +14,11 @@ internal sealed class WorkflowGenerator(
 
         var generationTasks = new List<Task>();
 
+        // ReSharper disable LoopCanBeConvertedToQuery
         foreach (var workflowDefinition in workflowDefinitions)
         foreach (var workflowType in workflowDefinition.WorkflowTypes)
         {
+            // ReSharper restore LoopCanBeConvertedToQuery
             var writer = _writers.FirstOrDefault(w => w.WorkflowType == workflowType.GetType());
 
             if (writer is null)
@@ -37,9 +39,11 @@ internal sealed class WorkflowGenerator(
 
         var checkTasks = new List<Task<bool>>();
 
+        // ReSharper disable LoopCanBeConvertedToQuery
         foreach (var workflowDefinition in workflowDefinitions)
         foreach (var workflowType in workflowDefinition.WorkflowTypes)
         {
+            // ReSharper restore LoopCanBeConvertedToQuery
             var writer = _writers.FirstOrDefault(w => w.WorkflowType == workflowType.GetType());
 
             if (writer is null)

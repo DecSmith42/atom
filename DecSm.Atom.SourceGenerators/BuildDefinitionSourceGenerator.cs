@@ -5,6 +5,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
+
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
@@ -160,15 +162,14 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .AllInterfaces
             .Where(static @interface => @interface
                 .GetAttributes()
-                .FirstOrDefault(static attribute =>
-                    attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull) is not null)
+                .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
             .ToArray();
 
         var interfacesWithConfigureHost = classSymbol
             .AllInterfaces
             .Where(static @interface => @interface
                 .GetAttributes()
-                .FirstOrDefault(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull) is not null)
+                .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull))
             .ToArray();
 
         var targetDefinitionsPropertyBodyLines = interfacesWithTargets
@@ -241,7 +242,6 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     };
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
-
 
         var targetsPropertiesLines = interfacesWithTargets
             .Select(static p =>

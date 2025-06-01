@@ -2,7 +2,6 @@ global using System.Text.RegularExpressions;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Blobs.Models;
 global using DecSm.Atom.Artifacts;
-global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Params;

@@ -134,6 +134,7 @@ internal sealed partial class DevopsWorkflowWriter(
                                 }
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pushTrigger.IncludedTags.Count > 0 || pushTrigger.ExcludedTags.Count > 0)
                         using (WriteSection("tags:"))
                         {
@@ -144,6 +145,7 @@ internal sealed partial class DevopsWorkflowWriter(
                                         WriteLine($"- '{tag}'");
                                 }
 
+                            // ReSharper disable once InvertIf
                             if (pushTrigger.ExcludedTags.Count > 0)
                                 using (WriteSection("exclude:"))
                                 {
@@ -284,14 +286,14 @@ internal sealed partial class DevopsWorkflowWriter(
                 var target = buildModel.GetTarget(commandStep.Name);
                 targetsForConsumedVariableDeclaration.Add(target);
 
-                if (UseCustomArtifactProvider.IsEnabled(workflow.Options) && !commandStep.SuppressArtifactPublishing)
-                {
-                    if (target.ConsumedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
+                if (!UseCustomArtifactProvider.IsEnabled(workflow.Options) || commandStep.SuppressArtifactPublishing)
+                    continue;
 
-                    if (target.ProducedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
-                }
+                if (target.ConsumedArtifacts.Count > 0)
+                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
+
+                if (target.ProducedArtifacts.Count > 0)
+                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
             }
 
             foreach (var consumedVariable in targetsForConsumedVariableDeclaration.SelectMany(x => x.ConsumedVariables))
@@ -357,9 +359,11 @@ internal sealed partial class DevopsWorkflowWriter(
                     foreach (var setupDotnetStep in setupDotnetSteps)
                         using (WriteSection("- task: UseDotNet@2"))
                         {
-                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
-                                using (WriteSection("inputs:"))
-                                    WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
+                            if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
+                                continue;
+
+                            using (WriteSection("inputs:"))
+                                WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
                         }
 
                 var setupNugetSteps = workflow
@@ -635,6 +639,7 @@ internal sealed partial class DevopsWorkflowWriter(
                 .Where(static x => x.value is { Length: > 0 })
                 .ToList();
 
+            // ReSharper disable once InvertIf
             if (validEnv.Count > 0 || validExtraParams.Count > 0)
                 using (WriteSection("env:"))
                 {

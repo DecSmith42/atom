@@ -81,6 +81,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
                 WriteCommand(target);
         }
 
+        // ReSharper disable once InvertIf
         if (projectTargets.Count > 0)
         {
             console.Write(new Markup("[bold]Project Commands[/]\n"));
