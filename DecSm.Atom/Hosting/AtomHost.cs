@@ -71,5 +71,6 @@ public static class AtomHost
         where T : BuildDefinition =>
         CreateAtomBuilder<T>(args)
             .Build()
+            .UseAtom()
             .Run();
 }

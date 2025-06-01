@@ -1,22 +1,25 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
-[TargetDefinition]
+[ConfigureBuilder]
 public partial interface IGithubWorkflows : IJobRunsOn
 {
-    static void IBuildDefinition.Register(IServiceCollection services)
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder)
     {
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter), typeof(GithubWorkflowWriter), ServiceLifetime.Singleton));
+        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
+            typeof(GithubWorkflowWriter),
+            ServiceLifetime.Singleton));
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
+        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
             typeof(DependabotWorkflowWriter),
             ServiceLifetime.Singleton));
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
+        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
             typeof(GithubVariableProvider),
             ServiceLifetime.Singleton));
 
         if (Github.IsGithubActions)
-            services
+            builder
+                .Services
                 .AddSingleton<IOutcomeReporter, GithubSummaryOutcomeReporter>()
                 .ProvidePath((key, locator) => Github.IsGithubActions
                     ? key switch

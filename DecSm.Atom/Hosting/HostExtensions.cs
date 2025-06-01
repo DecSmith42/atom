@@ -120,6 +120,21 @@ public static class HostExtensions
 
         TBuild.Register(builder.Services);
 
+        using var tempBuild = builder.Services.BuildServiceProvider();
+
+        tempBuild
+            .GetRequiredService<IBuildDefinition>()
+            .ConfigureBuildHostBuilder(builder);
+
         return builder;
+    }
+
+    public static IHost UseAtom(this IHost host)
+    {
+        var build = host.Services.GetRequiredService<IBuildDefinition>();
+
+        build.ConfigureBuildHost(host);
+
+        return host;
     }
 }

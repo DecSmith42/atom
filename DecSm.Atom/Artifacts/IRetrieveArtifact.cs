@@ -8,7 +8,7 @@
 ///     When creating a custom provider for storing artifacts, add this interface to the build.
 /// </remarks>
 [TargetDefinition]
-public partial interface IRetrieveArtifact : IArtifactHelper
+public partial interface IRetrieveArtifact : IArtifactHelper, IBuildInfo
 {
     Target RetrieveArtifact =>
         targetDefinition =>

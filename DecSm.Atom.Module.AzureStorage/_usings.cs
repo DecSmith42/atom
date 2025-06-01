@@ -10,4 +10,5 @@ global using DecSm.Atom.Reports;
 global using DecSm.Atom.Util;
 global using JetBrains.Annotations;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;

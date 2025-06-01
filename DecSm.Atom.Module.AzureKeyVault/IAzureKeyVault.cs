@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.AzureKeyVault;
 
+[ConfigureBuilder]
 [TargetDefinition]
 public partial interface IAzureKeyVault
 {
@@ -17,8 +18,9 @@ public partial interface IAzureKeyVault
 
     AzureKeyVaultValueInjections AzureKeyVaultValueInjections => new();
 
-    static void IBuildDefinition.Register(IServiceCollection services) =>
-        services
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
+        builder
+            .Services
             .AddSingleton<AzureKeySecretsProvider>()
             .AddSingleton<ISecretsProvider>(x => x.GetRequiredService<AzureKeySecretsProvider>())
             .AddSingleton<IWorkflowOptionProvider>(x => x.GetRequiredService<AzureKeySecretsProvider>());

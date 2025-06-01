@@ -63,7 +63,7 @@ public interface IBuildDefinition
     ///     Retrieves a parameter value using the specified expression, with an optional default value and converter.
     /// </summary>
     /// <typeparam name="T">The type of the parameter value.</typeparam>
-    /// <param name="parameterExpression">An expression identifying the parameter..</param>
+    /// <param name="parameterExpression">An expression identifying the parameter.</param>
     /// <param name="defaultValue">The default value to return if the parameter is not set.</param>
     /// <param name="converter">An optional function to convert the parameter value from a string.</param>
     /// <returns>The parameter value, or the default value if not set.</returns>
@@ -113,4 +113,8 @@ public interface IBuildDefinition
     /// </summary>
     /// <param name="services">The service collection to register services with.</param>
     static virtual void Register(IServiceCollection services) { }
+
+    void ConfigureBuildHostBuilder(IHostApplicationBuilder builder) { }
+
+    void ConfigureBuildHost(IHost hostBuilder) { }
 }

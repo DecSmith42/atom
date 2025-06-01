@@ -36,4 +36,8 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildInfo
         Services
             .GetRequiredService<ReportService>()
             .AddReportData(reportData);
+
+    public virtual void ConfigureBuildHostBuilder(IHostApplicationBuilder builder) { }
+
+    public virtual void ConfigureBuildHost(IHost host) { }
 }

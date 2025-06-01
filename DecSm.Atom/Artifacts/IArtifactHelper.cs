@@ -7,7 +7,7 @@
 ///     Used by internal Atom code to determine artifacts to store/retrieve.
 /// </remarks>
 [TargetDefinition]
-public partial interface IArtifactHelper : IBuildInfo
+public partial interface IArtifactHelper
 {
     /// <summary>
     ///     The name of the artifact/s to work with.

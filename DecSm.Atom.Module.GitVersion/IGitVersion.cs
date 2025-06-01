@@ -1,10 +1,11 @@
 ﻿namespace DecSm.Atom.Module.GitVersion;
 
-[TargetDefinition]
+[ConfigureBuilder]
 public partial interface IGitVersion
 {
-    static void IBuildDefinition.Register(IServiceCollection services) =>
-        services
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
+        builder
+            .Services
             .AddSingleton<IBuildIdProvider, GitVersionBuildIdProvider>()
             .AddSingleton<IBuildVersionProvider, GitVersionBuildVersionProvider>();
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial class MinimalTestDefinition
+partial class MinimalTestDefinition : DecSm.Atom.Build.Definition.IBuildDefinition
 {
     private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
     private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition>? _paramDefinitions;
@@ -92,12 +92,13 @@ partial class MinimalTestDefinition
         public static string BuildSlice = "BuildSlice";
     }
 
-    static void DecSm.Atom.Build.Definition.IBuildDefinition.Register(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+    public override void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
     {
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IBuildInfo>(services, static p => (DecSm.Atom.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IBuildInfo>(builder.Services, static p => (DecSm.Atom.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
     }
 
-    private static void RegisterTarget<T>(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-        where T : DecSm.Atom.Build.Definition.IBuildDefinition =>
-        T.Register(services);
+    public override void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
+    {
+
+    }
 }

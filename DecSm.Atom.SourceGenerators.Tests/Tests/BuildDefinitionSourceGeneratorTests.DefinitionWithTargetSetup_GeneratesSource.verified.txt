@@ -2,23 +2,22 @@
 
 #nullable enable
 
-global using static TestNamespace.DefaultTestDefinition;
+global using static TestNamespace.TestDefinitionWithSetup;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefinition
+partial class TestDefinitionWithSetup : DecSm.Atom.Build.Definition.IBuildDefinition
 {
     private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
     private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition>? _paramDefinitions;
 
-    public DefaultTestDefinition(System.IServiceProvider services) : base(services) { }
+    public TestDefinitionWithSetup(System.IServiceProvider services) : base(services) { }
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Build.Definition.Target>
     {
-        { "SetupBuildInfo", ((DecSm.Atom.ISetupBuildInfo)this).SetupBuildInfo },
-        { "ValidateBuild", ((DecSm.Atom.IValidateBuild)this).ValidateBuild },
+
     };
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions => _paramDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
@@ -77,9 +76,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
 
     public static class Commands
     {
-        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition SetupBuildInfo = new("SetupBuildInfo");
 
-        public static DecSm.Atom.Workflows.Definition.Command.CommandDefinition ValidateBuild = new("ValidateBuild");
     }
 
     public static class Params
@@ -97,13 +94,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
 
     public override void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
     {
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.ISetupBuildInfo>(builder.Services, static p => (DecSm.Atom.ISetupBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
-
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IBuildInfo>(builder.Services, static p => (DecSm.Atom.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
-
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IValidateBuild>(builder.Services, static p => (DecSm.Atom.IValidateBuild)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
-
-        DecSm.Atom.Secrets.IDotnetUserSecrets.ConfigureBuilder(builder);
     }
 
     public override void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)

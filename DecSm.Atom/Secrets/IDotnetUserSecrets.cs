@@ -1,10 +1,11 @@
 ﻿namespace DecSm.Atom.Secrets;
 
-[TargetDefinition]
+[ConfigureBuilder]
 public partial interface IDotnetUserSecrets
 {
-    static void IBuildDefinition.Register(IServiceCollection services) =>
-        services
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
+        builder
+            .Services
             .AddSingleton<DotnetUserSecretsProvider>()
             .AddSingleton<ISecretsProvider>(x => x.GetRequiredService<DotnetUserSecretsProvider>());
 }
