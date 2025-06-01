@@ -10,6 +10,20 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private const string Target = "Target";
+    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
+    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
+    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
+    private const string WorkflowTargetDefinitionFull = "DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition";
+    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
+    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
+    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
+    private const string IBuildDefinition = "IBuildDefinition";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string Register = "Register";
+    private const string RegisterTarget = "RegisterTarget";
+
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
                 .SyntaxProvider
@@ -145,10 +159,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
         var interfacesWithConfigureBuilder = classSymbol
             .AllInterfaces
             .Where(static @interface => @interface
-                    .GetAttributes()
-                    .FirstOrDefault(static attribute =>
-                        attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull) is not
-                null)
+                .GetAttributes()
+                .FirstOrDefault(static attribute =>
+                    attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull) is not null)
             .ToArray();
 
         var interfacesWithConfigureHost = classSymbol
@@ -349,18 +362,4 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
     private record struct InterfaceWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
 
     private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
-
-    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
-    private const string Target = "Target";
-    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
-    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
-    private const string WorkflowTargetDefinitionFull = "DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition";
-    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
-    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
-    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
-    private const string IBuildDefinition = "IBuildDefinition";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-    private const string Register = "Register";
-    private const string RegisterTarget = "RegisterTarget";
 }

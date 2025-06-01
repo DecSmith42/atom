@@ -27,7 +27,7 @@ public interface IPathProvider
     ///  class MyPathProvider : IPathProvider
     ///  {
     ///      public int Priority => 1;
-    ///
+    /// 
     ///      public RootedPath? Locate(string key, Func&lt;string, RootedPath&gt; locator)
     ///      {
     ///          // Example logic to locate a path based on the key
