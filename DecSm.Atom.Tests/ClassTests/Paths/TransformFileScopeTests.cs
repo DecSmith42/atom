@@ -3,12 +3,15 @@
 [TestFixture]
 internal sealed class TransformFileScopeTests
 {
+    // Explicitly return IAtomFileSystem as it's better in this context
+#pragma warning disable CA1859
     private static IAtomFileSystem CreateFileSystem(IDictionary<string, MockFileData> files, string currentDirectory = "") =>
-        new AtomFileSystem
+        new AtomFileSystem(A.Fake<ILogger<AtomFileSystem>>())
         {
             PathLocators = [],
             FileSystem = new MockFileSystem(files, currentDirectory),
         };
+#pragma warning restore CA1859
 
     [Test]
     public async Task CreateAsync_WhenFileDoesNotExist_CreatesFileAndWritesTransformedContent()

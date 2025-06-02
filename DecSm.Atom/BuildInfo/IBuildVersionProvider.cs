@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Build;
+﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
 ///     Provides a semantic version for the build.

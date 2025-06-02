@@ -12,6 +12,7 @@ internal sealed record NugetAddOptions(string Name, string Url)
             hasErrors = true;
         }
 
+        // ReSharper disable once InvertIf
         if (Url is not { Length: > 0 })
         {
             Console.WriteLine("The Url option is required.");

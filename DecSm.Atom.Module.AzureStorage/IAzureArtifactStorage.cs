@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.AzureStorage;
 
+[ConfigureHostBuilder]
 [TargetDefinition]
 public partial interface IAzureArtifactStorage : IStoreArtifact, IRetrieveArtifact
 {
@@ -9,6 +10,6 @@ public partial interface IAzureArtifactStorage : IStoreArtifact, IRetrieveArtifa
     [ParamDefinition("azurestorage-artifact-container", "Azure storage container")]
     string AzureArtifactStorageContainer => GetParam(() => AzureArtifactStorageContainer)!;
 
-    static void IBuildDefinition.Register(IServiceCollection services) =>
-        services.AddSingleton<IArtifactProvider, AzureBlobArtifactProvider>();
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
+        builder.Services.AddSingleton<IArtifactProvider, AzureBlobArtifactProvider>();
 }

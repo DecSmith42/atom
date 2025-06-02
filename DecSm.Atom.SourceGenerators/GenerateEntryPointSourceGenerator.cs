@@ -4,6 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
+
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
@@ -38,7 +40,7 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
             // Check the full name of the BuildDefinition attribute.
-            if (attributeName == "DecSm.Atom.Build.Definition.GenerateEntryPointAttribute")
+            if (attributeName == "DecSm.Atom.Hosting.GenerateEntryPointAttribute")
                 return (classDeclarationSyntax, true);
         }
 

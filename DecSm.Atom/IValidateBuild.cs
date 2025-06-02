@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 [TargetDefinition]
-public partial interface IValidateBuild
+public partial interface IValidateBuild : IReportsHelper
 {
     Target ValidateBuild =>
         t => t
@@ -26,6 +26,7 @@ public partial interface IValidateBuild
                         Title = "Warnings",
                     });
 
+                // ReSharper disable once InvertIf
                 if (errors.Count > 0)
                 {
                     AddReportData(new ListReportData(errors)

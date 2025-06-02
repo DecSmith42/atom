@@ -1,7 +1,6 @@
-﻿namespace DecSm.Atom;
+﻿namespace DecSm.Atom.BuildInfo;
 
-[TargetDefinition]
-public partial interface IBuildInfo
+public interface IBuildInfo : IBuildAccessor
 {
     [ParamDefinition("build-id", "Build/run ID", "{From IBuildIdProvider}")]
     string BuildId => GetParam(() => BuildId, DefaultBuildId);
@@ -35,11 +34,20 @@ public partial interface IBuildInfo
         GetService<IBuildTimestampProvider>()
             .Timestamp;
 
-    private string DefaultBuildName =>
-        FileSystem
-            .Directory
-            .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
-            .FirstOrDefault() is { } solutionFile
-            ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
-            : FileSystem.AtomRootDirectory.DirectoryName!;
+    private string DefaultBuildName
+    {
+        get
+        {
+            var solutionFile = FileSystem
+                .Directory
+                .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            Logger.LogDebug("Determined solution file: {SolutionFile}", solutionFile);
+
+            return solutionFile is not null
+                ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
+                : FileSystem.AtomRootDirectory.DirectoryName!;
+        }
+    }
 }

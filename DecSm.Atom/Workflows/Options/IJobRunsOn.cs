@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Workflows.Options;
 
 [PublicAPI]
-public interface IJobRunsOn : IBuildDefinition
+public interface IJobRunsOn : IBuildDefinition, IBuildAccessor
 {
     public const string WindowsLatestTag = "windows-latest";
 

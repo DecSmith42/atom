@@ -1,4 +1,4 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Core;
 
 [BuildDefinition]
-public sealed partial class MinimalAtomBuild : BuildDefinition, IBuildDefinition;
+public sealed partial class MinimalAtomBuild : BuildDefinition;

@@ -5,8 +5,4 @@
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial interface ITestTargetDefinition : DecSm.Atom.Build.Definition.IBuildDefinition
-{
-    private Microsoft.Extensions.Logging.ILogger<ITestTargetDefinition> Logger => GetService<Microsoft.Extensions.Logging.ILogger<ITestTargetDefinition>>();
-    private DecSm.Atom.Paths.IAtomFileSystem FileSystem => GetService<DecSm.Atom.Paths.IAtomFileSystem>();
-}
+partial interface ITestTargetDefinition : DecSm.Atom.Build.Definition.IBuildDefinition, DecSm.Atom.Build.IBuildAccessor;

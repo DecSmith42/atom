@@ -174,4 +174,40 @@ public class TargetTests
         // Assert
         await Verify(build);
     }
+
+    [Test]
+    public void Build_WithConfigureBuilder_ExecutesSetupMethods()
+    {
+        // Arrange / Act
+        var host = CreateTestHost<ConfigureBuilderAndHostBuild>();
+
+        // Assert
+        var configuration = host.Services.GetService<IConfiguration>();
+
+        Assert.Multiple(() =>
+        {
+            configuration.ShouldNotBeNull();
+
+            configuration["SetupExecuted1"]
+                .ShouldBe("true");
+
+            configuration["SetupExecuted2"]
+                .ShouldBe("true");
+        });
+    }
+
+    [Test]
+    public void Build_WithConfigureHost_ExecutesSetupMethods()
+    {
+        // Arrange
+        var host = CreateTestHost<ConfigureBuilderAndHostBuild>();
+
+        // Act
+        host.UseAtom();
+
+        // Assert
+        var target = (ITargetWithConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>();
+
+        target.IsSetupExecuted2.ShouldBeTrue();
+    }
 }

@@ -2,17 +2,17 @@
 
 #nullable enable
 
-global using static TestNamespace.MinimalTestDefinition;
+global using static TestNamespace.TestDefinitionWithSetup;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial class MinimalTestDefinition : DecSm.Atom.Build.Definition.IBuildDefinition
+partial class TestDefinitionWithSetup : DecSm.Atom.Build.Definition.IBuildDefinition
 {
     // Build has no defined targets
 
-    public MinimalTestDefinition(System.IServiceProvider services) : base(services) { }
+    public TestDefinitionWithSetup(System.IServiceProvider services) : base(services) { }
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Build.Definition.Target>();
 

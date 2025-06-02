@@ -10,6 +10,7 @@ jobs:
   SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
+      build-name: ${{ steps.SetupBuildInfo.outputs.build-name }}
       build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
       build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
       build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
@@ -51,6 +52,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -81,6 +83,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -111,6 +114,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -141,6 +145,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -171,6 +176,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -201,6 +207,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -231,6 +238,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -261,6 +269,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -296,6 +305,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project _atom/_atom.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
@@ -321,6 +331,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}

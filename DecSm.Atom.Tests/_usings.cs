@@ -2,13 +2,13 @@
 global using System.Diagnostics.CodeAnalysis;
 global using System.IO.Abstractions;
 global using System.IO.Abstractions.TestingHelpers;
-global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using DecSm.Atom.Args;
 global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Build.Model;
+global using DecSm.Atom.BuildInfo;
 global using DecSm.Atom.Cheatsheet;
 global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Logging;

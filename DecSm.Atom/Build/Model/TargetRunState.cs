@@ -7,7 +7,7 @@ namespace DecSm.Atom.Build.Model;
 public enum TargetRunState
 {
     /// <summary>
-    ///     Default value, indicates that the target has not been initialized.
+    ///     Default value indicates that the target has not been initialized.
     /// </summary>
     Uninitialized,
 

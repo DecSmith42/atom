@@ -15,7 +15,7 @@ public partial interface ICircularTarget1
 
     Target CircularTarget1 =>
         d => d
-            .DependsOn(CircularTargetDependencyBuild.Commands.CircularTarget1)
+            .DependsOn(nameof(ICircularTarget1))
             .Executes(() =>
             {
                 CircularTarget1Executed = true;
@@ -31,7 +31,7 @@ public partial interface ICircularTarget2
 
     Target CircularTarget2 =>
         d => d
-            .DependsOn(CircularTargetDependencyBuild.Commands.CircularTarget2)
+            .DependsOn(nameof(ICircularTarget2))
             .Executes(() =>
             {
                 CircularTarget2Executed = true;
@@ -57,7 +57,7 @@ public partial interface ITestCircularTarget3
 
     Target TestCircularTarget3 =>
         d => d
-            .DependsOn(CircularTargetDependencyBuild2.Commands.TestCircularTarget4)
+            .DependsOn(nameof(ITestCircularTarget4))
             .Executes(() =>
             {
                 CircularTarget3Executed = true;
@@ -73,7 +73,7 @@ public partial interface ITestCircularTarget4
 
     Target TestCircularTarget4 =>
         d => d
-            .DependsOn(CircularTargetDependencyBuild2.Commands.TestCircularTarget5)
+            .DependsOn(nameof(ITestCircularTarget5))
             .Executes(() =>
             {
                 CircularTarget4Executed = true;
@@ -89,7 +89,7 @@ public partial interface ITestCircularTarget5
 
     Target TestCircularTarget5 =>
         d => d
-            .DependsOn(CircularTargetDependencyBuild2.Commands.TestCircularTarget3)
+            .DependsOn(nameof(ITestCircularTarget3))
             .Executes(() =>
             {
                 CircularTarget5Executed = true;

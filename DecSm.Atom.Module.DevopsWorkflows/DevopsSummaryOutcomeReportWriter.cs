@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
-internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, ReportService reportService) : IOutcomeReporter
+internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService) : IOutcomeReportWriter
 {
     public async Task ReportRunOutcome()
     {
@@ -9,7 +9,7 @@ internal sealed class DevopsSummaryOutcomeReporter(IAtomFileSystem fileSystem, R
         if (tempFile.FileExists)
             fileSystem.File.Delete(tempFile);
 
-        var content = Encoding.UTF8.GetBytes(ReportDataMarkdownWriter.Write(reportService.GetReportData()));
+        var content = Encoding.UTF8.GetBytes(ReportDataMarkdownFormatter.Write(reportService.GetReportData()));
 
         if (content.Length is 0)
             return;

@@ -3,11 +3,13 @@
 [PublicAPI]
 public static class Extensions
 {
-    public static CommandDefinition WithGithubRunnerMatrix(this CommandDefinition commandDefinition, string[] labels) =>
-        commandDefinition
+    public static WorkflowTargetDefinition WithGithubRunnerMatrix(
+        this WorkflowTargetDefinition workflowTargetDefinition,
+        string[] labels) =>
+        workflowTargetDefinition
             .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn), labels))
             .WithAddedOptions(GithubRunsOn.SetByMatrix);
 
-    public static CommandDefinition WithGithubTokenInjection(this CommandDefinition commandDefinition) =>
-        commandDefinition.WithAddedOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
+    public static WorkflowTargetDefinition WithGithubTokenInjection(this WorkflowTargetDefinition workflowTargetDefinition) =>
+        workflowTargetDefinition.WithAddedOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
 }

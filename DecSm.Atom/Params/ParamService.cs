@@ -23,6 +23,7 @@ internal sealed class ParamService(
     CommandLineArgs args,
     IAnsiConsole console,
     IConfiguration config,
+    ILogger<ParamService> logger,
     IEnumerable<ISecretsProvider> secretsProviders
 ) : IParamService
 {
@@ -72,31 +73,71 @@ internal sealed class ParamService(
 
         if (paramDefinition.Sources.HasFlag(ParamSource.Cache) &&
             TryGetParamFromCache(paramDefinition, _cache, converter) is (true, { } cacheValue))
+        {
             result = cacheValue;
+            logger.LogDebug("Resolved param {ParamName} from cache", paramDefinition.Name);
+        }
         else if (paramDefinition.Sources.HasFlag(ParamSource.CommandLineArgs) &&
                  TryGetParamFromArgs(paramDefinition, args, converter) is (true, { } argsValue))
+        {
             result = argsValue;
+            logger.LogDebug("Resolved param {ParamName} from command line args", paramDefinition.Name);
+        }
         else if (paramDefinition.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
                  TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
+        {
             result = envVarValue;
+            logger.LogDebug("Resolved param {ParamName} from environment variables", paramDefinition.Name);
+        }
         else if (paramDefinition.Sources.HasFlag(ParamSource.Configuration) &&
                  TryGetParamFromConfig(paramDefinition, config, converter) is (true, { } configValue))
+        {
             result = configValue;
+            logger.LogDebug("Resolved param {ParamName} from configuration", paramDefinition.Name);
+        }
         else if (paramDefinition.Sources.HasFlag(ParamSource.Secrets) &&
                  paramDefinition.IsSecret &&
                  TryGetParamFromSecrets(paramDefinition, _secretsProviders, converter) is (true, { } secretValue))
+        {
             result = secretValue;
+            logger.LogDebug("Resolved param {ParamName} from secrets", paramDefinition.Name);
+        }
         else if (args is { HasHeadless: false, HasInteractive: true, HasHelp: false } &&
                  TryGetParamFromConsole(paramDefinition, console, _cache, converter) is (true, { } userValue))
+        {
             result = userValue;
+            logger.LogDebug("Resolved param {ParamName} from user input", paramDefinition.Name);
+        }
         else
+        {
             result = defaultValue;
+
+            logger.LogDebug("Parameter '{ParamName}' not resolved, using default value '{DefaultValue}'",
+                paramDefinition.Name,
+                result is null
+                    ? "(null)"
+                    : result is ""
+                        ? "(empty string)"
+                        : paramDefinition.IsSecret
+                            ? "*****"
+                            : result.ToString());
+        }
 
         if (!NoCache)
             _cache[paramDefinition.Name] = result;
 
         if (paramDefinition.IsSecret)
             _knownSecrets.Add(result?.ToString() ?? string.Empty);
+
+        logger.LogDebug("Parameter '{ParamName}' resolved to '{Value}'",
+            paramDefinition.Name,
+            result is null
+                ? "(null)"
+                : result is ""
+                    ? "(empty string)"
+                    : paramDefinition.IsSecret
+                        ? "*****"
+                        : result.ToString());
 
         return result;
     }
@@ -155,7 +196,7 @@ internal sealed class ParamService(
         return (true, convertedEnvVar);
     }
 
-    private (bool HasValue, T? Value) TryGetParamFromConfig<T>(
+    private static (bool HasValue, T? Value) TryGetParamFromConfig<T>(
         ParamDefinition paramDefinition,
         IConfiguration configuration,
         Func<string?, T?>? converter)

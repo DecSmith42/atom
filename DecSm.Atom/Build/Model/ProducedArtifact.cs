@@ -1,7 +1,7 @@
-namespace DecSm.Atom.Build.Definition;
+namespace DecSm.Atom.Build.Model;
 
 /// <summary>
-///     Represents an artifact that is produced by a target during the build process.
+///     Represents an artifact produced by a target during the build process.
 /// </summary>
 /// <param name="ArtifactName">The name of the artifact being produced.</param>
 /// <param name="BuildSlice">The build slice that produced the artifact, if applicable.</param>

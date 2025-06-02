@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
 [TargetDefinition]
-public partial interface INugetHelper : IVersionHelper
+public partial interface INugetHelper : IBuildInfo
 {
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
@@ -23,6 +23,20 @@ public partial interface INugetHelper : IVersionHelper
         }
     }
 
+    /// <summary>
+    ///     Pushes a project to a NuGet feed.
+    /// </summary>
+    /// <param name="projectName">The name of the project to push.</param>
+    /// <param name="feed">The NuGet feed URL to push the project to.</param>
+    /// <param name="apiKey">The API key for the NuGet feed.</param>
+    /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
+    /// <remarks>
+    ///     Requires the <see cref="IBuildInfo.BuildVersion" /> param, which should be marked as consumed by the target that calls this method.
+    ///     <br /><br />
+    ///     Requires the project to have been built and the package to be available in the artifacts directory.
+    ///     <br /><br />
+    ///     Requires the `dotnet` CLI to be installed and available in the PATH.
+    /// </remarks>
     async Task PushProject(string projectName, string feed, string apiKey, string? configFile = null)
     {
         var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
@@ -35,7 +49,7 @@ public partial interface INugetHelper : IVersionHelper
             return;
         }
 
-        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{Version}.nupkg");
+        var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{BuildVersion}.nupkg");
 
         await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
     }
@@ -155,7 +169,7 @@ public partial interface INugetHelper : IVersionHelper
                             <packageSources>
                           {sources}
                             </packageSources>
-                          
+
                             <packageSourceCredentials>
                           {credentials}
                             </packageSourceCredentials>

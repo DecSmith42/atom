@@ -42,4 +42,31 @@ public class BuildDefinitionSourceGeneratorTests
         // Assert
         await Verify(generatedText);
     }
+
+    [Test]
+    public async Task DefinitionWithTargetSetup_GeneratesSource()
+    {
+        // Arrange
+        const string source = """
+                              using DecSm.Atom.Build.Definition;
+
+                              namespace TestNamespace;
+
+                              [BuildDefinition]
+                              public partial class TestDefinitionWithSetup : BuildDefinition, ITestTargetDefinition;
+
+                              [TargetDefinition]
+                              [TargetSetup]
+                              public interface ITestTargetDefinition
+                              {
+                                  public void ConfigureBuilder(IHostApplicationBuilder builder);
+                              }
+                              """;
+
+        // Act
+        var generatedText = TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+
+        // Assert
+        await Verify(generatedText);
+    }
 }

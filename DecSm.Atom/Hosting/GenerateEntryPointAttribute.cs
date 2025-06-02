@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Build.Definition;
+﻿namespace DecSm.Atom.Hosting;
 
 /// <summary>
 ///     An attribute used to indicate that a class should have an entry point generated for it.

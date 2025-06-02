@@ -12,16 +12,19 @@ internal partial interface IPushToNuget : INugetHelper
     Target PushToNuget =>
         d => d
             .WithDescription("Pushes the Atom projects to Nuget")
-            .ConsumesArtifact(Commands.PackAtom, IPackAtom.AtomProjectName)
-            .ConsumesArtifact(Commands.PackAtomTool, IPackAtomTool.AtomToolProjectName)
-            .ConsumesArtifact(Commands.PackAzureKeyVaultModule, IPackAzureKeyVaultModule.AzureKeyVaultModuleProjectName)
-            .ConsumesArtifact(Commands.PackAzureStorageModule, IPackAzureStorageModule.AzureStorageModuleProjectName)
-            .ConsumesArtifact(Commands.PackDevopsWorkflowsModule, IPackDevopsWorkflowsModule.AtomDevopsWorkflowsModuleProjectName)
-            .ConsumesArtifact(Commands.PackDotnetModule, IPackDotnetModule.DotnetModuleProjectName)
-            .ConsumesArtifact(Commands.PackGithubWorkflowsModule, IPackGithubWorkflowsModule.AtomGithubWorkflowsModuleProjectName)
-            .ConsumesArtifact(Commands.PackGitVersionModule, IPackGitVersionModule.GitVersionModuleProjectName)
-            .RequiresParam(Params.NugetFeed)
-            .RequiresParam(Params.NugetApiKey)
+            .ConsumesArtifact(nameof(IPackAtom.PackAtom), IPackAtom.AtomProjectName)
+            .ConsumesArtifact(nameof(IPackAtomTool.PackAtomTool), IPackAtomTool.AtomToolProjectName)
+            .ConsumesArtifact(nameof(IPackAzureKeyVaultModule.PackAzureKeyVaultModule),
+                IPackAzureKeyVaultModule.AzureKeyVaultModuleProjectName)
+            .ConsumesArtifact(nameof(IPackAzureStorageModule.PackAzureStorageModule), IPackAzureStorageModule.AzureStorageModuleProjectName)
+            .ConsumesArtifact(nameof(IPackDevopsWorkflowsModule.PackDevopsWorkflowsModule),
+                IPackDevopsWorkflowsModule.AtomDevopsWorkflowsModuleProjectName)
+            .ConsumesArtifact(nameof(IPackDotnetModule.PackDotnetModule), IPackDotnetModule.DotnetModuleProjectName)
+            .ConsumesArtifact(nameof(IPackGithubWorkflowsModule.PackGithubWorkflowsModule),
+                IPackGithubWorkflowsModule.AtomGithubWorkflowsModuleProjectName)
+            .ConsumesArtifact(nameof(IPackGitVersionModule.PackGitVersionModule), IPackGitVersionModule.GitVersionModuleProjectName)
+            .RequiresParam(nameof(NugetFeed))
+            .RequiresParam(nameof(NugetApiKey))
             .Executes(async () =>
             {
                 await PushProject(IPackAtom.AtomProjectName, NugetFeed, NugetApiKey);

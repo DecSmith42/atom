@@ -80,7 +80,7 @@ public interface IAtomFileSystem : IFileSystem
         new(this, path);
 }
 
-internal sealed class AtomFileSystem : IAtomFileSystem
+internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFileSystem
 {
     private readonly Dictionary<string, RootedPath> _pathCache = [];
 
@@ -94,7 +94,11 @@ internal sealed class AtomFileSystem : IAtomFileSystem
     public RootedPath GetPath(string key)
     {
         if (_pathCache.TryGetValue(key, out var path))
+        {
+            logger.LogDebug("Path for key '{Key}' found in cache: {Path}", key, path);
+
             return path;
+        }
 
         var locate = (string locatorKey) =>
         {
@@ -109,9 +113,13 @@ internal sealed class AtomFileSystem : IAtomFileSystem
             .FirstOrDefault(x => x is not null);
 
         if (path is not null)
-            return _pathCache[key] = path;
+        {
+            logger.LogDebug("Path for key '{Key}' located by provider: {Path}", key, path);
 
-        return _pathCache[key] = key switch
+            return _pathCache[key] = path;
+        }
+
+        var result = _pathCache[key] = key switch
         {
             AtomPaths.Root => GetRoot(),
             AtomPaths.Artifacts => GetArtifacts(),
@@ -119,6 +127,10 @@ internal sealed class AtomFileSystem : IAtomFileSystem
             AtomPaths.Temp => GetTemp(),
             _ => throw new InvalidOperationException($"Could not locate path for key '{key}'"),
         };
+
+        logger.LogDebug("Path for key '{Key}' computed: {Path}", key, result);
+
+        return result;
     }
 
     internal void ClearCache() =>
@@ -133,21 +145,17 @@ internal sealed class AtomFileSystem : IAtomFileSystem
             currentDir = currentDir.Parent;
 
             if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
-                .Any())
-                return currentDir;
-
-            if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, "*.git")
-                .Any())
-                return currentDir;
-
-            if (FileSystem
-                .Directory
-                .EnumerateDirectories(currentDir, "*.sln")
-                .Any())
+                    .Directory
+                    .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
+                    .Any() ||
+                FileSystem
+                    .Directory
+                    .EnumerateDirectories(currentDir, "*.git")
+                    .Any() ||
+                FileSystem
+                    .Directory
+                    .EnumerateDirectories(currentDir, "*.sln")
+                    .Any())
                 return currentDir;
         }
 

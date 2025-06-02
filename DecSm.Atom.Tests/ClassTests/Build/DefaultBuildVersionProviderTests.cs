@@ -11,7 +11,7 @@ public class DefaultBuildVersionProviderTests
 
     private static AtomFileSystem NewFileSystem(IFileSystem fileSystem)
     {
-        var result = new AtomFileSystem
+        var result = new AtomFileSystem(A.Fake<ILogger<AtomFileSystem>>())
         {
             FileSystem = fileSystem,
             PathLocators = [],

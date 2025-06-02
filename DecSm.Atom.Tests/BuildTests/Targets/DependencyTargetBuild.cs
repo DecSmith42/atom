@@ -37,7 +37,7 @@ public partial interface IDependencyTarget2
 
     Target DependencyTarget2 =>
         d => d
-            .DependsOn(DependencyTargetBuild.Commands.DependencyTarget1)
+            .DependsOn(nameof(IDependencyTarget1.DependencyTarget1))
             .Executes(() =>
             {
                 DependencyTarget2Executed = true;
@@ -67,7 +67,7 @@ public partial interface IDependencyFailTarget2
 
     Target DependencyFailTarget2 =>
         d => d
-            .DependsOn(DependencyTargetBuild.Commands.DependencyFailTarget1)
+            .DependsOn(nameof(IDependencyFailTarget1.DependencyFailTarget1))
             .Executes(() =>
             {
                 DependencyFailTarget2Executed = true;

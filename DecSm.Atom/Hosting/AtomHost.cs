@@ -36,12 +36,15 @@ public static class AtomHost
             Args = args,
             EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ??
                               Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            ApplicationName = "Atom",
         });
 
         var environment = builder.Environment.EnvironmentName;
 
         builder.Configuration.AddJsonFile("appsettings.json", true, true);
-        builder.Configuration.AddJsonFile($"appsettings.{environment}.json", true, true);
+
+        if (environment.Length > 0)
+            builder.Configuration.AddJsonFile($"appsettings.{environment}.json", true, true);
 
         builder.AddAtom<HostApplicationBuilder, T>(args);
 
@@ -68,5 +71,6 @@ public static class AtomHost
         where T : BuildDefinition =>
         CreateAtomBuilder<T>(args)
             .Build()
+            .UseAtom()
             .Run();
 }

@@ -122,6 +122,7 @@ internal sealed class GithubWorkflowWriter(
                                 WriteLine($"- '{path}'");
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pullRequestTrigger.Types.Count > 0)
                         using (WriteSection("types:"))
                         {
@@ -168,6 +169,7 @@ internal sealed class GithubWorkflowWriter(
                                 WriteLine($"- '{tag}'");
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pushTrigger.ExcludedTags.Count > 0)
                         using (WriteSection("tags-ignore:"))
                         {
@@ -228,7 +230,7 @@ internal sealed class GithubWorkflowWriter(
 
             var outputs = new List<string>();
 
-            foreach (var step in job.Steps.OfType<WorkflowCommandModel>())
+            foreach (var step in job.Steps.OfType<WorkflowStepModel>())
                 outputs.AddRange(buildModel.GetTarget(step.Name)
                     .ProducedVariables);
 
@@ -251,11 +253,11 @@ internal sealed class GithubWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowTargetModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
     {
         switch (step)
         {
-            case WorkflowCommandModel commandStep:
+            case WorkflowStepModel commandStep:
 
                 using (WriteSection("- name: Checkout"))
                 {
@@ -290,9 +292,11 @@ internal sealed class GithubWorkflowWriter(
                     foreach (var setupDotnetStep in setupDotnetSteps)
                         using (WriteSection("- uses: actions/setup-dotnet@v4"))
                         {
-                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
-                                using (WriteSection("with:"))
-                                    WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
+                            if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
+                                continue;
+
+                            using (WriteSection("with:"))
+                                WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
                         }
 
                 var setupNugetSteps = workflow
@@ -342,7 +346,7 @@ internal sealed class GithubWorkflowWriter(
                         if (workflow
                             .Jobs
                             .SelectMany(x => x.Steps)
-                            .OfType<WorkflowCommandModel>()
+                            .OfType<WorkflowStepModel>()
                             .Single(x => x.Name == consumedArtifact.TargetName)
                             .SuppressArtifactPublishing)
                             logger.LogWarning(
@@ -451,19 +455,19 @@ internal sealed class GithubWorkflowWriter(
 
     private void WriteCommandStep(
         WorkflowModel workflow,
-        WorkflowCommandModel workflowCommandStep,
+        WorkflowStepModel workflowStep,
         TargetModel target,
         (string name, string value)[] extraParams,
         bool includeId)
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection($"- name: {workflowCommandStep.Name}"))
+        using (WriteSection($"- name: {workflowStep.Name}"))
         {
             if (includeId)
-                WriteLine($"id: {workflowCommandStep.Name}");
+                WriteLine($"id: {workflowStep.Name}");
 
-            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {workflowCommandStep.Name} --skip --headless");
+            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
 
             var env = new Dictionary<string, string>();
 
@@ -497,7 +501,7 @@ internal sealed class GithubWorkflowWriter(
                     {
                         logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -515,7 +519,7 @@ internal sealed class GithubWorkflowWriter(
                         logger.LogWarning(
                             "Workflow {WorkflowName} command {CommandName} has a secret provider environment variable injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -531,7 +535,7 @@ internal sealed class GithubWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
-                    .Concat(workflowCommandStep.Options)
+                    .Concat(workflowStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
@@ -550,7 +554,7 @@ internal sealed class GithubWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         environmentInjection.Value);
 
                     continue;
@@ -566,7 +570,7 @@ internal sealed class GithubWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that is not consumed by the command",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         paramInjection.Name);
 
                     continue;
@@ -583,6 +587,7 @@ internal sealed class GithubWorkflowWriter(
                 .Where(static x => x.value is { Length: > 0 })
                 .ToList();
 
+            // ReSharper disable once InvertIf
             if (validEnv.Count > 0 || validExtraParams.Count > 0)
                 using (WriteSection("env:"))
                 {

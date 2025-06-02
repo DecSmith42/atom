@@ -1,19 +1,24 @@
-﻿namespace DecSm.Atom.Module.DevopsWorkflows;
+﻿using DecSm.Atom.Hosting;
 
-[TargetDefinition]
+namespace DecSm.Atom.Module.DevopsWorkflows;
+
+[ConfigureHostBuilder]
 public partial interface IDevopsWorkflows : IJobRunsOn
 {
-    static void IBuildDefinition.Register(IServiceCollection services)
+    protected static partial void ConfigureBuilder(IHostApplicationBuilder builder)
     {
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter), typeof(DevopsWorkflowWriter), ServiceLifetime.Singleton));
+        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowWriter),
+            typeof(DevopsWorkflowWriter),
+            ServiceLifetime.Singleton));
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
+        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IWorkflowVariableProvider),
             typeof(DevopsVariableProvider),
             ServiceLifetime.Singleton));
 
         if (Devops.IsDevopsPipelines)
-            services
-                .AddSingleton<IOutcomeReporter, DevopsSummaryOutcomeReporter>()
+            builder
+                .Services
+                .AddSingleton<IOutcomeReportWriter, DevopsSummaryOutcomeReportWriter>()
                 .ProvidePath((key, locator) => Devops.IsDevopsPipelines
                     ? key switch
                     {

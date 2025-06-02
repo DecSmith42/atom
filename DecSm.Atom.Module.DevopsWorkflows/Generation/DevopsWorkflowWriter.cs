@@ -134,6 +134,7 @@ internal sealed partial class DevopsWorkflowWriter(
                                 }
                         }
 
+                    // ReSharper disable once InvertIf
                     if (pushTrigger.IncludedTags.Count > 0 || pushTrigger.ExcludedTags.Count > 0)
                         using (WriteSection("tags:"))
                         {
@@ -144,6 +145,7 @@ internal sealed partial class DevopsWorkflowWriter(
                                         WriteLine($"- '{tag}'");
                                 }
 
+                            // ReSharper disable once InvertIf
                             if (pushTrigger.ExcludedTags.Count > 0)
                                 using (WriteSection("exclude:"))
                                 {
@@ -279,19 +281,19 @@ internal sealed partial class DevopsWorkflowWriter(
 
             var targetsForConsumedVariableDeclaration = new List<TargetModel>();
 
-            foreach (var commandStep in job.Steps.OfType<WorkflowCommandModel>())
+            foreach (var commandStep in job.Steps.OfType<WorkflowStepModel>())
             {
                 var target = buildModel.GetTarget(commandStep.Name);
                 targetsForConsumedVariableDeclaration.Add(target);
 
-                if (UseCustomArtifactProvider.IsEnabled(workflow.Options) && !commandStep.SuppressArtifactPublishing)
-                {
-                    if (target.ConsumedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
+                if (!UseCustomArtifactProvider.IsEnabled(workflow.Options) || commandStep.SuppressArtifactPublishing)
+                    continue;
 
-                    if (target.ProducedArtifacts.Count > 0)
-                        targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
-                }
+                if (target.ConsumedArtifacts.Count > 0)
+                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
+
+                if (target.ProducedArtifacts.Count > 0)
+                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
             }
 
             foreach (var consumedVariable in targetsForConsumedVariableDeclaration.SelectMany(x => x.ConsumedVariables))
@@ -321,11 +323,11 @@ internal sealed partial class DevopsWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowTargetModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
     {
         switch (step)
         {
-            case WorkflowCommandModel commandStep:
+            case WorkflowStepModel commandStep:
 
                 using (WriteSection("- checkout: self"))
                     WriteLine("fetchDepth: 0");
@@ -357,9 +359,11 @@ internal sealed partial class DevopsWorkflowWriter(
                     foreach (var setupDotnetStep in setupDotnetSteps)
                         using (WriteSection("- task: UseDotNet@2"))
                         {
-                            if (setupDotnetStep.DotnetVersion is { Length: > 0 })
-                                using (WriteSection("inputs:"))
-                                    WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
+                            if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
+                                continue;
+
+                            using (WriteSection("inputs:"))
+                                WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
                         }
 
                 var setupNugetSteps = workflow
@@ -404,7 +408,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         if (workflow
                             .Jobs
                             .SelectMany(x => x.Steps)
-                            .OfType<WorkflowCommandModel>()
+                            .OfType<WorkflowStepModel>()
                             .Single(x => x.Name == consumedArtifact.TargetName)
                             .SuppressArtifactPublishing)
                             logger.LogWarning(
@@ -505,18 +509,17 @@ internal sealed partial class DevopsWorkflowWriter(
 
     private void WriteCommandStep(
         WorkflowModel workflow,
-        WorkflowCommandModel workflowCommandStep,
+        WorkflowStepModel workflowStep,
         TargetModel target,
         (string name, string value)[] extraParams,
         bool includeName)
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection(
-                   $"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowCommandStep.Name} --skip --headless"))
+        using (WriteSection($"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless"))
         {
             if (includeName)
-                WriteLine($"name: {workflowCommandStep.Name}");
+                WriteLine($"name: {workflowStep.Name}");
 
             var env = new Dictionary<string, string>();
 
@@ -550,7 +553,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     {
                         logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -568,7 +571,7 @@ internal sealed partial class DevopsWorkflowWriter(
                         logger.LogWarning(
                             "Workflow {WorkflowName} command {CommandName} has a secret environment variable injection with a null value",
                             workflow.Name,
-                            workflowCommandStep.Name);
+                            workflowStep.Name);
 
                         continue;
                     }
@@ -584,7 +587,7 @@ internal sealed partial class DevopsWorkflowWriter(
             {
                 var injectedSecret = workflow
                     .Options
-                    .Concat(workflowCommandStep.Options)
+                    .Concat(workflowStep.Options)
                     .OfType<WorkflowSecretInjection>()
                     .FirstOrDefault(x => x.Value == requiredSecret.Name);
 
@@ -603,7 +606,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         environmentInjection.Value);
 
                     continue;
@@ -619,7 +622,7 @@ internal sealed partial class DevopsWorkflowWriter(
                     logger.LogWarning(
                         "Workflow {WorkflowName} command {CommandName} has an injection for parameter {ParamName} that does not exist",
                         workflow.Name,
-                        workflowCommandStep.Name,
+                        workflowStep.Name,
                         paramInjection.Name);
 
                     continue;
@@ -636,6 +639,7 @@ internal sealed partial class DevopsWorkflowWriter(
                 .Where(static x => x.value is { Length: > 0 })
                 .ToList();
 
+            // ReSharper disable once InvertIf
             if (validEnv.Count > 0 || validExtraParams.Count > 0)
                 using (WriteSection("env:"))
                 {
