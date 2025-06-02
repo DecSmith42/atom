@@ -16,6 +16,7 @@ public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
         d => d
             .IsHidden()
             .WithDescription("Stores artifacts.")
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(AtomBuildName))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
             .RequiresParams(ArtifactProvider.RequiredParams)

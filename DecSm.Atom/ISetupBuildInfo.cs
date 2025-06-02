@@ -13,12 +13,15 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
         d => d
             .WithDescription("Sets up the build ID, version, and timestamp")
             .IsHidden()
-            .RequiresParam(nameof(AtomBuildName))
+            .ProducesVariable(nameof(AtomBuildName))
             .ProducesVariable(nameof(BuildId))
             .ProducesVariable(nameof(BuildVersion))
             .ProducesVariable(nameof(BuildTimestamp))
             .Executes(async () =>
             {
+                var atomBuildName = AtomBuildName;
+                await WriteVariable(nameof(AtomBuildName), atomBuildName);
+
                 var buildId = BuildIdProvider.BuildId;
                 await WriteVariable(nameof(BuildId), buildId);
 

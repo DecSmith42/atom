@@ -16,6 +16,7 @@ public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInf
         d => d
             .IsHidden()
             .WithDescription("Retrieves artifacts.")
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(AtomBuildName))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
             .RequiresParams(ArtifactProvider.RequiredParams)

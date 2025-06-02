@@ -10,6 +10,7 @@ jobs:
   SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
+      build-name: ${{ steps.SetupBuildInfo.outputs.build-name }}
       build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
       build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
       build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
