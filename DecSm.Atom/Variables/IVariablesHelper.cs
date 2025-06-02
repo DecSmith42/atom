@@ -31,47 +31,47 @@
 public interface IVariablesHelper : IBuildAccessor
 {
     /// <summary>
-    /// Writes a variable to the workflow context, making it available for later steps.
+    ///     Writes a variable to the workflow context, making it available for later steps.
     /// </summary>
     /// <param name="name">
-    /// The name of the variable. This should be a unique identifier that other
-    /// build steps can use to retrieve the variable value.
+    ///     The name of the variable. This should be a unique identifier that other
+    ///     build steps can use to retrieve the variable value.
     /// </param>
     /// <param name="value">
-    /// The value of the variable. The value will be stored as a string in the
-    /// workflow context and can be retrieved by subsequent build steps.
+    ///     The value of the variable. The value will be stored as a string in the
+    ///     workflow context and can be retrieved by subsequent build steps.
     /// </param>
     /// <returns>
-    /// A <see cref="Task"/> representing the asynchronous operation of writing
-    /// the variable to the workflow context.
+    ///     A <see cref="Task" /> representing the asynchronous operation of writing
+    ///     the variable to the workflow context.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="name"/> is null or empty.
+    ///     Thrown when <paramref name="name" /> is null or empty.
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown when the workflow variable service is not available or the
-    /// workflow context is not properly initialized.
+    ///     Thrown when the workflow variable service is not available or the
+    ///     workflow context is not properly initialized.
     /// </exception>
     /// <remarks>
-    /// <para>
-    /// Variables written through this method are persisted in the current workflow
-    /// execution context and remain available throughout the entire build process.
-    /// If a variable with the same name already exists, it will be overwritten
-    /// with the new value.
-    /// </para>
-    /// <para>
-    /// The actual variable writing is delegated to the <see cref="IWorkflowVariableService"/>
-    /// which handles the underlying storage and retrieval mechanisms.
-    /// </para>
+    ///     <para>
+    ///         Variables written through this method are persisted in the current workflow
+    ///         execution context and remain available throughout the entire build process.
+    ///         If a variable with the same name already exists, it will be overwritten
+    ///         with the new value.
+    ///     </para>
+    ///     <para>
+    ///         The actual variable writing is delegated to the <see cref="IWorkflowVariableService" />
+    ///         which handles the underlying storage and retrieval mechanisms.
+    ///     </para>
     /// </remarks>
     /// <example>
-    /// <code>
+    ///     <code>
     /// // Write a build identifier
     /// await WriteVariable("BuildId", Guid.NewGuid().ToString());
-    ///
+    /// 
     /// // Write version information
     /// await WriteVariable("Version", "2.1.0-beta");
-    ///
+    /// 
     /// // Write computed values
     /// await WriteVariable("OutputPath", Path.Combine(baseDir, "bin", "Release"));
     /// </code>

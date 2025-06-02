@@ -1,5 +1,4 @@
-﻿
-namespace DecSm.Atom.Secrets;
+﻿namespace DecSm.Atom.Secrets;
 
 /// <summary>
 ///     Provides access to .NET user secrets for retrieving configuration values during build processes.

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Help;
 
 /// <summary>
-/// Interface for providing help-related functionalities for the build system.
+///     Interface for providing help-related functionalities for the build system.
 /// </summary>
 public interface IHelpService
 {
