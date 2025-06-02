@@ -6,7 +6,7 @@ internal sealed class AtomService(
     BuildModel buildModel,
     IHostApplicationLifetime lifetime,
     ILogger<AtomService> logger,
-    CheatsheetService cheatsheetService,
+    IHelpService helpService,
     WorkflowGenerator workflowGenerator
 ) : BackgroundService
 {
@@ -24,14 +24,14 @@ internal sealed class AtomService(
             if (args is { HasHelp: false, HasHeadless: false, HasGen: false, Commands.Count: 0, Params.Count: 0 })
             {
                 await workflowGenerator.GenerateWorkflows();
-                cheatsheetService.ShowCheatsheet();
+                helpService.ShowHelp();
 
                 return;
             }
 
             if (args.HasHelp)
             {
-                cheatsheetService.ShowCheatsheet();
+                helpService.ShowHelp();
 
                 return;
             }

@@ -15,7 +15,7 @@ public class TargetDefinitionTests
         };
 
         // Act
-        targetDefinition.WithDescription(description);
+        targetDefinition.DescribedAs(description);
 
         // Assert
         targetDefinition.Description.ShouldBe(description);

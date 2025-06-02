@@ -11,16 +11,16 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
 
     Target SetupBuildInfo =>
         d => d
-            .WithDescription("Sets up the build ID, version, and timestamp")
+            .DescribedAs("Sets up the build ID, version, and timestamp")
             .IsHidden()
-            .ProducesVariable(nameof(AtomBuildName))
+            .ProducesVariable(nameof(BuildName))
             .ProducesVariable(nameof(BuildId))
             .ProducesVariable(nameof(BuildVersion))
             .ProducesVariable(nameof(BuildTimestamp))
             .Executes(async () =>
             {
-                var atomBuildName = AtomBuildName;
-                await WriteVariable(nameof(AtomBuildName), atomBuildName);
+                var atomBuildName = BuildName;
+                await WriteVariable(nameof(BuildName), atomBuildName);
 
                 var buildId = BuildIdProvider.BuildId;
                 await WriteVariable(nameof(BuildId), buildId);
@@ -35,7 +35,7 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
                     ? buildId
                     : $"{buildVersion} - {buildId} [{buildTimestamp}]";
 
-                AddReportData(new TextReportData($"{AtomBuildName} | {reportedBuildId}")
+                AddReportData(new TextReportData($"{BuildName} | {reportedBuildId}")
                 {
                     Title = "Run Information",
                     BeforeStandardData = true,

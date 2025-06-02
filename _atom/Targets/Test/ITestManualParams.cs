@@ -8,7 +8,7 @@ internal partial interface ITestManualParams
 
     Target TestManualParams =>
         d => d
-            .WithDescription("Test manual parameters")
+            .DescribedAs("Test manual parameters")
             .RequiresParam(nameof(TestStringParam))
             .Executes(() =>
             {

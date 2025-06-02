@@ -230,7 +230,7 @@ internal sealed class GithubWorkflowWriter(
 
             var outputs = new List<string>();
 
-            foreach (var step in job.Steps.OfType<WorkflowStepModel>())
+            foreach (var step in job.Steps)
                 outputs.AddRange(buildModel.GetTarget(step.Name)
                     .ProducedVariables);
 
@@ -253,203 +253,196 @@ internal sealed class GithubWorkflowWriter(
         }
     }
 
-    private void WriteStep(WorkflowModel workflow, IWorkflowStepModel step, WorkflowJobModel job)
+    private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)
     {
-        switch (step)
+        using (WriteSection("- name: Checkout"))
         {
-            case WorkflowStepModel commandStep:
+            WriteLine("uses: actions/checkout@v4");
 
-                using (WriteSection("- name: Checkout"))
+            using (WriteSection("with:"))
+                WriteLine("fetch-depth: 0");
+        }
+
+        var commandStepTarget = buildModel.GetTarget(step.Name);
+
+        var matrixParams = job
+            .MatrixDimensions
+            .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].ArgName)
+            .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
+            .ToArray();
+
+        var buildSlice = (Name: "build-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+
+        if (!string.IsNullOrWhiteSpace(buildSlice.Value))
+            matrixParams = matrixParams
+                .Append(buildSlice)
+                .ToArray();
+
+        var setupDotnetSteps = workflow
+            .Options
+            .Concat(step.Options)
+            .OfType<SetupDotnetStep>()
+            .ToList();
+
+        if (setupDotnetSteps.Count > 0)
+            foreach (var setupDotnetStep in setupDotnetSteps)
+                using (WriteSection("- uses: actions/setup-dotnet@v4"))
                 {
-                    WriteLine("uses: actions/checkout@v4");
+                    if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
+                        continue;
 
                     using (WriteSection("with:"))
-                        WriteLine("fetch-depth: 0");
+                        WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
                 }
 
-                var commandStepTarget = buildModel.GetTarget(commandStep.Name);
+        var setupNugetSteps = workflow
+            .Options
+            .Concat(step.Options)
+            .OfType<AddNugetFeedsStep>()
+            .ToList();
 
-                var matrixParams = job
-                    .MatrixDimensions
-                    .Select(dimension => buildDefinition.ParamDefinitions[dimension.Name].ArgName)
-                    .Select(name => (Name: name, Value: $"${{{{ matrix.{name} }}}}"))
-                    .ToArray();
+        if (setupNugetSteps.Count > 0)
+        {
+            var feedsToAdd = setupNugetSteps
+                .SelectMany(x => x.FeedsToAdd)
+                .DistinctBy(x => x.FeedName)
+                .ToList();
 
-                var buildSlice = (Name: "build-slice", Value: string.Join("-", matrixParams.Select(x => x.Value)));
+            // TODO: Remove preview flag once v1.0.0 is released
+            using (WriteSection("- name: Install atom tool"))
+            {
+                WriteLine("run: dotnet tool update --global DecSm.Atom.Tool --prerelease");
+                WriteLine("shell: bash");
+            }
 
-                if (!string.IsNullOrWhiteSpace(buildSlice.Value))
-                    matrixParams = matrixParams
-                        .Append(buildSlice)
-                        .ToArray();
+            WriteLine();
 
-                var setupDotnetSteps = workflow
-                    .Options
-                    .Concat(commandStep.Options)
-                    .OfType<SetupDotnetStep>()
-                    .ToList();
-
-                if (setupDotnetSteps.Count > 0)
-                    foreach (var setupDotnetStep in setupDotnetSteps)
-                        using (WriteSection("- uses: actions/setup-dotnet@v4"))
-                        {
-                            if (setupDotnetStep.DotnetVersion is not { Length: > 0 })
-                                continue;
-
-                            using (WriteSection("with:"))
-                                WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
-                        }
-
-                var setupNugetSteps = workflow
-                    .Options
-                    .Concat(commandStep.Options)
-                    .OfType<AddNugetFeedsStep>()
-                    .ToList();
-
-                if (setupNugetSteps.Count > 0)
+            using (WriteSection("- name: Setup NuGet"))
+            {
+                using (WriteSection("run: |"))
                 {
-                    var feedsToAdd = setupNugetSteps
-                        .SelectMany(x => x.FeedsToAdd)
-                        .DistinctBy(x => x.FeedName)
-                        .ToList();
+                    foreach (var feedToAdd in feedsToAdd)
+                        WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                }
 
-                    // TODO: Remove preview flag once v1.0.0 is released
-                    using (WriteSection("- name: Install atom tool"))
-                    {
-                        WriteLine("run: dotnet tool update --global DecSm.Atom.Tool --prerelease");
-                        WriteLine("shell: bash");
-                    }
+                WriteLine("shell: bash");
 
+                using (WriteSection("env:"))
+                {
+                    foreach (var feedToAdd in feedsToAdd)
+                        WriteLine(
+                            $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                }
+            }
+        }
+
+        if (commandStepTarget.ConsumedArtifacts.Count > 0)
+        {
+            foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)
+                if (workflow
+                    .Jobs
+                    .SelectMany(x => x.Steps)
+                    .Single(x => x.Name == consumedArtifact.TargetName)
+                    .SuppressArtifactPublishing)
+                    logger.LogWarning(
+                        "Workflow {WorkflowName} command {CommandName} consumes artifact {ArtifactName} from target {SourceTargetName}, which has artifact publishing suppressed; this may cause the workflow to fail",
+                        workflow.Name,
+                        step.Name,
+                        consumedArtifact.ArtifactName,
+                        consumedArtifact.TargetName);
+
+            if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
+                foreach (var slice in commandStepTarget.ConsumedArtifacts.GroupBy(a => a.BuildSlice))
+                {
                     WriteLine();
 
-                    using (WriteSection("- name: Setup NuGet"))
+                    WriteCommandStep(workflow,
+                        new(nameof(IRetrieveArtifact.RetrieveArtifact)),
+                        buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)),
+                        [
+                            ("atom-artifacts", string.Join(",",
+                                slice
+                                    .AsEnumerable()
+                                    .Select(x => x.ArtifactName))),
+                            slice.Key is { Length: > 0 }
+                                ? (Name: "build-slice", Value: slice.Key)
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
+                                    : default,
+                        ],
+                        false);
+                }
+            else
+                foreach (var artifact in commandStepTarget.ConsumedArtifacts)
+                {
+                    WriteLine();
+
+                    using (WriteSection($"- name: Download {artifact.ArtifactName}"))
                     {
-                        using (WriteSection("run: |"))
-                        {
-                            foreach (var feedToAdd in feedsToAdd)
-                                WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
-                        }
+                        WriteLine("uses: actions/download-artifact@v4");
 
-                        WriteLine("shell: bash");
-
-                        using (WriteSection("env:"))
+                        using (WriteSection("with:"))
                         {
-                            foreach (var feedToAdd in feedsToAdd)
-                                WriteLine(
-                                    $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                            WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
+                                    : $"name: {artifact.ArtifactName}");
+
+                            WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
                         }
                     }
                 }
+        }
 
-                if (commandStepTarget.ConsumedArtifacts.Count > 0)
+        WriteLine();
+        WriteCommandStep(workflow, step, commandStepTarget, matrixParams, true);
+
+        // ReSharper disable once InvertIf
+        if (commandStepTarget.ProducedArtifacts.Count > 0 && !step.SuppressArtifactPublishing)
+        {
+            if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
+                foreach (var slice in commandStepTarget.ProducedArtifacts.GroupBy(a => a.BuildSlice))
                 {
-                    foreach (var consumedArtifact in commandStepTarget.ConsumedArtifacts)
-                        if (workflow
-                            .Jobs
-                            .SelectMany(x => x.Steps)
-                            .OfType<WorkflowStepModel>()
-                            .Single(x => x.Name == consumedArtifact.TargetName)
-                            .SuppressArtifactPublishing)
-                            logger.LogWarning(
-                                "Workflow {WorkflowName} command {CommandName} consumes artifact {ArtifactName} from target {SourceTargetName}, which has artifact publishing suppressed; this may cause the workflow to fail",
-                                workflow.Name,
-                                commandStep.Name,
-                                consumedArtifact.ArtifactName,
-                                consumedArtifact.TargetName);
+                    WriteLine();
 
-                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
-                        foreach (var slice in commandStepTarget.ConsumedArtifacts.GroupBy(a => a.BuildSlice))
-                        {
-                            WriteLine();
-
-                            WriteCommandStep(workflow,
-                                new(nameof(IRetrieveArtifact.RetrieveArtifact)),
-                                buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)),
-                                [
-                                    ("atom-artifacts", string.Join(",",
-                                        slice
-                                            .AsEnumerable()
-                                            .Select(x => x.ArtifactName))),
-                                    slice.Key is { Length: > 0 }
-                                        ? (Name: "build-slice", Value: slice.Key)
-                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                            ? buildSlice
-                                            : default,
-                                ],
-                                false);
-                        }
-                    else
-                        foreach (var artifact in commandStepTarget.ConsumedArtifacts)
-                        {
-                            WriteLine();
-
-                            using (WriteSection($"- name: Download {artifact.ArtifactName}"))
-                            {
-                                WriteLine("uses: actions/download-artifact@v4");
-
-                                using (WriteSection("with:"))
-                                {
-                                    WriteLine(artifact.BuildSlice is { Length: > 0 }
-                                        ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
-                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                            ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
-                                            : $"name: {artifact.ArtifactName}");
-
-                                    WriteLine($"path: \"{Github.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
-                                }
-                            }
-                        }
+                    WriteCommandStep(workflow,
+                        new(nameof(IStoreArtifact.StoreArtifact)),
+                        buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)),
+                        [
+                            ("atom-artifacts", string.Join(",",
+                                slice
+                                    .AsEnumerable()
+                                    .Select(x => x.ArtifactName))),
+                            slice.Key is { Length: > 0 }
+                                ? (Name: "build-slice", Value: slice.Key)
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? buildSlice
+                                    : default,
+                        ],
+                        false);
                 }
-
-                WriteLine();
-                WriteCommandStep(workflow, commandStep, commandStepTarget, matrixParams, true);
-
-                if (commandStepTarget.ProducedArtifacts.Count > 0 && !commandStep.SuppressArtifactPublishing)
+            else
+                foreach (var artifact in commandStepTarget.ProducedArtifacts)
                 {
-                    if (UseCustomArtifactProvider.IsEnabled(workflow.Options))
-                        foreach (var slice in commandStepTarget.ProducedArtifacts.GroupBy(a => a.BuildSlice))
+                    WriteLine();
+
+                    using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
+                    {
+                        WriteLine("uses: actions/upload-artifact@v4");
+
+                        using (WriteSection("with:"))
                         {
-                            WriteLine();
+                            WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
+                                    : $"name: {artifact.ArtifactName}");
 
-                            WriteCommandStep(workflow,
-                                new(nameof(IStoreArtifact.StoreArtifact)),
-                                buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)),
-                                [
-                                    ("atom-artifacts", string.Join(",",
-                                        slice
-                                            .AsEnumerable()
-                                            .Select(x => x.ArtifactName))),
-                                    slice.Key is { Length: > 0 }
-                                        ? (Name: "build-slice", Value: slice.Key)
-                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                            ? buildSlice
-                                            : default,
-                                ],
-                                false);
+                            WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
                         }
-                    else
-                        foreach (var artifact in commandStepTarget.ProducedArtifacts)
-                        {
-                            WriteLine();
-
-                            using (WriteSection($"- name: Upload {artifact.ArtifactName}"))
-                            {
-                                WriteLine("uses: actions/upload-artifact@v4");
-
-                                using (WriteSection("with:"))
-                                {
-                                    WriteLine(artifact.BuildSlice is { Length: > 0 }
-                                        ? $"name: {artifact.ArtifactName}-{artifact.BuildSlice}"
-                                        : !string.IsNullOrWhiteSpace(buildSlice.Value)
-                                            ? $"name: {artifact.ArtifactName}-{buildSlice.Value}"
-                                            : $"name: {artifact.ArtifactName}");
-
-                                    WriteLine($"path: \"{Github.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
-                                }
-                            }
-                        }
+                    }
                 }
-
-                break;
         }
     }
 

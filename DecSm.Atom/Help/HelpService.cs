@@ -1,15 +1,19 @@
-﻿namespace DecSm.Atom.Cheatsheet;
+﻿namespace DecSm.Atom.Help;
 
 /// <summary>
-///     Service for displaying a cheatsheet of available commands and options.
+/// Interface for providing help-related functionalities for the build system.
 /// </summary>
-internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs args, BuildModel buildModel, IConfiguration config)
+public interface IHelpService
 {
     /// <summary>
-    ///     Displays a cheatsheet of available commands and options.
-    ///     The default Atom cheatsheet writes to the console.
+    ///     Display help information for the Atom build.
     /// </summary>
-    public void ShowCheatsheet()
+    void ShowHelp();
+}
+
+internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, BuildModel buildModel, IConfiguration config) : IHelpService
+{
+    public void ShowHelp()
     {
         console.WriteLine();
         console.Write(new Markup("[bold]Usage[/]\n"));
@@ -43,7 +47,7 @@ internal sealed class CheatsheetService(IAnsiConsole console, CommandLineArgs ar
                         .Contains(x.Name))
                     .ToList();
 
-        var atomAssembly = typeof(CheatsheetService).Assembly;
+        var atomAssembly = typeof(HelpService).Assembly;
 
         var projectAssembly = buildModel.DeclaringAssembly;
 

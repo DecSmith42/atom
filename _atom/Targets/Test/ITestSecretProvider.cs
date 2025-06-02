@@ -8,6 +8,6 @@ public partial interface ITestSecretProvider
 
     Target TestSecretProvider =>
         d => d
-            .WithDescription("Test Vault")
+            .DescribedAs("Test Vault")
             .RequiresParam(nameof(TestSecret));
 }

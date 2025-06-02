@@ -83,7 +83,7 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildTimestampProvider, DefaultBuildTimestampProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, DefaultBuildVersionProvider>();
-        builder.Services.TryAddSingleton<CheatsheetService>();
+        builder.Services.TryAddSingleton<IHelpService, HelpService>();
 
         builder.Services.AddSingleton<CommandLineArgsParser>();
 

@@ -7,7 +7,7 @@ internal partial interface ICleanupPrereleaseArtifacts : IBuildInfo
 {
     Target CleanupPrereleaseArtifacts =>
         t => t
-            .WithDescription("Cleans up stored artifacts from prerelease builds up to the second-most recent stable build.")
+            .DescribedAs("Cleans up stored artifacts from prerelease builds up to the second-most recent stable build.")
             .Executes(async () =>
             {
                 if (BuildVersion.IsPreRelease)

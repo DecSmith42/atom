@@ -15,11 +15,11 @@ public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInf
     Target RetrieveArtifact =>
         d => d
             .IsHidden()
-            .WithDescription("Retrieves artifacts.")
-            .ConsumesVariable(nameof(SetupBuildInfo), nameof(AtomBuildName))
+            .DescribedAs("Retrieves artifacts.")
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildName))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
-            .RequiresParams(ArtifactProvider.RequiredParams)
+            .RequiresParam(ArtifactProvider.RequiredParams)
             .Executes(async () =>
             {
                 Logger.LogInformation("Using artifact provider: {Provider}",

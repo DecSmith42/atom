@@ -12,7 +12,7 @@
         }
       ],
       ProducedVariables: [
-        AtomBuildName,
+        BuildName,
         BuildId,
         BuildVersion,
         BuildTimestamp

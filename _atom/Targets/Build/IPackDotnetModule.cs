@@ -7,7 +7,7 @@ internal partial interface IPackDotnetModule : IDotnetPackHelper
 
     Target PackDotnetModule =>
         d => d
-            .WithDescription("Builds the Dotnet extension project into a nuget package")
+            .DescribedAs("Builds the Dotnet extension project into a nuget package")
             .ProducesArtifact(DotnetModuleProjectName)
             .Executes(() => DotnetPackProject(new(DotnetModuleProjectName)));
 }

@@ -1,6 +1,7 @@
 ﻿namespace DecSm.Atom.Params;
 
-// If the constructor args are modified, the BuildDefinitionSourceGenerator will need to be updated
+// NOTE: If the constructor args are modified, the BuildDefinitionSourceGenerator will need to be updated
+
 /// <summary>
 ///     Attribute to define a parameter for a command.
 /// </summary>

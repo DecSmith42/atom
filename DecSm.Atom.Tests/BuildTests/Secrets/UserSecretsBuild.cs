@@ -16,7 +16,7 @@ public partial interface IUserSecretsTarget
 
     Target UserSecretsTarget =>
         d => d
-            .WithDescription("User secrets target")
+            .DescribedAs("User secrets target")
             .RequiresParam(nameof(Secret1))
             .Executes(() =>
             {

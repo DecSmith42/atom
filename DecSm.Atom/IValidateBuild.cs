@@ -5,7 +5,7 @@ public partial interface IValidateBuild : IReportsHelper
 {
     Target ValidateBuild =>
         t => t
-            .WithDescription("Checks the atom build for common issues.")
+            .DescribedAs("Checks the atom build for common issues.")
             .Executes(() =>
             {
                 // ReSharper disable once CollectionNeverUpdated.Local - TODO
