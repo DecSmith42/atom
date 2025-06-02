@@ -23,6 +23,16 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
     {
         {
+            "BuildName", new("BuildName")
+            {
+                ArgName = "build-name",
+                Description = "Name of the build",
+                DefaultValue = "{Solution name if provided, otherwise the root directory name}",
+                Sources = (DecSm.Atom.Params.ParamSource)47,
+                IsSecret = false,
+            }
+        },
+        {
             "BuildId", new("BuildId")
             {
                 ArgName = "build-id",
@@ -48,16 +58,6 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
                 ArgName = "build-timestamp",
                 Description = "Build timestamp (seconds since unix epoch)",
                 DefaultValue = "{From IBuildTimestampProvider}",
-                Sources = (DecSm.Atom.Params.ParamSource)47,
-                IsSecret = false,
-            }
-        },
-        {
-            "AtomBuildName", new("AtomBuildName")
-            {
-                ArgName = "build-name",
-                Description = "Name of the build",
-                DefaultValue = "{Solution name if provided, otherwise the root directory name}",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
             }
@@ -91,10 +91,10 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
     [JetBrains.Annotations.PublicAPI]
     private static class Params
     {
+        public static string BuildName = "BuildName";
         public static string BuildId = "BuildId";
         public static string BuildVersion = "BuildVersion";
         public static string BuildTimestamp = "BuildTimestamp";
-        public static string AtomBuildName = "AtomBuildName";
         public static string BuildSlice = "BuildSlice";
     }
 

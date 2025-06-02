@@ -17,6 +17,6 @@ public partial interface ITestTarget
 
     Target TestTarget =>
         d => d
-            .WithDescription(Description)
+            .DescribedAs(Description)
             .Executes(Execute);
 }

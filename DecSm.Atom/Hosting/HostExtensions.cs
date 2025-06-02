@@ -1,6 +1,4 @@
-﻿using DefaultBuildVersionProvider = DecSm.Atom.BuildInfo.DefaultBuildVersionProvider;
-
-namespace DecSm.Atom.Hosting;
+﻿namespace DecSm.Atom.Hosting;
 
 /// <summary>
 ///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
@@ -85,7 +83,7 @@ public static class HostExtensions
         builder.Services.TryAddSingleton<IWorkflowVariableService, WorkflowVariableService>();
         builder.Services.TryAddSingleton<IBuildTimestampProvider, DefaultBuildTimestampProvider>();
         builder.Services.TryAddSingleton<IBuildVersionProvider, DefaultBuildVersionProvider>();
-        builder.Services.TryAddSingleton<CheatsheetService>();
+        builder.Services.TryAddSingleton<IHelpService, HelpService>();
 
         builder.Services.AddSingleton<CommandLineArgsParser>();
 

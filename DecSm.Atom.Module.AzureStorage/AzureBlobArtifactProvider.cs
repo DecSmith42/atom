@@ -28,7 +28,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(IBuildInfo.BuildName));
 
         var serviceClient = new BlobServiceClient(connectionString,
             new()
@@ -101,7 +101,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(IBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(IBuildInfo.BuildName));
 
         var serviceClient = new BlobServiceClient(connectionString,
             new()
@@ -183,7 +183,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.BuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         foreach (var buildId in runIdentifiers)
@@ -208,7 +208,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.AtomBuildName));
+        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.BuildName));
         var containerClient = new BlobContainerClient(connectionString, container);
 
         if (artifactName is { Length: > 0 })

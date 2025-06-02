@@ -1,7 +1,9 @@
 ﻿namespace DecSm.Atom.Reports;
 
-[PublicAPI]
-public partial class ConsoleOutcomeReportWriter(
+/// <summary>
+///     Console-based implementation of <see cref="IOutcomeReportWriter" /> that provides formatted output for build outcomes and report data.
+/// </summary>
+internal partial class ConsoleOutcomeReportWriter(
     CommandLineArgs args,
     IAnsiConsole console,
     BuildModel buildModel,

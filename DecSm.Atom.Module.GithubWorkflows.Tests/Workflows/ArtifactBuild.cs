@@ -85,7 +85,7 @@ public partial interface IArtifactTarget1
 
     Target ArtifactTarget1 =>
         d => d
-            .WithDescription("Artifact Target 1")
+            .DescribedAs("Artifact Target 1")
             .ProducesArtifact(Artifact1);
 }
 
@@ -96,7 +96,7 @@ public partial interface IArtifactTarget2 : IArtifactSliceTarget1
 
     Target ArtifactTarget2 =>
         d => d
-            .WithDescription("Artifact Target 2")
+            .DescribedAs("Artifact Target 2")
             .ConsumesArtifact(nameof(IArtifactTarget1.ArtifactTarget1), IArtifactTarget1.Artifact1)
             .ProducesArtifact(Artifact2, Slice1)
             .ProducesArtifact(Artifact2, Slice2);
@@ -107,7 +107,7 @@ public partial interface IArtifactTarget3 : IArtifactSliceTarget1
 {
     Target ArtifactTarget3 =>
         d => d
-            .WithDescription("Artifact Target 3")
+            .DescribedAs("Artifact Target 3")
             .ConsumesArtifact(nameof(IArtifactTarget1.ArtifactTarget1), IArtifactTarget1.Artifact1)
             .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2, Slice1)
             .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2, Slice2);
@@ -118,6 +118,6 @@ public partial interface IArtifactTarget4
 {
     Target ArtifactTarget4 =>
         d => d
-            .WithDescription("Artifact Target 4")
+            .DescribedAs("Artifact Target 4")
             .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2);
 }

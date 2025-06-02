@@ -20,6 +20,6 @@ public partial interface IWorkflowSingleTarget
 {
     Target WorkflowSingleTarget =>
         d => d
-            .WithDescription("Workflow Target 1")
+            .DescribedAs("Workflow Target 1")
             .Executes(() => Task.CompletedTask);
 }

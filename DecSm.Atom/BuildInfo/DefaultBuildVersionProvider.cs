@@ -1,7 +1,22 @@
 ﻿namespace DecSm.Atom.BuildInfo;
 
+/// <summary>
+///     Default implementation of <see cref="IBuildVersionProvider" /> that provides semantic versions for build processes.
+/// </summary>
+/// <remarks>
+///     This provider generates a build version based on the current assembly version or a fallback default version.
+///     The version follows semantic versioning (SemVer) standards and is used to identify build outputs.
+///     This is the fallback provider used when no custom version provider is configured.
+/// </remarks>
 internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSystem) : IBuildVersionProvider
 {
+    /// <summary>
+    ///     Gets the build version as a semantic version.
+    /// </summary>
+    /// <value>
+    ///     A <see cref="SemVer" /> representing the current build version.
+    ///     The version is typically derived from assembly metadata or falls back to a default version (1.0.0).
+    /// </value>
     public SemVer Version
     {
         get

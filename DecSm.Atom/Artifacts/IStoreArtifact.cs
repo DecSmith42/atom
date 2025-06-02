@@ -15,11 +15,11 @@ public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
     Target StoreArtifact =>
         d => d
             .IsHidden()
-            .WithDescription("Stores artifacts.")
-            .ConsumesVariable(nameof(SetupBuildInfo), nameof(AtomBuildName))
+            .DescribedAs("Stores artifacts.")
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildName))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
-            .RequiresParams(ArtifactProvider.RequiredParams)
+            .RequiresParam(ArtifactProvider.RequiredParams)
             .Executes(async () =>
             {
                 Logger.LogInformation("Using artifact provider: {Provider}",

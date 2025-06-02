@@ -20,22 +20,22 @@ public partial interface IGithubWorkflows : IJobRunsOn
             typeof(GithubVariableProvider),
             ServiceLifetime.Singleton));
 
-        if (Github.IsGithubActions)
-        {
-            if (Github.Variables.RunnerDebug is "1")
-                LogOptions.IsVerboseEnabled = true;
+        if (!Github.IsGithubActions)
+            return;
 
-            builder
-                .Services
-                .AddSingleton<IOutcomeReportWriter, GithubSummaryOutcomeReportWriter>()
-                .ProvidePath((key, locator) => Github.IsGithubActions
-                    ? key switch
-                    {
-                        AtomPaths.Artifacts => locator(AtomPaths.Root) / ".github" / "artifacts",
-                        AtomPaths.Publish => locator(AtomPaths.Root) / ".github" / "publish",
-                        _ => null,
-                    }
-                    : null);
-        }
+        if (Github.Variables.RunnerDebug is "1")
+            LogOptions.IsVerboseEnabled = true;
+
+        builder
+            .Services
+            .AddSingleton<IOutcomeReportWriter, GithubSummaryOutcomeReportWriter>()
+            .ProvidePath((key, locator) => Github.IsGithubActions
+                ? key switch
+                {
+                    AtomPaths.Artifacts => locator(AtomPaths.Root) / ".github" / "artifacts",
+                    AtomPaths.Publish => locator(AtomPaths.Root) / ".github" / "publish",
+                    _ => null,
+                }
+                : null);
     }
 }

@@ -35,7 +35,6 @@ internal sealed class WorkflowResolver(
 
         // Turn command steps into jobs
         var definedCommandJobs = definedSteps
-            .OfType<WorkflowStepModel>()
             .Select(step => new WorkflowJobModel(step.Name, [step])
             {
                 Options = step.Options,
@@ -54,7 +53,7 @@ internal sealed class WorkflowResolver(
         if (UseCustomArtifactProvider.IsEnabled(workflowOptions))
             definedCommandJobs = definedCommandJobs.ConvertAll(job => job
                 .Steps
-                .Where(step => step is WorkflowStepModel { SuppressArtifactPublishing: false })
+                .Where(step => step is { SuppressArtifactPublishing: false })
                 .Select(step => buildModel.GetTarget(step.Name))
                 .Any(target => target.ConsumedArtifacts.Count > 0 || target.ProducedArtifacts.Count > 0)
                 ? job with
@@ -83,12 +82,12 @@ internal sealed class WorkflowResolver(
         }
 
         // Add all targets that are not already defined as jobs
-        var commandJobs = definedCommandJobs
+        var jobs = definedCommandJobs
             .Concat(buildModel
                 .Targets
                 .Select(target => target.Name)
                 .Where(targetName => definedCommandJobs.All(job => job.Name != targetName))
-                .Select(targetName => new WorkflowJobModel(targetName, [new WorkflowStepModel(targetName)])
+                .Select(targetName => new WorkflowJobModel(targetName, [new(targetName)])
                 {
                     JobDependencies = [],
                     Options = [],
@@ -97,19 +96,19 @@ internal sealed class WorkflowResolver(
             .ToList();
 
         // Remove jobs that are not defined and not depended on by any other defined or dependent job
-        while (commandJobs.Count > 0)
+        while (jobs.Count > 0)
         {
             var removedJob = false;
 
-            foreach (var job in commandJobs.Where(job => definedCommandJobs.All(definedJob => definedJob.Name != job.Name)))
+            foreach (var job in jobs.Where(job => definedCommandJobs.All(definedJob => definedJob.Name != job.Name)))
             {
-                if (commandJobs
+                if (jobs
                     .Where(x => x != job)
                     .SelectMany(x => x.JobDependencies)
                     .Any(x => x == job.Name))
                     continue;
 
-                commandJobs.Remove(job);
+                jobs.Remove(job);
                 removedJob = true;
 
                 break;
@@ -119,25 +118,13 @@ internal sealed class WorkflowResolver(
                 break;
         }
 
-        // Turn non-command steps into jobs and combine with ordered command jobs
-        var allJobs = definedSteps
-            .Where(step => step is not WorkflowStepModel)
-            .Select(step => new WorkflowJobModel(step.Name, [step])
-            {
-                JobDependencies = [],
-                Options = [],
-                MatrixDimensions = [],
-            })
-            .Concat(OrderJobs(commandJobs))
-            .ToList();
-
         // Order jobs based on dependencies
 
         return new(definition.Name)
         {
             Triggers = definition.Triggers,
             Options = workflowOptions,
-            Jobs = allJobs,
+            Jobs = OrderJobs(jobs),
         };
     }
 

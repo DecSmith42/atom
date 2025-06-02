@@ -20,7 +20,7 @@ public partial interface IWorkflowDependentTarget1
 {
     Target WorkflowDependentTarget1 =>
         d => d
-            .WithDescription("Workflow Target 1")
+            .DescribedAs("Workflow Target 1")
             .Executes(() => Task.CompletedTask);
 }
 
@@ -29,7 +29,7 @@ public partial interface IWorkflowDependentTarget2
 {
     Target WorkflowTarget2 =>
         d => d
-            .WithDescription("Workflow Target 2")
+            .DescribedAs("Workflow Target 2")
             .DependsOn(nameof(IWorkflowDependentTarget1.WorkflowDependentTarget1))
             .Executes(() => Task.CompletedTask);
 }

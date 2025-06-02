@@ -17,7 +17,7 @@ public partial interface IConsoleTarget
 
     Target ConsoleTarget =>
         d => d
-            .WithDescription("Console target")
+            .DescribedAs("Console target")
             .RequiresParam(nameof(RequiredParam))
             .RequiresParam(nameof(DefaultParam))
             .RequiresParam(nameof(SecretParam))

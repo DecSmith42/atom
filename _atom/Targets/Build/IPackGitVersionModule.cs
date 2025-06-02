@@ -7,7 +7,7 @@ internal partial interface IPackGitVersionModule : IDotnetPackHelper
 
     Target PackGitVersionModule =>
         d => d
-            .WithDescription("Builds the GitVersion extension project into a nuget package")
+            .DescribedAs("Builds the GitVersion extension project into a nuget package")
             .ProducesArtifact(GitVersionModuleProjectName)
             .Executes(() => DotnetPackProject(new(GitVersionModuleProjectName)));
 }

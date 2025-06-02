@@ -9,7 +9,7 @@ internal partial interface ITestAtom : IDotnetTestHelper
 
     Target TestAtom =>
         d => d
-            .WithDescription("Runs the unit tests projects")
+            .DescribedAs("Runs the unit tests projects")
             .ProducesArtifact(AtomTestsProjectName)
             .ProducesArtifact(AtomSourceGeneratorTestsProjectName)
             .ProducesArtifact(AtomGithubWorkflowsTestsProjectName)

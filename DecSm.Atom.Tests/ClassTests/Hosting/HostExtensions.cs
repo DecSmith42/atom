@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Tests.ClassTests.Hosting;
+﻿using DecSm.Atom.Help;
+
+namespace DecSm.Atom.Tests.ClassTests.Hosting;
 
 [TestFixture]
 public class HostExtensionsTests
@@ -86,7 +88,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<CheatsheetService>()
+                .GetService<IHelpService>()
                 .ShouldNotBeNull();
 
             serviceProvider

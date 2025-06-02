@@ -1,8 +1,61 @@
 ﻿namespace DecSm.Atom.Reports;
 
+/// <summary>
+///     Provides functionality to convert structured report data into GitHub Flavored Markdown format.
+/// </summary>
+/// <remarks>
+///     This formatter takes a collection of <see cref="IReportData" /> objects and produces a cohesive
+///     Markdown document with proper formatting, sections, and styling. It handles multiple data types
+///     including logs, artifacts, tables, lists, and custom text content.
+///     <para>
+///         The formatter organizes content in a specific order:
+///         <list type="number">
+///             <item>Custom report data marked with <see cref="ICustomReportData.BeforeStandardData" /> = true</item>
+///             <item>Log data grouped by severity level (Critical, Error, Warning)</item>
+///             <item>Artifact data as linked lists</item>
+///             <item>Custom report data marked with <see cref="ICustomReportData.BeforeStandardData" /> = false</item>
+///         </list>
+///     </para>
+///     <para>
+///         The output uses GitHub Flavored Markdown features including callout syntax for logs,
+///         properly formatted tables, and collapsible exception details.
+///     </para>
+/// </remarks>
 [PublicAPI]
 public static class ReportDataMarkdownFormatter
 {
+    /// <summary>
+    ///     Converts a collection of report data into a formatted Markdown string.
+    /// </summary>
+    /// <param name="reportData">A read-only list of <see cref="IReportData" /> objects to be formatted.</param>
+    /// <returns>A string containing the complete Markdown-formatted report.</returns>
+    /// <remarks>
+    ///     The method processes different data types in a specific order to ensure logical presentation:
+    ///     <list type="bullet">
+    ///         <item>Pre-positioned custom data appears first</item>
+    ///         <item>Log data is grouped by severity and sorted chronologically within each group</item>
+    ///         <item>Artifact data is presented as an "Output Artifacts" section with links</item>
+    ///         <item>Post-positioned custom data appears last</item>
+    ///     </list>
+    ///     Empty sections are automatically skipped to avoid unnecessary whitespace in the output.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// var reportData = new List&lt;IReportData&gt;
+    /// {
+    ///     new LogReportData("Build failed", null, LogLevel.Error, DateTimeOffset.Now),
+    ///     new ArtifactReportData("📦 Build Output", "/path/to/output.zip"),
+    ///     new TableReportData(new[] { new[] { "Tests", "5" }, new[] { "Passed", "3" } })
+    ///     {
+    ///         Title = "Test Summary",
+    ///         Header = new[] { "Metric", "Value" }
+    ///     }
+    /// };
+    /// 
+    /// string markdown = ReportDataMarkdownFormatter.Write(reportData);
+    /// // Produces formatted Markdown with error callouts, artifact links, and tables
+    /// </code>
+    /// </example>
     public static string Write(IReadOnlyList<IReportData> reportData)
     {
         var builder = new StringBuilder();
@@ -38,7 +91,7 @@ public static class ReportDataMarkdownFormatter
         return builder.ToString();
     }
 
-    public static void Write(StringBuilder builder, List<LogReportData> reportData)
+    private static void Write(StringBuilder builder, List<LogReportData> reportData)
     {
         if (reportData.Count == 0)
             return;
@@ -73,7 +126,7 @@ public static class ReportDataMarkdownFormatter
             "WARNING");
     }
 
-    public static void Write(StringBuilder builder, List<LogReportData> reportData, string header, string infoType)
+    private static void Write(StringBuilder builder, List<LogReportData> reportData, string header, string infoType)
     {
         if (reportData.Count == 0)
             return;
@@ -102,7 +155,7 @@ public static class ReportDataMarkdownFormatter
         builder.AppendLine();
     }
 
-    public static void Write(StringBuilder builder, List<ArtifactReportData> reportData)
+    private static void Write(StringBuilder builder, List<ArtifactReportData> reportData)
     {
         if (reportData.Count == 0)
             return;
@@ -117,7 +170,7 @@ public static class ReportDataMarkdownFormatter
         builder.AppendLine();
     }
 
-    public static void Write(StringBuilder builder, ICustomReportData reportData)
+    private static void Write(StringBuilder builder, ICustomReportData reportData)
     {
         switch (reportData)
         {
@@ -144,7 +197,7 @@ public static class ReportDataMarkdownFormatter
         }
     }
 
-    public static void Write(StringBuilder builder, TableReportData reportData)
+    private static void Write(StringBuilder builder, TableReportData reportData)
     {
         builder.AppendLine($"### {reportData.Title}");
         builder.AppendLine();
@@ -173,7 +226,7 @@ public static class ReportDataMarkdownFormatter
         builder.AppendLine();
     }
 
-    public static void Write(StringBuilder builder, ListReportData reportData)
+    private static void Write(StringBuilder builder, ListReportData reportData)
     {
         builder.AppendLine($"### {reportData.Title}");
         builder.AppendLine();
@@ -185,7 +238,7 @@ public static class ReportDataMarkdownFormatter
         builder.AppendLine();
     }
 
-    public static void Write(StringBuilder builder, TextReportData reportData)
+    private static void Write(StringBuilder builder, TextReportData reportData)
     {
         builder.AppendLine($"### {reportData.Title}");
         builder.AppendLine();

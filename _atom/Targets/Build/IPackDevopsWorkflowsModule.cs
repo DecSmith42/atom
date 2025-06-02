@@ -7,7 +7,7 @@ internal partial interface IPackDevopsWorkflowsModule : IDotnetPackHelper
 
     Target PackDevopsWorkflowsModule =>
         d => d
-            .WithDescription("Builds the DevopsWorkflows extension project into a nuget package")
+            .DescribedAs("Builds the DevopsWorkflows extension project into a nuget package")
             .ProducesArtifact(AtomDevopsWorkflowsModuleProjectName)
             .Executes(() => DotnetPackProject(new(AtomDevopsWorkflowsModuleProjectName)));
 }

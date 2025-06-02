@@ -7,7 +7,7 @@ internal partial interface IPackAzureStorageModule : IDotnetPackHelper
 
     Target PackAzureStorageModule =>
         d => d
-            .WithDescription("Builds the AzureStorage extension project into a nuget package")
+            .DescribedAs("Builds the AzureStorage extension project into a nuget package")
             .ProducesArtifact(AzureStorageModuleProjectName)
             .Executes(() => DotnetPackProject(new(AzureStorageModuleProjectName)));
 }

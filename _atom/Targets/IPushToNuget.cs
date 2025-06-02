@@ -11,7 +11,7 @@ internal partial interface IPushToNuget : INugetHelper
 
     Target PushToNuget =>
         d => d
-            .WithDescription("Pushes the Atom projects to Nuget")
+            .DescribedAs("Pushes the Atom projects to Nuget")
             .ConsumesArtifact(nameof(IPackAtom.PackAtom), IPackAtom.AtomProjectName)
             .ConsumesArtifact(nameof(IPackAtomTool.PackAtomTool), IPackAtomTool.AtomToolProjectName)
             .ConsumesArtifact(nameof(IPackAzureKeyVaultModule.PackAzureKeyVaultModule),

@@ -1,5 +1,21 @@
 ﻿namespace DecSm.Atom.Workflows.Definition;
 
+/// <summary>
+///     Defines a single target or step within a workflow.
+/// </summary>
+/// <param name="Name">The name of the workflow target.</param>
+/// <remarks>
+///     <para>
+///         A <c>WorkflowTargetDefinition</c> represents an individual unit of work within a larger <see cref="WorkflowDefinition" />.
+///         It holds configuration specific to this target, such as matrix execution strategies, custom options,
+///         and artifact publishing behavior.
+///     </para>
+///     <para>
+///         Instances of <c>WorkflowTargetDefinition</c> are typically created and configured when defining the
+///         <see cref="WorkflowDefinition.StepDefinitions" />
+///         for a workflow.
+///     </para>
+/// </remarks>
 [PublicAPI]
 public sealed record WorkflowTargetDefinition(string Name)
 {
@@ -15,8 +31,8 @@ public sealed record WorkflowTargetDefinition(string Name)
             SuppressArtifactPublishing = true,
         };
 
-    public IWorkflowStepModel CreateModel() =>
-        new WorkflowStepModel(Name)
+    public WorkflowStepModel CreateModel() =>
+        new(Name)
         {
             MatrixDimensions = MatrixDimensions,
             SuppressArtifactPublishing = SuppressArtifactPublishing,

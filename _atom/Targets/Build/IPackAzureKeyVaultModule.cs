@@ -7,7 +7,7 @@ internal partial interface IPackAzureKeyVaultModule : IDotnetPackHelper
 
     Target PackAzureKeyVaultModule =>
         d => d
-            .WithDescription("Builds the AzureKeyVault extension project into a nuget package")
+            .DescribedAs("Builds the AzureKeyVault extension project into a nuget package")
             .ProducesArtifact(AzureKeyVaultModuleProjectName)
             .Executes(() => DotnetPackProject(new(AzureKeyVaultModuleProjectName)));
 }
