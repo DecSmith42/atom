@@ -11,17 +11,8 @@
           Method: System.Threading.Tasks.Task get_SetupBuildInfo()
         }
       ],
-      RequiredParams: [
-        {
-          Name: AtomBuildName,
-          ArgName: build-name,
-          Description: Name of the build,
-          DefaultValue: {Solution name if provided, otherwise the root directory name},
-          Sources: All,
-          IsSecret: false
-        }
-      ],
       ProducedVariables: [
+        AtomBuildName,
         BuildId,
         BuildVersion,
         BuildTimestamp

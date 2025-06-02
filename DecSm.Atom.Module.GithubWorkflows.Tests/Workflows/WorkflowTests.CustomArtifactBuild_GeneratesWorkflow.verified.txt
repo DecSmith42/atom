@@ -10,6 +10,7 @@ jobs:
   SetupBuildInfo:
     runs-on: ubuntu-latest
     outputs:
+      build-name: ${{ steps.SetupBuildInfo.outputs.build-name }}
       build-id: ${{ steps.SetupBuildInfo.outputs.build-id }}
       build-version: ${{ steps.SetupBuildInfo.outputs.build-version }}
       build-timestamp: ${{ steps.SetupBuildInfo.outputs.build-timestamp }}
@@ -41,6 +42,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact1
   
@@ -57,6 +59,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact1
       
@@ -67,6 +70,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact2
           build-slice: Slice1
@@ -74,6 +78,7 @@ jobs:
       - name: StoreArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj StoreArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact2
           build-slice: Slice2
@@ -91,12 +96,14 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact1
       
       - name: RetrieveArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact2
           build-slice: Slice1
@@ -104,6 +111,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact2
           build-slice: Slice2
@@ -128,6 +136,7 @@ jobs:
       - name: RetrieveArtifact
         run: dotnet run --project AtomTest/AtomTest.csproj RetrieveArtifact --skip --headless
         env:
+          build-name: ${{ needs.SetupBuildInfo.outputs.build-name }}
           build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           atom-artifacts: TestArtifact2
           build-slice: ${{ matrix.slice }}
