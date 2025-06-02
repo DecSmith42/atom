@@ -76,6 +76,7 @@ public static class Github
         public const string Workflow = "GITHUB_WORKFLOW";
         public const string Workspace = "GITHUB_WORKSPACE";
         public const string RunnerArch = "RUNNER_ARCH";
+        public const string RunnerDebug = "RUNNER_DEBUG";
         public const string RunnerEnvironment = "RUNNER_ENVIRONMENT";
         public const string RunnerName = "RUNNER_NAME";
         public const string RunnerOs = "RUNNER_OS";
@@ -370,6 +371,14 @@ public static class Github
         ///     X64
         /// </example>
         public static string RunnerArch { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerArch) ?? string.Empty;
+
+        /// <summary>
+        ///     RUNNER_DEBUG
+        /// </summary>
+        /// <example>
+        ///     1
+        /// </example>
+        public static string RunnerDebug { get; } = Environment.GetEnvironmentVariable(VariableNames.RunnerDebug) ?? string.Empty;
 
         /// <summary>
         ///     RUNNER_ENVIRONMENT

@@ -1,4 +1,5 @@
 ﻿using DecSm.Atom.Hosting;
+using DecSm.Atom.Logging;
 
 namespace DecSm.Atom.Module.GithubWorkflows;
 
@@ -20,6 +21,10 @@ public partial interface IGithubWorkflows : IJobRunsOn
             ServiceLifetime.Singleton));
 
         if (Github.IsGithubActions)
+        {
+            if (Github.Variables.RunnerDebug is "1")
+                LogOptions.IsVerboseEnabled = true;
+
             builder
                 .Services
                 .AddSingleton<IOutcomeReportWriter, GithubSummaryOutcomeReportWriter>()
@@ -31,5 +36,6 @@ public partial interface IGithubWorkflows : IJobRunsOn
                         _ => null,
                     }
                     : null);
+        }
     }
 }

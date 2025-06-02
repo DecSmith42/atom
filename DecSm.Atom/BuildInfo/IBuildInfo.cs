@@ -37,7 +37,7 @@ public interface IBuildInfo : IBuildAccessor
     private string DefaultBuildName =>
         FileSystem
             .Directory
-            .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+            .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.AllDirectories)
             .FirstOrDefault() is { } solutionFile
             ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
             : FileSystem.AtomRootDirectory.DirectoryName!;

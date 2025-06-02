@@ -110,6 +110,7 @@ public static class HostExtensions
 
         builder.Logging.ClearProviders();
 
+        builder.Logging.SetMinimumLevel(LogLevel.Trace);
         builder.Logging.AddProvider(new SpectreLoggerProvider());
         builder.Logging.AddProvider(new ReportLoggerProvider());
 

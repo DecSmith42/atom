@@ -45,9 +45,12 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         slice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}'",
+        logger.LogInformation("Uploading artifacts '{Artifacts}' to container '{Container}' with path '{BlobPath}'",
             artifactNames,
-            container.SanitizeForLogging());
+            container.SanitizeForLogging(),
+            slice is { Length: > 0 }
+                ? $"{buildName}/{buildIdPath}/*/{slice}"
+                : $"{buildName}/{buildIdPath}/*");
 
         foreach (var artifactName in artifactNames)
         {
@@ -115,9 +118,12 @@ public sealed class AzureBlobArtifactProvider(
         var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
         buildSlice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
-        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}'",
+        logger.LogInformation("Downloading artifacts '{Artifacts}' from container '{Container}' with path '{BlobPath}'",
             artifactNames,
-            container.SanitizeForLogging());
+            container.SanitizeForLogging(),
+            buildSlice is { Length: > 0 }
+                ? $"{buildName}/{buildIdPath}/*/{buildSlice}"
+                : $"{buildName}/{buildIdPath}/*");
 
         foreach (var artifactName in artifactNames)
         {
