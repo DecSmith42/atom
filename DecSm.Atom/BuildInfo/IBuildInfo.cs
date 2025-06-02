@@ -34,11 +34,20 @@ public interface IBuildInfo : IBuildAccessor
         GetService<IBuildTimestampProvider>()
             .Timestamp;
 
-    private string DefaultBuildName =>
-        FileSystem
-            .Directory
-            .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.AllDirectories)
-            .FirstOrDefault() is { } solutionFile
-            ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
-            : FileSystem.AtomRootDirectory.DirectoryName!;
+    private string DefaultBuildName
+    {
+        get
+        {
+            var solutionFile = FileSystem
+                .Directory
+                .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+                .FirstOrDefault();
+
+            Logger.LogDebug("Determined solution file: {SolutionFile}", solutionFile);
+
+            return solutionFile is not null
+                ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
+                : FileSystem.AtomRootDirectory.DirectoryName!;
+        }
+    }
 }
