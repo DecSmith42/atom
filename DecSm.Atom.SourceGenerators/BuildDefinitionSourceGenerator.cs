@@ -137,6 +137,10 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
         var @class = classDeclarationSyntax.Identifier.Text;
         var classFull = $"{@namespace}.{@class}";
 
+        var globalUsingStaticLine = @namespace is "<global namespace>"
+            ? string.Empty
+            : $"global using static {classFull};";
+
         var interfacesWithProperties = classSymbol
             .AllInterfaces
             .SelectMany(static interfaceSymbol => interfaceSymbol
@@ -334,7 +338,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
                      #nullable enable
 
-                     global using static {{classFull}};
+                     {{globalUsingStaticLine}}
                      using System.Diagnostics.CodeAnalysis;
                      using System.Linq.Expressions;
                      using Microsoft.Extensions.DependencyInjection;
