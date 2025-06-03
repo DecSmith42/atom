@@ -66,7 +66,6 @@
 /// {
 ///     [SecretDefinition("database-password", "Database connection password")]
 ///     string DatabasePassword => GetParam(() => DatabasePassword);
-/// 
 ///     Target DeployApp => t => t
 ///         .Executes(() =>
 ///         {

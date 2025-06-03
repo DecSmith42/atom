@@ -26,13 +26,11 @@
 /// public class DefaultWorkflowOptionProvider : IWorkflowOptionProvider
 /// {
 ///     private readonly IReadOnlyList&lt;IWorkflowOption&gt; _options;
-/// 
 ///     public DefaultWorkflowOptionProvider(IEnumerable&lt;IWorkflowOption&gt; options)
 ///     {
 ///         _options = options?.ToList()?.AsReadOnly() ??
 ///                   throw new ArgumentNullException(nameof(options));
 ///     }
-/// 
 ///     public IReadOnlyList&lt;IWorkflowOption&gt; WorkflowOptions =&gt; _options;
 /// }
 /// </code>

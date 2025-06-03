@@ -87,7 +87,6 @@ public sealed class TargetDefinition
     ///     This affects the properties and the execution of this target, not the target being extended.
     /// </remarks>
     public TargetDefinition Extends<T>(Func<T, Target> targetToExtend, bool runExtensionAfter = false)
-        where T : IBuildDefinition
     {
         Extensions.Insert(0, (d => targetToExtend((T)d), runExtensionAfter));
 

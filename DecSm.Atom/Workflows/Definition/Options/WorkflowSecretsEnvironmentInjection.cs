@@ -28,7 +28,6 @@
 /// {
 ///     Value = "DATABASE_CONNECTION_STRING"
 /// };
-/// 
 /// // Multiple secrets can be injected
 /// var secrets = new[]
 /// {

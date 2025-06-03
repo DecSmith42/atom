@@ -5,4 +5,4 @@
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial interface ITestTargetDefinition : DecSm.Atom.Build.Definition.IBuildDefinition, DecSm.Atom.Build.IBuildAccessor;
+partial interface ITestTargetDefinition : DecSm.Atom.Build.IBuildAccessor;

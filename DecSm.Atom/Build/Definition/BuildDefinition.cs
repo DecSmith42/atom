@@ -23,7 +23,6 @@
 ///     A minimal build definition:
 ///     <code>
 /// using DecSm.Atom.Build.Definition;
-/// 
 /// [BuildDefinition]
 /// internal partial class MinimalBuild : BuildDefinition, IMyTargets
 /// {
@@ -37,7 +36,6 @@
 ///         }
 ///     ];
 /// }
-/// 
 /// [TargetDefinition]
 /// public partial interface IMyTargets
 /// {

@@ -25,7 +25,6 @@
 /// public class MyWorkflowWriter : WorkflowFileWriter&lt;MyWorkflowType&gt;
 /// {
 ///     protected override string FileExtension => "yml";
-/// 
 ///     protected override void WriteWorkflow(WorkflowModel workflow)
 ///     {
 ///         WriteLine("name: " + workflow.Name);
@@ -272,7 +271,6 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     /// {
     ///     WriteLine($"name: {workflow.Name}");
     ///     WriteLine($"on: {workflow.Trigger}");
-    /// 
     ///     using (WriteSection("jobs:"))
     ///     {
     ///         foreach (var job in workflow.Jobs)

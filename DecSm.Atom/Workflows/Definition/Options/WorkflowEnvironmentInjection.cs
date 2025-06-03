@@ -52,17 +52,14 @@
 ///     Name = "BUILD_CONFIGURATION",
 ///     Value = "Release"
 /// };
-/// 
 /// var apiBaseUrl = new WorkflowEnvironmentInjection
 /// {
 ///     Name = "API_BASE_URL",
 ///     Value = "https://api.example.com"
 /// };
-/// 
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition()
 ///     .WithAddedOptions(buildConfiguration, apiBaseUrl);
-/// 
 /// // The environment variables will be available in workflow steps as:
 /// // $BUILD_CONFIGURATION (GitHub Actions) or $(BUILD_CONFIGURATION) (Azure DevOps)
 /// // $API_BASE_URL (GitHub Actions) or $(API_BASE_URL) (Azure DevOps)

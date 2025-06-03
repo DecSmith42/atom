@@ -42,23 +42,18 @@
 ///     <code>
 /// // Using lambda expression
 /// var apiKey = paramService.GetParam(() => ApiKey, "default-key");
-/// 
 /// // Using string name with type conversion
 /// var timeout = paramService.GetParam&lt;int&gt;("request-timeout", 30);
-/// 
 /// // String convenience method
 /// var environment = paramService.GetParam("environment", "development");
-/// 
 /// // Custom converter
 /// var customValue = paramService.GetParam&lt;MyType&gt;("custom-param",
 ///     converter: str => MyType.Parse(str));
-/// 
 /// // Disabling cache temporarily
 /// using (paramService.CreateNoCacheScope())
 /// {
 ///     var freshValue = paramService.GetParam(() => SomeParam);
 /// }
-/// 
 /// // Masking secrets in logs
 /// var logMessage = paramService.MaskMatchingSecrets("API key: secret123");
 /// </code>
@@ -194,14 +189,12 @@ public interface IParamService
     ///     <code>
     /// // Normal caching behavior
     /// var cachedValue = paramService.GetParam(() => MyParam);
-    /// 
     /// // Temporarily disable caching
     /// using (paramService.CreateNoCacheScope())
     /// {
     ///     var freshValue = paramService.GetParam(() => MyParam);
     ///     // This will always resolve from sources, not cache
     /// }
-    /// 
     /// // Caching restored
     /// var cachedAgain = paramService.GetParam(() => MyParam);
     /// </code>
@@ -395,6 +388,8 @@ internal sealed class ParamService(
         var configSection = configuration
             .GetSection("Params")
             .GetSection(paramDefinition.ArgName);
+
+        Console.WriteLine(configSection.Exists());
 
         var configValue = configSection.Exists()
             ? configSection.Get<T?>() ?? TypeUtil.Convert(configSection.Value, converter)

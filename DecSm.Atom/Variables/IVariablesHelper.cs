@@ -68,10 +68,8 @@ public interface IVariablesHelper : IBuildAccessor
     ///     <code>
     /// // Write a build identifier
     /// await WriteVariable("BuildId", Guid.NewGuid().ToString());
-    /// 
     /// // Write version information
     /// await WriteVariable("Version", "2.1.0-beta");
-    /// 
     /// // Write computed values
     /// await WriteVariable("OutputPath", Path.Combine(baseDir, "bin", "Release"));
     /// </code>

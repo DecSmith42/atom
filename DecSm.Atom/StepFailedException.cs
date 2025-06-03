@@ -65,8 +65,8 @@ public sealed class StepFailedException(string message, Exception? innerExceptio
     ///     It's designed to provide extensible reporting capabilities for different types of step failures
     ///     that can be processed by Atom's outcome reporters.
     /// </remarks>
-    /// <seealso cref="ListReportData"/>
-    /// <seealso cref="TableReportData"/>
-    /// <seealso cref="TextReportData"/>
+    /// <seealso cref="ListReportData" />
+    /// <seealso cref="TableReportData" />
+    /// <seealso cref="TextReportData" />
     public ICustomReportData? ReportData { get; init; }
 }

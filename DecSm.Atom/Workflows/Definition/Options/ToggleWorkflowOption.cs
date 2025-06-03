@@ -43,11 +43,9 @@
 ///     <para>Creating a custom toggle workflow option:</para>
 ///     <code>
 /// public sealed record UseCustomFeature : ToggleWorkflowOption&lt;UseCustomFeature&gt;;
-/// 
 /// // Usage in workflow configuration
 /// var enabledOption = UseCustomFeature.Enabled;
 /// var disabledOption = UseCustomFeature.Disabled;
-/// 
 /// // Check if feature is enabled in a collection of options
 /// bool isFeatureEnabled = UseCustomFeature.IsEnabled(workflowOptions);
 /// </code>
@@ -81,7 +79,6 @@ public abstract record ToggleWorkflowOption<TSelf> : WorkflowOption<bool, TSelf>
     ///     <code>
     /// // Enable a feature in workflow configuration
     /// var options = new List&lt;IWorkflowOption&gt; { UseAzureKeyVault.Enabled };
-    /// 
     /// // Add to existing configuration
     /// workflowDefinition.WithAddedOptions(UseCustomFeature.Enabled);
     /// </code>
@@ -117,7 +114,6 @@ public abstract record ToggleWorkflowOption<TSelf> : WorkflowOption<bool, TSelf>
     ///     <code>
     /// // Explicitly disable a feature in workflow configuration
     /// var options = new List&lt;IWorkflowOption&gt; { UseAzureKeyVault.Disabled };
-    /// 
     /// // Override a default enabled state
     /// workflowDefinition.WithAddedOptions(UseCustomFeature.Disabled);
     /// </code>
@@ -164,7 +160,6 @@ public abstract record ToggleWorkflowOption<TSelf> : WorkflowOption<bool, TSelf>
     ///     UseCustomFeature.Disabled,
     ///     new SomeOtherOption()
     /// };
-    /// 
     /// bool azureKeyVaultEnabled = UseAzureKeyVault.IsEnabled(workflowOptions); // Returns true
     /// bool customFeatureEnabled = UseCustomFeature.IsEnabled(workflowOptions); // Returns false
     /// bool undefinedFeatureEnabled = SomeToggleFeature.IsEnabled(workflowOptions); // Returns false
@@ -172,8 +167,10 @@ public abstract record ToggleWorkflowOption<TSelf> : WorkflowOption<bool, TSelf>
     /// </example>
     /// <seealso cref="Enabled" />
     /// <seealso cref="Disabled" />
+#pragma warning disable RCS1158
     public static bool IsEnabled(IEnumerable<IWorkflowOption> options) =>
         options
             .OfType<TSelf>()
             .Any(x => x.Value);
+#pragma warning restore RCS1158
 }

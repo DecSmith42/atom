@@ -13,7 +13,6 @@ namespace DecSm.Atom.SourceGenerators;
 public class TargetDefinitionSourceGenerator : IIncrementalGenerator
 {
     private const string TargetDefinitionAttributeFull = "DecSm.Atom.Build.Definition.TargetDefinitionAttribute";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
     private const string IBuildAccessorFull = "DecSm.Atom.Build.IBuildAccessor";
 
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
@@ -81,7 +80,7 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                     {namespaceLine}
 
                     [JetBrains.Annotations.PublicAPI]
-                    partial interface {@interface} : {IBuildDefinitionFull}, {IBuildAccessorFull};
+                    partial interface {@interface} : {IBuildAccessorFull};
 
                     """;
 

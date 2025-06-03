@@ -1,19 +1,21 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 /// <summary>
-/// Defines a target for storing artifacts within the Atom framework.
+///     Defines a target for storing artifacts within the Atom framework.
 /// </summary>
 /// <remarks>
-/// This interface, when implemented by a build definition, provides the <see cref="StoreArtifact"/> target.
-/// This target is responsible for uploading specified artifacts using the configured <see cref="IArtifactProvider"/>.
-/// It typically consumes build information like <c>ISetupBuildInfo.BuildName</c> and <c>ISetupBuildInfo.BuildId</c> to correctly tag or categorize the artifacts.
-/// The artifacts to be stored are specified via the <see cref="IAtomArtifactsParam.AtomArtifacts"/> parameter.
-/// Artifacts are expected to be located in the directory specified by <see cref="IAtomFileSystem.AtomPublishDirectory"/> before this target is run.
-/// The target is hidden by default as it's primarily for internal use by the Atom framework or custom artifact provider workflows.
+///     This interface, when implemented by a build definition, provides the <see cref="StoreArtifact" /> target.
+///     This target is responsible for uploading specified artifacts using the configured <see cref="IArtifactProvider" />.
+///     It typically consumes build information like <c>ISetupBuildInfo.BuildName</c> and <c>ISetupBuildInfo.BuildId</c> to correctly tag or
+///     categorize the artifacts.
+///     The artifacts to be stored are specified via the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
+///     Artifacts are expected to be located in the directory specified by <see cref="IAtomFileSystem.AtomPublishDirectory" /> before this
+///     target is run.
+///     The target is hidden by default as it's primarily for internal use by the Atom framework or custom artifact provider workflows.
 /// </remarks>
 /// <example>
-/// A workflow might use this target to upload build outputs:
-/// <code>
+///     A workflow might use this target to upload build outputs:
+///     <code>
 /// // In a GitHub Workflow YML file (e.g., .github/workflows/Test_BuildWithCustomArtifacts.yml)
 /// // This step would invoke the StoreArtifact target.
 /// - name: StoreArtifact

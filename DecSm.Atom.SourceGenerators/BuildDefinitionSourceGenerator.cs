@@ -22,6 +22,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
     private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
     private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
     private const string IBuildDefinition = "IBuildDefinition";
+    private const string IBuildAccessor = "IBuildAccessor";
     private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
     private const string Register = "Register";
     private const string RegisterTarget = "RegisterTarget";
@@ -75,7 +76,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Split('.')
             .Last();
 
-    private static List<InterfaceWithProperty> DeduplicateTargets(IEnumerable<InterfaceWithProperty> interfacesWithTargets)
+    private static List<TypeWithProperty> DeduplicateTargets(IEnumerable<TypeWithProperty> interfacesWithTargets)
     {
         var interfacesWithTargetsList = interfacesWithTargets.ToList();
 
@@ -87,7 +88,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             {
                 var (interfaceSymbol, propertySymbol) = interfaceWithTarget;
 
-                var duplicateInterfaceTarget = new InterfaceWithProperty();
+                var duplicateInterfaceTarget = new TypeWithProperty();
 
                 var matches = interfacesWithTargetsList.Where(p =>
                     SimpleName(p.Property.Name) == SimpleName(propertySymbol.Name) &&
@@ -141,7 +142,11 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new InterfaceWithProperty(interfaceSymbol, propertySymbol)))
+                .Select(propertySymbol => new TypeWithProperty(interfaceSymbol, propertySymbol)))
+            .Concat(classSymbol
+                .GetMembers()
+                .OfType<IPropertySymbol>()
+                .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .ToArray();
 
         var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
@@ -280,7 +285,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         var registerTargetsToServicesLines = classSymbol
             .AllInterfaces
-            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition))
+            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition or IBuildAccessor))
             .Select(static @interface => @interface
                 .GetMembers($"{IBuildDefinitionFull}.{Register}")
                 .Any()
@@ -330,7 +335,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      #nullable enable
 
                      global using static {{classFull}};
+                     using System.Diagnostics.CodeAnalysis;
+                     using System.Linq.Expressions;
                      using Microsoft.Extensions.DependencyInjection;
+                     using Microsoft.Extensions.Logging;
+                     using DecSm.Atom.Build.Definition;
+                     using DecSm.Atom.Params;
+                     using DecSm.Atom.Paths;
 
                      {{namespaceLine}}
 
@@ -340,6 +351,29 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {{targetDefinitionsField}}
 
                          public {{@class}}(System.IServiceProvider services) : base(services) { }
+
+                         private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("{{classFull}}");
+
+                         private IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
+
+                         private T GetService<T>()
+                             where T : notnull =>
+                             typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+                                 ? (T)(IBuildDefinition)this
+                                 : Services.GetRequiredService<T>();
+
+                        private IEnumerable<T> GetServices<T>()
+                             where T : notnull =>
+                             typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+                                 ? [(T)(IBuildDefinition)this]
+                                 : Services.GetServices<T>();
+
+                         [return: NotNullIfNotNull(nameof(defaultValue))]
+                         private T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+                             Services
+                                 .GetRequiredService<IParamService>()
+                                 .GetParam(parameterExpression, defaultValue, converter);
+
 
                      {{targetDefinitionsProperty}}
 
@@ -359,7 +393,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
         context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 
-    private record struct InterfaceWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
+    private record struct TypeWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
 
     private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
 }

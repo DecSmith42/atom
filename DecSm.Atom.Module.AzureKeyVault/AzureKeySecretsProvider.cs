@@ -1,8 +1,12 @@
 ﻿namespace DecSm.Atom.Module.AzureKeyVault;
 
 [PublicAPI]
-public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, CommandLineArgs args, ILogger<AzureKeySecretsProvider> logger)
-    : ISecretsProvider, IWorkflowOptionProvider
+public sealed class AzureKeySecretsProvider(
+    IBuildDefinition buildDefinition,
+    CommandLineArgs args,
+    IAzureKeyVault keyVault,
+    ILogger<AzureKeySecretsProvider> logger
+) : ISecretsProvider, IWorkflowOptionProvider
 {
     private SecretClient? _secretClient;
 
@@ -16,10 +20,7 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
 
         logger.LogDebug("Getting secret {Key} from Azure Vault", key);
 
-        if (buildDefinition is not IAzureKeyVault definition)
-            throw new("The build definition must implement IAzureKeyVault to use Azure Key Vault");
-
-        if (definition.AzureVaultAddress is null or "")
+        if (keyVault.AzureVaultAddress is null or "")
         {
             var addressArg = buildDefinition.ParamDefinitions[nameof(IAzureKeyVault.AzureVaultAddress)].ArgName;
 
@@ -28,7 +29,7 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
 
         try
         {
-            var client = _secretClient ??= new(new(definition.AzureVaultAddress), GetCredential(definition));
+            var client = _secretClient ??= new(new(keyVault.AzureVaultAddress), GetCredential(keyVault));
 
             return GetSecret(client, key);
         }
@@ -48,10 +49,7 @@ public sealed class AzureKeySecretsProvider(IBuildDefinition buildDefinition, Co
                     buildDefinition.DefaultWorkflowOptions.Concat(buildDefinition.Workflows.SelectMany(x => x.Options))))
                 return [];
 
-            if (buildDefinition is not IAzureKeyVault keyVaultDefinition)
-                throw new("The build definition must implement IAzureKeyVault to use Azure Key Vault");
-
-            var injections = keyVaultDefinition.AzureKeyVaultValueInjections;
+            var injections = keyVault.AzureKeyVaultValueInjections;
 
             var valueInjections = new List<IWorkflowOption>();
 

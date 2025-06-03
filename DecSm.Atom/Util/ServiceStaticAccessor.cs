@@ -42,7 +42,6 @@
 ///     <code>
 /// // Register a service with static accessor
 /// services.AddSingletonWithStaticAccessor&lt;IMyService, MyService&gt;();
-/// 
 /// // Access the service statically
 /// var result = ServiceStaticAccessor&lt;IMyService&gt;.Service?.DoSomething();
 /// </code>
@@ -95,7 +94,6 @@ internal static class ServiceAccessorExtensions
     ///     <code>
     /// // Register a concrete class for static access
     /// services.AddSingletonWithStaticAccessor&lt;ReportService&gt;();
-    /// 
     /// // Later access the service
     /// ServiceStaticAccessor&lt;ReportService&gt;.Service?.AddReportData(data, command);
     /// </code>
@@ -130,7 +128,6 @@ internal static class ServiceAccessorExtensions
     ///     <code>
     /// // Register with interface separation
     /// services.AddSingletonWithStaticAccessor&lt;IParamService, ParamService&gt;();
-    /// 
     /// // Access through the interface
     /// var masked = ServiceStaticAccessor&lt;IParamService&gt;.Service?.MaskMatchingSecrets(text);
     /// </code>
