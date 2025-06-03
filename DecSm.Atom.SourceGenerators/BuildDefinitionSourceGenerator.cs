@@ -368,7 +368,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                                  : Services.GetServices<T>();
 
                          [return: NotNullIfNotNull(nameof(defaultValue))]
-                         protected T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+                         private T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
                              Services
                                  .GetRequiredService<IParamService>()
                                  .GetParam(parameterExpression, defaultValue, converter);
