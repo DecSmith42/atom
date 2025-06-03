@@ -81,7 +81,7 @@ public class TargetDefinitionSourceGenerator : IIncrementalGenerator
                     {namespaceLine}
 
                     [JetBrains.Annotations.PublicAPI]
-                    partial interface {@interface} : {IBuildDefinitionFull}, {IBuildAccessorFull};
+                    partial interface {@interface} : {IBuildAccessorFull};
 
                     """;
 

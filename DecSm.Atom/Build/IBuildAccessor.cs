@@ -46,7 +46,7 @@ public interface IBuildAccessor
     ///     returns the current instance (this) cast to type T, rather than resolving from the service provider.
     ///     This enables build definitions to access their own interface methods through dependency injection patterns.
     /// </remarks>
-    T GetService<T>()
+    protected T GetService<T>()
         where T : notnull =>
         typeof(T).GetInterface(nameof(IBuildDefinition)) != null
             ? (T)this
@@ -62,7 +62,7 @@ public interface IBuildAccessor
     ///     returns a collection containing only the current instance (this) cast to type T,
     ///     rather than resolving from the service provider.
     /// </remarks>
-    IEnumerable<T> GetServices<T>()
+    protected IEnumerable<T> GetServices<T>()
         where T : notnull =>
         typeof(T).GetInterface(nameof(IBuildDefinition)) != null
             ? [(T)this]
@@ -84,7 +84,7 @@ public interface IBuildAccessor
     ///     typically checking command line arguments, environment variables, configuration files, and secrets.
     /// </remarks>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+    protected T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
             .GetParam(parameterExpression, defaultValue, converter);
