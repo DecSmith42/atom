@@ -1,7 +1,58 @@
 ﻿namespace DecSm.Atom.Args;
 
+/// <summary>
+///     Parses command-line arguments for an Atom build process.
+///     It identifies known options (like help, generate, skip, headless, verbose, project),
+///     parameters (defined in the build definition), and commands (targets to be executed).
+/// </summary>
+/// <remarks>
+///     <para>
+///         This parser is a core component of the Atom framework's command-line interface.
+///         It takes raw string arguments and converts them into a structured <see cref="CommandLineArgs" /> object.
+///         The parser relies on an <see cref="IBuildDefinition" /> to understand available targets and their parameters.
+///         It also uses an <see cref="Spectre.Console.IAnsiConsole" /> for displaying error messages or help information related to argument
+///         parsing.
+///     </para>
+///     <para>
+///         Ambiguous or unknown arguments will result in the <see cref="CommandLineArgs.IsValid" /> property being set to false,
+///         and diagnostic messages may be printed to the console.
+///     </para>
+/// </remarks>
 internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IAnsiConsole console)
 {
+    /// <summary>
+    ///     Parses the provided raw command-line arguments into a structured <see cref="CommandLineArgs" /> object.
+    /// </summary>
+    /// <param name="rawArgs">
+    ///     A read-only list of string arguments, typically obtained from the application's entry point (e.g., `string[] args` in
+    ///     `Main`).
+    /// </param>
+    /// <returns>
+    ///     A <see cref="CommandLineArgs" /> object representing the parsed arguments.
+    ///     The <see cref="CommandLineArgs.IsValid" /> property will indicate if parsing was successful and all arguments were recognized.
+    /// </returns>
+    /// <exception cref="System.ArgumentException">
+    ///     Thrown if a parameter requiring a value is provided without one (e.g., `--project` without a project name following it, or a custom
+    ///     parameter `--paramName` without its value).
+    /// </exception>
+    /// <example>
+    ///     Given the command: <c>atom BuildProject --version 1.0.0 -s --headless</c>
+    ///     The parser might produce a <see cref="CommandLineArgs" /> object containing:
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <description><see cref="HelpArg" /> if `-h` or `--help` is provided.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description><see cref="GenArg" /> if `-g` or `--gen` is provided.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description><see cref="SkipArg" /> if `-s` or `--skip` is provided.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description><see cref="HeadlessArg" /> if `-hl` or `--headless` is provided.</description>
+    ///         </item>
+    ///     </list>
+    /// </example>
     public CommandLineArgs Parse(IReadOnlyList<string> rawArgs)
     {
         List<IArg> args = [];

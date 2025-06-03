@@ -1,21 +1,48 @@
 ﻿namespace DecSm.Atom;
 
 /// <summary>
-///     Represents an exception that is thrown when a step in an automated process, test, or workflow fails.
+///     Represents an exception thrown when a step within an Atom build target fails.
 ///     This exception provides additional reporting capabilities through custom report data.
 /// </summary>
 /// <remarks>
-///     This exception is typically used in step-based automation frameworks, testing environments,
-///     or workflow engines where individual steps can fail and need to be reported with additional context.
+///     This exception is used throughout the Atom framework to signal failures in build targets,
+///     such as task execution errors, failed external process calls (via <see cref="ProcessRunner" />),
+///     or unmet validation criteria within a target's logic.
+///     Consumers of the Atom framework can also throw <c>StepFailedException</c> to programmatically halt a build target
+///     and optionally provide custom report data using the <see cref="ReportData" /> property.
 ///     The <see cref="ReportData" /> property allows attaching custom reporting information that can be
-///     used for enhanced error reporting, logging, or debugging purposes.
+///     used for enhanced error reporting, logging, or debugging purposes by Atom's reporting services.
 /// </remarks>
+/// <example>
+///     <code>
+///     throw new StepFailedException("Could not validate a value");
+///     </code>
+///     <code>
+///     try
+///     {
+///         ...
+///     }
+///     catch (Exception ex)
+///     {
+///         // It's not recommended to throw a new exception in a catch block without
+///         // including the original exception.
+///         throw new StepFailedException("An error occurred during the step execution", ex)
+///         {
+///             ReportData = new TextReportData(...);
+///         };
+///     }
+///     </code>
+/// </example>
 [PublicAPI]
 public sealed class StepFailedException(string message, Exception? innerException = null) : Exception(message, innerException)
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="StepFailedException" /> class with an empty message.
     /// </summary>
+    /// <remarks>
+    ///     Using this constructor is generally not recommended. It is preferable to provide a descriptive message
+    ///     and/or an inner exception to aid in diagnosing the failure.
+    /// </remarks>
     public StepFailedException() : this(string.Empty) { }
 
     /// <summary>
@@ -27,7 +54,7 @@ public sealed class StepFailedException(string message, Exception? innerExceptio
     /// <summary>
     ///     Gets custom report data associated with this step failure.
     ///     This property can be used to attach additional context, diagnostic information,
-    ///     or custom reporting data that helps with error analysis and reporting.
+    ///     or custom reporting data that helps with error analysis and reporting within the Atom framework.
     /// </summary>
     /// <value>
     ///     An <see cref="ICustomReportData" /> instance containing custom report information,
@@ -35,7 +62,11 @@ public sealed class StepFailedException(string message, Exception? innerExceptio
     /// </value>
     /// <remarks>
     ///     This property can only be set during object initialization (init-only property).
-    ///     It's designed to provide extensible reporting capabilities for different types of step failures.
+    ///     It's designed to provide extensible reporting capabilities for different types of step failures
+    ///     that can be processed by Atom's outcome reporters.
     /// </remarks>
+    /// <seealso cref="ListReportData"/>
+    /// <seealso cref="TableReportData"/>
+    /// <seealso cref="TextReportData"/>
     public ICustomReportData? ReportData { get; init; }
 }
