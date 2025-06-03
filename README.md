@@ -1,12 +1,6 @@
 ---
 icon: atom
-cover: >-
-  https://images.unsplash.com/photo-1633998860530-d5ebf1e2018e?crop=entropy&cs=srgb&fm=jpg&ixid=M3wxOTcwMjR8MHwxfHNlYXJjaHwyfHxhdG9tfGVufDB8fHx8MTc0ODUyODkyOHww&ixlib=rb-4.1.0&q=85
-coverY: 0
 layout:
-  cover:
-    visible: true
-    size: full
   title:
     visible: true
   description:

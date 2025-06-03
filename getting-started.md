@@ -4,8 +4,6 @@ icon: flag
 
 # Getting Started
 
-####
-
 #### Installation
 
 Atom comes with a .NET tool. You can install the Atom CLI tool, `DecSm.Atom.Tool`, to manage and run your builds.
