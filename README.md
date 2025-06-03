@@ -148,7 +148,7 @@ public interface ICompile : IBuildAccessor
 		.Executes(() => {
 			Logger.LogInformation("Compiling project...");
 			FileSystem.File.Create("output.txt");
-			Servics.Get<IService>().DoSomething();
+			Services.Get<IService>().DoSomething();
 			return Task.CompletedTask;
 		});
 }
