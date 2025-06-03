@@ -22,6 +22,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
     private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
     private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
     private const string IBuildDefinition = "IBuildDefinition";
+    private const string IBuildAccessor = "IBuildAccessor";
     private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
     private const string Register = "Register";
     private const string RegisterTarget = "RegisterTarget";
@@ -284,7 +285,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         var registerTargetsToServicesLines = classSymbol
             .AllInterfaces
-            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition))
+            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition or IBuildAccessor))
             .Select(static @interface => @interface
                 .GetMembers($"{IBuildDefinitionFull}.{Register}")
                 .Any()

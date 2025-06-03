@@ -54,14 +54,11 @@
 ///     <code>
 /// // Inject a dry-run parameter for testing
 /// var dryRunInjection = new WorkflowParamInjection(Params.NugetDryRun, "true");
-/// 
 /// // Inject a custom configuration value
 /// var configInjection = new WorkflowParamInjection("BuildConfiguration", "Debug");
-/// 
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition()
 ///     .WithAddedOptions(dryRunInjection, configInjection);
-/// 
 /// // Multiple injections for the same parameter - last one wins
 /// var overrideInjection = new WorkflowParamInjection(Params.NugetDryRun, "false");
 /// workflowDefinition = workflowDefinition.WithAddedOptions(overrideInjection);

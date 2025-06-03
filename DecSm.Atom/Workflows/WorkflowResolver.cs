@@ -34,18 +34,16 @@ internal sealed class WorkflowResolver(
             .ToList();
 
         // Turn command steps into jobs
-        var definedCommandJobs = definedSteps
-            .Select(step => new WorkflowJobModel(step.Name, [step])
-            {
-                Options = step.Options,
-                MatrixDimensions = step.MatrixDimensions,
-                JobDependencies = buildModel
-                    .GetTarget(step.Name)
-                    .Dependencies
-                    .Select(x => x.Name)
-                    .ToList(),
-            })
-            .ToList();
+        var definedCommandJobs = definedSteps.ConvertAll(step => new WorkflowJobModel(step.Name, [step])
+        {
+            Options = step.Options,
+            MatrixDimensions = step.MatrixDimensions,
+            JobDependencies = buildModel
+                .GetTarget(step.Name)
+                .Dependencies
+                .Select(x => x.Name)
+                .ToList(),
+        });
 
         // If this workflow uses a custom artifact provider, we need to ensure that steps that
         // consume or produce artifacts are dependent on the Setup step.

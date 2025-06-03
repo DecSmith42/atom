@@ -26,7 +26,6 @@ public partial interface IValidateBuild : IReportsHelper
     /// public class Build : BuildDefinition
     /// {
     ///     // ... other targets ...
-    /// 
     ///     // The ValidateBuild target from IValidateBuild would be automatically available
     ///     // and could be set as a dependency for other targets.
     ///     Target MyCustomTarget => t => t

@@ -41,7 +41,6 @@
 ///     ErrorLogLevel = LogLevel.Warning,
 ///     AllowFailedResult = false
 /// };
-/// 
 /// var result = await processRunner.RunAsync(options);
 /// if (result.ExitCode == 0)
 /// {
@@ -195,10 +194,8 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger)
     ///     WorkingDirectory = "./temp",
     ///     AllowFailedResult = true
     /// };
-    /// 
     /// using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
     /// var result = await processRunner.RunAsync(options, cts.Token);
-    /// 
     /// if (result.ExitCode != 0)
     /// {
     ///     logger.LogWarning("Git clone failed: {Error}", result.Error);

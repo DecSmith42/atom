@@ -193,6 +193,9 @@ public class TargetTests
 
             configuration["SetupExecuted2"]
                 .ShouldBe("true");
+
+            configuration["SetupExecuted3"]
+                .ShouldBe("true");
         });
     }
 
@@ -206,8 +209,9 @@ public class TargetTests
         host.UseAtom();
 
         // Assert
-        var target = (ITargetWithConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>();
+        var target = (ITargetWithInheritAndConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>();
 
         target.IsSetupExecuted2.ShouldBeTrue();
+        target.IsSetupExecuted3.ShouldBeTrue();
     }
 }

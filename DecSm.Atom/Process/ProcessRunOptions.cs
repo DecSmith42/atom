@@ -35,10 +35,8 @@
 ///     <code>
 /// // Basic usage with string arguments
 /// var options1 = new ProcessRunOptions("dotnet", "build --configuration Release");
-/// 
 /// // Using array arguments constructor
 /// var options2 = new ProcessRunOptions("git", ["status", "--porcelain"]);
-/// 
 /// // Advanced configuration
 /// var options3 = new ProcessRunOptions("npm", "install")
 /// {
@@ -188,13 +186,11 @@ public sealed record ProcessRunOptions(string Name, string Args)
     ///     <code>
     /// // Strict mode - throw on any failure (default)
     /// var strictOptions = new ProcessRunOptions("dotnet", "test");
-    /// 
     /// // Tolerant mode - handle failures manually
     /// var tolerantOptions = new ProcessRunOptions("git", "status --porcelain")
     /// {
     ///     AllowFailedResult = true
     /// };
-    /// 
     /// var result = await runner.RunAsync(tolerantOptions);
     /// if (result.ExitCode != 0)
     /// {

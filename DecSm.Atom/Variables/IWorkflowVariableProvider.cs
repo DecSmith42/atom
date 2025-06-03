@@ -35,7 +35,6 @@
 ///         }
 ///         return false; // Let next provider handle it
 ///     }
-/// 
 ///     public async Task&lt;bool&gt; ReadVariable(string jobName, string variableName)
 ///     {
 ///         // Custom logic to read variable from external system
@@ -92,7 +91,6 @@ public interface IWorkflowVariableProvider
     /// {
     ///     if (!IsGitHubActionsEnvironment())
     ///         return false; // Not our environment, let another provider handle it
-    /// 
     ///     await WriteToGitHubOutput(variableName, variableValue);
     ///     return true; // Successfully written to GitHub Actions output
     /// }
@@ -144,14 +142,12 @@ public interface IWorkflowVariableProvider
     /// {
     ///     var cacheKey = $"{jobName}:{variableName}";
     ///     var cachedValue = await _cache.GetAsync(cacheKey);
-    /// 
     ///     if (cachedValue != null)
     ///     {
     ///         // Variable found in cache, make it available to the workflow
     ///         await SetWorkflowVariable(variableName, cachedValue);
     ///         return true;
     ///     }
-    /// 
     ///     return false; // Not found in this provider
     /// }
     /// </code>

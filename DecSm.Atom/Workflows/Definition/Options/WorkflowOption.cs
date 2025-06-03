@@ -55,13 +55,11 @@
 /// {
 ///     public override bool AllowMultiple => false; // Only one build configuration allowed
 /// }
-/// 
 /// // Complex data option
 /// public sealed record DatabaseSettings : WorkflowOption&lt;DatabaseConfig, DatabaseSettings&gt;
 /// {
 ///     public override bool AllowMultiple => false;
 /// }
-/// 
 /// // Usage
 /// var config = new BuildConfiguration { Value = "Release" };
 /// var dbSettings = new DatabaseSettings
@@ -119,13 +117,11 @@ public abstract record WorkflowOption<TData, TSelf> : IWorkflowOption
     /// {
     ///     Value = "production"
     /// };
-    /// 
     /// // Boolean value example
     /// var toggleOption = new UseAzureKeyVault
     /// {
     ///     Value = true
     /// };
-    /// 
     /// // Access the value
     /// string environment = envOption.Value;
     /// bool useKeyVault = toggleOption.Value;

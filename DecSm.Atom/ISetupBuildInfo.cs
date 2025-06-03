@@ -135,10 +135,8 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     /// {
     ///     // ISetupBuildInfo members (BuildIdProvider, etc.) would be implicitly available
     ///     // or explicitly implemented if not using a base class that provides them.
-    /// 
     ///     // The BuildName property is inherited from IBuildInfo
     ///     public override string BuildName => "MyAwesomeProject";
-    /// 
     ///     // A custom target that depends on SetupBuildInfo having run
     ///     Target Package => t => t
     ///         .DependsOn(nameof(ISetupBuildInfo.SetupBuildInfo)) // Ensures build info is set up
@@ -148,13 +146,10 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     ///             var buildId = await GetVariable&lt;string&gt;("BuildId");
     ///             var buildVersion = await GetVariable&lt;string&gt;("BuildVersion");
     ///             var buildTimestamp = await GetVariable&lt;string&gt;("BuildTimestamp");
-    /// 
     ///             // Log or use these variables
     ///             LogInformation($"Packaging {BuildName} version {buildVersion} (Build ID: {buildId}, Timestamp: {buildTimestamp})");
-    /// 
     ///             // ... further packaging logic ...
     ///         });
-    /// 
     ///     // Main build flow
     ///     Target Default => t => t.DependsOn(Package);
     /// }

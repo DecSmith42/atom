@@ -37,11 +37,9 @@
 ///     <code>
 /// // Create secret injection using factory method
 /// var githubTokenSecret = WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken));
-/// 
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition()
 ///     .WithAddedOptions(githubTokenSecret);
-/// 
 /// // The secret will be available securely in workflow steps
 /// </code>
 /// </example>

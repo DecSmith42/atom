@@ -129,6 +129,11 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
 
     public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
     {
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.ISetupBuildInfo>(builder.Services, static p => (DecSm.Atom.ISetupBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.BuildInfo.IBuildInfo>(builder.Services, static p => (DecSm.Atom.BuildInfo.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.Variables.IVariablesHelper>(builder.Services, static p => (DecSm.Atom.Variables.IVariablesHelper)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IValidateBuild>(builder.Services, static p => (DecSm.Atom.IValidateBuild)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
+        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.Reports.IReportsHelper>(builder.Services, static p => (DecSm.Atom.Reports.IReportsHelper)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
         DecSm.Atom.Secrets.IDotnetUserSecrets.ConfigureBuilder(builder);
     }
 

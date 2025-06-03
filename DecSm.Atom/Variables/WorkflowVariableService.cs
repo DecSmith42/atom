@@ -27,17 +27,14 @@
 /// public class MyBuildTarget
 /// {
 ///     private readonly IWorkflowVariableService _variableService;
-/// 
 ///     public MyBuildTarget(IWorkflowVariableService variableService)
 ///     {
 ///         _variableService = variableService;
 ///     }
-/// 
 ///     public async Task ExecuteAsync()
 ///     {
 ///         // Write a variable for later use
 ///         await _variableService.WriteVariable("BuildNumber", "1.2.3");
-/// 
 ///         // Read a variable from a previous job
 ///         await _variableService.ReadVariable("setup-job", "Configuration");
 ///     }
@@ -94,10 +91,8 @@ public interface IWorkflowVariableService
     /// await WriteVariable("BuildId", Guid.NewGuid().ToString());
     /// await WriteVariable("BuildVersion", "2.1.0");
     /// await WriteVariable("BuildTimestamp", DateTime.UtcNow.ToString("O"));
-    /// 
     /// // Write computed paths
     /// await WriteVariable("OutputDirectory", "/builds/artifacts");
-    /// 
     /// // Write configuration values
     /// await WriteVariable("Environment", "Production");
     /// </code>
@@ -152,10 +147,8 @@ public interface IWorkflowVariableService
     /// // Read variables from a setup job
     /// await ReadVariable("setup", "BuildId");
     /// await ReadVariable("setup", "BuildVersion");
-    /// 
     /// // Read configuration from a previous step
     /// await ReadVariable("configure", "TargetEnvironment");
-    /// 
     /// // Read computed values from analysis job
     /// await ReadVariable("analyze", "TestCoverage");
     /// await ReadVariable("analyze", "CodeQualityScore");

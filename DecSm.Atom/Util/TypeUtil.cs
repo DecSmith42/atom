@@ -53,17 +53,13 @@
 ///     <code>
 /// // Basic type conversion
 /// var intValue = TypeUtil.Convert&lt;int&gt;("42", null);
-/// 
 /// // Array conversion
 /// var intArray = TypeUtil.Convert&lt;int[]&gt;("1,2,3,4", null);
-/// 
 /// // Collection conversion
 /// var stringList = TypeUtil.Convert&lt;IReadOnlyList&lt;string&gt;&gt;("a,b,c", null);
-/// 
 /// // Custom converter
 /// var customValue = TypeUtil.Convert&lt;DateTime&gt;("2023-12-25",
 ///     str => DateTime.ParseExact(str, "yyyy-MM-dd", null));
-/// 
 /// // Nullable handling
 /// var nullableInt = TypeUtil.Convert&lt;int?&gt;(null, null); // Returns null
 /// </code>
@@ -135,21 +131,16 @@ public static class TypeUtil
     /// var number = TypeUtil.Convert&lt;int&gt;("123", null);
     /// var flag = TypeUtil.Convert&lt;bool&gt;("true", null);
     /// var date = TypeUtil.Convert&lt;DateTime&gt;("2023-12-25", null);
-    /// 
     /// // Converting to arrays
     /// var numbers = TypeUtil.Convert&lt;int[]&gt;("1,2,3,4,5", null);
     /// var names = TypeUtil.Convert&lt;string[]&gt;("John,Jane,Bob", null);
-    /// 
     /// // Converting to collections
     /// var readOnlyList = TypeUtil.Convert&lt;IReadOnlyList&lt;string&gt;&gt;("apple,banana,cherry", null);
-    /// 
     /// // Using custom converters
     /// var customDate = TypeUtil.Convert&lt;DateTime&gt;("25-12-2023",
     ///     str => DateTime.ParseExact(str, "dd-MM-yyyy", CultureInfo.InvariantCulture));
-    /// 
     /// var enumValue = TypeUtil.Convert&lt;MyEnum&gt;("Value1",
     ///     str => Enum.Parse&lt;MyEnum&gt;(str, ignoreCase: true));
-    /// 
     /// // Handling null and empty values
     /// var nullResult = TypeUtil.Convert&lt;int?&gt;(null, null); // Returns null
     /// var emptyResult = TypeUtil.Convert&lt;string&gt;("", null); // Returns empty string

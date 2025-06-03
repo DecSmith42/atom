@@ -21,13 +21,11 @@
 ///     <code>
 /// // Trigger on pushes to main branch only
 /// var mainTrigger = GitPushTrigger.ToMain;
-/// 
 /// // Trigger on version tag pushes
 /// var releaseTrigger = new GitPushTrigger
 /// {
 ///     IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"]
 /// };
-/// 
 /// // Trigger on feature branches, excluding documentation changes
 /// var featureTrigger = new GitPushTrigger
 /// {

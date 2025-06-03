@@ -51,7 +51,6 @@ public static class ReportDataMarkdownFormatter
     ///         Header = new[] { "Metric", "Value" }
     ///     }
     /// };
-    /// 
     /// string markdown = ReportDataMarkdownFormatter.Write(reportData);
     /// // Produces formatted Markdown with error callouts, artifact links, and tables
     /// </code>
