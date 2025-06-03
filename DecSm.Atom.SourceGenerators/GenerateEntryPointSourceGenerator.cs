@@ -70,7 +70,11 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 
     private static void GeneratePartialBuild(SourceProductionContext context, INamedTypeSymbol classSymbol, string className)
     {
-        var fullClassName = $"{classSymbol.ContainingNamespace.ToDisplayString()}.{className}";
+        var containingNamespace = classSymbol.ContainingNamespace.ToDisplayString();
+
+        var fullClassName = containingNamespace is "<global namespace>" or "global"
+            ? className
+            : $"{containingNamespace}.{className}";
 
         // Build up the source code
         var code = $"""
