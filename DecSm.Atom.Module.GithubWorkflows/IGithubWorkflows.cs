@@ -1,7 +1,4 @@
-﻿using DecSm.Atom.Hosting;
-using DecSm.Atom.Logging;
-
-namespace DecSm.Atom.Module.GithubWorkflows;
+﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
 [ConfigureHostBuilder]
 public partial interface IGithubWorkflows : IJobRunsOn
