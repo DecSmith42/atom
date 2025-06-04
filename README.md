@@ -4,7 +4,9 @@
 
 Atom is an opinionated task and build automation framework, written in C#.
 
-Inspired by the likes of [NUKE](https://nuke.build/), Atom aims to provide a flexible, extensible framework for defining and executing build tasks. It leverages .NET and provides a comprehensive set of features for automating your development workflow with automatic CI/CD pipeline generation e.g. for GitHub Actions and Azure DevOps.
+Inspired by the likes of [NUKE](https://nuke.build/), Atom aims to provide a flexible, extensible framework for defining
+and executing build tasks. It leverages .NET and provides a comprehensive set of features for automating your
+development workflow with automatic CI/CD pipeline generation e.g. for GitHub Actions and Azure DevOps.
 
 ## ✨ Features
 
@@ -47,12 +49,30 @@ internal partial class Build : BuildDefinition
     private Target HelloWorld =>
         t => t
             .DescribedAs("Prints a hello world message")
-            .Executes(() =>
-            {
-                Logger.LogInformation("Hello, World!");
-                return Task.CompletedTask;
-            });
+            .Executes(() => Logger.LogInformation("Hello, World!"));
 }
+```
+
+Targets can also be async:
+
+```csharp
+private Target HelloWorldAsync =>
+    t => t
+        .DescribedAs("Prints a hello world message asynchronously")
+        .Executes(async () =>
+        {
+            await Task.Delay(1000); // Simulate async work
+            Logger.LogInformation("Hello, World!");
+        });
+
+private Target HelloWorldAsyncWithCancel =>
+    t => t
+        .DescribedAs("Prints a hello world message asynchronously")
+        .Executes(async cancellationToken =>
+        {
+            await Task.Delay(1000, cancellationToken); // Simulate async work with cancellation
+            Logger.LogInformation("Hello, World!");
+        });
 ```
 
 ### 3. Run Your Build
@@ -66,6 +86,7 @@ dotnet run -- HelloWorld
 ### Basic Concepts
 
 #### Build Definitions
+
 Build definitions are classes that inherit from `BuildDefinition` and define targets (build steps) as properties:
 
 ```csharp
@@ -74,14 +95,15 @@ internal partial class Build : BuildDefinition
 {
     private Target Compile => t => t
         .DescribedAs("Compiles the project")
-        .Executes(() => {
+        .Executes(() =>
+        {
             // Your build logic here
-            return Task.CompletedTask;
         });
 }
 ```
 
 #### Parameters
+
 Define and use parameters in your builds:
 
 ```csharp
@@ -90,25 +112,27 @@ private string? MyName => GetParam(() => MyName);
 
 private Target Hello => t => t
     .RequiresParam(nameof(MyName))
-    .Executes(() => {
+    .Executes(() =>
+    {
         Logger.LogInformation("Hello, {Name}!", MyName);
-        return Task.CompletedTask;
     });
 ```
 
 #### Target Dependencies
+
 Define dependencies between targets:
 
 ```csharp
 private Target Test => t => t
     .DependsOn(Compile)
-    .Executes(() => {
+    .Executes(() =>
+    {
         // Run tests after compilation
-        return Task.CompletedTask;
     });
 ```
 
 ### Target Interfaces
+
 You can also define targets using interfaces for better organization:
 
 ```csharp
@@ -118,39 +142,40 @@ internal partial class Build : BuildDefinition, ICompile, ITest;
 
 public interface ICompile
 {
-	Target Compile => t => t
-		.DescribedAs("Compiles the project")
-		.Executes(() => {
-			// Your build logic here
-			return Task.CompletedTask;
-		});
+    Target Compile => t => t
+        .DescribedAs("Compiles the project")
+        .Executes(() =>
+        {
+            // Your build logic here
+        });
 }
 
 public interface ITest
 {
-	Target Test => t => t
-		.DependsOn(Compile)
-		.Executes(() => {
-			// Run tests after compilation
-			return Task.CompletedTask;
-		});
+    Target Test => t => t
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            // Run tests after compilation
+        });
 }
 ```
 
 ### Access Build Services
+
 You can access various build services like logging, parameters, and secrets:
 
 ```csharp
 public interface ICompile : IBuildAccessor
 {
-	Target Compile => t => t
-		.DescribedAs("Compiles the project")
-		.Executes(() => {
-			Logger.LogInformation("Compiling project...");
-			FileSystem.File.Create("output.txt");
-			Services.Get<IService>().DoSomething();
-			return Task.CompletedTask;
-		});
+    Target Compile => t => t
+        .DescribedAs("Compiles the project")
+        .Executes(() =>
+        {
+            Logger.LogInformation("Compiling project...");
+            FileSystem.File.Create("output.txt");
+            Services.Get<IService>().DoSomething();
+        });
 }
 ```
 
@@ -161,6 +186,7 @@ Atom can automatically generate CI/CD pipelines for your builds:
 #### GitHub Actions
 
 > Install the required modules for your CI/CD platform (GitHub Actions, Azure DevOps, etc.):
+
 ```bash
 dotnet add package DecSm.Atom.Module.GithubWorkflows
 ```
@@ -184,6 +210,7 @@ public partial class Build : BuildDefinition, IGithubWorkflows
 #### Azure DevOps
 
 > Install the required modules for your CI/CD platform (GitHub Actions, Azure DevOps, etc.):
+
 ```bash
 dotnet add package DecSm.Atom.Module.DevopsWorkflows
 ```
@@ -254,10 +281,9 @@ private Target Package => t => t
 
 private Target Deploy => t => t
     .ConsumesArtifact(nameof(Package), "MyPackage") // Workflows automatically download this artifact
-    .Executes(() => {
+    .Executes(() =>
+    {
         // Deploy the package
-
-        return Task.CompletedTask;
     });
 ```
 
@@ -271,28 +297,26 @@ private string? MyName => GetParam(() => MyName);
 
 private Target Info => t => t
     .ProducesVariable("MyPackage")
-    .Executes(() => {
-		// Variable writing is done manually
-		Services.GetRequiredService<IVariablesHelper>().WriteVariable(nameof(MyName), "Declan");
-
-        return Task.CompletedTask;
+    .Executes(() =>
+    {
+        // Variable writing is done manually
+        Services.GetRequiredService<IVariablesHelper>().WriteVariable(nameof(MyName), "Declan");
     });
 
 private Target Print => t => t
     .ConsumesVariable(nameof(Info), "MyPackage") // Workflows automatically inject this variable
-    .Executes(() => {
-		// Using the variable
-		Logger.LogInformation("Hello, {Name}!", MyName);
-		// output: Hello, Declan!
-
-        return Task.CompletedTask;
+    .Executes(() =>
+    {
+        // Using the variable
+        Logger.LogInformation("Hello, {Name}!", MyName);
+        // output: Hello, Declan!
     });
 ```
-
 
 ## 🔧 Advanced Features
 
 ### Matrix Builds
+
 Run builds across multiple configurations:
 
 ```csharp
@@ -311,6 +335,7 @@ public override IReadOnlyList<WorkflowDefinition> Workflows =>
 ```
 
 ### Custom Artifact Providers
+
 Use custom artifact storage backends:
 
 ```csharp
@@ -325,9 +350,11 @@ public override IReadOnlyList<WorkflowDefinition> Workflows =>
 ```
 
 ### Secret Management
+
 Integrate with Azure Key Vault:
 
 > Install the required module for Azure Key Vault:
+
 ```bash
 dotnet add package DecSm.Atom.Module.AzureKeyVault
 ```
@@ -358,6 +385,7 @@ Check out the sample projects:
 ### Building from Source
 
 Atom can build itself!
+
 ```bash
 git clone https://github.com/DecSmith42/atom.git
 cd atom
