@@ -389,8 +389,6 @@ internal sealed class ParamService(
             .GetSection("Params")
             .GetSection(paramDefinition.ArgName);
 
-        Console.WriteLine(configSection.Exists());
-
         var configValue = configSection.Exists()
             ? configSection.Get<T?>() ?? TypeUtil.Convert(configSection.Value, converter)
             : default;

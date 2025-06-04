@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Process;
 
 /// <summary>
-///     Configuration options for executing external processes through the <see cref="ProcessRunner" /> service.
+///     Configuration options for executing external processes through the <see cref="IProcessRunner" /> service.
 /// </summary>
 /// <remarks>
 ///     This record provides a comprehensive set of configuration options for controlling how external processes
@@ -172,7 +172,7 @@ public sealed record ProcessRunOptions(string Name, string Args)
     /// <remarks>
     ///     <para>
     ///         When set to <c>false</c> (the default), any non-zero exit code from the executed process
-    ///         will cause the <see cref="ProcessRunner" /> to throw a <see cref="StepFailedException" />,
+    ///         will cause the <see cref="IProcessRunner" /> to throw a <see cref="StepFailedException" />,
     ///         which is appropriate for build automation scenarios where process failures should halt execution.
     ///     </para>
     ///     <para>

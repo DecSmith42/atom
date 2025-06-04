@@ -6,7 +6,7 @@
 /// </summary>
 /// <remarks>
 ///     This exception is used throughout the Atom framework to signal failures in build targets,
-///     such as task execution errors, failed external process calls (via <see cref="ProcessRunner" />),
+///     such as task execution errors, failed external process calls (via <see cref="IProcessRunner" />),
 ///     or unmet validation criteria within a target's logic.
 ///     Consumers of the Atom framework can also throw <c>StepFailedException</c> to programmatically halt a build target
 ///     and optionally provide custom report data using the <see cref="ReportData" /> property.
