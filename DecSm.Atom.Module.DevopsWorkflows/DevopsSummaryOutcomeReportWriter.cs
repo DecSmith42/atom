@@ -2,7 +2,7 @@
 
 internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService) : IOutcomeReportWriter
 {
-    public async Task ReportRunOutcome()
+    public async Task ReportRunOutcome(CancellationToken cancellationToken)
     {
         var tempFile = fileSystem.AtomTempDirectory / "DevopsSummaryOutcome.md";
 
@@ -15,7 +15,7 @@ internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSyste
             return;
 
         await using (var writer = fileSystem.File.Create(tempFile))
-            await writer.WriteAsync(content);
+            await writer.WriteAsync(content, cancellationToken);
 
         Console.WriteLine($"##vso[task.uploadsummary]{tempFile}");
     }

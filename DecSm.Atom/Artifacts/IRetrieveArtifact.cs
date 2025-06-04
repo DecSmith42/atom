@@ -47,12 +47,12 @@ public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInf
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
             .RequiresParam(ArtifactProvider.RequiredParams)
-            .Executes(async () =>
+            .Executes(async cancellationToken =>
             {
                 Logger.LogInformation("Using artifact provider: {Provider}",
                     ArtifactProvider.GetType()
                         .Name);
 
-                await ArtifactProvider.RetrieveArtifacts(AtomArtifacts);
+                await ArtifactProvider.RetrieveArtifacts(AtomArtifacts, cancellationToken: cancellationToken);
             });
 }

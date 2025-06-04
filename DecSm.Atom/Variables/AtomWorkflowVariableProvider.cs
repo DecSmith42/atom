@@ -2,7 +2,7 @@
 
 internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
 {
-    public async Task<bool> WriteVariable(string variableName, string variableValue)
+    public async Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
     {
         var variablesPath = fileSystem.AtomTempDirectory / "variables";
 
@@ -10,7 +10,7 @@ internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, B
 
         if (variablesPath.FileExists)
         {
-            var text = await fileSystem.File.ReadAllTextAsync(variablesPath);
+            var text = await fileSystem.File.ReadAllTextAsync(variablesPath, cancellationToken);
             variables = JsonSerializer.Deserialize<Dictionary<string, string>>(text) ?? [];
         }
         else
@@ -21,19 +21,19 @@ internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, B
         var jobScopedVariableName = $"{buildModel.CurrentTarget!.Name}:{variableName}";
         variables[jobScopedVariableName] = variableValue;
 
-        await fileSystem.File.WriteAllTextAsync(variablesPath, JsonSerializer.Serialize(variables));
+        await fileSystem.File.WriteAllTextAsync(variablesPath, JsonSerializer.Serialize(variables), cancellationToken);
 
         return true;
     }
 
-    public async Task<bool> ReadVariable(string jobName, string variableName)
+    public async Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default)
     {
         var variablesPath = fileSystem.AtomTempDirectory / "variables";
 
         if (!variablesPath.FileExists)
             return false;
 
-        var text = await fileSystem.File.ReadAllTextAsync(variablesPath);
+        var text = await fileSystem.File.ReadAllTextAsync(variablesPath, cancellationToken);
 
         var variables = JsonSerializer.Deserialize<Dictionary<string, string>>(text) ?? [];
 

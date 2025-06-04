@@ -30,6 +30,7 @@ public partial interface INugetHelper : IBuildInfo
     /// <param name="feed">The NuGet feed URL to push the project to.</param>
     /// <param name="apiKey">The API key for the NuGet feed.</param>
     /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
+    /// <param name="cancellationToken"></param>
     /// <remarks>
     ///     Requires the <see cref="IBuildInfo.BuildVersion" /> param, which should be marked as consumed by the target that calls this method.
     ///     <br /><br />
@@ -37,7 +38,12 @@ public partial interface INugetHelper : IBuildInfo
     ///     <br /><br />
     ///     Requires the `dotnet` CLI to be installed and available in the PATH.
     /// </remarks>
-    async Task PushProject(string projectName, string feed, string apiKey, string? configFile = null)
+    async Task PushProject(
+        string projectName,
+        string feed,
+        string apiKey,
+        string? configFile = null,
+        CancellationToken cancellationToken = default)
     {
         var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
         var packages = FileSystem.Directory.GetFiles(packageBuildDir, "*.nupkg");
@@ -51,10 +57,15 @@ public partial interface INugetHelper : IBuildInfo
 
         var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{BuildVersion}.nupkg");
 
-        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey);
+        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey, cancellationToken: cancellationToken);
     }
 
-    async Task PushPackageToNuget(RootedPath packagePath, string feed, string apiKey, string? configFile = null)
+    async Task PushPackageToNuget(
+        RootedPath packagePath,
+        string feed,
+        string apiKey,
+        string? configFile = null,
+        CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
 
@@ -66,19 +77,24 @@ public partial interface INugetHelper : IBuildInfo
         }
 
         await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"nuget push \"{packagePath}\" --source {feed} --api-key {apiKey}"));
+            .RunAsync(new("dotnet", $"nuget push \"{packagePath}\" --source {feed} --api-key {apiKey}"), cancellationToken);
 
         Logger.LogInformation("Package pushed");
     }
 
-    async Task<bool> IsNugetPackageVersionPublished(string projectName, string version, string feedUrl, string? feedKey = null)
+    async Task<bool> IsNugetPackageVersionPublished(
+        string projectName,
+        string version,
+        string feedUrl,
+        string? feedKey = null,
+        CancellationToken cancellationToken = default)
     {
         using var httpClient = new HttpClient();
 
         if (feedKey is { Length: > 0 })
             httpClient.DefaultRequestHeaders.Add("X-NuGet-ApiKey", feedKey);
 
-        var index = await httpClient.GetStringAsync(feedUrl);
+        var index = await httpClient.GetStringAsync(feedUrl, cancellationToken);
 
         // {
         //   ...
@@ -109,7 +125,7 @@ public partial interface INugetHelper : IBuildInfo
 
         var packageUrl = $"{registrationsBaseUrl}{projectName.ToLowerInvariant()}/{version}.json";
 
-        var response = await httpClient.GetAsync(packageUrl);
+        var response = await httpClient.GetAsync(packageUrl, cancellationToken);
 
         if (response.StatusCode is not (HttpStatusCode.OK or HttpStatusCode.NotFound))
             throw new InvalidOperationException(
@@ -118,14 +134,14 @@ public partial interface INugetHelper : IBuildInfo
         return response.StatusCode is HttpStatusCode.OK;
     }
 
-    async Task<TransformFileScope> CreateNugetConfigOverwriteScope(string contents) =>
-        await TransformFileScope.CreateAsync(NugetConfigPath, _ => contents);
+    async Task<TransformFileScope> CreateNugetConfigOverwriteScope(string contents, CancellationToken cancellationToken = default) =>
+        await TransformFileScope.CreateAsync(NugetConfigPath, _ => contents, cancellationToken);
 
-    async Task CreateNugetConfigOverwriteScope(NugetFeed[] feeds, bool skipIfExists = false)
+    async Task CreateNugetConfigOverwriteScope(NugetFeed[] feeds, bool skipIfExists = false, CancellationToken cancellationToken = default)
     {
         if (skipIfExists)
         {
-            var nugetContents = await FileSystem.File.ReadAllTextAsync(NugetConfigPath);
+            var nugetContents = await FileSystem.File.ReadAllTextAsync(NugetConfigPath, cancellationToken);
 
             if (feeds.All(f => nugetContents.Contains(f.Url, StringComparison.OrdinalIgnoreCase)))
             {
@@ -176,6 +192,6 @@ public partial interface INugetHelper : IBuildInfo
                           </configuration>
                           """;
 
-        await CreateNugetConfigOverwriteScope(configText);
+        await CreateNugetConfigOverwriteScope(configText, cancellationToken);
     }
 }

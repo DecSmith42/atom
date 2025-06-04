@@ -164,7 +164,7 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     /// <seealso cref="BuildVersionProvider" />
     /// <seealso cref="BuildTimestampProvider" />
     /// <seealso cref="IBuildInfo.BuildName" />
-    /// <seealso cref="IVariablesHelper.WriteVariable(string, string)" />
+    /// <seealso cref="IVariablesHelper.WriteVariable(string, string, CancellationToken)" />
     /// <seealso cref="IReportsHelper.AddReportData(IReportData)" />
     Target SetupBuildInfo =>
         d => d
@@ -174,19 +174,19 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
             .ProducesVariable(nameof(BuildId))
             .ProducesVariable(nameof(BuildVersion))
             .ProducesVariable(nameof(BuildTimestamp))
-            .Executes(async () =>
+            .Executes(async cancellationToken =>
             {
                 var atomBuildName = BuildName; // BuildName is from IBuildInfo
-                await WriteVariable(nameof(BuildName), atomBuildName);
+                await WriteVariable(nameof(BuildName), atomBuildName, cancellationToken);
 
                 var buildId = BuildIdProvider.BuildId;
-                await WriteVariable(nameof(BuildId), buildId);
+                await WriteVariable(nameof(BuildId), buildId, cancellationToken);
 
                 var buildVersion = BuildVersionProvider.Version;
-                await WriteVariable(nameof(BuildVersion), buildVersion);
+                await WriteVariable(nameof(BuildVersion), buildVersion, cancellationToken);
 
                 var buildTimestamp = BuildTimestampProvider.Timestamp;
-                await WriteVariable(nameof(BuildTimestamp), buildTimestamp.ToString());
+                await WriteVariable(nameof(BuildTimestamp), buildTimestamp.ToString(), cancellationToken);
 
                 var reportedBuildId = buildId == buildVersion
                     ? buildId

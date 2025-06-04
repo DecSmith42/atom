@@ -37,6 +37,7 @@ public interface IWorkflowWriter
     ///     Generates a workflow file from the specified workflow model.
     /// </summary>
     /// <param name="workflow">The workflow model containing the configuration and steps to generate.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous generation operation.</returns>
     /// <remarks>
     ///     <para>
@@ -50,13 +51,14 @@ public interface IWorkflowWriter
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="workflow" /> is null.</exception>
-    Task Generate(WorkflowModel workflow);
+    Task Generate(WorkflowModel workflow, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Checks whether the current workflow file differs from what would be generated
     ///     from the specified workflow model.
     /// </summary>
     /// <param name="workflow">The workflow model to compare against the existing file.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A task containing <c>true</c> if the existing workflow file is outdated or missing
     ///     and needs regeneration; otherwise, <c>false</c>.
@@ -73,7 +75,7 @@ public interface IWorkflowWriter
     ///     </para>
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="workflow" /> is null.</exception>
-    Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow);
+    Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -106,18 +108,20 @@ public interface IWorkflowWriter<T> : IWorkflowWriter
     ///     Generates a workflow file from the specified workflow model.
     /// </summary>
     /// <param name="workflow">The workflow model containing the configuration and steps to generate.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A task representing the asynchronous generation operation.</returns>
     /// <remarks>
     ///     Implementing classes must provide a concrete implementation of this method
     ///     that handles the specific workflow format for type <typeparamref name="T" />.
     /// </remarks>
-    abstract Task IWorkflowWriter.Generate(WorkflowModel workflow);
+    abstract Task IWorkflowWriter.Generate(WorkflowModel workflow, CancellationToken cancellationToken);
 
     /// <summary>
     ///     Checks whether the current workflow file differs from what would be generated
     ///     from the specified workflow model.
     /// </summary>
     /// <param name="workflow">The workflow model to compare against the existing file.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A task containing <c>true</c> if the existing workflow file needs regeneration;
     ///     otherwise, <c>false</c>.
@@ -126,5 +130,5 @@ public interface IWorkflowWriter<T> : IWorkflowWriter
     ///     Implementing classes must provide a concrete implementation of this method
     ///     that performs the dirty check for the specific workflow format of type <typeparamref name="T" />.
     /// </remarks>
-    abstract Task<bool> IWorkflowWriter.CheckForDirtyWorkflow(WorkflowModel workflow);
+    abstract Task<bool> IWorkflowWriter.CheckForDirtyWorkflow(WorkflowModel workflow, CancellationToken cancellationToken);
 }

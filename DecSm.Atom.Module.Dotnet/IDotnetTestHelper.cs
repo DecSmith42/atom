@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
 {
-    async Task<int> RunDotnetUnitTests(DotnetTestOptions options)
+    async Task<int> RunDotnetUnitTests(DotnetTestOptions options, CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Running unit tests for Atom project {AtomProjectName}", options.ProjectName);
 
@@ -14,17 +14,20 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
             (true, not null) => await TransformProjectVersionScope
                 .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
                     GetService<IBuildVersionProvider>()
-                        .Version)
+                        .Version,
+                    cancellationToken)
                 .AddAsync(options.CustomPropertiesTransform),
 
             (true, null) => await TransformProjectVersionScope.CreateAsync(
                 DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
                 GetService<IBuildVersionProvider>()
-                    .Version),
+                    .Version,
+                cancellationToken),
 
             (false, not null) => await TransformMultiFileScope.CreateAsync(
                 DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
-                options.CustomPropertiesTransform!),
+                options.CustomPropertiesTransform!,
+                cancellationToken),
 
             _ => null,
         };
@@ -53,16 +56,17 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
         // Run test
         var result = await GetService<IProcessRunner>()
             .RunAsync(new("dotnet",
-            [
-                $"test {projectPath.Path}",
-                $"--configuration {options.Configuration}",
-                $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
-                $"--logger \"html;LogFileName={options.ProjectName}.html\"",
-                "--collect:\"XPlat Code Coverage\"",
-            ])
-            {
-                AllowFailedResult = true,
-            });
+                [
+                    $"test {projectPath.Path}",
+                    $"--configuration {options.Configuration}",
+                    $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
+                    $"--logger \"html;LogFileName={options.ProjectName}.html\"",
+                    "--collect:\"XPlat Code Coverage\"",
+                ])
+                {
+                    AllowFailedResult = true,
+                },
+                cancellationToken);
 
         // Copy html file to publish directory
         FileSystem.File.Copy(testOutputDirectory / $"{options.ProjectName}.html",
@@ -71,20 +75,21 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
         GenerateTestReport(options.ProjectName, testOutputDirectory / $"{options.ProjectName}.trx");
 
         // Install/update reportgenerator
-        await InstallToolAsync("dotnet-reportgenerator-globaltool");
+        await InstallToolAsync("dotnet-reportgenerator-globaltool", cancellationToken: cancellationToken);
 
         // Run coverage report generator
         await GetService<IProcessRunner>()
             .RunAsync(new("reportgenerator",
-            [
-                $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",
-                $"-targetdir:{coverageResultsPublishDirectory}",
-                "-reporttypes:HtmlInline;JsonSummary",
-                "-sourcedirs:" + FileSystem.AtomRootDirectory,
-            ])
-            {
-                AllowFailedResult = true,
-            });
+                [
+                    $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",
+                    $"-targetdir:{coverageResultsPublishDirectory}",
+                    "-reporttypes:HtmlInline;JsonSummary",
+                    "-sourcedirs:" + FileSystem.AtomRootDirectory,
+                ])
+                {
+                    AllowFailedResult = true,
+                },
+                cancellationToken);
 
         GenerateCoverageReport(options.ProjectName, coverageResultsPublishDirectory / "Summary.json");
 

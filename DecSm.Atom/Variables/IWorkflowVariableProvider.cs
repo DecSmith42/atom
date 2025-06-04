@@ -59,6 +59,7 @@ public interface IWorkflowVariableProvider
     ///     The value to store for the variable. Values are always stored as strings and
     ///     should be serialized appropriately by the calling code if complex types are involved.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A <see cref="Task{TResult}" /> that represents the asynchronous write operation.
     ///     The task result is <c>true</c> if this provider successfully handled the write operation;
@@ -96,7 +97,7 @@ public interface IWorkflowVariableProvider
     /// }
     /// </code>
     /// </example>
-    public Task<bool> WriteVariable(string variableName, string variableValue);
+    public Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Reads a variable from the provider's storage system for a specific job context.
@@ -109,6 +110,7 @@ public interface IWorkflowVariableProvider
     ///     The name of the variable to read. This is typically the argument name as defined
     ///     in the build parameter definitions, not the original parameter name.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A <see cref="Task{TResult}" /> that represents the asynchronous read operation.
     ///     The task result is <c>true</c> if this provider successfully found and retrieved
@@ -152,5 +154,5 @@ public interface IWorkflowVariableProvider
     /// }
     /// </code>
     /// </example>
-    public Task<bool> ReadVariable(string jobName, string variableName);
+    public Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default);
 }

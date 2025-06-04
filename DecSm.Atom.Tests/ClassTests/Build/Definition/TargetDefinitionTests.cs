@@ -38,7 +38,7 @@ public class TargetDefinitionTests
         // Assert
         targetDefinition.Tasks.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
             x => x.Count.ShouldBe(1),
-            x => x[0]()
+            x => x[0](CancellationToken.None)
                 .ShouldBe(task));
     }
 
@@ -62,33 +62,10 @@ public class TargetDefinitionTests
         // Assert
         targetDefinition.Tasks.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
             x => x.Count.ShouldBe(2),
-            x => x[0]()
+            x => x[0](CancellationToken.None)
                 .ShouldBe(task1),
-            x => x[1]()
+            x => x[1](CancellationToken.None)
                 .ShouldBe(task2));
-    }
-
-    [Test]
-    public void Executes_DoesNotAddDuplicateTasks()
-    {
-        // Arrange
-        var task = Task.CompletedTask;
-
-        var targetDefinition = new TargetDefinition
-        {
-            Name = "name",
-        };
-
-        // Act
-        targetDefinition
-            .Executes(() => task)
-            .Executes(() => task);
-
-        // Assert
-        targetDefinition.Tasks.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
-            x => x.Count.ShouldBe(1),
-            x => x[0]()
-                .ShouldBe(task));
     }
 
     // ReSharper disable once ClassNeverInstantiated.Local

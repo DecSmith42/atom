@@ -11,7 +11,7 @@ internal sealed class BuildExecutor(
     ILogger<BuildExecutor> logger
 )
 {
-    public async Task Execute()
+    public async Task Execute(CancellationToken cancellationToken)
     {
         var commands = args.Commands;
 
@@ -28,12 +28,12 @@ internal sealed class BuildExecutor(
             ValidateTargetParameters(buildModel.GetTarget(command.Name));
 
         foreach (var command in commands)
-            await ExecuteTarget(buildModel.GetTarget(command.Name));
+            await ExecuteTarget(buildModel.GetTarget(command.Name), cancellationToken);
 
         foreach (var outcomeReporter in outcomeReporters)
             try
             {
-                await outcomeReporter.ReportRunOutcome();
+                await outcomeReporter.ReportRunOutcome(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -77,7 +77,7 @@ internal sealed class BuildExecutor(
         }
     }
 
-    private async Task ExecuteTarget(TargetModel target)
+    private async Task ExecuteTarget(TargetModel target, CancellationToken cancellationToken)
     {
         if (buildModel.TargetStates[target].Status is TargetRunState.NotRun
             or TargetRunState.Skipped
@@ -95,7 +95,7 @@ internal sealed class BuildExecutor(
         }
 
         foreach (var dependency in target.Dependencies)
-            await ExecuteTarget(dependency);
+            await ExecuteTarget(dependency, cancellationToken);
 
         if (target.Dependencies.Any(depTarget => buildModel.TargetStates[depTarget].Status is TargetRunState.Failed))
         {
@@ -107,7 +107,7 @@ internal sealed class BuildExecutor(
 
         foreach (var variable in target.ConsumedVariables)
         {
-            await variableService.ReadVariable(variable.TargetName, variable.VariableName);
+            await variableService.ReadVariable(variable.TargetName, variable.VariableName, cancellationToken);
 
             if (paramService.GetParam(variable.VariableName) is not (null or ""))
                 continue;
@@ -156,7 +156,12 @@ internal sealed class BuildExecutor(
             try
             {
                 foreach (var task in target.Tasks)
-                    await task();
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        throw new OperationCanceledException("Build execution was cancelled", cancellationToken);
+
+                    await task(cancellationToken);
+                }
 
                 buildModel.TargetStates[target].Status = TargetRunState.Succeeded;
             }

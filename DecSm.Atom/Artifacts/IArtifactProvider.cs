@@ -52,6 +52,7 @@ public interface IArtifactProvider
     ///     An optional identifier for a specific slice or variation of the build (e.g., for matrix builds).
     ///     This helps in organizing artifacts when a build produces multiple variations.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task" /> representing the asynchronous upload operation.</returns>
     /// <example>
     ///     A build step might invoke this to store a compiled package:
@@ -65,7 +66,11 @@ public interface IArtifactProvider
     ///     });
     /// </code>
     /// </example>
-    Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null);
+    Task StoreArtifacts(
+        IReadOnlyList<string> artifactNames,
+        string? buildId = null,
+        string? buildSlice = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Downloads the specified artifacts from the configured storage.
@@ -81,6 +86,7 @@ public interface IArtifactProvider
     ///     be assumed or it might retrieve the latest.
     /// </param>
     /// <param name="buildSlice">An optional identifier for a specific slice or variation of the build from which to retrieve artifacts.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task" /> representing the asynchronous download operation.</returns>
     /// <example>
     ///     A build step might invoke this to retrieve a previously built package:
@@ -93,18 +99,23 @@ public interface IArtifactProvider
     ///     });
     /// </code>
     /// </example>
-    Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null);
+    Task RetrieveArtifacts(
+        IReadOnlyList<string> artifactNames,
+        string? buildId = null,
+        string? buildSlice = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Cleans up (deletes) artifacts associated with the specified build run identifiers.
     /// </summary>
     /// <param name="runIdentifiers">A list of build run identifiers whose artifacts should be cleaned up.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A <see cref="Task" /> representing the asynchronous cleanup operation.</returns>
     /// <remarks>
     ///     This is useful for managing storage space by removing old or temporary artifacts.
     ///     An example target using this is <c>ICleanupPrereleaseArtifacts</c>.
     /// </remarks>
-    Task Cleanup(IReadOnlyList<string> runIdentifiers);
+    Task Cleanup(IReadOnlyList<string> runIdentifiers, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Retrieves a list of stored run identifiers from the artifact storage.
@@ -114,10 +125,14 @@ public interface IArtifactProvider
     ///     all relevant run identifiers may be retrieved.
     /// </param>
     /// <param name="buildSlice">Optional. The build slice to filter run identifiers by.</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task{TResult}" /> representing the asynchronous operation, with a list of stored run identifiers as the result.</returns>
     /// <remarks>
     ///     This can be used to list available builds or to find specific runs for retrieval or cleanup.
     ///     The <c>AzureBlobArtifactProvider</c> uses this to find build IDs for cleanup.
     /// </remarks>
-    Task<IReadOnlyList<string>> GetStoredRunIdentifiers(string? artifactName = null, string? buildSlice = null);
+    Task<IReadOnlyList<string>> GetStoredRunIdentifiers(
+        string? artifactName = null,
+        string? buildSlice = null,
+        CancellationToken cancellationToken = default);
 }

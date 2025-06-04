@@ -55,7 +55,7 @@ public class BuildExecutorTests
             _logger);
 
         // Act
-        await buildExecutor.Execute();
+        await buildExecutor.Execute(CancellationToken.None);
 
         // Assert
         // TODO: Verify logs
@@ -78,7 +78,7 @@ public class BuildExecutorTests
         {
             Tasks =
             [
-                () =>
+                _ =>
                 {
                     testVal.Value = "Test";
 
@@ -120,7 +120,7 @@ public class BuildExecutorTests
             _logger);
 
         // Act
-        await buildExecutor.Execute();
+        await buildExecutor.Execute(CancellationToken.None);
 
         // Assert
         testVal.Value.ShouldBe("Test");

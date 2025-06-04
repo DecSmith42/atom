@@ -57,6 +57,7 @@ public interface IWorkflowVariableService
     ///     The value to store for the variable. Values are persisted as strings and should be
     ///     serialized appropriately if complex data types need to be stored.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A <see cref="Task" /> representing the asynchronous write operation.
     /// </returns>
@@ -97,7 +98,7 @@ public interface IWorkflowVariableService
     /// await WriteVariable("Environment", "Production");
     /// </code>
     /// </example>
-    Task WriteVariable(string variableName, string variableValue);
+    Task WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Reads a variable from the workflow context for a specific job, making it available in the current execution context.
@@ -110,6 +111,7 @@ public interface IWorkflowVariableService
     ///     The name of the variable as defined in the build parameter definitions. This name will be
     ///     resolved to the corresponding argument name before being passed to the underlying providers.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A <see cref="Task" /> representing the asynchronous read operation.
     /// </returns>
@@ -154,7 +156,7 @@ public interface IWorkflowVariableService
     /// await ReadVariable("analyze", "CodeQualityScore");
     /// </code>
     /// </example>
-    Task ReadVariable(string jobName, string variableName);
+    Task ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default);
 }
 
 internal sealed class WorkflowVariableService(
@@ -172,25 +174,25 @@ internal sealed class WorkflowVariableService(
         .Where(x => x is not AtomWorkflowVariableProvider)
         .ToArray();
 
-    public async Task WriteVariable(string variableName, string variableValue)
+    public async Task WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
     {
         var variableArgName = buildDefinition.ParamDefinitions[variableName].ArgName;
 
         foreach (var provider in _customProviders)
-            if (await provider.WriteVariable(variableArgName, variableValue))
+            if (await provider.WriteVariable(variableArgName, variableValue, cancellationToken))
                 return;
 
-        await _baseProvider.WriteVariable(variableArgName, variableValue);
+        await _baseProvider.WriteVariable(variableArgName, variableValue, cancellationToken);
     }
 
-    public async Task ReadVariable(string jobName, string variableName)
+    public async Task ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default)
     {
         var variableArgName = buildDefinition.ParamDefinitions[variableName].ArgName;
 
         foreach (var provider in _customProviders)
-            if (await provider.ReadVariable(jobName, variableArgName))
+            if (await provider.ReadVariable(jobName, variableArgName, cancellationToken))
                 return;
 
-        await _baseProvider.ReadVariable(jobName, variableArgName);
+        await _baseProvider.ReadVariable(jobName, variableArgName, cancellationToken);
     }
 }

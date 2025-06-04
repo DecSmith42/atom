@@ -46,6 +46,7 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return;
 
+        // No cancellation token here - we'd prefer to wait for the files to write so they don't get mangled.
         foreach (var (file, i) in _files.Select((x, i) => (x, i)))
             if (_initialContents[i] is null)
                 file.FileSystem.File.Delete(file);
@@ -54,16 +55,19 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.CreateAsync(RootedPath, Func{string, string})" />
+    ///     See <see cref="TransformFileScope.CreateAsync(RootedPath, Func{string, string}, CancellationToken)" />
     /// </summary>
-    public static async Task<TransformMultiFileScope> CreateAsync(IEnumerable<RootedPath> files, Func<string, string> transform)
+    public static async Task<TransformMultiFileScope> CreateAsync(
+        IEnumerable<RootedPath> files,
+        Func<string, string> transform,
+        CancellationToken cancellationToken = default)
     {
         var filesArray = files.ToArray();
 
         var initialContents = await Task.WhenAll(filesArray.Select(async x =>
         {
             if (x.FileSystem.File.Exists(x))
-                return await x.FileSystem.File.ReadAllTextAsync(x);
+                return await x.FileSystem.File.ReadAllTextAsync(x, cancellationToken);
 
             await x
                 .FileSystem
@@ -76,29 +80,45 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
 
         var scope = new TransformMultiFileScope(filesArray, initialContents);
 
-        await Task.WhenAll(
-            filesArray.Select((x, i) => x.FileSystem.File.WriteAllTextAsync(x, transform(initialContents[i] ?? string.Empty))));
+        try
+        {
+            await Task.WhenAll(filesArray.Select((x, i) =>
+                x.FileSystem.File.WriteAllTextAsync(x, transform(initialContents[i] ?? string.Empty), cancellationToken)));
+        }
+        catch (OperationCanceledException)
+        {
+            await scope.DisposeAsync();
+        }
 
         return scope;
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.Create(RootedPath, Func{string, string})" />
+    ///     See <see cref="TransformFileScope.AddAsync(Func{string, string},CancellationToken)" />
     /// </summary>
-    public async Task<TransformMultiFileScope> AddAsync(Func<string, string> transform)
+    public async Task<TransformMultiFileScope> AddAsync(Func<string, string> transform, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
         if (_cancelled)
             return this;
 
-        await Task.WhenAll(_files.Select(async x =>
+        try
         {
-            var currentContent = await x.FileSystem.File.ReadAllTextAsync(x);
-            await x.FileSystem.File.WriteAllTextAsync(x, transform(currentContent));
-        }));
+            await Task.WhenAll(_files.Select(async x =>
+            {
+                var currentContent = await x.FileSystem.File.ReadAllTextAsync(x, cancellationToken);
+                await x.FileSystem.File.WriteAllTextAsync(x, transform(currentContent), cancellationToken);
+            }));
 
-        return this;
+            return this;
+        }
+        catch (OperationCanceledException)
+        {
+            await DisposeAsync();
+
+            throw;
+        }
     }
 
     /// <summary>
@@ -133,7 +153,7 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.AddAsync(Func{string, string})" />
+    ///     See <see cref="TransformFileScope.Add(Func{string, string})" />
     /// </summary>
     public TransformMultiFileScope Add(Func<string, string> transform)
     {

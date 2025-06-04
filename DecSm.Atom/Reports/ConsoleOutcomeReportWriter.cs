@@ -10,7 +10,7 @@ internal partial class ConsoleOutcomeReportWriter(
     ReportService reportService
 ) : IOutcomeReportWriter
 {
-    public Task ReportRunOutcome()
+    public Task ReportRunOutcome(CancellationToken cancellationToken)
     {
         var table = new Table()
             .LeftAligned()
