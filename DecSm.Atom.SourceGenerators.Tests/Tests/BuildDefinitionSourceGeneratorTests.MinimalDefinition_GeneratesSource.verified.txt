@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using DecSm.Atom.Build.Definition;
 using DecSm.Atom.Params;
 using DecSm.Atom.Paths;
+using DecSm.Atom.Process;
 
 namespace TestNamespace;
 
@@ -23,6 +24,8 @@ partial class MinimalTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
     private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("TestNamespace.MinimalTestDefinition");
 
     private IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
+
+    private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
 
     private T GetService<T>()
         where T : notnull =>

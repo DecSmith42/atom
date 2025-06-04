@@ -16,7 +16,7 @@ public partial interface IConsoleTarget
     string SecretParam => GetParam(() => SecretParam)!;
 
     Target ConsoleTarget =>
-        d => d
+        t => t
             .DescribedAs("Console target")
             .RequiresParam(nameof(RequiredParam))
             .RequiresParam(nameof(DefaultParam))

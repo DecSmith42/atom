@@ -186,7 +186,10 @@ internal sealed partial class DevopsWorkflowWriter(
                 {
                     var dimensions = job
                         .MatrixDimensions
-                        .Select(d => new MatrixDimension(d.Name, d.Values))
+                        .Select(d => new MatrixDimension(d.Name)
+                        {
+                            Values = d.Values,
+                        })
                         .ToArray();
 
                     var dimensionValues = dimensions

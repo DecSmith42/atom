@@ -85,7 +85,7 @@ public interface IWorkflowOption
     /// </remarks>
     /// <seealso cref="Merge{T}" />
     public static IEnumerable<IWorkflowOption> GetOptionsForCurrentTarget(IBuildDefinition buildDefinition) =>
-        Merge(buildDefinition.DefaultWorkflowOptions.Concat(buildDefinition
+        Merge(buildDefinition.GlobalWorkflowOptions.Concat(buildDefinition
             .Workflows
             .Where(workflow => workflow.WorkflowTypes.Any(workflowType => workflowType.IsRunning))
             .SelectMany(workflow => workflow.Options)));

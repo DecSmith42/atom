@@ -19,7 +19,7 @@ public partial class WorkflowSingleTargetBuild : BuildDefinition, IWorkflowSingl
 public partial interface IWorkflowSingleTarget
 {
     Target WorkflowSingleTarget =>
-        d => d
+        t => t
             .DescribedAs("Workflow Target 1")
             .Executes(() => Task.CompletedTask);
 }

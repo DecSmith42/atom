@@ -7,9 +7,12 @@ public static class Extensions
         this WorkflowTargetDefinition workflowTargetDefinition,
         string[] labels) =>
         workflowTargetDefinition
-            .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn), labels))
-            .WithAddedOptions(GithubRunsOn.SetByMatrix);
+            .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
+            {
+                Values = labels,
+            })
+            .WithOptions(GithubRunsOn.SetByMatrix);
 
     public static WorkflowTargetDefinition WithGithubTokenInjection(this WorkflowTargetDefinition workflowTargetDefinition) =>
-        workflowTargetDefinition.WithAddedOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
+        workflowTargetDefinition.WithOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
 }

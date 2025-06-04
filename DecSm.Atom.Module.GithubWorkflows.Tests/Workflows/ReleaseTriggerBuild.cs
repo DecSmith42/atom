@@ -17,5 +17,5 @@ public partial class ReleaseTriggerBuild : BuildDefinition, IGithubWorkflows, IR
 [TargetDefinition]
 public partial interface IReleaseTriggerTarget
 {
-    Target ReleaseTriggerTarget => d => d;
+    Target ReleaseTriggerTarget => t => t;
 }

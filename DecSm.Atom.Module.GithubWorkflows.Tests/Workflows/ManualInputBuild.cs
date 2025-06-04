@@ -51,5 +51,5 @@ public partial interface IManualInputTarget
     [ParamDefinition("choice-param-with-default", "Choice param", "choice 1")]
     string ChoiceParamWithDefault => GetParam(() => ChoiceParamWithDefault)!;
 
-    Target ManualInputTarget => d => d;
+    Target ManualInputTarget => t => t;
 }

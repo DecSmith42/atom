@@ -1,7 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
-[TargetDefinition]
-public partial interface IDotnetToolHelper
+public interface IDotnetToolInstallHelper : IBuildAccessor
 {
     void InstallTool(string toolName, string? version = null, bool global = true, bool forceReinstall = false)
     {
@@ -10,22 +9,20 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
-            GetService<IProcessRunner>()
-                .Run(new("dotnet", "new tool-manifest")
-                {
-                    InvocationLogLevel = LogLevel.Debug,
-                });
+            ProcessRunner.Run(new("dotnet", "new tool-manifest")
+            {
+                InvocationLogLevel = LogLevel.Debug,
+            });
 
         if (!forceReinstall &&
             !GetService<CommandLineArgs>()
                 .HasHeadless)
         {
-            var globalListResult = GetService<IProcessRunner>()
-                .Run(new("dotnet", $"tool list {toolName} {globalFlag}")
-                {
-                    AllowFailedResult = true,
-                    InvocationLogLevel = LogLevel.Debug,
-                });
+            var globalListResult = ProcessRunner.Run(new("dotnet", $"tool list {toolName} {globalFlag}")
+            {
+                AllowFailedResult = true,
+                InvocationLogLevel = LogLevel.Debug,
+            });
 
             var toolVersion = globalListResult
                 .Output
@@ -46,11 +43,10 @@ public partial interface IDotnetToolHelper
             ? $"-v {version}"
             : string.Empty;
 
-        GetService<IProcessRunner>()
-            .Run(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
-            {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+        ProcessRunner.Run(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
+        {
+            InvocationLogLevel = LogLevel.Debug,
+        });
     }
 
     async Task InstallToolAsync(
@@ -65,24 +61,22 @@ public partial interface IDotnetToolHelper
             : string.Empty;
 
         if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
-            await GetService<IProcessRunner>()
-                .RunAsync(new("dotnet", "new tool-manifest")
-                    {
-                        InvocationLogLevel = LogLevel.Debug,
-                    },
-                    cancellationToken);
+            await ProcessRunner.RunAsync(new("dotnet", "new tool-manifest")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                },
+                cancellationToken);
 
         if (!forceReinstall &&
             !GetService<CommandLineArgs>()
                 .HasHeadless)
         {
-            var globalListResult = await GetService<IProcessRunner>()
-                .RunAsync(new("dotnet", $"tool list {toolName} {globalFlag}")
-                    {
-                        AllowFailedResult = true,
-                        InvocationLogLevel = LogLevel.Debug,
-                    },
-                    cancellationToken);
+            var globalListResult = await ProcessRunner.RunAsync(new("dotnet", $"tool list {toolName} {globalFlag}")
+                {
+                    AllowFailedResult = true,
+                    InvocationLogLevel = LogLevel.Debug,
+                },
+                cancellationToken);
 
             var toolVersion = globalListResult
                 .Output
@@ -103,11 +97,10 @@ public partial interface IDotnetToolHelper
             ? $"-v {version}"
             : string.Empty;
 
-        await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
-                {
-                    InvocationLogLevel = LogLevel.Debug,
-                },
-                cancellationToken);
+        await ProcessRunner.RunAsync(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
+            {
+                InvocationLogLevel = LogLevel.Debug,
+            },
+            cancellationToken);
     }
 }

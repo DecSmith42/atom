@@ -42,24 +42,12 @@ public sealed record WorkflowTargetDefinition(string Name)
     public WorkflowTargetDefinition WithMatrixDimensions(params MatrixDimension[] dimensions) =>
         this with
         {
-            MatrixDimensions = dimensions,
-        };
-
-    public WorkflowTargetDefinition WithAddedMatrixDimensions(params MatrixDimension[] dimensions) =>
-        this with
-        {
             MatrixDimensions = MatrixDimensions
                 .Concat(dimensions)
                 .ToList(),
         };
 
     public WorkflowTargetDefinition WithOptions(params IWorkflowOption[] options) =>
-        this with
-        {
-            Options = options,
-        };
-
-    public WorkflowTargetDefinition WithAddedOptions(params IWorkflowOption[] options) =>
         this with
         {
             Options = Options

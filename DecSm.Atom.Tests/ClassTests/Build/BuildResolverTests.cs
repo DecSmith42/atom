@@ -49,7 +49,7 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d.Executes(() => Task.CompletedTask),
+                ["Target1"] = t => t.Executes(() => Task.CompletedTask),
             },
         };
 
@@ -75,8 +75,8 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d.DependsOn("Target2"),
-                ["Target2"] = d => d.DependsOn("Target1"),
+                ["Target1"] = t => t.DependsOn("Target2"),
+                ["Target2"] = t => t.DependsOn("Target1"),
             },
         };
 
@@ -96,7 +96,7 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d.Executes(() => Task.CompletedTask),
+                ["Target1"] = t => t.Executes(() => Task.CompletedTask),
             },
         };
 
@@ -126,8 +126,8 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d.Executes(() => Task.CompletedTask),
-                ["Target2"] = d => d.Executes(() => Task.CompletedTask),
+                ["Target1"] = t => t.Executes(() => Task.CompletedTask),
+                ["Target2"] = t => t.Executes(() => Task.CompletedTask),
             },
         };
 
@@ -165,10 +165,10 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d
+                ["Target1"] = t => t
                     .DependsOn("Target2")
                     .Executes(() => Task.CompletedTask),
-                ["Target2"] = d => d.Executes(() => Task.CompletedTask),
+                ["Target2"] = t => t.Executes(() => Task.CompletedTask),
             },
         };
 
@@ -206,7 +206,7 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d
+                ["Target1"] = t => t
                     .DependsOn("Target2")
                     .Executes(() => Task.CompletedTask),
             },
@@ -228,8 +228,8 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d.Executes(() => Task.CompletedTask),
-                ["Target2"] = d => d.Executes(() => Task.CompletedTask),
+                ["Target1"] = t => t.Executes(() => Task.CompletedTask),
+                ["Target2"] = t => t.Executes(() => Task.CompletedTask),
             },
         };
 
@@ -267,10 +267,10 @@ public class BuildResolverTests
         {
             ManualTargetDefinitions = new Dictionary<string, Target>
             {
-                ["Target1"] = d => d
+                ["Target1"] = t => t
                     .ConsumesArtifact("Target2", "Artifact1")
                     .Executes(() => Task.CompletedTask),
-                ["Target2"] = d => d
+                ["Target2"] = t => t
                     .ProducesArtifact("Artifact1")
                     .Executes(() => Task.CompletedTask),
             },

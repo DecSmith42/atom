@@ -16,7 +16,7 @@ public partial interface ITestTarget
     public Func<Task> Execute { get; set; }
 
     Target TestTarget =>
-        d => d
+        t => t
             .DescribedAs(Description)
             .Executes(Execute);
 }

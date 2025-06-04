@@ -1,11 +1,12 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
 [TargetDefinition]
-public partial interface IDotnetPublishHelper : IVersionHelper
+public partial interface IDotnetPublishHelper : IBuildInfo
 {
     async Task DotnetPublishProject(DotnetPublishOptions options, CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Publishing Atom project {AtomProjectName}", options.ProjectName);
+        Logger.LogDebug("Using configuration {Configuration} for publishing", options.Configuration);
 
         var projectPath = DotnetFileUtils.GetProjectFilePathByName(FileSystem, options.ProjectName);
 
@@ -13,15 +14,13 @@ public partial interface IDotnetPublishHelper : IVersionHelper
         {
             (true, not null) => await TransformProjectVersionScope
                 .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
-                    GetService<IBuildVersionProvider>()
-                        .Version,
+                    BuildVersion,
                     cancellationToken)
                 .AddAsync(options.CustomPropertiesTransform),
 
             (true, null) => await TransformProjectVersionScope.CreateAsync(
                 DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
-                GetService<IBuildVersionProvider>()
-                    .Version,
+                BuildVersion,
                 cancellationToken),
 
             (false, not null) => await TransformMultiFileScope.CreateAsync(
@@ -37,8 +36,8 @@ public partial interface IDotnetPublishHelper : IVersionHelper
         if (FileSystem.Directory.Exists(buildDir))
             FileSystem.Directory.Delete(buildDir, true);
 
-        await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"), cancellationToken);
+        await ProcessRunner.RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"),
+            cancellationToken);
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
-[TargetDefinition]
-public partial interface INugetHelper : IBuildInfo
+[PublicAPI]
+public interface INugetHelper : IBuildInfo
 {
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
@@ -42,7 +42,7 @@ public partial interface INugetHelper : IBuildInfo
         string projectName,
         string feed,
         string apiKey,
-        string? configFile = null,
+        RootedPath? configFile = null,
         CancellationToken cancellationToken = default)
     {
         var packageBuildDir = FileSystem.AtomArtifactsDirectory / projectName;
@@ -57,14 +57,14 @@ public partial interface INugetHelper : IBuildInfo
 
         var matchingPackage = packages.Single(x => x == packageBuildDir / $"{projectName}.{BuildVersion}.nupkg");
 
-        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey, cancellationToken: cancellationToken);
+        await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey, configFile, cancellationToken);
     }
 
     async Task PushPackageToNuget(
         RootedPath packagePath,
         string feed,
         string apiKey,
-        string? configFile = null,
+        RootedPath? configFile = null,
         CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
@@ -76,8 +76,12 @@ public partial interface INugetHelper : IBuildInfo
             return;
         }
 
-        await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"nuget push \"{packagePath}\" --source {feed} --api-key {apiKey}"), cancellationToken);
+        var configFileFlag = configFile is not null
+            ? $" --configfile \"{configFile}\""
+            : string.Empty;
+
+        await ProcessRunner.RunAsync(new("dotnet", $"nuget push \"{packagePath}\"{configFileFlag} --source {feed} --api-key {apiKey}"),
+            cancellationToken);
 
         Logger.LogInformation("Package pushed");
     }

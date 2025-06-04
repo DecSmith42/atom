@@ -44,7 +44,7 @@ public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
     ///     <see cref="IAtomFileSystem.AtomPublishDirectory" />.
     /// </remarks>
     Target StoreArtifact =>
-        d => d
+        t => t
             .IsHidden()
             .DescribedAs("Stores artifacts.")
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildName))

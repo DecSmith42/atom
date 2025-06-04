@@ -39,7 +39,7 @@
 /// [TargetDefinition]
 /// public partial interface IMyTargets
 /// {
-///     Target MyTarget => d => d.DescribedAs("A minimal target.").Executes(() => Console.WriteLine("Executing MyTarget"));
+///     Target MyTarget => t => t.DescribedAs("A minimal target.").Executes(() => Console.WriteLine("Executing MyTarget"));
 /// }
 /// </code>
 /// </example>
@@ -61,6 +61,6 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinit
     /// <inheritdoc cref="IBuildDefinition.Workflows" />
     public virtual IReadOnlyList<WorkflowDefinition> Workflows => [];
 
-    /// <inheritdoc cref="IBuildDefinition.DefaultWorkflowOptions" />
-    public virtual IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions => [];
+    /// <inheritdoc cref="IBuildDefinition.GlobalWorkflowOptions" />
+    public virtual IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => [];
 }

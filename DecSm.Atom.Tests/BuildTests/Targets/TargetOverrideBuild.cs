@@ -14,7 +14,7 @@ public partial interface IBaseOverrideTarget
     bool BaseOverrideTargetExecuted { get; set; }
 
     Target OverrideTarget =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             BaseOverrideTargetExecuted = true;
 
@@ -28,7 +28,7 @@ public partial interface IOverrideTarget : IBaseOverrideTarget
     bool OverrideOverrideTargetExecuted { get; set; }
 
     new Target OverrideTarget =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             OverrideOverrideTargetExecuted = true;
 

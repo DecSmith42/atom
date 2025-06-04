@@ -14,7 +14,7 @@ public partial interface ICircularTarget1
     bool CircularTarget1Executed { get; set; }
 
     Target CircularTarget1 =>
-        d => d
+        t => t
             .DependsOn(nameof(ICircularTarget1))
             .Executes(() =>
             {
@@ -30,7 +30,7 @@ public partial interface ICircularTarget2
     bool CircularTarget2Executed { get; set; }
 
     Target CircularTarget2 =>
-        d => d
+        t => t
             .DependsOn(nameof(ICircularTarget2))
             .Executes(() =>
             {
@@ -56,7 +56,7 @@ public partial interface ITestCircularTarget3
     bool CircularTarget3Executed { get; set; }
 
     Target TestCircularTarget3 =>
-        d => d
+        t => t
             .DependsOn(nameof(ITestCircularTarget4))
             .Executes(() =>
             {
@@ -72,7 +72,7 @@ public partial interface ITestCircularTarget4
     bool CircularTarget4Executed { get; set; }
 
     Target TestCircularTarget4 =>
-        d => d
+        t => t
             .DependsOn(nameof(ITestCircularTarget5))
             .Executes(() =>
             {
@@ -88,7 +88,7 @@ public partial interface ITestCircularTarget5
     bool CircularTarget5Executed { get; set; }
 
     Target TestCircularTarget5 =>
-        d => d
+        t => t
             .DependsOn(nameof(ITestCircularTarget3))
             .Executes(() =>
             {

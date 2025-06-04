@@ -23,5 +23,5 @@ public partial class SimpleBuild : BuildDefinition, IGithubWorkflows, ISimpleTar
 [TargetDefinition]
 public partial interface ISimpleTarget
 {
-    Target SimpleTarget => d => d;
+    Target SimpleTarget => t => t;
 }

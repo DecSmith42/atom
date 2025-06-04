@@ -40,7 +40,7 @@ public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInf
     ///     by the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
     /// </remarks>
     Target RetrieveArtifact =>
-        d => d
+        t => t
             .IsHidden()
             .DescribedAs("Retrieves artifacts.")
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildName))

@@ -22,7 +22,7 @@ public partial interface IDependencyTarget1
     bool DependencyTarget1Executed { get; set; }
 
     Target DependencyTarget1 =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             DependencyTarget1Executed = true;
 
@@ -36,7 +36,7 @@ public partial interface IDependencyTarget2
     bool DependencyTarget2Executed { get; set; }
 
     Target DependencyTarget2 =>
-        d => d
+        t => t
             .DependsOn(nameof(IDependencyTarget1.DependencyTarget1))
             .Executes(() =>
             {
@@ -52,7 +52,7 @@ public partial interface IDependencyFailTarget1
     bool DependencyFailTarget1Executed { get; set; }
 
     Target DependencyFailTarget1 =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             DependencyFailTarget1Executed = true;
 
@@ -66,7 +66,7 @@ public partial interface IDependencyFailTarget2
     bool DependencyFailTarget2Executed { get; set; }
 
     Target DependencyFailTarget2 =>
-        d => d
+        t => t
             .DependsOn(nameof(IDependencyFailTarget1.DependencyFailTarget1))
             .Executes(() =>
             {
