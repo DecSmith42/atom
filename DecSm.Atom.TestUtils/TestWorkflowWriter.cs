@@ -7,13 +7,13 @@ public class TestWorkflowWriter : IWorkflowWriter<TestWorkflowType>
 
     public List<WorkflowModel> GeneratedWorkflows { get; } = [];
 
-    public Task Generate(WorkflowModel workflow)
+    public Task Generate(WorkflowModel workflow, CancellationToken cancellationToken = default)
     {
         GeneratedWorkflows.Add(workflow);
 
         return Task.CompletedTask;
     }
 
-    public Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow) =>
+    public Task<bool> CheckForDirtyWorkflow(WorkflowModel workflow, CancellationToken cancellationToken = default) =>
         Task.FromResult(IsDirty);
 }

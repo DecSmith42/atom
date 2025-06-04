@@ -93,7 +93,7 @@ internal sealed class AtomService(
 
             if (args is { HasHelp: false, HasHeadless: false, HasGen: false, Commands.Count: 0, Params.Count: 0 })
             {
-                await workflowGenerator.GenerateWorkflows();
+                await workflowGenerator.GenerateWorkflows(stoppingToken);
                 helpService.ShowHelp();
 
                 return;
@@ -107,11 +107,11 @@ internal sealed class AtomService(
             }
 
             if (args.HasGen || !args.HasHeadless)
-                await workflowGenerator.GenerateWorkflows();
-            else if (await workflowGenerator.WorkflowsDirty())
+                await workflowGenerator.GenerateWorkflows(stoppingToken);
+            else if (await workflowGenerator.WorkflowsDirty(stoppingToken))
                 throw new InvalidOperationException("One or more workflows are dirty. Run 'atom -g' to regenerate them");
 
-            await executor.Execute();
+            await executor.Execute(stoppingToken);
 
             if (buildModel.Targets.Any(x => buildModel.TargetStates[x].Status is TargetRunState.Failed))
                 Environment.ExitCode = 1;

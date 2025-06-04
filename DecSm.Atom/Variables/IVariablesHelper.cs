@@ -41,6 +41,7 @@ public interface IVariablesHelper : IBuildAccessor
     ///     The value of the variable. The value will be stored as a string in the
     ///     workflow context and can be retrieved by subsequent build steps.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A <see cref="Task" /> representing the asynchronous operation of writing
     ///     the variable to the workflow context.
@@ -74,7 +75,7 @@ public interface IVariablesHelper : IBuildAccessor
     /// await WriteVariable("OutputPath", Path.Combine(baseDir, "bin", "Release"));
     /// </code>
     /// </example>
-    Task WriteVariable(string name, string value) =>
+    Task WriteVariable(string name, string value, CancellationToken cancellationToken = default) =>
         GetService<IWorkflowVariableService>()
-            .WriteVariable(name, value);
+            .WriteVariable(name, value, cancellationToken);
 }

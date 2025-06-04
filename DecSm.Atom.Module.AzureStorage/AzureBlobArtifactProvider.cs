@@ -16,7 +16,11 @@ public sealed class AzureBlobArtifactProvider(
         nameof(IAzureArtifactStorage.AzureArtifactStorageContainer), nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
     ];
 
-    public async Task StoreArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? slice = null)
+    public async Task StoreArtifacts(
+        IReadOnlyList<string> artifactNames,
+        string? buildId = null,
+        string? slice = null,
+        CancellationToken cancellationToken = default)
     {
         buildId ??= buildIdProvider.BuildId;
 
@@ -81,7 +85,8 @@ public sealed class AzureBlobArtifactProvider(
                     new BlobHttpHeaders
                     {
                         ContentType = MimeTypes.GetMimeType(file),
-                    });
+                    },
+                    cancellationToken: cancellationToken);
             }
 
             // Add report data for the artifact - name and url
@@ -89,7 +94,11 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task RetrieveArtifacts(IReadOnlyList<string> artifactNames, string? buildId = null, string? buildSlice = null)
+    public async Task RetrieveArtifacts(
+        IReadOnlyList<string> artifactNames,
+        string? buildId = null,
+        string? buildSlice = null,
+        CancellationToken cancellationToken = default)
     {
         buildId ??= buildIdProvider.BuildId;
 
@@ -141,7 +150,7 @@ public sealed class AzureBlobArtifactProvider(
 
             var hasAtLeastOneBlob = false;
 
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: artifactBlobDir);
+            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: artifactBlobDir, cancellationToken: cancellationToken);
 
             await foreach (var blobItem in blobs)
             {
@@ -151,7 +160,7 @@ public sealed class AzureBlobArtifactProvider(
 
                 var blobClient = containerClient.GetBlobClient(blobItem.Blob.Name);
 
-                var blobDownloadInfo = await blobClient.DownloadAsync();
+                var blobDownloadInfo = await blobClient.DownloadAsync(cancellationToken);
                 var blobName = blobItem.Blob.Name;
 
                 if (blobName.StartsWith(artifactBlobDir))
@@ -170,7 +179,7 @@ public sealed class AzureBlobArtifactProvider(
 
                 logger.LogTrace("Writing file {BlobPath}", blobPath);
                 await using var fileStream = fileSystem.File.Create(blobPath);
-                await blobDownloadInfo.Value.Content.CopyToAsync(fileStream);
+                await blobDownloadInfo.Value.Content.CopyToAsync(fileStream, cancellationToken);
             }
 
             if (!hasAtLeastOneBlob)
@@ -179,7 +188,7 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
-    public async Task Cleanup(IReadOnlyList<string> runIdentifiers)
+    public async Task Cleanup(IReadOnlyList<string> runIdentifiers, CancellationToken cancellationToken = default)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
@@ -191,7 +200,8 @@ public sealed class AzureBlobArtifactProvider(
             var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
             var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildIdPath}/");
+            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildIdPath}/",
+                cancellationToken: cancellationToken);
 
             await foreach (var blob in blobs)
             {
@@ -199,12 +209,15 @@ public sealed class AzureBlobArtifactProvider(
 
                 var blobClient = containerClient.GetBlobClient(blob.Blob.Name);
 
-                await blobClient.DeleteIfExistsAsync();
+                await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
             }
         }
     }
 
-    public async Task<IReadOnlyList<string>> GetStoredRunIdentifiers(string? artifactName = null, string? buildSlice = null)
+    public async Task<IReadOnlyList<string>> GetStoredRunIdentifiers(
+        string? artifactName = null,
+        string? buildSlice = null,
+        CancellationToken cancellationToken = default)
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
@@ -222,7 +235,7 @@ public sealed class AzureBlobArtifactProvider(
                 : $"{artifactName}/";
         }
 
-        var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/");
+        var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/", cancellationToken: cancellationToken);
 
         var buildIds = new List<string>();
 

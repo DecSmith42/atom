@@ -18,6 +18,7 @@ public interface IOutcomeReportWriter
     /// <summary>
     ///     Generates and outputs a report of the build execution outcome.
     /// </summary>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A task that represents the asynchronous reporting operation.
     ///     The task completes when the report has been successfully generated and output.
@@ -52,5 +53,5 @@ public interface IOutcomeReportWriter
     ///         </item>
     ///     </list>
     /// </remarks>
-    Task ReportRunOutcome();
+    Task ReportRunOutcome(CancellationToken cancellationToken);
 }

@@ -77,7 +77,5 @@ public partial interface IValidateBuild : IReportsHelper
 
                     throw new StepFailedException("Validation failed.");
                 }
-
-                return Task.CompletedTask;
             });
 }

@@ -3,7 +3,7 @@
 [TargetDefinition]
 public partial interface IDotnetPackHelper : IVersionHelper
 {
-    async Task DotnetPackProject(DotnetPackOptions options)
+    async Task DotnetPackProject(DotnetPackOptions options, CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Packing Atom project {AtomProjectName}", options.ProjectName);
 
@@ -14,17 +14,20 @@ public partial interface IDotnetPackHelper : IVersionHelper
             (true, not null) => await TransformProjectVersionScope
                 .CreateAsync(DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
                     GetService<IBuildVersionProvider>()
-                        .Version)
+                        .Version,
+                    cancellationToken)
                 .AddAsync(options.CustomPropertiesTransform),
 
             (true, null) => await TransformProjectVersionScope.CreateAsync(
                 DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
                 GetService<IBuildVersionProvider>()
-                    .Version),
+                    .Version,
+                cancellationToken),
 
             (false, not null) => await TransformMultiFileScope.CreateAsync(
                 DotnetFileUtils.GetPropertyFilesForProject(projectPath, FileSystem.AtomRootDirectory),
-                options.CustomPropertiesTransform!),
+                options.CustomPropertiesTransform!,
+                cancellationToken),
 
             _ => null,
         };
@@ -35,7 +38,7 @@ public partial interface IDotnetPackHelper : IVersionHelper
             FileSystem.Directory.Delete(packDirectory, true);
 
         await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"));
+            .RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"), cancellationToken);
 
         var packageFilePattern = options.CustomPackageId is { Length: > 0 }
             ? $"{options.CustomPackageId}.*.nupkg"

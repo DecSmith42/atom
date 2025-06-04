@@ -6,9 +6,9 @@
       IsHidden: true,
       Tasks: [
         {
-          Type: Func<Task>,
+          Type: Func<CancellationToken, Task>,
           Target: ISetupBuildInfo,
-          Method: System.Threading.Tasks.Task get_SetupBuildInfo()
+          Method: System.Threading.Tasks.Task get_SetupBuildInfo(System.Threading.CancellationToken)
         }
       ],
       ProducedVariables: [
@@ -24,19 +24,19 @@
       IsHidden: false,
       Tasks: [
         {
-          Type: Func<Task>,
-          Target: IValidateBuild,
-          Method: System.Threading.Tasks.Task get_ValidateBuild()
+          Type: Func<CancellationToken, Task>,
+          Target: TargetDefinition.<>c__DisplayClass49_0,
+          Method: System.Threading.Tasks.Task Executes(System.Threading.CancellationToken)
         }
       ]
     }
   ],
   TargetStates: {
-    TargetModel { Name = SetupBuildInfo, Description = Sets up the build ID, version, and timestamp, IsHidden = True, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
+    TargetModel { Name = SetupBuildInfo, Description = Sets up the build ID, version, and timestamp, IsHidden = True, Tasks = System.Collections.Generic.List`1[System.Func`2[System.Threading.CancellationToken,System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
       Name: SetupBuildInfo,
       Status: Skipped
     },
-    TargetModel { Name = ValidateBuild, Description = Checks the atom build for common issues., IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`1[System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
+    TargetModel { Name = ValidateBuild, Description = Checks the atom build for common issues., IsHidden = False, Tasks = System.Collections.Generic.List`1[System.Func`2[System.Threading.CancellationToken,System.Threading.Tasks.Task]], RequiredParams = System.Collections.Generic.List`1[DecSm.Atom.Params.ParamModel], ConsumedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedArtifact], ProducedArtifacts = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ProducedArtifact], ConsumedVariables = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.ConsumedVariable], ProducedVariables = System.Collections.Generic.List`1[System.String], Dependencies = System.Collections.Generic.List`1[DecSm.Atom.Build.Model.TargetModel], DeclaringAssembly = DecSm.Atom, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null }: {
       Name: ValidateBuild,
       Status: Skipped
     }

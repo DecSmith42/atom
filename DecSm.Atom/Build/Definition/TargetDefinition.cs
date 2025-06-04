@@ -29,7 +29,7 @@ public sealed class TargetDefinition
     /// <remarks>
     ///     Tasks will be executed in the order of the list.
     /// </remarks>
-    public List<Func<Task>> Tasks { get; private set; } = [];
+    public List<Func<CancellationToken, Task>> Tasks { get; private set; } = [];
 
     /// <summary>
     ///     Names of targets that must be executed before this target.
@@ -184,12 +184,38 @@ public sealed class TargetDefinition
     /// </summary>
     /// <param name="task">The async task to execute.</param>
     /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    public TargetDefinition Executes(Func<CancellationToken, Task> task)
+    {
+        Tasks.Add(task);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds an asynchronous task to execute when the build target runs.
+    /// </summary>
+    /// <param name="task">The async task to execute.</param>
+    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
     public TargetDefinition Executes(Func<Task> task)
     {
-        if (Tasks.Any(x => x() == task()))
-            return this;
+        Tasks.Add(_ => task());
 
-        Tasks.Add(task);
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds an asynchronous task to execute when the build target runs.
+    /// </summary>
+    /// <param name="action">The synchronous action to execute.</param>
+    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    public TargetDefinition Executes(Action action)
+    {
+        Tasks.Add(_ =>
+        {
+            action();
+
+            return Task.CompletedTask;
+        });
 
         return this;
     }

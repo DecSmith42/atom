@@ -2,7 +2,7 @@
 
 internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger<GithubVariableProvider> logger) : IWorkflowVariableProvider
 {
-    public async Task<bool> WriteVariable(string variableName, string variableValue)
+    public async Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
     {
         if (!Github.IsGithubActions)
             return false;
@@ -18,11 +18,13 @@ internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger
             variableValue,
             githubOutputPath);
 
-        await fileSystem.File.AppendAllTextAsync(githubOutputPath, $"{variableName}={variableValue}{Environment.NewLine}");
+        await fileSystem.File.AppendAllTextAsync(githubOutputPath,
+            $"{variableName}={variableValue}{Environment.NewLine}",
+            cancellationToken);
 
         return true;
     }
 
-    public Task<bool> ReadVariable(string jobName, string variableName) =>
+    public Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default) =>
         Task.FromResult(Github.IsGithubActions);
 }

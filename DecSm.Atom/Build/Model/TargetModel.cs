@@ -13,7 +13,7 @@ public sealed record TargetModel(string Name, string? Description, bool IsHidden
     /// <summary>
     ///     The actual code that will be executed when the target is run.
     /// </summary>
-    public required IReadOnlyList<Func<Task>> Tasks { get; init; }
+    public required IReadOnlyList<Func<CancellationToken, Task>> Tasks { get; init; }
 
     /// <summary>
     ///     Represents the input parameters that are mandatory for the execution of the target.

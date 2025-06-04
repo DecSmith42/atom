@@ -8,7 +8,7 @@ internal sealed class WorkflowGenerator(
 {
     private readonly List<IWorkflowWriter> _writers = writers.ToList();
 
-    public async Task GenerateWorkflows()
+    public async Task GenerateWorkflows(CancellationToken cancellationToken = default)
     {
         var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
 
@@ -25,7 +25,7 @@ internal sealed class WorkflowGenerator(
                 continue;
 
             var workflow = workflowResolver.Resolve(workflowDefinition);
-            var generateTask = writer.Generate(workflow);
+            var generateTask = writer.Generate(workflow, cancellationToken);
 
             generationTasks.Add(generateTask);
         }
@@ -33,7 +33,7 @@ internal sealed class WorkflowGenerator(
         await Task.WhenAll(generationTasks);
     }
 
-    public async Task<bool> WorkflowsDirty()
+    public async Task<bool> WorkflowsDirty(CancellationToken cancellationToken = default)
     {
         var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
 
@@ -50,7 +50,7 @@ internal sealed class WorkflowGenerator(
                 continue;
 
             var workflow = workflowResolver.Resolve(workflowDefinition);
-            var checkTask = writer.CheckForDirtyWorkflow(workflow);
+            var checkTask = writer.CheckForDirtyWorkflow(workflow, cancellationToken);
 
             checkTasks.Add(checkTask);
         }

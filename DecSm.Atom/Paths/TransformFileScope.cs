@@ -40,6 +40,7 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
         if (_cancelled)
             return;
 
+        // No cancellation token here - we'd prefer to wait for the file to write so it doesn't get mangled.
         if (_initialContent is null)
             _file.FileSystem.File.Delete(_file);
         else
@@ -71,11 +72,15 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     ///     A function that takes the initial content of the file as a string
     ///     and returns the transformed content as a string.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A task that represents the asynchronous operation and contains a <see cref="TransformFileScope" /> instance
     ///     managing the file.
     /// </returns>
-    public static async Task<TransformFileScope> CreateAsync(RootedPath file, Func<string, string> transform)
+    public static async Task<TransformFileScope> CreateAsync(
+        RootedPath file,
+        Func<string, string> transform,
+        CancellationToken cancellationToken = default)
     {
         string? initialContent = null;
 
@@ -86,11 +91,20 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
                 .Create(file)
                 .DisposeAsync();
         else
-            initialContent = await file.FileSystem.File.ReadAllTextAsync(file);
+            initialContent = await file.FileSystem.File.ReadAllTextAsync(file, cancellationToken);
 
         var scope = new TransformFileScope(file, initialContent);
 
-        await file.FileSystem.File.WriteAllTextAsync(file, transform(initialContent ?? string.Empty));
+        try
+        {
+            await file.FileSystem.File.WriteAllTextAsync(file, transform(initialContent ?? string.Empty), cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            await scope.DisposeAsync();
+
+            throw;
+        }
 
         return scope;
     }
@@ -103,20 +117,30 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     ///     A function that takes the current content of the file as a string
     ///     and returns the updated content as a string.
     /// </param>
+    /// <param name="cancellationToken"></param>
     /// <returns>
     ///     A task that represents the asynchronous operation and contains the current <see cref="TransformFileScope" /> instance.
     /// </returns>
-    public async Task<TransformFileScope> AddAsync(Func<string, string> transform)
+    public async Task<TransformFileScope> AddAsync(Func<string, string> transform, CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
         if (_cancelled)
             return this;
 
-        var currentContent = await _file.FileSystem.File.ReadAllTextAsync(_file);
-        await _file.FileSystem.File.WriteAllTextAsync(_file, transform(currentContent));
+        try
+        {
+            var currentContent = await _file.FileSystem.File.ReadAllTextAsync(_file, cancellationToken);
+            await _file.FileSystem.File.WriteAllTextAsync(_file, transform(currentContent), cancellationToken);
 
-        return this;
+            return this;
+        }
+        catch (OperationCanceledException)
+        {
+            await DisposeAsync();
+
+            throw;
+        }
     }
 
     /// <summary>

@@ -53,7 +53,12 @@ public partial interface IDotnetToolHelper
             });
     }
 
-    async Task InstallToolAsync(string toolName, string? version = null, bool global = true, bool forceReinstall = false)
+    async Task InstallToolAsync(
+        string toolName,
+        string? version = null,
+        bool global = true,
+        bool forceReinstall = false,
+        CancellationToken cancellationToken = default)
     {
         var globalFlag = global
             ? "-g"
@@ -62,9 +67,10 @@ public partial interface IDotnetToolHelper
         if (!global && !FileSystem.File.Exists(FileSystem.CurrentDirectory / ".config" / "dotnet-tools.json"))
             await GetService<IProcessRunner>()
                 .RunAsync(new("dotnet", "new tool-manifest")
-                {
-                    InvocationLogLevel = LogLevel.Debug,
-                });
+                    {
+                        InvocationLogLevel = LogLevel.Debug,
+                    },
+                    cancellationToken);
 
         if (!forceReinstall &&
             !GetService<CommandLineArgs>()
@@ -72,10 +78,11 @@ public partial interface IDotnetToolHelper
         {
             var globalListResult = await GetService<IProcessRunner>()
                 .RunAsync(new("dotnet", $"tool list {toolName} {globalFlag}")
-                {
-                    AllowFailedResult = true,
-                    InvocationLogLevel = LogLevel.Debug,
-                });
+                    {
+                        AllowFailedResult = true,
+                        InvocationLogLevel = LogLevel.Debug,
+                    },
+                    cancellationToken);
 
             var toolVersion = globalListResult
                 .Output
@@ -98,8 +105,9 @@ public partial interface IDotnetToolHelper
 
         await GetService<IProcessRunner>()
             .RunAsync(new("dotnet", $"tool update {toolName} {versionFlag} {globalFlag}")
-            {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                },
+                cancellationToken);
     }
 }
