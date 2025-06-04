@@ -64,7 +64,7 @@ public class HostExtensionsTests
                 .ShouldNotBeNull();
 
             serviceProvider
-                .GetService<ProcessRunner>()
+                .GetService<IProcessRunner>()
                 .ShouldNotBeNull();
 
             serviceProvider

@@ -76,7 +76,7 @@ public static class HostExtensions
 
         builder.Services.AddSingleton<BuildExecutor>();
         builder.Services.AddSingleton<WorkflowGenerator>();
-        builder.Services.AddSingleton<ProcessRunner>();
+        builder.Services.AddSingleton<IProcessRunner, ProcessRunner>();
         builder.Services.AddSingleton<IOutcomeReportWriter, ConsoleOutcomeReportWriter>();
         builder.Services.AddSingleton<IWorkflowVariableProvider, AtomWorkflowVariableProvider>();
 

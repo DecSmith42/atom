@@ -34,7 +34,7 @@ public partial interface IDotnetPublishHelper : IVersionHelper
         if (FileSystem.Directory.Exists(buildDir))
             FileSystem.Directory.Delete(buildDir, true);
 
-        await GetService<ProcessRunner>()
+        await GetService<IProcessRunner>()
             .RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"));
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;

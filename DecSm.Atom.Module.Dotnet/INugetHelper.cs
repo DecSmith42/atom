@@ -65,7 +65,7 @@ public partial interface INugetHelper : IBuildInfo
             return;
         }
 
-        await GetService<ProcessRunner>()
+        await GetService<IProcessRunner>()
             .RunAsync(new("dotnet", $"nuget push \"{packagePath}\" --source {feed} --api-key {apiKey}"));
 
         Logger.LogInformation("Package pushed");
