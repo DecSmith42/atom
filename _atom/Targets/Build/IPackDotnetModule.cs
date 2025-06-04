@@ -6,7 +6,7 @@ internal partial interface IPackDotnetModule : IDotnetPackHelper
     public const string DotnetModuleProjectName = "DecSm.Atom.Module.Dotnet";
 
     Target PackDotnetModule =>
-        d => d
+        t => t
             .DescribedAs("Builds the Dotnet extension project into a nuget package")
             .ProducesArtifact(DotnetModuleProjectName)
             .Executes(() => DotnetPackProject(new(DotnetModuleProjectName)));

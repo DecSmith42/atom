@@ -15,7 +15,7 @@ public partial interface IParamTarget1
     string? ExecuteValue { get; set; }
 
     Target ParamTarget1 =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             ExecuteValue = Param1;
 
@@ -32,7 +32,7 @@ public partial interface IParamTarget2
     string? ExecuteValue { get; set; }
 
     Target ParamTarget2 =>
-        d => d
+        t => t
             .RequiresParam(nameof(Param2))
             .Executes(() =>
             {

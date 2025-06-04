@@ -19,5 +19,5 @@ public partial class SetupDotnetBuild : BuildDefinition, IGithubWorkflows, ISetu
 [TargetDefinition]
 public partial interface ISetupDotnetTarget
 {
-    Target SetupDotnetTarget => d => d;
+    Target SetupDotnetTarget => t => t;
 }

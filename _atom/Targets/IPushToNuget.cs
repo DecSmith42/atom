@@ -10,7 +10,7 @@ internal partial interface IPushToNuget : INugetHelper
     string NugetApiKey => GetParam(() => NugetApiKey)!;
 
     Target PushToNuget =>
-        d => d
+        t => t
             .DescribedAs("Pushes the Atom projects to Nuget")
             .ConsumesArtifact(nameof(IPackAtom.PackAtom), IPackAtom.AtomProjectName)
             .ConsumesArtifact(nameof(IPackAtomTool.PackAtomTool), IPackAtomTool.AtomToolProjectName)

@@ -15,7 +15,7 @@
 ///     <code>
 ///     public interface IMyBuildTarget : IBuildInfo
 ///     {
-///         Target Build => d => d
+///         Target Build => t => t
 ///             .ConsumesVariable(nameof(ISetupBuildInfo), nameof(BuildName))
 ///             .ConsumesVariable(nameof(ISetupBuildInfo), nameof(BuildVersion))
 ///             .ConsumesVariable(nameof(ISetupBuildInfo), nameof(BuildId))

@@ -58,7 +58,7 @@ public interface IArtifactProvider
     ///     A build step might invoke this to store a compiled package:
     ///     <code>
     /// // Target definition using IStoreArtifact
-    /// Target StoreMyPackage => d => d
+    /// Target StoreMyPackage => t => t
     ///     .Executes(async () => {
     ///         // ... logic to produce MyPackage.nupkg ...
     ///         // The IStoreArtifact target would then call provider.StoreArtifacts(["MyPackage"], buildId, buildSlice);
@@ -92,7 +92,7 @@ public interface IArtifactProvider
     ///     A build step might invoke this to retrieve a previously built package:
     ///     <code>
     /// // Target definition using IRetrieveArtifact
-    /// Target UseMyPackage => d => d
+    /// Target UseMyPackage => t => t
     ///     .DependsOn(RetrieveMyPackage) // RetrieveMyPackage would call provider.RetrieveArtifacts
     ///     .Executes(async () => {
     ///         // ... logic to use the retrieved "MyPackage" ...

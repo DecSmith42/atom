@@ -167,7 +167,7 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     /// <seealso cref="IVariablesHelper.WriteVariable(string, string, CancellationToken)" />
     /// <seealso cref="IReportsHelper.AddReportData(IReportData)" />
     Target SetupBuildInfo =>
-        d => d
+        t => t
             .DescribedAs("Sets up the build ID, version, and timestamp")
             .IsHidden()
             .ProducesVariable(nameof(BuildName))

@@ -15,7 +15,7 @@ public partial interface IUserSecretsTarget
     string? ExecutionValue { get; set; }
 
     Target UserSecretsTarget =>
-        d => d
+        t => t
             .DescribedAs("User secrets target")
             .RequiresParam(nameof(Secret1))
             .Executes(() =>

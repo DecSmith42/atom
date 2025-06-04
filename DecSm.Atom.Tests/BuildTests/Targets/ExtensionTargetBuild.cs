@@ -14,7 +14,7 @@ public partial interface IBaseExtensionTarget
     bool BaseExtensionTargetExecuted { get; set; }
 
     Target BaseExtensionTarget =>
-        d => d.Executes(() =>
+        t => t.Executes(() =>
         {
             BaseExtensionTargetExecuted = true;
 
@@ -28,7 +28,7 @@ public partial interface IExtendedExtensionTarget
     bool ExtendedExtensionTargetExecuted { get; set; }
 
     Target ExtendedExtensionTarget =>
-        d => d
+        t => t
             .Extends<IBaseExtensionTarget>(definition => definition.BaseExtensionTarget)
             .Executes(() =>
             {

@@ -8,7 +8,7 @@ internal partial interface ITestAtom : IDotnetTestHelper
     public const string AtomGithubWorkflowsTestsProjectName = "DecSm.Atom.Module.GithubWorkflows.Tests";
 
     Target TestAtom =>
-        d => d
+        t => t
             .DescribedAs("Runs the unit tests projects")
             .ProducesArtifact(AtomTestsProjectName)
             .ProducesArtifact(AtomSourceGeneratorTestsProjectName)

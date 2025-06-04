@@ -56,7 +56,7 @@
 /// [TargetDefinition]
 /// public partial interface IMyCustomTarget
 /// {
-///     Target MyCustomTarget => d => d.DescribedAs("My custom build target.").Executes(() => { /* ... */ });
+///     Target MyCustomTarget => t => t.DescribedAs("My custom build target.").Executes(() => { /* ... */ });
 /// }
 /// </code>
 ///     This example demonstrates how <c>BuildDefinitionAttribute</c> is applied to the <c>MyBuild</c> class.

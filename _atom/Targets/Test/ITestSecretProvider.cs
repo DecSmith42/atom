@@ -7,7 +7,7 @@ public partial interface ITestSecretProvider
     string TestSecret => GetParam(() => TestSecret)!;
 
     Target TestSecretProvider =>
-        d => d
+        t => t
             .DescribedAs("Test Vault")
             .RequiresParam(nameof(TestSecret));
 }

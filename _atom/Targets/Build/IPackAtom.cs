@@ -6,7 +6,7 @@ internal partial interface IPackAtom : IDotnetPackHelper
     public const string AtomProjectName = "DecSm.Atom";
 
     Target PackAtom =>
-        d => d
+        t => t
             .DescribedAs("Builds the Atom project into a nuget package")
             .ProducesArtifact(AtomProjectName)
             .Executes(() => DotnetPackProject(new(AtomProjectName)));

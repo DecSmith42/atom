@@ -23,11 +23,11 @@ public partial class DependentBuild : BuildDefinition, IGithubWorkflows, IDepend
 [TargetDefinition]
 public partial interface IDependentTarget1
 {
-    Target DependentTarget1 => d => d;
+    Target DependentTarget1 => t => t;
 }
 
 [TargetDefinition]
 public partial interface IDependentTarget2
 {
-    Target DependentTarget2 => d => d.DependsOn(nameof(IDependentTarget1.DependentTarget1));
+    Target DependentTarget2 => t => t.DependsOn(nameof(IDependentTarget1.DependentTarget1));
 }

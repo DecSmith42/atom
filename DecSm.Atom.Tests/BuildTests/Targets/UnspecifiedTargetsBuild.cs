@@ -6,14 +6,14 @@ internal partial class UnspecifiedTargetsBuild : BuildDefinition, IUnspecifiedTa
 [TargetDefinition]
 internal partial interface IUnspecifiedTarget1
 {
-    Target UnspecifiedTarget1 => d => d.DescribedAs("Unspecified target 1");
+    Target UnspecifiedTarget1 => t => t.DescribedAs("Unspecified target 1");
 }
 
 [TargetDefinition]
 internal partial interface IUnspecifiedTarget2
 {
     Target UnspecifiedTarget2 =>
-        d => d
+        t => t
             .DependsOn(nameof(IUnspecifiedTarget3.UnspecifiedTarget3))
             .DescribedAs("Unspecified target 2");
 }
@@ -21,5 +21,5 @@ internal partial interface IUnspecifiedTarget2
 [TargetDefinition]
 internal partial interface IUnspecifiedTarget3
 {
-    Target UnspecifiedTarget3 => d => d.DescribedAs("Unspecified target 3");
+    Target UnspecifiedTarget3 => t => t.DescribedAs("Unspecified target 3");
 }

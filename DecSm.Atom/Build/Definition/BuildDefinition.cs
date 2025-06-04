@@ -39,7 +39,7 @@
 /// [TargetDefinition]
 /// public partial interface IMyTargets
 /// {
-///     Target MyTarget => d => d.DescribedAs("A minimal target.").Executes(() => Console.WriteLine("Executing MyTarget"));
+///     Target MyTarget => t => t.DescribedAs("A minimal target.").Executes(() => Console.WriteLine("Executing MyTarget"));
 /// }
 /// </code>
 /// </example>
