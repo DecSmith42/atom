@@ -7,10 +7,6 @@
 ///     The name of the matrix dimension. This is often derived from an interface property like
 ///     <c>nameof(IJobRunsOn.JobRunsOn)</c>.
 /// </param>
-/// <param name="Values">
-///     A read-only list of string values for this dimension. These values represent the different options for this dimension,
-///     for example, different operating systems like <c>IJobRunsOn.WindowsLatestTag</c> or <c>IJobRunsOn.UbuntuLatestTag</c>.
-/// </param>
 /// <remarks>
 ///     A <c>MatrixDimension</c> is typically used in conjunction with <c>WorkflowTargetDefinition</c> methods like <c>WithMatrixDimensions</c>
 ///     or <c>WithAddedMatrixDimensions</c> to configure build matrixes.
@@ -22,4 +18,11 @@
 ///     that dimension.
 /// </remarks>
 [PublicAPI]
-public record MatrixDimension(string Name, IReadOnlyList<string> Values);
+public record MatrixDimension(string Name)
+{
+    /// <summary>
+    ///     A read-only list of string values for this dimension. These values represent the different options for this dimension,
+    ///     for example, different operating systems like <c>IJobRunsOn.WindowsLatestTag</c> or <c>IJobRunsOn.UbuntuLatestTag</c>.
+    /// </summary>
+    public IReadOnlyList<string> Values { get; init; } = [];
+}

@@ -1,9 +1,6 @@
-﻿using DecSm.Atom.BuildInfo;
+﻿namespace Atom.Targets;
 
-namespace Atom.Targets;
-
-[TargetDefinition]
-internal partial interface ICleanupPrereleaseArtifacts : IBuildInfo
+internal interface ICleanupPrereleaseArtifacts : IBuildInfo
 {
     Target CleanupPrereleaseArtifacts =>
         t => t

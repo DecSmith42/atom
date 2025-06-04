@@ -2,7 +2,7 @@
 
 namespace DecSm.Atom.Module.GitVersion;
 
-internal sealed class GitVersionBuildVersionProvider(IDotnetToolHelper dotnetToolHelper, IProcessRunner processRunner)
+internal sealed class GitVersionBuildVersionProvider(IDotnetToolInstallHelper dotnetToolInstallHelper, IProcessRunner processRunner)
     : IBuildVersionProvider
 {
     private SemVer? _version;
@@ -14,7 +14,7 @@ internal sealed class GitVersionBuildVersionProvider(IDotnetToolHelper dotnetToo
             if (_version is not null)
                 return _version;
 
-            dotnetToolHelper.InstallTool("GitVersion.Tool");
+            dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
             var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
             {

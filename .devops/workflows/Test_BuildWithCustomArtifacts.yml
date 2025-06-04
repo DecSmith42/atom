@@ -290,7 +290,7 @@ jobs:
         003_macos-latest:
           job-runs-on: 'macos-latest'
     pool:
-      vmImage: ubuntu-latest
+      vmImage: $(job-runs-on)
     variables:
       build-name: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-name'] ]
       build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]

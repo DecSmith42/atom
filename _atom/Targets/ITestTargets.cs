@@ -1,7 +1,6 @@
-﻿namespace Atom.Targets.Test;
+﻿namespace Atom.Targets;
 
-[TargetDefinition]
-internal partial interface ITestAtom : IDotnetTestHelper
+internal interface ITestTargets : IDotnetTestHelper
 {
     public const string AtomTestsProjectName = "DecSm.Atom.Tests";
     public const string AtomSourceGeneratorTestsProjectName = "DecSm.Atom.SourceGenerators.Tests";
@@ -13,13 +12,13 @@ internal partial interface ITestAtom : IDotnetTestHelper
             .ProducesArtifact(AtomTestsProjectName)
             .ProducesArtifact(AtomSourceGeneratorTestsProjectName)
             .ProducesArtifact(AtomGithubWorkflowsTestsProjectName)
-            .Executes(async () =>
+            .Executes(async cancellationToken =>
             {
                 var exitCode = 0;
 
-                exitCode += await RunDotnetUnitTests(new(AtomTestsProjectName));
-                exitCode += await RunDotnetUnitTests(new(AtomSourceGeneratorTestsProjectName));
-                exitCode += await RunDotnetUnitTests(new(AtomGithubWorkflowsTestsProjectName));
+                exitCode += await RunDotnetUnitTests(new(AtomTestsProjectName), cancellationToken);
+                exitCode += await RunDotnetUnitTests(new(AtomSourceGeneratorTestsProjectName), cancellationToken);
+                exitCode += await RunDotnetUnitTests(new(AtomGithubWorkflowsTestsProjectName), cancellationToken);
 
                 if (exitCode != 0)
                     throw new StepFailedException("One or more unit tests failed");

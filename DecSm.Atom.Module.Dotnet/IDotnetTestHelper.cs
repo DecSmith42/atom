@@ -1,7 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
-[TargetDefinition]
-public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
+public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
 {
     async Task<int> RunDotnetUnitTests(DotnetTestOptions options, CancellationToken cancellationToken = default)
     {
@@ -54,19 +53,18 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
         FileSystem.Directory.CreateDirectory(coverageResultsPublishDirectory);
 
         // Run test
-        var result = await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet",
-                [
-                    $"test {projectPath.Path}",
-                    $"--configuration {options.Configuration}",
-                    $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
-                    $"--logger \"html;LogFileName={options.ProjectName}.html\"",
-                    "--collect:\"XPlat Code Coverage\"",
-                ])
-                {
-                    AllowFailedResult = true,
-                },
-                cancellationToken);
+        var result = await ProcessRunner.RunAsync(new("dotnet",
+            [
+                $"test {projectPath.Path}",
+                $"--configuration {options.Configuration}",
+                $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
+                $"--logger \"html;LogFileName={options.ProjectName}.html\"",
+                "--collect:\"XPlat Code Coverage\"",
+            ])
+            {
+                AllowFailedResult = true,
+            },
+            cancellationToken);
 
         // Copy html file to publish directory
         FileSystem.File.Copy(testOutputDirectory / $"{options.ProjectName}.html",
@@ -78,18 +76,17 @@ public partial interface IDotnetTestHelper : IDotnetToolHelper, IReportsHelper
         await InstallToolAsync("dotnet-reportgenerator-globaltool", cancellationToken: cancellationToken);
 
         // Run coverage report generator
-        await GetService<IProcessRunner>()
-            .RunAsync(new("reportgenerator",
-                [
-                    $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",
-                    $"-targetdir:{coverageResultsPublishDirectory}",
-                    "-reporttypes:HtmlInline;JsonSummary",
-                    "-sourcedirs:" + FileSystem.AtomRootDirectory,
-                ])
-                {
-                    AllowFailedResult = true,
-                },
-                cancellationToken);
+        await ProcessRunner.RunAsync(new("reportgenerator",
+            [
+                $"-reports:{testOutputDirectory / "**" / "coverage.cobertura.xml"}",
+                $"-targetdir:{coverageResultsPublishDirectory}",
+                "-reporttypes:HtmlInline;JsonSummary",
+                "-sourcedirs:" + FileSystem.AtomRootDirectory,
+            ])
+            {
+                AllowFailedResult = true,
+            },
+            cancellationToken);
 
         GenerateCoverageReport(options.ProjectName, coverageResultsPublishDirectory / "Summary.json");
 

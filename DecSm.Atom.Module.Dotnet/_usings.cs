@@ -10,7 +10,6 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.BuildInfo;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
-global using DecSm.Atom.Process;
 global using DecSm.Atom.Reports;
 global using DecSm.Atom.Util;
 global using JetBrains.Annotations;

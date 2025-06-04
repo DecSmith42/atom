@@ -37,6 +37,12 @@ public interface IBuildAccessor
     protected IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
 
     /// <summary>
+    ///     Gets the process runner service for executing external processes.
+    ///     Provides unified access to process execution functionality within the build system.
+    /// </summary>
+    protected IProcessRunner ProcessRunner => GetService<IProcessRunner>();
+
+    /// <summary>
     ///     Shortcut for getting a service from the <see cref="Services" /> service provider.
     /// </summary>
     /// <typeparam name="T">The type of service to retrieve.</typeparam>

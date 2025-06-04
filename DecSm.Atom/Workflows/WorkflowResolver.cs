@@ -13,7 +13,7 @@ internal sealed class WorkflowResolver(
         // Get all default options from BuildDefinition, WorkflowOptionProviders and WorkflowDefinition
         var workflowOptions = IWorkflowOption
             .Merge(buildDefinition
-                .DefaultWorkflowOptions
+                .GlobalWorkflowOptions
                 .Concat(_workflowOptionProviders.SelectMany(provider => provider.WorkflowOptions))
                 .Concat(definition.Options))
             .ToList();

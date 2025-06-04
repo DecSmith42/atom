@@ -106,12 +106,12 @@ public interface IBuildDefinition
     /// </remarks>
     /// <example>
     ///     <code>
-    /// public override IReadOnlyList&lt;IWorkflowOption&gt; DefaultWorkflowOptions =>
+    /// public override IReadOnlyList&lt;IWorkflowOption&gt; GlobalWorkflowOptions =>
     /// [
     ///    SetupDotnetStep.FromGlobalJson(), // Sets up .NET SDK based on global.json
     ///    UseCustomArtifactProvider.Disabled // Uses CI/CD native artifacts by default
     /// ];
     /// </code>
     /// </example>
-    IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions { get; }
+    IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions { get; }
 }

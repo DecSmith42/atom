@@ -346,6 +346,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      using DecSm.Atom.Build.Definition;
                      using DecSm.Atom.Params;
                      using DecSm.Atom.Paths;
+                     using DecSm.Atom.Process;
 
                      {{namespaceLine}}
 
@@ -359,6 +360,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                          private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("{{classFull}}");
 
                          private IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
+
+                         private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
 
                          private T GetService<T>()
                              where T : notnull =>

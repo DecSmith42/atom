@@ -8,36 +8,11 @@ internal partial class Build : DefaultBuildDefinition,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,
-    IPackAtom,
-    IPackAtomTool,
-    IPackAzureKeyVaultModule,
-    IPackAzureStorageModule,
-    IPackDevopsWorkflowsModule,
-    IPackDotnetModule,
-    IPackGithubWorkflowsModule,
-    IPackGitVersionModule,
-    IPushToNuget,
-    ITestAtom,
-    ICleanupPrereleaseArtifacts,
-    ITestManualParams,
-    ITestSecretProvider
+    IDeployTargets,
+    ITestTargets,
+    ICleanupPrereleaseArtifacts
 {
-    private static AddNugetFeedsStep AddNugetFeedsStep =>
-        new()
-        {
-            Name = "Update NuGet Feeds",
-            FeedsToAdd =
-            [
-                new()
-                {
-                    FeedName = "DecSm",
-                    FeedUrl = "https://nuget.pkg.github.com/DecSmith42/index.json",
-                    SecretName = "PRIVATE_NUGET_API_KEY",
-                },
-            ],
-        };
-
-    public override IReadOnlyList<IWorkflowOption> DefaultWorkflowOptions =>
+    public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
         UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("9.0.x"),
     ];
@@ -58,11 +33,9 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
                 Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets
-                    .TestAtom
-                    .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
-                        [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag]))
-                    .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
+                Targets.TestAtom.WithGithubRunnerMatrix([
+                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+                ]),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
@@ -89,18 +62,6 @@ internal partial class Build : DefaultBuildDefinition,
         },
 
         // Test workflows
-        new("Test_ManualParams")
-        {
-            Triggers =
-            [
-                new ManualTrigger
-                {
-                    Inputs = [ManualStringInput.ForParam(ParamDefinitions[Params.TestStringParam])],
-                },
-            ],
-            StepDefinitions = [Targets.TestManualParams],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-        },
         new("Test_Devops_Validate")
         {
             StepDefinitions =
@@ -116,9 +77,11 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
                 Targets
                     .TestAtom
-                    .WithAddedMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn),
-                        [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag]))
-                    .WithAddedOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
+                    .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
+                    {
+                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
+                    })
+                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
             WorkflowTypes = [Devops.WorkflowType],
         },
@@ -135,7 +98,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithGithubRunnerMatrix([
+                Targets.TestAtom.WithDevopsPoolMatrix([
                     IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
                 ]),
                 Targets.PushToNuget,
@@ -157,9 +120,13 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets
+                    .TestAtom
+                    .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
+                    {
+                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
+                    })
+                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
                 Targets.PushToNuget,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],

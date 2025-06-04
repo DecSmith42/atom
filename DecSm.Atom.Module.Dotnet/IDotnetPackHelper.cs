@@ -1,7 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
-[TargetDefinition]
-public partial interface IDotnetPackHelper : IVersionHelper
+public interface IDotnetPackHelper : IBuildAccessor
 {
     async Task DotnetPackProject(DotnetPackOptions options, CancellationToken cancellationToken = default)
     {
@@ -37,8 +36,7 @@ public partial interface IDotnetPackHelper : IVersionHelper
         if (FileSystem.Directory.Exists(packDirectory))
             FileSystem.Directory.Delete(packDirectory, true);
 
-        await GetService<IProcessRunner>()
-            .RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"), cancellationToken);
+        await ProcessRunner.RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"), cancellationToken);
 
         var packageFilePattern = options.CustomPackageId is { Length: > 0 }
             ? $"{options.CustomPackageId}.*.nupkg"

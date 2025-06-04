@@ -77,6 +77,21 @@ public interface IBuildInfo : IBuildAccessor
 
     /// <summary>
     ///     Gets the build timestamp as Unix time in seconds since epoch (UTC).
+    ///     <br />
+    ///     <br />
+    ///     <b>***WARNING***</b><br />
+    ///     This value is not consistent across different builds / targets / process instances.<br />
+    ///     It is instead recommended to consume the <c>BuildTimestamp</c> parameter from <see cref="ISetupBuildInfo.SetupBuildInfo" />
+    ///     so a consistent value can be used across all targets.
+    ///     <code>
+    ///     interface IMyTarget : IBuildInfo
+    ///     {
+    ///         Target MyTarget =>
+    ///             t => t
+    ///             .ConsumesVariable(nameof(ISetupBuildInfo.SetupBuildInfo), nameof(BuildTimestamp))
+    ///             .Executes(() => { Logger.LogInformation("Build timestamp: {Timestamp}", BuildTimestamp); });
+    ///     }
+    ///     </code>
     /// </summary>
     /// <value>
     ///     A long integer representing the build timestamp in Unix time format.
