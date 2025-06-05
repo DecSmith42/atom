@@ -50,7 +50,7 @@ public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildName))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .RequiresParam(nameof(AtomArtifacts))
-            .RequiresParam(ArtifactProvider.RequiredParams)
+            .RequiresParam(ArtifactProvider.RequiredParams.ToArray())
             .Executes(async cancellationToken =>
             {
                 Logger.LogInformation("Using artifact provider: {Provider}",
