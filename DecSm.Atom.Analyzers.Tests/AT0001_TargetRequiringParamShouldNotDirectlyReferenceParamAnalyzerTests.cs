@@ -63,10 +63,21 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzerT
                             }
                             """;
 
-        var expected = Verifier
-            .Diagnostic()
-            .WithSpan(12, 45, 12, 52)
-            .WithArguments("MyParam");
+        DiagnosticResult[] expected =
+        [
+            Verifier
+                .Diagnostic()
+                .WithSpan(16, 45, 16, 53)
+                .WithArguments("MyParam1"),
+            Verifier
+                .Diagnostic()
+                .WithSpan(16, 94, 16, 102)
+                .WithArguments("MyParam2"),
+            Verifier
+                .Diagnostic()
+                .WithSpan(17, 71, 17, 79)
+                .WithArguments("MyParam1"),
+        ];
 
         await Verifier.VerifyAnalyzerAsync(text, Configure, expected);
     }
