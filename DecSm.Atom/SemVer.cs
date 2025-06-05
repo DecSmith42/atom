@@ -216,6 +216,7 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
         var match = SemVerRegex()
             .Match(s);
 
+        // ReSharper disable once LocalizableElement
         if (!match.Success)
             throw new ArgumentException($"Invalid version string '{s}'.", nameof(s));
 

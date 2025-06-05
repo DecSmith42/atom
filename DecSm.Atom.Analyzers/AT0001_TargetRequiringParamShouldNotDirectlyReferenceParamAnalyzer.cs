@@ -17,6 +17,9 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
 {
     public const string DiagnosticId = "AT0001";
 
+    // The category of the diagnostic (Design, Naming etc.).
+    private const string Category = "Usage";
+
     // Feel free to use raw strings if you don't need localization.
     private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.AT0001Title),
         Resources.ResourceManager,
@@ -28,9 +31,6 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
 
     private static readonly LocalizableString Description =
         new LocalizableResourceString(nameof(Resources.AT0001Description), Resources.ResourceManager, typeof(Resources));
-
-    // The category of the diagnostic (Design, Naming etc.).
-    private const string Category = "Usage";
 
     private static readonly DiagnosticDescriptor Rule = new(DiagnosticId,
         Title,

@@ -47,3 +47,4 @@ global using Spectre.Console.Rendering;
 
 [assembly: InternalsVisibleTo("DecSm.Atom.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+[assembly: SuppressMessage("ReSharper", "LocalizableElement")]
