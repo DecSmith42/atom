@@ -11,6 +11,9 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class SetupSourceGenerator : IIncrementalGenerator
 {
+    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
+    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
+
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
                 .SyntaxProvider
@@ -135,11 +138,4 @@ public class SetupSourceGenerator : IIncrementalGenerator
         // Add the source code to the compilation.
         context.AddSource($"{@interface}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
-
-    // ReSharper disable InconsistentNaming
-
-    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
-
-    // ReSharper restore InconsistentNaming
 }
