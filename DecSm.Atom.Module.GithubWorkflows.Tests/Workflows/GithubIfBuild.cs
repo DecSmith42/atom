@@ -3,6 +3,8 @@
 [BuildDefinition]
 public partial class GithubIfBuild : BuildDefinition, IGithubWorkflows
 {
+    private Target GithubIfTarget => t => t;
+
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
         new("githubif-workflow")
@@ -16,6 +18,4 @@ public partial class GithubIfBuild : BuildDefinition, IGithubWorkflows
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];
-
-    private Target GithubIfTarget => t => t;
 }

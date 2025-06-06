@@ -7,7 +7,8 @@ internal partial class ConsoleOutcomeReportWriter(
     CommandLineArgs args,
     IAnsiConsole console,
     BuildModel buildModel,
-    ReportService reportService
+    ReportService reportService,
+    IParamService paramService
 ) : IOutcomeReportWriter
 {
     public Task ReportRunOutcome(CancellationToken cancellationToken)
@@ -42,7 +43,7 @@ internal partial class ConsoleOutcomeReportWriter(
             if (state.Status is TargetRunState.NotRun && args.HasHeadless)
                 continue;
 
-            table.AddRow(state.Name, outcome, durationText);
+            table.AddRow(paramService.MaskMatchingSecrets(state.Name), outcome, durationText);
         }
 
         console.Write(new Text("Build Summary", new(decoration: Decoration.Underline)));
@@ -57,10 +58,10 @@ internal partial class ConsoleOutcomeReportWriter(
     }
 
     [return: NotNullIfNotNull("input")]
-    private static string? StripEmojis(string? input) =>
+    private string? FormatFreetext(string? input) =>
         input is not null
-            ? EmojiRegex()
-                .Replace(input, string.Empty)
+            ? paramService.MaskMatchingSecrets(EmojiRegex()
+                .Replace(input, string.Empty))
             : null;
 
     private void Write(IReadOnlyList<IReportData> reportData)
@@ -138,6 +139,10 @@ internal partial class ConsoleOutcomeReportWriter(
             var splitPattern = new[] { '\r', '\n' };
             var messageLines = log.Message.Split(splitPattern, StringSplitOptions.RemoveEmptyEntries);
 
+            messageLines = messageLines
+                .Select(paramService.MaskMatchingSecrets)
+                .ToArray();
+
             var rows = new List<IRenderable>
             {
                 new Markup($"[{styleTag}]{messageLines.FirstOrDefault().EscapeMarkup()}[/]"),
@@ -149,7 +154,7 @@ internal partial class ConsoleOutcomeReportWriter(
                     .Select(line => new Text(line)));
 
             if (log.Exception is not null)
-                rows.Add(new Text(log.Exception.ToString()));
+                rows.Add(new Text(paramService.MaskMatchingSecrets(log.Exception.ToString())));
 
             if (rows.Count > 1 && log != reportData[^1])
                 rows.Add(new Text(string.Empty));
@@ -176,7 +181,7 @@ internal partial class ConsoleOutcomeReportWriter(
             .Border(TableBorder.Minimal);
 
         foreach (var artifact in reportData)
-            table.AddRow(StripEmojis(artifact.Name), artifact.Path);
+            table.AddRow(FormatFreetext(artifact.Name), FormatFreetext(artifact.Path));
 
         console.Write(new Text("Output Artifacts", new(decoration: Decoration.Underline)));
         console.WriteLine();
@@ -204,7 +209,7 @@ internal partial class ConsoleOutcomeReportWriter(
                 break;
 
             default:
-                console.Write(new Text(reportData.ToString() ?? string.Empty));
+                console.Write(new Text(FormatFreetext(reportData.ToString() ?? string.Empty)));
                 console.WriteLine();
 
                 break;
@@ -235,6 +240,10 @@ internal partial class ConsoleOutcomeReportWriter(
                           .Repeat(string.Empty, columnCount)
                           .ToArray();
 
+        headers = headers
+            .Select(FormatFreetext)
+            .ToArray()!;
+
         for (var i = 0; i < columnCount; i++)
         {
             var column = new TableColumn(headers[i])
@@ -255,11 +264,19 @@ internal partial class ConsoleOutcomeReportWriter(
             table.HideHeaders();
 
         foreach (var row in reportData.Rows)
-            table.AddRow(row.Select(x => new Text(StripEmojis(x))));
+        {
+            var formattedRow = row
+                .Select(FormatFreetext)
+                .ToArray();
+
+            table.AddRow(formattedRow.Select(x => new Text(x!)));
+        }
 
         if (reportData.Title is not null)
         {
-            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            var title = FormatFreetext(reportData.Title);
+
+            console.Write(new Text(title, new(decoration: Decoration.Underline)));
             console.WriteLine();
         }
 
@@ -271,12 +288,14 @@ internal partial class ConsoleOutcomeReportWriter(
     {
         var rows = reportData
             .Items
-            .Select(x => new Text($"{reportData.Prefix}{StripEmojis(x)}"))
+            .Select(x => new Text($"{FormatFreetext(reportData.Prefix)}{FormatFreetext(x)}"))
             .ToList();
 
         if (reportData.Title is not null)
         {
-            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            var title = FormatFreetext(reportData.Title);
+
+            console.Write(new Text(title, new(decoration: Decoration.Underline)));
             console.WriteLine();
             console.WriteLine();
         }
@@ -290,12 +309,14 @@ internal partial class ConsoleOutcomeReportWriter(
     {
         if (reportData.Title is not null)
         {
-            console.Write(new Text(StripEmojis(reportData.Title), new(decoration: Decoration.Underline)));
+            var title = FormatFreetext(reportData.Title);
+            console.Write(new Text(title, new(decoration: Decoration.Underline)));
             console.WriteLine();
             console.WriteLine();
         }
 
-        console.WriteLine(StripEmojis(reportData.Text));
+        var text = FormatFreetext(reportData.Text);
+        console.WriteLine(text);
         console.WriteLine();
         console.WriteLine();
     }

@@ -103,7 +103,7 @@ branches:
   alpha:
     mode: ContinuousDelivery
     label: alpha.{BranchName}
-    increment: Minor
+    increment: None
     prevent-increment:
       when-current-commit-tagged: false
     track-merge-target: true

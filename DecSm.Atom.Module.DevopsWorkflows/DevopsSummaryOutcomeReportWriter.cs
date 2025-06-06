@@ -1,6 +1,7 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
-internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService) : IOutcomeReportWriter
+internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService, IParamService paramService)
+    : IOutcomeReportWriter
 {
     public async Task ReportRunOutcome(CancellationToken cancellationToken)
     {
@@ -9,7 +10,12 @@ internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSyste
         if (tempFile.FileExists)
             fileSystem.File.Delete(tempFile);
 
-        var content = Encoding.UTF8.GetBytes(ReportDataMarkdownFormatter.Write(reportService.GetReportData()));
+        var reportText = ReportDataMarkdownFormatter.Write(reportService.GetReportData());
+
+        // If the text contains any secrets, we don't want to log it
+        reportText = paramService.MaskMatchingSecrets(reportText);
+
+        var content = Encoding.UTF8.GetBytes(reportText);
 
         if (content.Length is 0)
             return;
