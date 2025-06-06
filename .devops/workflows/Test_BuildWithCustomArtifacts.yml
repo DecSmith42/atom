@@ -323,7 +323,7 @@ jobs:
           build-slice: $(job-runs-on)
   
   - job: PushToNuget
-    dependsOn: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    dependsOn: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
     variables:
