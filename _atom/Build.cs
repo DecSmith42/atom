@@ -22,7 +22,7 @@ internal partial class Build : DefaultBuildDefinition,
         // Real workflows
         new("Validate")
         {
-            Triggers = [GitPullRequestTrigger.IntoMain],
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
                 Targets.SetupBuildInfo,
@@ -41,7 +41,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Build")
         {
-            Triggers = [GitPushTrigger.ToMain],
+            Triggers = [ManualTrigger.Empty, GitPushTrigger.ToMain, GithubReleaseTrigger.OnReleased],
             Targets =
             [
                 Targets.SetupBuildInfo,

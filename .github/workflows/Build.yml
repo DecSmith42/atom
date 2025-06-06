@@ -1,6 +1,10 @@
 name: Build
 
 on:
+  workflow_dispatch:
+  release:
+    types: [ released ]
+  
   push:
     branches:
       - 'main'
