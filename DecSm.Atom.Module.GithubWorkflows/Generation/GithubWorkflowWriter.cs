@@ -228,6 +228,15 @@ internal sealed class GithubWorkflowWriter(
             else
                 WriteLine($"runs-on: {labelsDisplay}");
 
+            var environmentOptions = job
+                .Options
+                .Concat(workflow.Options)
+                .OfType<DeployToEnvironment>()
+                .ToList();
+
+            foreach (var environmentOption in environmentOptions)
+                WriteLine($"environment: {environmentOption.Value}");
+
             var outputs = new List<string>();
 
             foreach (var step in job.Steps)
