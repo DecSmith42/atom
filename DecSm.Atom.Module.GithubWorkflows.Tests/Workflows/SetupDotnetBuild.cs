@@ -10,7 +10,7 @@ public partial class SetupDotnetBuild : BuildDefinition, IGithubWorkflows, ISetu
         new("setup-dotnet")
         {
             Triggers = [GitPushTrigger.ToMain],
-            StepDefinitions = [Targets.SetupDotnetTarget.WithOptions(new SetupDotnetStep("9.0.x"))],
+            Targets = [Targets.SetupDotnetTarget.WithOptions(new SetupDotnetStep("9.0.x"))],
             WorkflowTypes = [Github.WorkflowType],
         },
     ];

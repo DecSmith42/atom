@@ -19,7 +19,7 @@ internal sealed class WorkflowResolver(
             .ToList();
 
         // If there are no steps, we can return a simple workflow
-        if (definition.StepDefinitions.Count is 0)
+        if (definition.Targets.Count is 0)
             return new(definition.Name)
             {
                 Triggers = definition.Triggers,
@@ -29,7 +29,7 @@ internal sealed class WorkflowResolver(
 
         // Transform all step definitions into steps
         var definedSteps = definition
-            .StepDefinitions
+            .Targets
             .Select(targetDefinition => targetDefinition.CreateModel())
             .ToList();
 

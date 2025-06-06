@@ -19,7 +19,7 @@ public partial class ArtifactBuild : BuildDefinition,
                     IncludedBranches = ["main"],
                 },
             ],
-            StepDefinitions =
+            Targets =
             [
                 Targets.ArtifactTarget1,
                 Targets.ArtifactTarget2,
@@ -55,7 +55,7 @@ public partial class CustomArtifactBuild : BuildDefinition,
                     IncludedBranches = ["main"],
                 },
             ],
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.ArtifactTarget1,

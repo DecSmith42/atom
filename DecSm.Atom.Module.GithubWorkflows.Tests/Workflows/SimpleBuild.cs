@@ -14,7 +14,7 @@ public partial class SimpleBuild : BuildDefinition, IGithubWorkflows, ISimpleTar
                     IncludedBranches = ["main"],
                 },
             ],
-            StepDefinitions = [Targets.SimpleTarget],
+            Targets = [Targets.SimpleTarget],
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];

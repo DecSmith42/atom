@@ -23,7 +23,7 @@ internal partial class Build : DefaultBuildDefinition,
         new("Validate")
         {
             Triggers = [GitPullRequestTrigger.IntoMain],
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom.WithSuppressedArtifactPublishing,
@@ -42,7 +42,7 @@ internal partial class Build : DefaultBuildDefinition,
         new("Build")
         {
             Triggers = [GitPushTrigger.ToMain],
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
@@ -64,7 +64,7 @@ internal partial class Build : DefaultBuildDefinition,
         // Test workflows
         new("Test_Devops_Validate")
         {
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom.WithSuppressedArtifactPublishing,
@@ -87,7 +87,7 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Test_Devops_Build")
         {
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
@@ -109,7 +109,7 @@ internal partial class Build : DefaultBuildDefinition,
         new("Test_BuildWithCustomArtifacts")
         {
             Triggers = [GitPullRequestTrigger.IntoMain],
-            StepDefinitions =
+            Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
@@ -142,7 +142,7 @@ internal partial class Build : DefaultBuildDefinition,
                     IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
                 },
             ],
-            StepDefinitions = [Targets.CleanupPrereleaseArtifacts],
+            Targets = [Targets.CleanupPrereleaseArtifacts],
             WorkflowTypes = [Github.WorkflowType],
         },
         Github.DependabotDefaultWorkflow(),

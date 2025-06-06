@@ -31,7 +31,7 @@
 ///     [
 ///         new("MyWorkflow")
 ///         {
-///             StepDefinitions = [Targets.MyTarget], // Assumes IMyTargets defines MyTarget
+///             Targets = [Targets.MyTarget], // Assumes IMyTargets defines MyTarget
 ///             WorkflowTypes = [ Github.WorkflowType ] // Example for GitHub Actions
 ///         }
 ///     ];
