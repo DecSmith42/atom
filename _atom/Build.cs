@@ -9,8 +9,7 @@ internal partial class Build : DefaultBuildDefinition,
     IGithubWorkflows,
     IGitVersion,
     IDeployTargets,
-    ITestTargets,
-    ICleanupPrereleaseArtifacts
+    ITestTargets
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
@@ -137,19 +136,6 @@ internal partial class Build : DefaultBuildDefinition,
             ],
             WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
             Options = [UseCustomArtifactProvider.Enabled, new WorkflowParamInjection(Params.NugetDryRun, "true")],
-        },
-        new("CleanupBuilds")
-        {
-            Triggers =
-            [
-                ManualTrigger.Empty,
-                new GitPushTrigger
-                {
-                    IncludedTags = ["v[0-9]+.[0-9]+.[0-9]+"],
-                },
-            ],
-            Targets = [Targets.CleanupPrereleaseArtifacts],
-            WorkflowTypes = [Github.WorkflowType],
         },
         Github.DependabotDefaultWorkflow(),
     ];
