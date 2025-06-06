@@ -62,6 +62,7 @@ internal partial class Build : DefaultBuildDefinition,
                     .WithOptions(GithubIf.Create(new ConsumedVariableExpression(nameof(Targets.SetupBuildInfo),
                             ParamDefinitions[nameof(ISetupBuildInfo.BuildVersion)].ArgName)
                         .Contains(new StringExpression("-"))
+                        .Grouped()
                         .Not())),
             ],
             WorkflowTypes = [Github.WorkflowType],
