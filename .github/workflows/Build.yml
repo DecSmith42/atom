@@ -321,7 +321,7 @@ jobs:
   PushToRelease:
     needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     runs-on: ubuntu-latest
-    if: contains(needs.SetupBuildInfo.outputs.BuildVersion, '-')
+    if: !contains(needs.SetupBuildInfo.outputs.build-version, '-')
     steps:
       
       - name: Checkout

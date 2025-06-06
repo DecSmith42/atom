@@ -59,9 +59,10 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets
                     .PushToRelease
                     .WithGithubTokenInjection()
-                    .WithOptions(GithubIf.Create(
-                        new ConsumedVariableExpression(nameof(Targets.SetupBuildInfo), nameof(ISetupBuildInfo.BuildVersion)).Contains(
-                            new StringExpression("-")))),
+                    .WithOptions(GithubIf.Create(new ConsumedVariableExpression(nameof(Targets.SetupBuildInfo),
+                            ParamDefinitions[nameof(ISetupBuildInfo.BuildVersion)].ArgName)
+                        .Contains(new StringExpression("-"))
+                        .Not())),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
