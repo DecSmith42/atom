@@ -24,7 +24,7 @@ public partial class ManualInputBuild : BuildDefinition, IGithubWorkflows, IManu
                     ],
                 },
             ],
-            StepDefinitions = [Targets.ManualInputTarget],
+            Targets = [Targets.ManualInputTarget],
             WorkflowTypes = [Github.WorkflowType],
         },
     ];

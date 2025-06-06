@@ -8,7 +8,7 @@ public partial class WorkflowDependentTargetBuild : BuildDefinition, IWorkflowDe
         new("workflow-2")
         {
             Triggers = [new TestWorkflowTrigger()],
-            StepDefinitions = [Targets.WorkflowTarget2],
+            Targets = [Targets.WorkflowTarget2],
             Options = [new TestWorkflowOption()],
             WorkflowTypes = [new TestWorkflowType()],
         },

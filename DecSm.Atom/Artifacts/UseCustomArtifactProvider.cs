@@ -33,7 +33,7 @@
 ///     {
 ///         // ... other workflow configurations ...
 ///         Options = [UseCustomArtifactProvider.Enabled, /* other options */],
-///         StepDefinitions =
+///         Targets =
 ///         [
 ///             Targets.SetupBuildInfo, // Important for providing BuildId to the artifact provider
 ///             Targets.PackMyProject,  // A target that produces an artifact

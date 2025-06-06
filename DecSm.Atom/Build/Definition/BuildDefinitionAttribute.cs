@@ -48,7 +48,7 @@
 ///         new("DefaultBuild")
 ///         {
 ///             Triggers = [GitPushTrigger.ToMain],
-///             StepDefinitions = [Targets.MyCustomTarget], // Targets are available via generated static class
+///             Targets = [Targets.MyCustomTarget], // Targets are available via generated static class
 ///             WorkflowTypes = [Github.WorkflowType]
 ///         }
 ///     ];

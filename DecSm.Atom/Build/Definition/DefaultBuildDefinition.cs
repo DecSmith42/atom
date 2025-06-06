@@ -35,7 +35,7 @@
 ///         new("BuildAndTest")
 ///         {
 ///             Triggers = [GitPushTrigger.ToBranch("main"), GitPullRequestTrigger.ToBranch("main")],
-///             StepDefinitions =
+///             Targets =
 ///             [
 ///                 Targets.SetupBuildInfo,
 ///                 Targets.DotnetRestore,

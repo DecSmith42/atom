@@ -20,7 +20,7 @@
 ///             new("SomeWorkflow")
 ///             {
 ///                 Triggers = [GitPullRequestTrigger.IntoMain],
-///                 StepDefinitions = ...,
+///                 Targets = ...,
 ///                 WorkflowTypes = ...,
 ///             },
 ///         ];

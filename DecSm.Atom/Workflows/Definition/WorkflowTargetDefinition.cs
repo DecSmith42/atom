@@ -12,7 +12,7 @@
 ///     </para>
 ///     <para>
 ///         Instances of <c>WorkflowTargetDefinition</c> are typically created and configured when defining the
-///         <see cref="WorkflowDefinition.StepDefinitions" />
+///         <see cref="WorkflowDefinition.Targets" />
 ///         for a workflow.
 ///     </para>
 /// </remarks>

@@ -8,7 +8,7 @@ public partial class WorkflowSingleTargetBuild : BuildDefinition, IWorkflowSingl
         new("workflow-1")
         {
             Triggers = [new TestWorkflowTrigger()],
-            StepDefinitions = [Targets.WorkflowSingleTarget],
+            Targets = [Targets.WorkflowSingleTarget],
             Options = [new TestWorkflowOption()],
             WorkflowTypes = [new TestWorkflowType()],
         },

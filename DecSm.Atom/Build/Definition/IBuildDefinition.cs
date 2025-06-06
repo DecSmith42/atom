@@ -44,7 +44,7 @@ public interface IBuildDefinition
     ///     new("ContinuousIntegration")
     ///     {
     ///         Triggers = [GitPushTrigger.ToMain],
-    ///         StepDefinitions = [ /* list of targets */ ],
+    ///         Targets = [ /* list of targets */ ],
     ///         WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType]
     ///     }
     /// ];
