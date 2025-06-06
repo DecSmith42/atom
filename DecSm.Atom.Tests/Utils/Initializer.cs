@@ -7,6 +7,7 @@ public static class Initializer
     {
         DiffTools.UseOrder(DiffTool.Rider, DiffTool.VisualStudioCode, DiffTool.VisualStudio, DiffTool.BeyondCompare);
         VerifierSettings.IgnoreMember<BuildModel>(x => x.DeclaringAssembly);
+        VerifierSettings.IgnoreMember<BuildModel>(x => x.TargetStates);
         VerifierSettings.IgnoreMember<TargetModel>(x => x.DeclaringAssembly);
     }
 }
