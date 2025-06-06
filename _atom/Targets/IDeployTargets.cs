@@ -3,7 +3,7 @@
 internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseHelper, ISetupBuildInfo
 {
     [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
-    string NugetFeed => GetParam(() => NugetFeed)!;
+    string NugetFeed => GetParam(() => NugetFeed, "https://api.nuget.org/v3/index.json");
 
     [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
     string NugetApiKey => GetParam(() => NugetApiKey)!;
