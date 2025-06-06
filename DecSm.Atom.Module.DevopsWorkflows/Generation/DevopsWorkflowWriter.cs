@@ -280,6 +280,16 @@ internal sealed partial class DevopsWorkflowWriter(
                     }
             }
 
+            var environmentOption = job
+                .Options
+                .Concat(workflow.Options)
+                .OfType<DeployToEnvironment>()
+                .FirstOrDefault();
+
+            if (environmentOption is not null)
+                using (WriteSection("environment:"))
+                    WriteLine($"name: {environmentOption.Value}");
+
             var variables = new Dictionary<string, string>();
 
             var targetsForConsumedVariableDeclaration = new List<TargetModel>();

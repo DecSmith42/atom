@@ -7,6 +7,7 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.TestUtils;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Triggers;
+global using DecSm.Atom.Workflows.Options;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Shouldly;
