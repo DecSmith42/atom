@@ -57,7 +57,12 @@ internal partial class Build : DefaultBuildDefinition,
                     IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
                 ]),
                 Targets.PushToNuget,
-                Targets.PushToRelease.WithGithubTokenInjection(),
+                Targets
+                    .PushToRelease
+                    .WithGithubTokenInjection()
+                    .WithOptions(GithubIf.Create(
+                        new ConsumedVariableExpression(nameof(Targets.SetupBuildInfo), nameof(ISetupBuildInfo.BuildVersion)).Contains(
+                            new StringExpression("-")))),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
