@@ -245,7 +245,7 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
+    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
     runs-on: ubuntu-latest
     steps:
       
@@ -313,3 +313,75 @@ jobs:
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
+  
+  PushToRelease:
+    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+      
+      - name: Download DecSm.Atom
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Module.AzureKeyVault
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.AzureKeyVault
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.AzureKeyVault"
+      
+      - name: Download DecSm.Atom.Module.AzureStorage
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.AzureStorage
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.AzureStorage"
+      
+      - name: Download DecSm.Atom.Module.DevopsWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.DevopsWorkflows"
+      
+      - name: Download DecSm.Atom.Module.Dotnet
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.Dotnet
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.Dotnet"
+      
+      - name: Download DecSm.Atom.Module.GithubWorkflows
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GithubWorkflows
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GithubWorkflows"
+      
+      - name: Download DecSm.Atom.Module.GitVersion
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GitVersion
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GitVersion"
+      
+      - name: PushToRelease
+        id: PushToRelease
+        run: dotnet run --project _atom/_atom.csproj PushToRelease --skip --headless
+        env:
+          build-version: ${{ needs.SetupBuildInfo.outputs.build-version }}
+          azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
+          azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
+          azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
+          azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

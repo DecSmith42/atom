@@ -316,7 +316,7 @@ jobs:
           build-slice: ${{ matrix.job-runs-on }}
   
   PushToNuget:
-    needs: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       

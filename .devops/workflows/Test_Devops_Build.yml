@@ -262,7 +262,7 @@ jobs:
       
   
   - job: PushToNuget
-    dependsOn: [ PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
+    dependsOn: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
     pool:
       vmImage: ubuntu-latest
     steps:
