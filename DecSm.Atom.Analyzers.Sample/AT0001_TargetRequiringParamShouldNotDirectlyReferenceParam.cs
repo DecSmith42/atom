@@ -1,9 +1,11 @@
 using DecSm.Atom.Build;
 using DecSm.Atom.Build.Definition;
 using DecSm.Atom.Params;
+using JetBrains.Annotations;
 
 namespace DecSm.Atom.Analyzers.Sample;
 
+[PublicAPI]
 public interface IMyTarget : IBuildAccessor
 {
     [ParamDefinition("my-param-1", "My Param 1")]

@@ -1,4 +1,6 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
+﻿#pragma warning disable CA1822
+
+namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
 [BuildDefinition]
 public partial class GithubIfBuild : BuildDefinition, IGithubWorkflows

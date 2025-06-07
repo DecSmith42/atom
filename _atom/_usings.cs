@@ -3,7 +3,6 @@ global using DecSm.Atom;
 global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Module.AzureKeyVault;
 global using DecSm.Atom.Build.Definition;
-global using DecSm.Atom.BuildInfo;
 global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Module.AzureStorage;
 global using DecSm.Atom.Module.DevopsWorkflows;

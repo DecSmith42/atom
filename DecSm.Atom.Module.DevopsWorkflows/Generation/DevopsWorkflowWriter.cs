@@ -388,8 +388,7 @@ internal sealed partial class DevopsWorkflowWriter(
                 .DistinctBy(x => x.FeedName)
                 .ToList();
 
-            // TODO: Remove preview flag once v1.0.0 is released
-            using (WriteSection("- script: dotnet tool update --global DecSm.Atom.Tool --prerelease"))
+            using (WriteSection("- script: dotnet tool update --global DecSm.Atom.Tool"))
                 WriteLine("displayName: 'Install atom tool'");
 
             WriteLine();

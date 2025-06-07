@@ -47,7 +47,10 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixPr
     /// <summary>
     ///     Replaces a direct parameter reference with a nameof expression.
     /// </summary>
-    private async Task<Document> ReplaceWithNameofAsync(Document document, TextSpan diagnosticSpan, CancellationToken cancellationToken)
+    private static async Task<Document> ReplaceWithNameofAsync(
+        Document document,
+        TextSpan diagnosticSpan,
+        CancellationToken cancellationToken)
     {
         // Get the syntax root
         var root = await document

@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using JetBrains.Annotations;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -6,11 +7,13 @@ using Microsoft.CodeAnalysis.Testing;
 
 namespace DecSm.Atom.Analyzers.Tests;
 
+[PublicAPI]
 public class ExtendedCodeFixVerifier<TAnalyzer, TCodeFix> : ExtendedCodeFixVerifier<TAnalyzer,
     CSharpCodeFixTest<TAnalyzer, TCodeFix, DefaultVerifier>, DefaultVerifier>
     where TAnalyzer : DiagnosticAnalyzer, new()
     where TCodeFix : CodeFixProvider, new();
 
+[PublicAPI]
 public class ExtendedCodeFixVerifier<TAnalyzer, TTest, TVerifier>
     where TAnalyzer : DiagnosticAnalyzer, new()
     where TTest : CodeFixTest<TVerifier>, new()
