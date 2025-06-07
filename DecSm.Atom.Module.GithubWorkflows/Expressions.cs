@@ -1,7 +1,6 @@
-﻿using System.Globalization;
+﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
-namespace DecSm.Atom.Module.GithubWorkflows;
-
+[PublicAPI]
 public abstract record IGithubExpression
 {
     protected abstract string Write();
@@ -78,6 +77,7 @@ public abstract record IGithubExpression
 
 // Literals
 
+[PublicAPI]
 public sealed record LiteralExpression(string Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -87,6 +87,7 @@ public sealed record LiteralExpression(string Value) : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record BoolExpression(bool Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -98,6 +99,7 @@ public sealed record BoolExpression(bool Value) : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record NullExpression : IGithubExpression
 {
     protected override string Write() =>
@@ -107,6 +109,7 @@ public sealed record NullExpression : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record NumberExpression(double Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -122,6 +125,7 @@ public sealed record NumberExpression(double Value) : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record StringExpression(string Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -137,6 +141,7 @@ public sealed record StringExpression(string Value) : IGithubExpression
 
 // Operators
 
+[PublicAPI]
 public sealed record LogicalGroupingExpression(IGithubExpression Contents) : IGithubExpression
 {
     protected override string Write() =>
@@ -146,6 +151,7 @@ public sealed record LogicalGroupingExpression(IGithubExpression Contents) : IGi
         Write();
 }
 
+[PublicAPI]
 public sealed record IndexedExpression(IGithubExpression Index) : IGithubExpression
 {
     protected override string Write() =>
@@ -155,6 +161,7 @@ public sealed record IndexedExpression(IGithubExpression Index) : IGithubExpress
         Write();
 }
 
+[PublicAPI]
 public sealed record PropertyExpression(params IGithubExpression[] Sections) : IGithubExpression
 {
     protected override string Write() =>
@@ -170,6 +177,7 @@ public sealed record PropertyExpression(params IGithubExpression[] Sections) : I
         Write();
 }
 
+[PublicAPI]
 public sealed record NotExpression(IGithubExpression Contents) : IGithubExpression
 {
     protected override string Write() =>
@@ -179,6 +187,7 @@ public sealed record NotExpression(IGithubExpression Contents) : IGithubExpressi
         Write();
 }
 
+[PublicAPI]
 public sealed record LessThanExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -188,6 +197,7 @@ public sealed record LessThanExpression(IGithubExpression Left, IGithubExpressio
         Write();
 }
 
+[PublicAPI]
 public sealed record LessThanOrEqualExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -197,6 +207,7 @@ public sealed record LessThanOrEqualExpression(IGithubExpression Left, IGithubEx
         Write();
 }
 
+[PublicAPI]
 public sealed record GreaterThanExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -206,6 +217,7 @@ public sealed record GreaterThanExpression(IGithubExpression Left, IGithubExpres
         Write();
 }
 
+[PublicAPI]
 public sealed record GreaterThanOrEqualExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -215,6 +227,7 @@ public sealed record GreaterThanOrEqualExpression(IGithubExpression Left, IGithu
         Write();
 }
 
+[PublicAPI]
 public sealed record EqualExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -224,6 +237,7 @@ public sealed record EqualExpression(IGithubExpression Left, IGithubExpression R
         Write();
 }
 
+[PublicAPI]
 public sealed record NotEqualExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -233,6 +247,7 @@ public sealed record NotEqualExpression(IGithubExpression Left, IGithubExpressio
         Write();
 }
 
+[PublicAPI]
 public sealed record AndExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -242,6 +257,7 @@ public sealed record AndExpression(IGithubExpression Left, IGithubExpression Rig
         Write();
 }
 
+[PublicAPI]
 public sealed record OrExpression(IGithubExpression Left, IGithubExpression Right) : IGithubExpression
 {
     protected override string Write() =>
@@ -253,6 +269,7 @@ public sealed record OrExpression(IGithubExpression Left, IGithubExpression Righ
 
 // Functions
 
+[PublicAPI]
 public sealed record ContainsExpression(IGithubExpression Search, IGithubExpression Item) : IGithubExpression
 {
     protected override string Write() =>
@@ -262,6 +279,7 @@ public sealed record ContainsExpression(IGithubExpression Search, IGithubExpress
         Write();
 }
 
+[PublicAPI]
 public sealed record StartsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue) : IGithubExpression
 {
     protected override string Write() =>
@@ -271,6 +289,7 @@ public sealed record StartsWithExpression(IGithubExpression SearchString, IGithu
         Write();
 }
 
+[PublicAPI]
 public sealed record EndsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue) : IGithubExpression
 {
     protected override string Write() =>
@@ -280,6 +299,7 @@ public sealed record EndsWithExpression(IGithubExpression SearchString, IGithubE
         Write();
 }
 
+[PublicAPI]
 public sealed record FormatExpression(IGithubExpression String, params IGithubExpression[] ReplaceValues) : IGithubExpression
 {
     protected override string Write() =>
@@ -294,6 +314,7 @@ public sealed record FormatExpression(IGithubExpression String, params IGithubEx
         Write();
 }
 
+[PublicAPI]
 public sealed record JoinExpression(IGithubExpression Array, IGithubExpression? OptionalSeparator = null) : IGithubExpression
 {
     protected override string Write() =>
@@ -305,6 +326,7 @@ public sealed record JoinExpression(IGithubExpression Array, IGithubExpression? 
         Write();
 }
 
+[PublicAPI]
 public sealed record ToJsonExpression(IGithubExpression Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -314,6 +336,7 @@ public sealed record ToJsonExpression(IGithubExpression Value) : IGithubExpressi
         Write();
 }
 
+[PublicAPI]
 public sealed record FromJsonExpression(IGithubExpression Value) : IGithubExpression
 {
     protected override string Write() =>
@@ -323,6 +346,7 @@ public sealed record FromJsonExpression(IGithubExpression Value) : IGithubExpres
         Write();
 }
 
+[PublicAPI]
 public sealed record HashFilesExpression(params IGithubExpression[] Paths) : IGithubExpression
 {
     protected override string Write() =>
@@ -339,6 +363,7 @@ public sealed record HashFilesExpression(params IGithubExpression[] Paths) : IGi
 
 // Status Check Functions
 
+[PublicAPI]
 public sealed record SuccessExpression : IGithubExpression
 {
     protected override string Write() =>
@@ -348,6 +373,7 @@ public sealed record SuccessExpression : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record AlwaysExpression : IGithubExpression
 {
     protected override string Write() =>
@@ -357,6 +383,7 @@ public sealed record AlwaysExpression : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record CancelledExpression : IGithubExpression
 {
     protected override string Write() =>
@@ -366,6 +393,7 @@ public sealed record CancelledExpression : IGithubExpression
         Write();
 }
 
+[PublicAPI]
 public sealed record FailureExpression : IGithubExpression
 {
     protected override string Write() =>
@@ -376,6 +404,7 @@ public sealed record FailureExpression : IGithubExpression
 }
 
 // Consumed Expressions
+[PublicAPI]
 public sealed record ConsumedVariableExpression(IGithubExpression JobName, IGithubExpression VariableName) : IGithubExpression
 {
     protected override string Write() =>
@@ -385,6 +414,7 @@ public sealed record ConsumedVariableExpression(IGithubExpression JobName, IGith
         Write();
 }
 
+[PublicAPI]
 public sealed record ConsumedResultExpression(IGithubExpression JobName) : IGithubExpression
 {
     protected override string Write() =>

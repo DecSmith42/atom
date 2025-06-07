@@ -55,7 +55,7 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
         context.RegisterOperationAction(AnalyzeOperation, OperationKind.AnonymousFunction);
     }
 
-    private void AnalyzeOperation(OperationAnalysisContext context)
+    private static void AnalyzeOperation(OperationAnalysisContext context)
     {
         if (context.Operation is not IAnonymousFunctionOperation anonFuncOperation ||
             context.Operation.Syntax is not SimpleLambdaExpressionSyntax)

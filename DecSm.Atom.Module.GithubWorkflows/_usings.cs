@@ -1,3 +1,4 @@
+global using System.Globalization;
 global using System.IO.Compression;
 global using System.Text;
 global using DecSm.Atom.Artifacts;
