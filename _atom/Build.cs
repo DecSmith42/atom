@@ -32,6 +32,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
                 Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
+                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
                 Targets.TestAtom.WithGithubRunnerMatrix([
                     IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
                 ]),
