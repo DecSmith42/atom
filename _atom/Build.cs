@@ -112,32 +112,6 @@ internal partial class Build : DefaultBuildDefinition,
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
         },
-        new("Test_BuildWithCustomArtifacts")
-        {
-            Triggers = [GitPullRequestTrigger.IntoMain],
-            Targets =
-            [
-                Targets.SetupBuildInfo,
-                Targets.PackAtom,
-                Targets.PackAtomTool,
-                Targets.PackAzureKeyVaultModule,
-                Targets.PackAzureStorageModule,
-                Targets.PackDevopsWorkflowsModule,
-                Targets.PackDotnetModule,
-                Targets.PackGithubWorkflowsModule,
-                Targets.PackGitVersionModule,
-                Targets
-                    .TestAtom
-                    .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
-                    {
-                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
-                    })
-                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
-                Targets.PushToNuget,
-            ],
-            WorkflowTypes = [Github.WorkflowType, Devops.WorkflowType],
-            Options = [UseCustomArtifactProvider.Enabled, new WorkflowParamInjection(Params.NugetDryRun, "true")],
-        },
         Github.DependabotDefaultWorkflow(),
     ];
 }
