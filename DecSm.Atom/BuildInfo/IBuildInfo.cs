@@ -119,7 +119,7 @@ public interface IBuildInfo : IBuildAccessor
     [ParamDefinition("build-slice", "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs")]
     string? BuildSlice => GetParam(() => BuildSlice);
 
-    private string DefaultBuildName
+    string DefaultBuildName
     {
         get
         {
@@ -136,20 +136,20 @@ public interface IBuildInfo : IBuildAccessor
         }
     }
 
-    private string DefaultBuildId =>
+    string DefaultBuildId =>
         GetService<IBuildIdProvider>()
             .BuildId;
 
-    private SemVer DefaultBuildVersion =>
+    SemVer DefaultBuildVersion =>
         GetService<IBuildVersionProvider>()
             .Version;
 
-    private static Func<string?, SemVer?> BuildVersionConverter =>
+    static Func<string?, SemVer?> BuildVersionConverter =>
         s => s is not null
             ? SemVer.Parse(s)
             : throw new ArgumentException("Invalid SemVer");
 
-    private long DefaultBuildTimestamp =>
+    long DefaultBuildTimestamp =>
         GetService<IBuildTimestampProvider>()
             .Timestamp;
 }

@@ -1,9 +1,8 @@
-﻿using DecSm.Atom.BuildInfo;
-
-namespace DecSm.Atom.Module.AzureStorage;
+﻿namespace DecSm.Atom.Module.AzureStorage;
 
 [PublicAPI]
 public sealed class AzureBlobArtifactProvider(
+    IBuildInfo buildInfo,
     IParamService paramService,
     ReportService reportService,
     IAtomFileSystem fileSystem,
@@ -32,7 +31,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(IBuildInfo.BuildName));
+        var buildName = buildInfo.BuildName;
 
         var serviceClient = new BlobServiceClient(connectionString,
             new()
@@ -110,7 +109,7 @@ public sealed class AzureBlobArtifactProvider(
 
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(IBuildInfo.BuildName));
+        var buildName = buildInfo.BuildName;
 
         var serviceClient = new BlobServiceClient(connectionString,
             new()
@@ -192,7 +191,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.BuildName));
+        var buildName = buildInfo.BuildName;
         var containerClient = new BlobContainerClient(connectionString, container);
 
         foreach (var buildId in runIdentifiers)
@@ -221,7 +220,7 @@ public sealed class AzureBlobArtifactProvider(
     {
         var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
-        var buildName = paramService.GetParam(nameof(ISetupBuildInfo.BuildName));
+        var buildName = buildInfo.BuildName;
         var containerClient = new BlobContainerClient(connectionString, container);
 
         if (artifactName is { Length: > 0 })
