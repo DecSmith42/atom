@@ -2,12 +2,10 @@
 
 internal static class NugetAddHandler
 {
-    public static async Task<int> Handle(NugetAddOptions options, CancellationToken cancellationToken)
+    public static async Task<int> Handle(ParseResult parseResult, CancellationToken cancellationToken)
     {
-        var validateResult = options.Validate();
-
-        if (validateResult is not 0)
-            return validateResult;
+        var nameOption = parseResult.GetRequiredValue(Model.NameOption);
+        var urlOption = parseResult.GetRequiredValue(Model.UrlOption);
 
         Console.WriteLine("Fetching nuget sources...");
 
@@ -30,23 +28,21 @@ internal static class NugetAddHandler
             return 1;
         }
 
-        if (listSourceOutput.Contains(options.Name) || listSourceOutput.Contains(options.Url))
+        if (listSourceOutput.Contains(nameOption) || listSourceOutput.Contains(urlOption))
         {
-            Console.WriteLine($"'{options.Name}' feed is already present, skipping");
+            Console.WriteLine($"'{nameOption}' feed is already present, skipping");
 
             return 0;
         }
 
-        var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{options.Name.Replace(" ", "_").ToUpper()}");
+        var secret = Environment.GetEnvironmentVariable($"NUGET_TOKEN_{nameOption.Replace(" ", "_").ToUpper()}");
 
         // Sanitize feed name and url
-        var feedName = new string(options
-            .Name
+        var feedName = new string(nameOption
             .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_')
             .ToArray());
 
-        var feedUrl = new string(options
-            .Url
+        var feedUrl = new string(urlOption
             .Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '/' || c == ':' || c == '.')
             .ToArray());
 
@@ -57,7 +53,7 @@ internal static class NugetAddHandler
                      .Replace("\r", "") ??
                  string.Empty;
 
-        Console.WriteLine($"Adding {options.Name} feed...");
+        Console.WriteLine($"Adding {nameOption} feed...");
 
         var addSourceProcess = Process.Start(new ProcessStartInfo("dotnet")
         {
@@ -84,12 +80,12 @@ internal static class NugetAddHandler
 
         if (addSourceProcess.ExitCode is 0)
         {
-            Console.WriteLine($"'{options.Name}' feed added successfully.");
+            Console.WriteLine($"'{nameOption}' feed added successfully.");
 
             return 0;
         }
 
-        Console.WriteLine($"Failed to add {options.Name} feed.");
+        Console.WriteLine($"Failed to add {nameOption} feed.");
         Console.WriteLine(addSourceError);
 
         return 1;
