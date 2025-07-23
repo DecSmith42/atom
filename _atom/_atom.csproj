@@ -22,14 +22,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DecSm.Atom.Module.AzureKeyVault\DecSm.Atom.Module.AzureKeyVault.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Module.AzureStorage\DecSm.Atom.Module.AzureStorage.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Module.DevopsWorkflows\DecSm.Atom.Module.DevopsWorkflows.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Module.Dotnet\DecSm.Atom.Module.Dotnet.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Module.GitVersion\DecSm.Atom.Module.GitVersion.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj"/>
-    <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\DecSm.Atom.Module.AzureKeyVault\DecSm.Atom.Module.AzureKeyVault.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Module.AzureStorage\DecSm.Atom.Module.AzureStorage.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Module.DevopsWorkflows\DecSm.Atom.Module.DevopsWorkflows.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Module.Dotnet\DecSm.Atom.Module.Dotnet.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Module.GitVersion\DecSm.Atom.Module.GitVersion.csproj" />
+    <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj" />
+    <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

@@ -25,92 +25,91 @@ public class HostExtensionsTests
         // Assert
         var serviceProvider = builder.Services.BuildServiceProvider();
 
-        Assert.Multiple(() =>
-        {
-            serviceProvider
-                .GetService<IHostedService>()
-                .ShouldNotBeNull();
+        using var _ = Assert.EnterMultipleScope();
 
-            serviceProvider
-                .GetService<IBuildDefinition>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IHostedService>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IParamService>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IBuildDefinition>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<ReportService>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IParamService>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IAtomFileSystem>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<ReportService>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IFileSystem>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IAtomFileSystem>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IAnsiConsole>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IFileSystem>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<BuildExecutor>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IAnsiConsole>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<WorkflowGenerator>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<BuildExecutor>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IProcessRunner>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<WorkflowGenerator>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IOutcomeReportWriter>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IProcessRunner>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IWorkflowVariableProvider>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IOutcomeReportWriter>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IWorkflowVariableService>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IWorkflowVariableProvider>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IBuildTimestampProvider>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IWorkflowVariableService>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IBuildVersionProvider>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IBuildTimestampProvider>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<IHelpService>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IBuildVersionProvider>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<CommandLineArgsParser>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<IHelpService>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<CommandLineArgs>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<CommandLineArgsParser>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<BuildResolver>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<CommandLineArgs>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<WorkflowResolver>()
-                .ShouldNotBeNull();
+        serviceProvider
+            .GetService<BuildResolver>()
+            .ShouldNotBeNull();
 
-            serviceProvider
-                .GetService<BuildModel>()
-                .ShouldNotBeNull();
-        });
+        serviceProvider
+            .GetService<WorkflowResolver>()
+            .ShouldNotBeNull();
+
+        serviceProvider
+            .GetService<BuildModel>()
+            .ShouldNotBeNull();
     }
 
     [Test]
