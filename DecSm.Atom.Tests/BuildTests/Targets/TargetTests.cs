@@ -184,19 +184,18 @@ public class TargetTests
         // Assert
         var configuration = host.Services.GetService<IConfiguration>();
 
-        Assert.Multiple(() =>
-        {
-            configuration.ShouldNotBeNull();
+        using var _ = Assert.EnterMultipleScope();
 
-            configuration["SetupExecuted1"]
-                .ShouldBe("true");
+        configuration.ShouldNotBeNull();
 
-            configuration["SetupExecuted2"]
-                .ShouldBe("true");
+        configuration["SetupExecuted1"]
+            .ShouldBe("true");
 
-            configuration["SetupExecuted3"]
-                .ShouldBe("true");
-        });
+        configuration["SetupExecuted2"]
+            .ShouldBe("true");
+
+        configuration["SetupExecuted3"]
+            .ShouldBe("true");
     }
 
     [Test]
