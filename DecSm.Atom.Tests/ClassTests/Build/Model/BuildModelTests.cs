@@ -25,7 +25,7 @@ public class BuildModelTests
         new("TargetModel", null, false)
         {
             Tasks = [],
-            RequiredParams = [],
+            Params = [],
             ConsumedArtifacts = [],
             ProducedArtifacts = [],
             ConsumedVariables = [],

@@ -16,9 +16,9 @@ public sealed record TargetModel(string Name, string? Description, bool IsHidden
     public required IReadOnlyList<Func<CancellationToken, Task>> Tasks { get; init; }
 
     /// <summary>
-    ///     Represents the input parameters that are mandatory for the execution of the target.
+    ///     Represents the input parameters that are used for the execution of the target.
     /// </summary>
-    public required IReadOnlyList<ParamModel> RequiredParams { get; init; }
+    public required IReadOnlyList<UsedParam> Params { get; init; }
 
     /// <summary>
     ///     Artifacts that are consumed by the target during the build process.

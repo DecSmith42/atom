@@ -2,7 +2,10 @@
 
 internal static class Model
 {
-    public static readonly Argument<string[]> RunArgs = new("runArgs");
+    public static readonly Argument<string[]> RunArgs = new("runArgs")
+    {
+        DefaultValueFactory = _ => [],
+    };
 
     public static readonly Option<string> ProjectOption = new("--project", "-p")
     {

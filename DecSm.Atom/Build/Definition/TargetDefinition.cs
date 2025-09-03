@@ -37,9 +37,9 @@ public sealed class TargetDefinition
     public List<string> Dependencies { get; private set; } = [];
 
     /// <summary>
-    ///     Names of parameters that must be provided when invoking the target.
+    ///     Names of parameters that may/must be provided when invoking the target.
     /// </summary>
-    public List<string> RequiredParams { get; private set; } = [];
+    public List<DefinedParam> Params { get; private set; } = [];
 
     /// <summary>
     ///     Artifacts that must be produced by other targets before this target can be executed.
@@ -108,7 +108,7 @@ public sealed class TargetDefinition
             {
                 Tasks.AddRange(targetToExtend.Tasks);
                 Dependencies.AddRange(targetToExtend.Dependencies);
-                RequiredParams.AddRange(targetToExtend.RequiredParams);
+                Params.AddRange(targetToExtend.Params);
                 ConsumedArtifacts.AddRange(targetToExtend.ConsumedArtifacts);
                 ProducedArtifacts.AddRange(targetToExtend.ProducedArtifacts);
                 ConsumedVariables.AddRange(targetToExtend.ConsumedVariables);
@@ -126,9 +126,9 @@ public sealed class TargetDefinition
                     .Concat(Dependencies)
                     .ToList();
 
-                RequiredParams = targetToExtend
-                    .RequiredParams
-                    .Concat(RequiredParams)
+                Params = targetToExtend
+                    .Params
+                    .Concat(Params)
                     .ToList();
 
                 ConsumedArtifacts = targetToExtend
@@ -245,13 +245,25 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
+    ///     Specifies that this target may use the provided parameters for execution.
+    /// </summary>
+    /// <param name="paramNames">An array of parameter names that may be used by the target.</param>
+    /// <returns>This target definition.</returns>
+    public TargetDefinition UsesParam(params IEnumerable<string> paramNames)
+    {
+        Params.AddRange(paramNames.Select(x => new DefinedParam(x, false)));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Specifies that this target requires the provided parameters to be defined for execution.
     /// </summary>
     /// <param name="paramNames">An array of parameter names that are required by the target.</param>
     /// <returns>This target definition.</returns>
     public TargetDefinition RequiresParam(params IEnumerable<string> paramNames)
     {
-        RequiredParams.AddRange(paramNames);
+        Params.AddRange(paramNames.Select(x => new DefinedParam(x, true)));
 
         return this;
     }
