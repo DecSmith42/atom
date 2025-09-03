@@ -1,0 +1,7 @@
+﻿# name: simple-workflow
+
+$atom_variables = @{}
+
+
+# Command: SimpleTarget
+dotnet run --project AtomTest/AtomTest.csproj SimpleTarget --skip --headless

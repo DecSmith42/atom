@@ -1,0 +1,11 @@
+﻿# name: dependent-workflow
+
+$atom_variables = @{}
+
+
+# Command: DependentTarget1
+dotnet run --project AtomTest/AtomTest.csproj DependentTarget1 --skip --headless
+
+
+# Command: DependentTarget2
+dotnet run --project AtomTest/AtomTest.csproj DependentTarget2 --skip --headless

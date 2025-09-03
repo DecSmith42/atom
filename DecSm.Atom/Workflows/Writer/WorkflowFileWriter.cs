@@ -253,6 +253,15 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
         return new DisposableAction(() => IndentLevel -= TabSize);
     }
 
+    protected void Indent() =>
+        IndentLevel += TabSize;
+
+    protected void Unindent()
+    {
+        if (IndentLevel >= TabSize)
+            IndentLevel -= TabSize;
+    }
+
     /// <summary>
     ///     Abstract method that concrete implementations must override to define how to write workflow content.
     /// </summary>
