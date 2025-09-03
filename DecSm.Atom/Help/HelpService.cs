@@ -25,11 +25,12 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         console.Write(new Markup("[bold]Options[/]\n"));
         console.WriteLine();
 
-        console.Write(new Markup("  [dim]-h,  --help[/]      [dim]Show help[/]\n"));
-        console.Write(new Markup("  [dim]-g,  --gen[/]       [dim]Generate build script[/]\n"));
-        console.Write(new Markup("  [dim]-s,  --skip[/]      [dim]Skip dependency execution[/]\n"));
-        console.Write(new Markup("  [dim]-hl, --headless[/]  [dim]Run in headless mode[/]\n"));
-        console.Write(new Markup("  [dim]-v,  --verbose[/]   [dim]Show verbose output[/]\n"));
+        console.Write(new Markup("  [dim]-h,  --help[/]        [dim]Show help for entire tool or a single command[/]\n"));
+        console.Write(new Markup("  [dim]-i,  --interactive[/] [dim]Run in interactive mode (prompt for required params)[/]\n"));
+        console.Write(new Markup("  [dim]-g,  --gen[/]         [dim]Generate build scripts[/]\n"));
+        console.Write(new Markup("  [dim]-s,  --skip[/]        [dim]Skip dependency execution (run only specified commands)[/]\n"));
+        console.Write(new Markup("  [dim]-hl, --headless[/]    [dim]Run in headless mode (no prompts or logins, used in CI)[/]\n"));
+        console.Write(new Markup("  [dim]-v,  --verbose[/]     [dim]Show verbose output (extra logging)[/]\n"));
         console.WriteLine();
 
         var targets = args.HasVerbose
@@ -114,33 +115,31 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                 depTree.AddNode($"[dim]{dependency.Name}[/]");
         }
 
-        var secrets = target
+        var requiredParams = target
             .Params
-            .Where(x => x.Param.IsSecret)
+            .Where(x => x is { Param.IsSecret: false, Required: true })
             .ToList();
 
         var optionalParams = target
             .Params
-            .Except(secrets)
-            .Where(x => !x.Required)
+            .Where(x => x is { Param.IsSecret: false, Required: false })
             .ToList();
 
-        var requiredParams = target
+        var secrets = target
             .Params
-            .Except(secrets)
-            .Except(optionalParams)
+            .Where(x => x is { Param.IsSecret: true })
             .ToList();
 
         if (requiredParams.Count > 0)
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(requiredParams.Count);
 
-            foreach (var requiredParam in requiredParams)
+            foreach (var param in requiredParams)
             {
-                var defaultValue = requiredParam.Param.DefaultValue ?? string.Empty;
+                var defaultValue = param.Param.DefaultValue ?? string.Empty;
 
                 var configuredValue = config
-                                          .GetSection("Params")[requiredParam.Param.ArgName] ??
+                                          .GetSection("Params")[param.Param.ArgName] ??
                                       string.Empty;
 
                 var suppliedDisplay = (defaultValue, configuredValue) switch
@@ -154,24 +153,24 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     _ => "[dim] | [/][dim yellow][[⚠ None]][/]",
                 };
 
-                var descriptionDisplay = requiredParam.Param.Description is { Length: > 0 }
-                    ? $"[dim] | {requiredParam.Param.Description.EscapeMarkup()}[/]"
+                var descriptionDisplay = param.Param.Description is { Length: > 0 }
+                    ? $"[dim] | {param.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                var nameDisplay = $"--{requiredParam.Param.ArgName.EscapeMarkup()}";
+                var nameDisplay = $"--{param.Param.ArgName.EscapeMarkup()}";
 
-                nodes.Add((requiredParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
+                nodes.Add((param.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
                     defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
 
-            var reqTree = tree.AddNode("[bold red]Requires[/]");
+            var requiredParamsTree = tree.AddNode("[bold red]Requires[/]");
 
-            reqTree.AddNodes(nodes
+            requiredParamsTree.AddNodes(nodes
                 .Where(x => !x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
 
-            reqTree.AddNodes(nodes
+            requiredParamsTree.AddNodes(nodes
                 .Where(x => x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
@@ -181,12 +180,12 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(optionalParams.Count);
 
-            foreach (var optionalParam in optionalParams)
+            foreach (var param in optionalParams)
             {
-                var defaultValue = optionalParam.Param.DefaultValue ?? string.Empty;
+                var defaultValue = param.Param.DefaultValue ?? string.Empty;
 
                 var configuredValue = config
-                                          .GetSection("Params")[optionalParam.Param.ArgName] ??
+                                          .GetSection("Params")[param.Param.ArgName] ??
                                       string.Empty;
 
                 var suppliedDisplay = (defaultValue, configuredValue) switch
@@ -200,24 +199,24 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 
-                var descriptionDisplay = optionalParam.Param.Description is { Length: > 0 }
-                    ? $"[dim] | {optionalParam.Param.Description.EscapeMarkup()}[/]"
+                var descriptionDisplay = param.Param.Description is { Length: > 0 }
+                    ? $"[dim] | {param.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                var nameDisplay = $"--{optionalParam.Param.ArgName.EscapeMarkup()}";
+                var nameDisplay = $"--{param.Param.ArgName.EscapeMarkup()}";
 
-                nodes.Add((optionalParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
+                nodes.Add((param.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
                     defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
 
-            var optTree = tree.AddNode("[bold green]Options[/]");
+            var optionalParamsTree = tree.AddNode("[bold green]Options[/]");
 
-            optTree.AddNodes(nodes
+            optionalParamsTree.AddNodes(nodes
                 .Where(x => !x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
 
-            optTree.AddNodes(nodes
+            optionalParamsTree.AddNodes(nodes
                 .Where(x => x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
@@ -246,7 +245,8 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     ({ Length: > 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[Default: ****]][/][dim][[✔ Configured: ****]][/]",
                     ({ Length: > 0 }, { Length: 0 }) => "[dim] | [/][dim green][[✔ Default: ****]][/]",
                     ({ Length: 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[✔ Configured: ****]][/]",
-                    _ => string.Empty,
+                    _ when secret.Required => "[dim] | [/][dim yellow][[⚠ None]][/]",
+                    _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 
                 var nameDisplay = $"--{secret.Param.ArgName.EscapeMarkup()}";
@@ -255,14 +255,14 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
 
-            var secTree = tree.AddNode("[bold purple]Secrets[/]");
+            var secretsTree = tree.AddNode("[bold purple]Secrets[/]");
 
-            secTree.AddNodes(nodes
+            secretsTree.AddNodes(nodes
                 .Where(x => !x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
 
-            secTree.AddNodes(nodes
+            secretsTree.AddNodes(nodes
                 .Where(x => x.IsSupplied)
                 .OrderBy(x => x.Name)
                 .Select(x => x.Value));
