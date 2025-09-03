@@ -122,10 +122,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         var optionalParams = target
             .Params
             .Except(secrets)
-            .Where(x => x.Param.DefaultValue is { Length: > 0 } ||
-                        config
-                            .GetSection("Params")[x.Param.ArgName] is { Length: > 0 } ||
-                        !x.Required)
+            .Where(x => !x.Required)
             .ToList();
 
         var requiredParams = target
@@ -136,21 +133,55 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
         if (requiredParams.Count > 0)
         {
-            var reqTree = tree.AddNode("[dim bold red]Requires[/]");
+            var nodes = new List<(string Name, string Value, bool IsSupplied)>(requiredParams.Count);
 
             foreach (var requiredParam in requiredParams)
             {
+                var defaultValue = requiredParam.Param.DefaultValue ?? string.Empty;
+
+                var configuredValue = config
+                                          .GetSection("Params")[requiredParam.Param.ArgName] ??
+                                      string.Empty;
+
+                var suppliedDisplay = (defaultValue, configuredValue) switch
+                {
+                    ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
+                        $"[dim] [[Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) =>
+                        $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/][dim][[Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    _ => string.Empty,
+                };
+
                 var descriptionDisplay = requiredParam.Param.Description is { Length: > 0 }
                     ? $"[dim] | {requiredParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                reqTree.AddNode($"--{requiredParam.Param.ArgName.EscapeMarkup()}{descriptionDisplay}");
+                var nameDisplay = suppliedDisplay is { Length: > 0 }
+                    ? $"[green]--{requiredParam.Param.ArgName.EscapeMarkup()}[/]"
+                    : $"--{requiredParam.Param.ArgName.EscapeMarkup()}";
+
+                nodes.Add((requiredParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
+                    suppliedDisplay is { Length: > 0 }));
             }
+
+            var reqTree = tree.AddNode("[dim bold red]Requires[/]");
+
+            reqTree.AddNodes(nodes
+                .Where(x => !x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
+
+            reqTree.AddNodes(nodes
+                .Where(x => x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
         }
 
         if (optionalParams.Count > 0)
         {
-            var optTree = tree.AddNode("[dim bold green]Options[/]");
+            var nodes = new List<(string Name, string Value, bool IsSupplied)>(optionalParams.Count);
 
             foreach (var optionalParam in optionalParams)
             {
@@ -160,7 +191,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                                           .GetSection("Params")[optionalParam.Param.ArgName] ??
                                       string.Empty;
 
-                var defaultDisplay = (defaultValue, configuredValue) switch
+                var suppliedDisplay = (defaultValue, configuredValue) switch
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
                         $"[dim] [[Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
@@ -175,8 +206,25 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     ? $"[dim] | {optionalParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                optTree.AddNode($"--{optionalParam.Param.ArgName.EscapeMarkup()}{defaultDisplay}{descriptionDisplay}");
+                var nameDisplay = suppliedDisplay is { Length: > 0 }
+                    ? $"[green]--{optionalParam.Param.ArgName.EscapeMarkup()}[/]"
+                    : $"--{optionalParam.Param.ArgName.EscapeMarkup()}";
+
+                nodes.Add((optionalParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
+                    suppliedDisplay is { Length: > 0 }));
             }
+
+            var optTree = tree.AddNode("[dim bold green]Options[/]");
+
+            optTree.AddNodes(nodes
+                .Where(x => !x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
+
+            optTree.AddNodes(nodes
+                .Where(x => x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
         }
 
         if (secrets.Count > 0)

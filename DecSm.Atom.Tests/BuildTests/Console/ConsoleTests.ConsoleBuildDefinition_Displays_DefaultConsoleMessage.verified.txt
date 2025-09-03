@@ -20,8 +20,7 @@ Project Commands
 
 ConsoleTarget | Console target
 ├── Requires
-│   └── --required-param | Required param
-├── Options
+│   ├── --required-param | Required param
 │   └── --default-param [Default: default-value] | Default param
 └── Secrets
     └── --secret-param | Secret param
