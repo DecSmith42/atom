@@ -146,27 +146,25 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                 var suppliedDisplay = (defaultValue, configuredValue) switch
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
-                        $"[dim] [[Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
+                        $"[dim] | [/][dim green][[✔ Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: > 0 }, { Length: > 0 }) =>
-                        $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/][dim][[Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    _ => string.Empty,
+                        $"[dim] | [/][dim green][[Default: {defaultValue.EscapeMarkup()}]][/][dim] [[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    _ => "[dim] | [/][dim yellow][[⚠ None]][/]",
                 };
 
                 var descriptionDisplay = requiredParam.Param.Description is { Length: > 0 }
                     ? $"[dim] | {requiredParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                var nameDisplay = suppliedDisplay is { Length: > 0 }
-                    ? $"[green]--{requiredParam.Param.ArgName.EscapeMarkup()}[/]"
-                    : $"--{requiredParam.Param.ArgName.EscapeMarkup()}";
+                var nameDisplay = $"--{requiredParam.Param.ArgName.EscapeMarkup()}";
 
                 nodes.Add((requiredParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
-                    suppliedDisplay is { Length: > 0 }));
+                    defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
 
-            var reqTree = tree.AddNode("[dim bold red]Requires[/]");
+            var reqTree = tree.AddNode("[bold red]Requires[/]");
 
             reqTree.AddNodes(nodes
                 .Where(x => !x.IsSupplied)
@@ -194,27 +192,25 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                 var suppliedDisplay = (defaultValue, configuredValue) switch
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
-                        $"[dim] [[Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
+                        $"[dim] | [/][dim green][[✔ Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: > 0 }, { Length: > 0 }) =>
-                        $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/][dim][[Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] [[Default: {defaultValue.EscapeMarkup()}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] [[Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    _ => string.Empty,
+                        $"[dim] | [/][dim green][[Default: {defaultValue.EscapeMarkup()}]][/][dim] [[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 
                 var descriptionDisplay = optionalParam.Param.Description is { Length: > 0 }
                     ? $"[dim] | {optionalParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                var nameDisplay = suppliedDisplay is { Length: > 0 }
-                    ? $"[green]--{optionalParam.Param.ArgName.EscapeMarkup()}[/]"
-                    : $"--{optionalParam.Param.ArgName.EscapeMarkup()}";
+                var nameDisplay = $"--{optionalParam.Param.ArgName.EscapeMarkup()}";
 
                 nodes.Add((optionalParam.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
-                    suppliedDisplay is { Length: > 0 }));
+                    defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
 
-            var optTree = tree.AddNode("[dim bold green]Options[/]");
+            var optTree = tree.AddNode("[bold green]Options[/]");
 
             optTree.AddNodes(nodes
                 .Where(x => !x.IsSupplied)
@@ -229,16 +225,47 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
         if (secrets.Count > 0)
         {
-            var secTree = tree.AddNode("[dim bold purple]Secrets[/]");
+            var nodes = new List<(string Name, string Value, bool IsSupplied)>(secrets.Count);
 
             foreach (var secret in secrets)
             {
+                var defaultValue = secret.Param.DefaultValue ?? string.Empty;
+
+                var configuredValue = config
+                                          .GetSection("Params")[secret.Param.ArgName] ??
+                                      string.Empty;
+
                 var descriptionDisplay = secret.Param.Description is { Length: > 0 }
                     ? $"[dim] | {secret.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                secTree.AddNode($"--{secret.Param.ArgName.EscapeMarkup()}{descriptionDisplay}");
+                var suppliedDisplay = (defaultValue, configuredValue) switch
+                {
+                    ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
+                        "[dim] | [/][dim green][[✔ Default/Configured: ****]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[Default: ****]][/][dim][[✔ Configured: ****]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) => "[dim] | [/][dim green][[✔ Default: ****]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[✔ Configured: ****]][/]",
+                    _ => string.Empty,
+                };
+
+                var nameDisplay = $"--{secret.Param.ArgName.EscapeMarkup()}";
+
+                nodes.Add((secret.Param.ArgName, $"{nameDisplay}{suppliedDisplay}{descriptionDisplay}",
+                    defaultValue is { Length: > 0 } || configuredValue is { Length: > 0 }));
             }
+
+            var secTree = tree.AddNode("[bold purple]Secrets[/]");
+
+            secTree.AddNodes(nodes
+                .Where(x => !x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
+
+            secTree.AddNodes(nodes
+                .Where(x => x.IsSupplied)
+                .OrderBy(x => x.Name)
+                .Select(x => x.Value));
         }
 
         console.Write(tree);
