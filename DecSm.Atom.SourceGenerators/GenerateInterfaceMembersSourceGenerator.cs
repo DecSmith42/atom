@@ -56,11 +56,6 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
                 GeneratePartial(context, classSymbol, classDeclarationSyntax);
     }
 
-    private static string SimpleName(string fullName) =>
-        fullName
-            .Split('.')
-            .Last();
-
     private static void GeneratePartial(
         SourceProductionContext context,
         INamedTypeSymbol classSymbol,

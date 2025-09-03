@@ -55,4 +55,29 @@ public class ParamTests
             .ToString()
             .ShouldContain("Missing required parameter 'param-2' for target ParamTarget2");
     }
+
+    [Test]
+    public void Param_WhenOptionalAndNotSupplied_UsesDefaultValue()
+    {
+        // Arrange
+        var loggerProvider = new TestLoggerProvider();
+
+        var host = CreateTestHost<OptionalParamBuild>(commandLineArgs: new(true,
+            [
+                new CommandArg(nameof(IOptionalParamTarget1.OptionalParamTarget1)),
+                new ParamArg("param-1", nameof(IOptionalParamTarget1.Param1), "TestValue"),
+            ]),
+            configure: builder => builder.Logging.AddProvider(loggerProvider));
+
+        var build = (OptionalParamBuild)host.Services.GetRequiredService<IBuildDefinition>();
+
+        // Act
+        host.Run();
+
+        // Assert
+        TestContext.Out.WriteLine(loggerProvider.Logger.LogContent.ToString());
+
+        build.ExecuteValue1.ShouldBe("TestValue");
+        build.ExecuteValue2.ShouldBeNull();
+    }
 }

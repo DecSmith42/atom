@@ -85,7 +85,7 @@ public class BuildExecutorTests
                     return Task.CompletedTask;
                 },
             ],
-            RequiredParams = [],
+            Params = [],
             ConsumedArtifacts = [],
             ProducedArtifacts = [],
             ConsumedVariables = [],

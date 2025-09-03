@@ -115,20 +115,21 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         }
 
         var secrets = target
-            .RequiredParams
-            .Where(x => x.IsSecret)
+            .Params
+            .Where(x => x.Param.IsSecret)
             .ToList();
 
         var optionalParams = target
-            .RequiredParams
+            .Params
             .Except(secrets)
-            .Where(x => x.DefaultValue is { Length: > 0 } ||
+            .Where(x => x.Param.DefaultValue is { Length: > 0 } ||
                         config
-                            .GetSection("Params")[x.ArgName] is { Length: > 0 })
+                            .GetSection("Params")[x.Param.ArgName] is { Length: > 0 } ||
+                        !x.Required)
             .ToList();
 
         var requiredParams = target
-            .RequiredParams
+            .Params
             .Except(secrets)
             .Except(optionalParams)
             .ToList();
@@ -139,11 +140,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
             foreach (var requiredParam in requiredParams)
             {
-                var descriptionDisplay = requiredParam.Description is { Length: > 0 }
-                    ? $"[dim] | {requiredParam.Description.EscapeMarkup()}[/]"
+                var descriptionDisplay = requiredParam.Param.Description is { Length: > 0 }
+                    ? $"[dim] | {requiredParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                reqTree.AddNode($"--{requiredParam.ArgName.EscapeMarkup()}{descriptionDisplay}");
+                reqTree.AddNode($"--{requiredParam.Param.ArgName.EscapeMarkup()}{descriptionDisplay}");
             }
         }
 
@@ -153,10 +154,10 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
             foreach (var optionalParam in optionalParams)
             {
-                var defaultValue = optionalParam.DefaultValue;
+                var defaultValue = optionalParam.Param.DefaultValue;
 
                 var configuredValue = config
-                    .GetSection("Params")[optionalParam.ArgName];
+                    .GetSection("Params")[optionalParam.Param.ArgName];
 
                 var defaultDisplay = (defaultValue, configuredValue) switch
                 {
@@ -169,11 +170,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     _ => string.Empty,
                 };
 
-                var descriptionDisplay = optionalParam.Description is { Length: > 0 }
-                    ? $"[dim] | {optionalParam.Description.EscapeMarkup()}[/]"
+                var descriptionDisplay = optionalParam.Param.Description is { Length: > 0 }
+                    ? $"[dim] | {optionalParam.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                optTree.AddNode($"--{optionalParam.ArgName.EscapeMarkup()}{defaultDisplay}{descriptionDisplay}");
+                optTree.AddNode($"--{optionalParam.Param.ArgName.EscapeMarkup()}{defaultDisplay}{descriptionDisplay}");
             }
         }
 
@@ -183,11 +184,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
             foreach (var secret in secrets)
             {
-                var descriptionDisplay = secret.Description is { Length: > 0 }
-                    ? $"[dim] | {secret.Description.EscapeMarkup()}[/]"
+                var descriptionDisplay = secret.Param.Description is { Length: > 0 }
+                    ? $"[dim] | {secret.Param.Description.EscapeMarkup()}[/]"
                     : string.Empty;
 
-                secTree.AddNode($"--{secret.ArgName.EscapeMarkup()}{descriptionDisplay}");
+                secTree.AddNode($"--{secret.Param.ArgName.EscapeMarkup()}{descriptionDisplay}");
             }
         }
 

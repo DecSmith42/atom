@@ -46,29 +46,29 @@ internal sealed class BuildExecutor(
 
     private void ValidateTargetParameters(TargetModel target)
     {
-        foreach (var requiredParam in target.RequiredParams)
+        foreach (var requiredParam in target.Params.Where(x => x.Required))
         {
-            var defaultValue = requiredParam.DefaultValue is { Length: > 0 }
-                ? requiredParam.DefaultValue
+            var defaultValue = requiredParam.Param.DefaultValue is { Length: > 0 }
+                ? requiredParam.Param.DefaultValue
                 : null;
 
             string? value;
 
-            if (requiredParam.IsSecret)
+            if (requiredParam.Param.IsSecret)
             {
-                value = paramService.GetParam(requiredParam.Name, defaultValue, x => x);
+                value = paramService.GetParam(requiredParam.Param.Name, defaultValue, x => x);
             }
             else
             {
                 using var _ = paramService.CreateNoCacheScope();
-                value = paramService.GetParam(requiredParam.Name, defaultValue);
+                value = paramService.GetParam(requiredParam.Param.Name, defaultValue);
             }
 
             if (value is { Length: > 0 })
                 continue;
 
             logger.LogError("Missing required parameter '{ParamName}' for target {TargetDefinitionName}",
-                requiredParam.ArgName,
+                requiredParam.Param.ArgName,
                 target.Name);
 
             buildModel.TargetStates[target].Status = TargetRunState.Failed;

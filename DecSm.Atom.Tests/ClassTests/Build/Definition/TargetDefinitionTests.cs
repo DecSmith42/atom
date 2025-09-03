@@ -111,9 +111,10 @@ public class TargetDefinitionTests
         targetDefinition.RequiresParam(paramName);
 
         // Assert
-        targetDefinition.RequiredParams.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
+        targetDefinition.Params.ShouldSatisfyAllConditions(x => x.ShouldNotBeEmpty(),
             x => x.Count.ShouldBe(1),
             x => x[0]
+                .Param
                 .ShouldBe(paramName));
     }
 

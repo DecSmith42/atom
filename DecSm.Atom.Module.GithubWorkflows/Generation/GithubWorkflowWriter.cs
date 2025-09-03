@@ -487,8 +487,8 @@ internal sealed class GithubWorkflowWriter(
                     continue;
 
                 foreach (var input in githubManualTrigger.Inputs.Where(i => target
-                             .RequiredParams
-                             .Select(p => p.ArgName)
+                             .Params
+                             .Select(p => p.Param.ArgName)
                              .Any(p => p == i.Name)))
                     env[input.Name] = $"${{{{ inputs.{input.Name} }}}}";
             }
@@ -498,12 +498,12 @@ internal sealed class GithubWorkflowWriter(
                     $"${{{{ needs.{consumedVariable.TargetName}.outputs.{buildDefinition.ParamDefinitions[consumedVariable.VariableName].ArgName} }}}}";
 
             var requiredSecrets = target
-                .RequiredParams
-                .Where(x => x.IsSecret)
+                .Params
+                .Where(x => x.Param.IsSecret)
                 .Select(x => x)
                 .ToArray();
 
-            if (requiredSecrets.Any(x => x.IsSecret))
+            if (requiredSecrets.Any(x => x.Param.IsSecret))
             {
                 foreach (var injectedSecret in workflow.Options.OfType<WorkflowSecretsSecretInjection>())
                 {
@@ -547,10 +547,10 @@ internal sealed class GithubWorkflowWriter(
                     .Options
                     .Concat(workflowStep.Options)
                     .OfType<WorkflowSecretInjection>()
-                    .FirstOrDefault(x => x.Value == requiredSecret.Name);
+                    .FirstOrDefault(x => x.Value == requiredSecret.Param.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.ArgName] = $"${{{{ secrets.{requiredSecret.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    env[requiredSecret.Param.ArgName] = $"${{{{ secrets.{requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();

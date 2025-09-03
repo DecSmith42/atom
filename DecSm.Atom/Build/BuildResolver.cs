@@ -35,7 +35,7 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 .ApplyExtensions(buildDefinition))
             .ToArray();
 
-        // Duplicate target names could result in undefined behavior
+        // Duplicate target names could result in undefined behavior,
         // So we fail early if any are found
         // Note: This doesn't include overriden or extended targets
         var duplicateTargetNames = targetDefinitions
@@ -61,7 +61,7 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 return new TargetModel(x.Name, x.Description, x.Hidden)
                 {
                     Tasks = x.Tasks,
-                    RequiredParams = x.RequiredParams.ConvertAll(p => paramModels[p]),
+                    Params = x.Params.ConvertAll(p => new UsedParam(paramModels[p.Param], p.Required)),
                     ConsumedArtifacts = x.ConsumedArtifacts,
                     ProducedArtifacts = x.ProducedArtifacts,
                     ConsumedVariables = x.ConsumedVariables,
