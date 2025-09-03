@@ -22,7 +22,7 @@ ConsoleTarget | Console target
 ├── Requires
 │   └── --required-param | Required param
 ├── Options
-│   └── --default-param | Default param
+│   └── --default-param [Default: default-value] | Default param
 └── Secrets
     └── --secret-param | Secret param
 
