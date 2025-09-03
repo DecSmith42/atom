@@ -1,0 +1,13 @@
+﻿global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.Build.Model;
+global using DecSm.Atom.Hosting;
+global using DecSm.Atom.Paths;
+global using DecSm.Atom.Workflows.Definition;
+global using DecSm.Atom.Workflows.Model;
+global using DecSm.Atom.Workflows.Options;
+global using DecSm.Atom.Workflows.Writer;
+global using JetBrains.Annotations;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Hosting;
+global using Microsoft.Extensions.Logging;

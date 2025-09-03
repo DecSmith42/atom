@@ -1,0 +1,7 @@
+﻿# name: environment-workflow
+
+$atom_variables = @{}
+
+
+# Command: EnvironmentTarget
+dotnet run --project AtomTest/AtomTest.csproj EnvironmentTarget --skip --headless

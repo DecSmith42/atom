@@ -9,7 +9,8 @@ internal partial class Build : DefaultBuildDefinition,
     IGithubWorkflows,
     IGitVersion,
     IDeployTargets,
-    ITestTargets
+    ITestTargets,
+    IPowershellWorkflows
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
@@ -69,6 +70,23 @@ internal partial class Build : DefaultBuildDefinition,
         },
 
         // Test workflows
+        new("Test_Cmd")
+        {
+            Targets =
+            [
+                Targets.SetupBuildInfo,
+                Targets.PackAtom.WithSuppressedArtifactPublishing,
+                Targets.PackAtomTool.WithSuppressedArtifactPublishing,
+                Targets.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
+                Targets.PackAzureStorageModule.WithSuppressedArtifactPublishing,
+                Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
+                Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
+                Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
+                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
+                Targets.TestAtom,
+            ],
+            WorkflowTypes = [new PowershellWorkflowType()],
+        },
         new("Test_Devops_Validate")
         {
             Targets =

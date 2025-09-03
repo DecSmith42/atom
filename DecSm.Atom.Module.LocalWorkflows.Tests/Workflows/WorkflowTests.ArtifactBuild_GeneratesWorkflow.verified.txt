@@ -1,0 +1,25 @@
+﻿# name: artifact-workflow
+
+$atom_variables = @{}
+
+
+# Command: ArtifactTarget1
+dotnet run --project AtomTest/AtomTest.csproj ArtifactTarget1 --skip --headless
+
+
+
+# Command: ArtifactTarget2
+dotnet run --project AtomTest/AtomTest.csproj ArtifactTarget2 --skip --headless
+
+
+
+# Command: ArtifactTarget3
+dotnet run --project AtomTest/AtomTest.csproj ArtifactTarget3 --skip --headless
+
+$matrix_slice = @('Slice1', 'Slice2')
+foreach ($slice in $matrix_slice)
+{
+  
+  # Command: ArtifactTarget4
+  dotnet run --project AtomTest/AtomTest.csproj ArtifactTarget4 --skip --headless --slice $slice
+}
