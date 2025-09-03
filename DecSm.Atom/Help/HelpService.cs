@@ -154,10 +154,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
 
             foreach (var optionalParam in optionalParams)
             {
-                var defaultValue = optionalParam.Param.DefaultValue;
+                var defaultValue = optionalParam.Param.DefaultValue ?? string.Empty;
 
                 var configuredValue = config
-                    .GetSection("Params")[optionalParam.Param.ArgName];
+                                          .GetSection("Params")[optionalParam.Param.ArgName] ??
+                                      string.Empty;
 
                 var defaultDisplay = (defaultValue, configuredValue) switch
                 {
