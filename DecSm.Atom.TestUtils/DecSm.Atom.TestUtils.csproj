@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Spectre.Console.Testing" Version="0.50.0" />
+    <PackageReference Include="Spectre.Console.Testing" Version="0.51.1" />
     <PackageReference Include="TestableIO.System.IO.Abstractions.TestingHelpers" Version="22.0.15" />
   </ItemGroup>
 
