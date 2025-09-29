@@ -150,14 +150,38 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
     /// </remarks>
     public ProcessRunResult Run(ProcessRunOptions options)
     {
-        if (options.WorkingDirectory is { Length: > 0 })
-            logger.Log(options.InvocationLogLevel,
-                "Run: {Name} {Args} in {WorkingDirectory}",
-                options.Name,
-                options.Args,
-                options.WorkingDirectory);
-        else
-            logger.Log(options.InvocationLogLevel, "Run: {Name} {Args}", options.Name, options.Args);
+        switch (options)
+        {
+            case { WorkingDirectory.Length: > 0, EnvironmentVariables.Count: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} in {WorkingDirectory} with env {EnvironmentVariables}",
+                    options.Name,
+                    options.Args,
+                    options.WorkingDirectory,
+                    string.Join(", ", options.EnvironmentVariables.Select(kv => $"{kv.Key}={kv.Value}")));
+
+                break;
+            case { WorkingDirectory.Length: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} in {WorkingDirectory}",
+                    options.Name,
+                    options.Args,
+                    options.WorkingDirectory);
+
+                break;
+            case { EnvironmentVariables.Count: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} with env {EnvironmentVariables}",
+                    options.Name,
+                    options.Args,
+                    string.Join(", ", options.EnvironmentVariables.Select(kv => $"{kv.Key}={kv.Value}")));
+
+                break;
+            default:
+                logger.Log(options.InvocationLogLevel, "Run: {Name} {Args}", options.Name, options.Args);
+
+                break;
+        }
 
         using var process = new System.Diagnostics.Process();
 
@@ -169,6 +193,9 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             RedirectStandardOutput = true,
             RedirectStandardError = true,
         };
+
+        foreach (var environmentVariable in options.EnvironmentVariables)
+            process.StartInfo.Environment[environmentVariable.Key] = environmentVariable.Value;
 
         var outputBuilder = new StringBuilder();
         var errorBuilder = new StringBuilder();
@@ -278,14 +305,38 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
     /// </example>
     public async Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default)
     {
-        if (options.WorkingDirectory is { Length: > 0 })
-            logger.Log(options.InvocationLogLevel,
-                "Run: {Name} {Args} in {WorkingDirectory}",
-                options.Name,
-                options.Args,
-                options.WorkingDirectory);
-        else
-            logger.Log(options.InvocationLogLevel, "Run: {Name} {Args}", options.Name, options.Args);
+        switch (options)
+        {
+            case { WorkingDirectory.Length: > 0, EnvironmentVariables.Count: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} in {WorkingDirectory} with env {EnvironmentVariables}",
+                    options.Name,
+                    options.Args,
+                    options.WorkingDirectory,
+                    string.Join(", ", options.EnvironmentVariables.Select(kv => $"{kv.Key}={kv.Value}")));
+
+                break;
+            case { WorkingDirectory.Length: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} in {WorkingDirectory}",
+                    options.Name,
+                    options.Args,
+                    options.WorkingDirectory);
+
+                break;
+            case { EnvironmentVariables.Count: > 0 }:
+                logger.Log(options.InvocationLogLevel,
+                    "Run: {Name} {Args} with env {EnvironmentVariables}",
+                    options.Name,
+                    options.Args,
+                    string.Join(", ", options.EnvironmentVariables.Select(kv => $"{kv.Key}={kv.Value}")));
+
+                break;
+            default:
+                logger.Log(options.InvocationLogLevel, "Run: {Name} {Args}", options.Name, options.Args);
+
+                break;
+        }
 
         using var process = new System.Diagnostics.Process();
 
@@ -297,6 +348,9 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             RedirectStandardOutput = true,
             RedirectStandardError = true,
         };
+
+        foreach (var environmentVariable in options.EnvironmentVariables)
+            process.StartInfo.Environment[environmentVariable.Key] = environmentVariable.Value;
 
         var outputBuilder = new StringBuilder();
         var errorBuilder = new StringBuilder();
