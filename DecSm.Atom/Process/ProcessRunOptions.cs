@@ -200,4 +200,17 @@ public sealed record ProcessRunOptions(string Name, string Args)
     /// </code>
     /// </example>
     public bool AllowFailedResult { get; init; }
+
+    /// <summary>
+    ///     Gets or sets the environment variables to be used by the process during execution.
+    /// </summary>
+    /// <value>
+    ///     A dictionary where keys represent the names of the environment variables and values represent their corresponding values.
+    ///     A value of <c>null</c> for any variable indicates that it should be removed from the environment.
+    /// </value>
+    /// <remarks>
+    ///     These environment variables are passed to the process when it is executed, potentially overriding inherited variables
+    ///     from the current environment. If not set, the process will inherit the current environment's variables by default.
+    /// </remarks>
+    public Dictionary<string, string?> EnvironmentVariables { get; init; } = [];
 }
