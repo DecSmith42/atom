@@ -64,14 +64,12 @@ internal interface IBuildTargets : IDotnetPackHelper
                         Configuration = "Release",
                         RuntimeIdentifier = "win-x64",
                         NativeAot = true,
-                        CustomPackageId = "atomtool",
                     },
                     cancellationToken);
 
                 await DotnetPackProject(new(AtomToolProjectName)
                     {
                         Configuration = "Release",
-                        CustomPackageId = "atomtool",
                         SuppressClearingPublishDirectory = true,
                     },
                     cancellationToken);

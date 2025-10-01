@@ -5,7 +5,7 @@
     <StripSymbols>true</StripSymbols>
     <PackAsTool>true</PackAsTool>
     <ToolCommandNames>atomtool;atom;</ToolCommandNames>
-    <PackageId>atomtool</PackageId>
+    <PackageId>DecSm.Atom.Tool</PackageId>
   </PropertyGroup>
 
   <!-- Conditional framework version to support NuGet tool -->
