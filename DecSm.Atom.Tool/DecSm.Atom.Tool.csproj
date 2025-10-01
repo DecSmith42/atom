@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <StripSymbols>true</StripSymbols>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandNames>atomtool;atom;</ToolCommandNames>
+    <ToolCommandName>atom</ToolCommandName>
     <PackageId>DecSm.Atom.Tool</PackageId>
   </PropertyGroup>
 
