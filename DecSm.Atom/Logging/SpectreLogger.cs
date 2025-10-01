@@ -9,6 +9,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
         where TState : notnull =>
         scopeProvider?.Push(state) ?? NullScope.Instance;
 
+    // Secrets are not masked here because our custom Spectre output implementation does that.
     public void Log<TState>(
         LogLevel logLevel,
         EventId eventId,
@@ -96,9 +97,6 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
 
         if (message is "(null)")
             return;
-
-        // If the text contains any secrets, we don't want to log it
-        message = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(message) ?? message;
 
         message = message.EscapeMarkup();
 

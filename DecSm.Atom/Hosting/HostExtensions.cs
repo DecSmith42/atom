@@ -49,7 +49,19 @@ public static class HostExtensions
 
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
-        builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) => AnsiConsole.Console);
+
+        builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) =>
+        {
+            // Wrap Spectre's console output so all rendered text is masked for secrets before being written
+            var innerOutput = AnsiConsole.Console.Profile.Out;
+
+            var settings = new AnsiConsoleSettings
+            {
+                Out = new MaskingAnsiConsoleOutput(innerOutput),
+            };
+
+            return AnsiConsole.Create(settings);
+        });
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<IBuildIdProvider, DefaultBuildIdProvider>();
