@@ -2,9 +2,40 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+    <StripSymbols>true</StripSymbols>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>atom</ToolCommandName>
+    <ToolCommandNames>atomtool;atom;</ToolCommandNames>
+    <PackageId>atomtool</PackageId>
+  </PropertyGroup>
+
+  <!-- Conditional framework version to support NuGet tool -->
+  <PropertyGroup Condition="$(RuntimeIdentifier) != ''">
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(RuntimeIdentifier) == ''">
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net10.0'">
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <PublishAot>true</PublishAot>
+
+    <!--  Size optimisation bits for Native AOT -->
+    <DebuggerSupport>false</DebuggerSupport>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+    <StripSymbols>true</StripSymbols>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IlcDisableReflection>true</IlcDisableReflection>
+    <IlcTrimMetadata>true</IlcTrimMetadata>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
+
+    <!-- For analysis by Sizoscope  -->
+    <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
+    <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -13,6 +13,7 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
             .DescribedAs("Pushes the Atom projects to Nuget")
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
             .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
             .ConsumesArtifact(nameof(PackAtomTool), AtomToolProjectName)
             .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
@@ -25,13 +26,21 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
             .Executes(async cancellationToken =>
             {
                 await PushProject(AtomProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomToolProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(AzureKeyVaultModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(AzureStorageModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(AtomDevopsWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(DotnetModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(AtomGithubWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(GitVersionModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+
+                var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
+                var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg");
+
+                foreach (var atomToolPackagePath in atomToolPackagePaths)
+                    await PushPackageToNuget(atomToolDirectory / atomToolPackagePath,
+                        NugetFeed,
+                        NugetApiKey,
+                        cancellationToken: cancellationToken);
             });
 
     Target PushToRelease =>

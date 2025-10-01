@@ -57,5 +57,23 @@ internal interface IBuildTargets : IDotnetPackHelper
         t => t
             .DescribedAs("Builds the DecSm.Atom.Tool project into a nuget package")
             .ProducesArtifact(AtomToolProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomToolProjectName), cancellationToken));
+            .Executes(async cancellationToken =>
+            {
+                await DotnetPackProject(new(AtomToolProjectName)
+                    {
+                        Configuration = "Release",
+                        RuntimeIdentifier = "win-x64",
+                        NativeAot = true,
+                        CustomPackageId = "atomtool",
+                    },
+                    cancellationToken);
+
+                await DotnetPackProject(new(AtomToolProjectName)
+                    {
+                        Configuration = "Release",
+                        CustomPackageId = "atomtool",
+                        SuppressClearingPublishDirectory = true,
+                    },
+                    cancellationToken);
+            });
 }
