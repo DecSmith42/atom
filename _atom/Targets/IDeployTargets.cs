@@ -13,7 +13,6 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
             .DescribedAs("Pushes the Atom projects to Nuget")
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
-            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
             .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
             .ConsumesArtifact(nameof(PackAtomTool), AtomToolProjectName)
             .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
