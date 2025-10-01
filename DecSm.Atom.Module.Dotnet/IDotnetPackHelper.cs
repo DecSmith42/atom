@@ -36,7 +36,14 @@ public interface IDotnetPackHelper : IBuildAccessor
         if (FileSystem.Directory.Exists(packDirectory))
             FileSystem.Directory.Delete(packDirectory, true);
 
-        await ProcessRunner.RunAsync(new("dotnet", $"pack {projectPath.Path} -c {options.Configuration}"), cancellationToken);
+        var command = options switch
+        {
+            { RuntimeIdentifier: not null } =>
+                $"pack {projectPath.Path} -c {options.Configuration} -r {options.RuntimeIdentifier} /p:PublishAot={options.NativeAot.ToString().ToLower()}",
+            _ => $"pack {projectPath.Path} -c {options.Configuration}",
+        };
+
+        await ProcessRunner.RunAsync(new("dotnet", command), cancellationToken);
 
         var packageFilePattern = options.CustomPackageId is { Length: > 0 }
             ? $"{options.CustomPackageId}.*.nupkg"
@@ -44,12 +51,12 @@ public interface IDotnetPackHelper : IBuildAccessor
 
         var packageFileName = FileSystem
             .Directory
-            .GetFiles(FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration, packageFilePattern)
+            .GetFiles(packDirectory, packageFilePattern)
             .OrderByDescending(x => x)
             .First();
 
         // Move package to publish directory
-        var packagePath = FileSystem.AtomRootDirectory / options.ProjectName / "bin" / options.Configuration / $"{packageFileName}";
+        var packagePath = packDirectory / $"{packageFileName}";
 
         if (!packagePath.FileExists)
             throw new InvalidOperationException($"Package {packagePath} does not exist.");
@@ -58,7 +65,7 @@ public interface IDotnetPackHelper : IBuildAccessor
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;
         Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
 
-        if (FileSystem.Directory.Exists(publishDir))
+        if (!options.SuppressClearingPublishDirectory && FileSystem.Directory.Exists(publishDir))
             FileSystem.Directory.Delete(publishDir, true);
 
         FileSystem.Directory.CreateDirectory(publishDir);
