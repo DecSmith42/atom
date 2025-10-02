@@ -16,8 +16,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
         env:
@@ -33,8 +34,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
         env:
@@ -57,8 +59,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
         env:
@@ -81,8 +84,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
         name: PackAzureKeyVaultModule
         env:
@@ -105,8 +109,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
         name: PackAzureStorageModule
         env:
@@ -129,8 +134,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
         name: PackDevopsWorkflowsModule
         env:
@@ -153,8 +159,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
         name: PackDotnetModule
         env:
@@ -177,8 +184,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
         name: PackGithubWorkflowsModule
         env:
@@ -201,8 +209,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
         name: PackGitVersionModule
         env:
@@ -233,8 +242,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
         env:
@@ -274,8 +284,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom
         inputs:

@@ -372,7 +372,12 @@ internal sealed class GithubWorkflowWriter(
                         continue;
 
                     using (WriteSection("with:"))
+                    {
                         WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
+
+                        if (setupDotnetStep.Quality is not null)
+                            WriteLine($"dotnet-quality: '{setupDotnetStep.Quality.ToString()!.ToLower()}'");
+                    }
                 }
 
         var setupNugetSteps = workflow

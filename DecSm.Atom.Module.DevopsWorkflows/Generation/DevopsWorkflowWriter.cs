@@ -372,7 +372,12 @@ internal sealed partial class DevopsWorkflowWriter(
                         continue;
 
                     using (WriteSection("inputs:"))
+                    {
                         WriteLine($"version: '{setupDotnetStep.DotnetVersion}'\n");
+
+                        if (setupDotnetStep.Quality is not null)
+                            WriteLine("includePreviewVersions: 'true'");
+                    }
                 }
 
         var setupNugetSteps = workflow
