@@ -13,7 +13,7 @@ internal partial class Build : DefaultBuildDefinition,
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("9.0.x"),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("10.0.x"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
