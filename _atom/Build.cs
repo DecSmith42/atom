@@ -46,7 +46,9 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
-                Targets.PackAtomTool,
+                Targets.PackAtomTool.WithGithubRunnerMatrix([
+                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+                ]),
                 Targets.PackAzureKeyVaultModule,
                 Targets.PackAzureStorageModule,
                 Targets.PackDevopsWorkflowsModule,

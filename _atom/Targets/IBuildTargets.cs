@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace Atom.Targets;
 
 internal interface IBuildTargets : IDotnetPackHelper
@@ -59,19 +61,28 @@ internal interface IBuildTargets : IDotnetPackHelper
             .ProducesArtifact(AtomToolProjectName)
             .Executes(async cancellationToken =>
             {
-                await DotnetPackProject(new(AtomToolProjectName)
-                    {
-                        Configuration = "Release",
-                        RuntimeIdentifier = "win-x64",
-                        NativeAot = true,
-                    },
-                    cancellationToken);
+                var runtimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+
+                Logger.LogInformation("Packing AOT Atom tool for runtime {RuntimeIdentifier}", runtimeIdentifier);
 
                 await DotnetPackProject(new(AtomToolProjectName)
                     {
                         Configuration = "Release",
-                        SuppressClearingPublishDirectory = true,
+                        RuntimeIdentifier = runtimeIdentifier,
+                        NativeAot = true,
                     },
                     cancellationToken);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Logger.LogInformation("Packing Atom tool for non-native AOT");
+
+                    await DotnetPackProject(new(AtomToolProjectName)
+                        {
+                            Configuration = "Release",
+                            SuppressClearingPublishDirectory = true,
+                        },
+                        cancellationToken);
+                }
             });
 }

@@ -55,7 +55,10 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
   
   PackAtomTool:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.job-runs-on }}
     steps:
       
       - name: Checkout
@@ -69,11 +72,14 @@ jobs:
       - name: PackAtomTool
         id: PackAtomTool
         run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+        env:
+          job-runs-on: ${{ matrix.job-runs-on }}
+          build-slice: ${{ matrix.job-runs-on }}
       
       - name: Upload DecSm.Atom.Tool
         uses: actions/upload-artifact@v4
         with:
-          name: DecSm.Atom.Tool
+          name: DecSm.Atom.Tool-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
   
   PackAzureKeyVaultModule:
@@ -249,7 +255,7 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
   
   PushToNuget:
-    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
+    needs: [ PackAtomTool, TestAtom, PackAtom, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -266,12 +272,6 @@ jobs:
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
-      
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: Download DecSm.Atom.Module.AzureKeyVault
         uses: actions/download-artifact@v4
@@ -313,6 +313,7 @@ jobs:
         id: PushToNuget
         run: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         env:
+          build-id: ${{ needs.SetupBuildInfo.outputs.build-id }}
           azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}

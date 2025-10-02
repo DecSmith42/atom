@@ -1,4 +1,6 @@
-﻿namespace Atom.Targets;
+﻿using DecSm.Atom.Artifacts;
+
+namespace Atom.Targets;
 
 internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseHelper, ISetupBuildInfo
 {
@@ -11,10 +13,11 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
     Target PushToNuget =>
         t => t
             .DescribedAs("Pushes the Atom projects to Nuget")
+            .DependsOn(nameof(PackAtomTool))
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
-            .ConsumesArtifact(nameof(PackAtomTool), AtomToolProjectName)
             .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
             .ConsumesArtifact(nameof(PackAzureStorageModule), AzureStorageModuleProjectName)
             .ConsumesArtifact(nameof(PackDevopsWorkflowsModule), AtomDevopsWorkflowsModuleProjectName)
@@ -31,16 +34,20 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
                 await PushProject(DotnetModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(AtomGithubWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
                 await PushProject(GitVersionModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-
-                var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
-                var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg");
-
-                foreach (var atomToolPackagePath in atomToolPackagePaths)
-                    await PushPackageToNuget(atomToolDirectory / atomToolPackagePath,
-                        NugetFeed,
-                        NugetApiKey,
-                        cancellationToken: cancellationToken);
+                await PushAtomTool(cancellationToken);
             });
+
+    private async Task PushAtomTool(CancellationToken cancellationToken)
+    {
+        await GetService<IArtifactProvider>()
+            .RetrieveArtifacts([nameof(PackAtomTool)], BuildId, null, cancellationToken);
+
+        var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
+        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg");
+
+        foreach (var atomToolPackagePath in atomToolPackagePaths)
+            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+    }
 
     Target PushToRelease =>
         d => d
