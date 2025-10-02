@@ -148,7 +148,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
                         $"[dim] | [/][dim green][[✔ Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: > 0 }, { Length: > 0 }) =>
-                        $"[dim] | [/][dim green][[Default: {defaultValue.EscapeMarkup()}]][/][dim] [[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                        $"[dim] | [/][dim][[Default: {defaultValue.EscapeMarkup()}]] [dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/][/]",
                     ({ Length: > 0 }, { Length: 0 }) => $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: 0 }, { Length: > 0 }) => $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
                     _ => "[dim] | [/][dim yellow][[⚠ None]][/]",
@@ -248,7 +248,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     ({ Length: > 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[Default: ****]][/][dim][[✔ Configured: ****]][/]",
                     ({ Length: > 0 }, { Length: 0 }) => "[dim] | [/][dim green][[✔ Default: ****]][/]",
                     ({ Length: 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[✔ Configured: ****]][/]",
-                    _ when secret.Required => "[dim] | [/][dim yellow][[⚠ None]][/]",
+                    _ when secret.Required => "[dim] | [/][dim blue][[? None]][/]",
                     _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 
