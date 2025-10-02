@@ -1,4 +1,4 @@
-﻿return await Model
-    .RootCommand
-    .Parse(args)
-    .InvokeAsync();
+﻿var app = ConsoleApp.Create();
+app.Add<CommandModel>();
+app.UseFilter<RunArgsFilter>();
+app.Run(args);
