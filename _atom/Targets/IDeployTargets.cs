@@ -39,8 +39,11 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
 
     private async Task PushAtomTool(CancellationToken cancellationToken)
     {
-        await GetService<IArtifactProvider>()
-            .RetrieveArtifacts([nameof(PackAtomTool)], BuildId, null, cancellationToken);
+        var artifactProvider = GetService<IArtifactProvider>();
+
+        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.WindowsLatestTag, cancellationToken);
+        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.UbuntuLatestTag, cancellationToken);
+        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.MacOsLatestTag, cancellationToken);
 
         var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
         var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg");
