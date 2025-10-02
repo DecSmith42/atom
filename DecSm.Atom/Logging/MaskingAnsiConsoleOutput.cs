@@ -62,13 +62,13 @@ internal sealed class MaskingAnsiConsoleOutput : IAnsiConsoleOutput
 
         public override Task WriteAsync(string? value)
         {
-            if (value is { Length: > 0 })
-            {
-                var masker = ServiceStaticAccessor<IParamService>.Service;
+            if (value is not { Length: > 0 })
+                return _innerWriter.WriteAsync(value);
 
-                if (masker is not null)
-                    value = masker.MaskMatchingSecrets(value);
-            }
+            var masker = ServiceStaticAccessor<IParamService>.Service;
+
+            if (masker is not null)
+                value = masker.MaskMatchingSecrets(value);
 
             return _innerWriter.WriteAsync(value);
         }

@@ -6,17 +6,11 @@ namespace DecSm.Atom.Tests.ClassTests.Logging;
 [TestFixture]
 public class MaskingAnsiConsoleOutputTests
 {
-    private const string Secret = "SuperSecretValue123";
-    private readonly string _masked = "*****";
-
-    private StringWriter _writer = null!;
-    private IAnsiConsole _console = null!;
-
     [SetUp]
     public void SetUp()
     {
         // Install a stub param service that masks our known secret
-        ServiceStaticAccessor<IParamService>.Service = new StubParamService(Secret, _masked);
+        ServiceStaticAccessor<IParamService>.Service = new StubParamService(Secret, MaskedSecret);
 
         _writer = new(new StringBuilder());
 
@@ -41,6 +35,12 @@ public class MaskingAnsiConsoleOutputTests
         _writer.Dispose();
     }
 
+    private const string Secret = "SuperSecretValue123";
+    private const string MaskedSecret = "*****";
+
+    private StringWriter _writer = null!;
+    private IAnsiConsole _console = null!;
+
     [Test]
     public void Markup_Output_ShouldMaskSecrets()
     {
@@ -54,7 +54,7 @@ public class MaskingAnsiConsoleOutputTests
 
         // Assert
         output.ShouldNotContain(Secret);
-        output.ShouldContain(_masked);
+        output.ShouldContain(MaskedSecret);
         TestContext.Out.WriteLine(output);
     }
 
@@ -73,7 +73,7 @@ public class MaskingAnsiConsoleOutputTests
 
         // Assert
         output.ShouldNotContain(Secret);
-        output.ShouldContain(_masked);
+        output.ShouldContain(MaskedSecret);
         TestContext.Out.WriteLine(output);
     }
 
@@ -90,14 +90,14 @@ public class MaskingAnsiConsoleOutputTests
 
         // Assert
         output.ShouldNotContain(Secret);
-        output.ShouldContain(_masked);
+        output.ShouldContain(MaskedSecret);
         TestContext.Out.WriteLine(output);
     }
 
     private sealed class StubParamService : IParamService
     {
-        private readonly string _secret;
         private readonly string _mask;
+        private readonly string _secret;
 
         public StubParamService(string secret, string mask)
         {
@@ -111,13 +111,13 @@ public class MaskingAnsiConsoleOutputTests
         public string MaskMatchingSecrets(string text) =>
             text.Replace(_secret, _mask, StringComparison.OrdinalIgnoreCase);
 
-        public T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+        public T GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
             throw new NotImplementedException();
 
-        public T? GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+        public T GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null) =>
             throw new NotImplementedException();
 
-        public string? GetParam(string paramName, string? defaultValue = null) =>
+        public string GetParam(string paramName, string? defaultValue = null) =>
             throw new NotImplementedException();
     }
 
