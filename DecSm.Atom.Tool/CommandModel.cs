@@ -1,7 +1,5 @@
 ﻿#pragma warning disable CA1822, RCS1163
 
-using JetBrains.Annotations;
-
 namespace DecSm.Atom.Tool;
 
 [PublicAPI]
