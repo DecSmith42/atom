@@ -24,5 +24,5 @@ ConsoleTarget | Console target
 │   ├── --required-param | [⚠ None] | Required param
 │   └── --default-param | [✔ Default: default-value] | Default param
 └── Secrets
-    └── --secret-param | [⚠ None] | Secret param
+    └── --secret-param | [? None] | Secret param
 
