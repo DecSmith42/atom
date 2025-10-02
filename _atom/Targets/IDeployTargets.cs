@@ -41,9 +41,9 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
     {
         var artifactProvider = GetService<IArtifactProvider>();
 
-        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.WindowsLatestTag, cancellationToken);
-        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.UbuntuLatestTag, cancellationToken);
-        await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.MacOsLatestTag, cancellationToken);
+        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.WindowsLatestTag, cancellationToken);
+        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.UbuntuLatestTag, cancellationToken);
+        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.MacOsLatestTag, cancellationToken);
 
         var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
         var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
