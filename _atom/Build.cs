@@ -36,9 +36,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.TestAtom.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
@@ -57,18 +55,14 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
-                Targets.PackAtomTool.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.PackAtomTool.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
                 Targets.PackAzureKeyVaultModule,
                 Targets.PackAzureStorageModule,
                 Targets.PackDevopsWorkflowsModule,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.TestAtom.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
                 Targets.PushToNuget,
                 Targets
                     .PushToRelease
@@ -99,7 +93,7 @@ internal partial class Build : DefaultBuildDefinition,
                     .TestAtom
                     .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
                     {
-                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
+                        Values = IBuildTargets.BuildPlatformNames,
                     })
                     .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
             ],
@@ -118,9 +112,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithDevopsPoolMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.TestAtom.WithDevopsPoolMatrix(IBuildTargets.BuildPlatformNames),
                 Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],

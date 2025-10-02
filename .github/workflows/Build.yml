@@ -266,7 +266,7 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
   
   PushToNuget:
-    needs: [ PackAtomTool, TestAtom, PackAtom, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -284,6 +284,24 @@ jobs:
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
+      
+      - name: Download DecSm.Atom.Tool-macos-latest
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-macos-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-macos-latest"
+      
+      - name: Download DecSm.Atom.Tool-ubuntu-latest
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-ubuntu-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-ubuntu-latest"
+      
+      - name: Download DecSm.Atom.Tool-windows-latest
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-windows-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-windows-latest"
       
       - name: Download DecSm.Atom.Module.AzureKeyVault
         uses: actions/download-artifact@v4

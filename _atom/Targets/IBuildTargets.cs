@@ -13,6 +13,8 @@ internal interface IBuildTargets : IDotnetPackHelper
     const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
     const string AtomToolProjectName = "DecSm.Atom.Tool";
 
+    static readonly string[] BuildPlatformNames = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag];
+
     Target PackAtom =>
         t => t
             .DescribedAs("Builds the Atom project into a nuget package")

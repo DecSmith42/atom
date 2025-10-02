@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Artifacts;
-
-namespace Atom.Targets;
+﻿namespace Atom.Targets;
 
 internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseHelper, ISetupBuildInfo
 {
@@ -13,11 +11,13 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
     Target PushToNuget =>
         t => t
             .DescribedAs("Pushes the Atom projects to Nuget")
-            .DependsOn(nameof(PackAtomTool))
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
+            .ConsumesArtifact(nameof(PackAtomTool), $"{AtomToolProjectName}-{IJobRunsOn.MacOsLatestTag}")
+            .ConsumesArtifact(nameof(PackAtomTool), $"{AtomToolProjectName}-{IJobRunsOn.UbuntuLatestTag}")
+            .ConsumesArtifact(nameof(PackAtomTool), $"{AtomToolProjectName}-{IJobRunsOn.WindowsLatestTag}")
             .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
             .ConsumesArtifact(nameof(PackAzureStorageModule), AzureStorageModuleProjectName)
             .ConsumesArtifact(nameof(PackDevopsWorkflowsModule), AtomDevopsWorkflowsModuleProjectName)
@@ -39,12 +39,6 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
 
     private async Task PushAtomTool(CancellationToken cancellationToken)
     {
-        var artifactProvider = GetService<IArtifactProvider>();
-
-        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.WindowsLatestTag, cancellationToken);
-        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.UbuntuLatestTag, cancellationToken);
-        await artifactProvider.RetrieveArtifacts([nameof(AtomToolProjectName)], BuildId, IJobRunsOn.MacOsLatestTag, cancellationToken);
-
         var atomToolDirectory = FileSystem.AtomArtifactsDirectory / AtomToolProjectName;
         var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
 
