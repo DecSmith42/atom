@@ -46,7 +46,7 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
         await artifactProvider.RetrieveArtifacts([nameof(PackAtomTool)], BuildId, IJobRunsOn.MacOsLatestTag, cancellationToken);
 
         var atomToolDirectory = FileSystem.AtomPublishDirectory / AtomToolProjectName;
-        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg");
+        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
 
         foreach (var atomToolPackagePath in atomToolPackagePaths)
             await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
