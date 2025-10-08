@@ -24,8 +24,7 @@ public sealed record RootedPath(IAtomFileSystem FileSystem, string Path)
 
             var path = Path switch
             {
-                [.., '/'] => Path[..^1],
-                [.., '\\'] => Path[..^1],
+                [.., '/'] or [.., '\\'] => Path[..^1],
                 _ => Path,
             };
 

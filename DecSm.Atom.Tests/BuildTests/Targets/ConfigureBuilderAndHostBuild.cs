@@ -23,7 +23,7 @@ public partial interface ITargetWithConfigureBuilder
 [ConfigureHost]
 public partial interface ITargetWithConfigureBuilderAndConfigureHost
 {
-    public bool IsSetupExecuted2 { get; set; }
+    bool IsSetupExecuted2 { get; set; }
 
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
         builder.Configuration.AddInMemoryCollection([new("SetupExecuted2", "true")]);
@@ -36,7 +36,7 @@ public partial interface ITargetWithConfigureBuilderAndConfigureHost
 [ConfigureHost]
 public partial interface ITargetWithInheritAndConfigureBuilderAndConfigureHost : ITargetWithConfigureBuilderAndConfigureHost
 {
-    public bool IsSetupExecuted3 { get; set; }
+    bool IsSetupExecuted3 { get; set; }
 
     protected new static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
         builder.Configuration.AddInMemoryCollection([new("SetupExecuted3", "true")]);

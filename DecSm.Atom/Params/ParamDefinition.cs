@@ -36,8 +36,8 @@ public sealed record ParamDefinition(string Name)
     public required bool IsSecret { get; init; }
 
     /// <summary>
-    /// A collection of other parameters that are required and associated with this parameter.
-    /// These additional parameters are defined as dependencies for the current parameter.
+    ///     A collection of other parameters that are required and associated with this parameter.
+    ///     These additional parameters are defined as dependencies for the current parameter.
     /// </summary>
     public required IReadOnlyList<string> ChainedParams { get; init; }
 }

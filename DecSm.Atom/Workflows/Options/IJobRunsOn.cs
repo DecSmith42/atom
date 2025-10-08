@@ -17,17 +17,17 @@ public interface IJobRunsOn : IBuildDefinition, IBuildAccessor
     /// <summary>
     ///     Tag for the latest Windows runner.
     /// </summary>
-    public const string WindowsLatestTag = "windows-latest";
+    const string WindowsLatestTag = "windows-latest";
 
     /// <summary>
     ///     Tag for the latest Ubuntu runner.
     /// </summary>
-    public const string UbuntuLatestTag = "ubuntu-latest";
+    const string UbuntuLatestTag = "ubuntu-latest";
 
     /// <summary>
     ///     Tag for the latest macOS runner.
     /// </summary>
-    public const string MacOsLatestTag = "macos-latest";
+    const string MacOsLatestTag = "macos-latest";
 
     /// <summary>
     ///     Gets the runner or agent tag for the job.

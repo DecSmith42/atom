@@ -48,9 +48,8 @@ public static class DotnetFileUtils
         var project = fileSystem.FileInfo.New(fileSystem.AtomRootDirectory / projectName / $"{projectName}.csproj");
         var projectPath = new RootedPath(fileSystem, project.FullName);
 
-        if (!project.Exists)
-            throw new InvalidOperationException($"Project file {project.FullName} does not exist.");
-
-        return projectPath;
+        return !project.Exists
+            ? throw new InvalidOperationException($"Project file {project.FullName} does not exist.")
+            : projectPath;
     }
 }

@@ -27,6 +27,8 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
+        // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - Perf
+
         foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
         {
@@ -40,6 +42,8 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             if (attributeName == GenerateInterfaceMembersAttributeFull)
                 return (classDeclarationSyntax, true);
         }
+
+        // ReSharper restore ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
         return (classDeclarationSyntax, false);
     }

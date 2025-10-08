@@ -52,7 +52,9 @@ internal sealed class GithubWorkflowWriter(
                                             bool? defaultBoolValue = null;
 
                                             if (boolInput.DefaultValue.HasValue)
+                                            {
                                                 defaultBoolValue = boolInput.DefaultValue.Value;
+                                            }
                                             else
                                             {
                                                 var accessedParam = buildDefinition.AccessParam(inputParamName);
@@ -73,7 +75,7 @@ internal sealed class GithubWorkflowWriter(
                                                 }
                                             }
 
-                                            var isBoolRequired = (input.Required ?? defaultBoolValue is null)
+                                            var isBoolRequired = input.Required ?? defaultBoolValue is null
                                                 ? "true"
                                                 : "false";
 
@@ -94,7 +96,7 @@ internal sealed class GithubWorkflowWriter(
                                                     .AccessParam(inputParamName)
                                                     ?.ToString();
 
-                                            var isStringRequired = (input.Required ?? defaultStringValue is not { Length: > 0 })
+                                            var isStringRequired = input.Required ?? defaultStringValue is not { Length: > 0 }
                                                 ? "true"
                                                 : "false";
 
@@ -115,7 +117,7 @@ internal sealed class GithubWorkflowWriter(
                                                     .AccessParam(inputParamName)
                                                     ?.ToString();
 
-                                            var isChoiceRequired = (input.Required ?? defaultChoiceValue is not { Length: > 0 })
+                                            var isChoiceRequired = input.Required ?? defaultChoiceValue is not { Length: > 0 }
                                                 ? "true"
                                                 : "false";
 

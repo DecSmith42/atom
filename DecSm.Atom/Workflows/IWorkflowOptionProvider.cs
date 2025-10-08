@@ -66,5 +66,5 @@ public interface IWorkflowOptionProvider
     ///     May be thrown by implementers if the provider is in an invalid state
     ///     or if options cannot be retrieved due to configuration errors.
     /// </exception>
-    public IReadOnlyList<IWorkflowOption> WorkflowOptions { get; }
+    IReadOnlyList<IWorkflowOption> WorkflowOptions { get; }
 }

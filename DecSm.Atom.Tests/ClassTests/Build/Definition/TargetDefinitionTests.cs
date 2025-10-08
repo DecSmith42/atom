@@ -73,7 +73,7 @@ public class TargetDefinitionTests
     {
         // ReSharper disable once UnusedMember.Local
 #pragma warning disable CA1822
-        public Target TestTarget => x => x;
+        Target TestTarget => x => x;
 #pragma warning restore CA1822
     }
 

@@ -117,6 +117,17 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     public int BuildNumberFromMetadata => ExtractBuildNumber(Metadata);
 
     /// <summary>
+    ///     Gets a semantic version representing version 1.0.0.
+    /// </summary>
+    /// <value>A <see cref="SemVer" /> instance with Major set to 1, Minor set to 0, and Patch set to 0.</value>
+    public static SemVer One { get; } = new()
+    {
+        Major = 1,
+        Minor = 0,
+        Patch = 0,
+    };
+
+    /// <summary>
     ///     Compares the current instance with another <see cref="SemVer" /> and returns an integer that indicates
     ///     whether the current instance precedes, follows, or occurs in the same position in the sort order.
     /// </summary>
@@ -375,17 +386,6 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
             ? int.Parse(matches[0].Value)
             : 0;
     }
-
-    /// <summary>
-    ///     Gets a semantic version representing version 1.0.0.
-    /// </summary>
-    /// <value>A <see cref="SemVer" /> instance with Major set to 1, Minor set to 0, and Patch set to 0.</value>
-    public static SemVer One { get; } = new()
-    {
-        Major = 1,
-        Minor = 0,
-        Patch = 0,
-    };
 
     /// <summary>
     ///     Parses a string representation of a semantic version.

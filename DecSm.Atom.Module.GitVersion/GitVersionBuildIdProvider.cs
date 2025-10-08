@@ -37,11 +37,8 @@ internal sealed class GitVersionBuildIdProvider(
         }
     }
 
-    public string GetBuildIdGroup(string buildId)
-    {
-        if (!SemVer.TryParse(buildId, out var version))
-            throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer");
-
-        return $"{version.Major}.{version.Minor}.{version.Patch}";
-    }
+    public string GetBuildIdGroup(string buildId) =>
+        !SemVer.TryParse(buildId, out var version)
+            ? throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer")
+            : $"{version.Major}.{version.Minor}.{version.Patch}";
 }

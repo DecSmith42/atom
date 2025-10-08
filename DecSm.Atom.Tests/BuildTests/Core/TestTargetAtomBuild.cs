@@ -11,9 +11,9 @@ public partial class TestTargetAtomBuild : BuildDefinition, ITestTarget
 [TargetDefinition]
 public partial interface ITestTarget
 {
-    public string Description { get; set; }
+    string Description { get; set; }
 
-    public Func<Task> Execute { get; set; }
+    Func<Task> Execute { get; set; }
 
     Target TestTarget =>
         t => t

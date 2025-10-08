@@ -134,6 +134,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(requiredParams.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var param in requiredParams)
             {
                 var defaultValue = param.Param.DefaultValue ?? string.Empty;
@@ -180,6 +181,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(optionalParams.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var param in optionalParams)
             {
                 var defaultValue = param.Param.DefaultValue ?? string.Empty;
@@ -226,6 +228,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(secrets.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var secret in secrets)
             {
                 var defaultValue = secret.Param.DefaultValue ?? string.Empty;

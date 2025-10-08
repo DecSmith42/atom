@@ -97,7 +97,7 @@ public interface IWorkflowVariableProvider
     /// }
     /// </code>
     /// </example>
-    public Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default);
+    Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Reads a variable from the provider's storage system for a specific job context.
@@ -154,5 +154,5 @@ public interface IWorkflowVariableProvider
     /// }
     /// </code>
     /// </example>
-    public Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default);
+    Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default);
 }

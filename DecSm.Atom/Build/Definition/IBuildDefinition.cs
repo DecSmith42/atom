@@ -97,27 +97,6 @@ public interface IBuildDefinition
     IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; }
 
     /// <summary>
-    ///     Retrieves the value of a build parameter by its name.
-    /// </summary>
-    /// <param name="paramName">
-    ///     The name of the parameter to access. This should match the key defined in <see cref="ParamDefinitions"/>.
-    /// </param>
-    /// <returns>
-    ///     The value of the specified parameter, or <c>null</c> if the parameter is not defined or has no value.
-    /// </returns>
-    /// <remarks>
-    ///     This method provides dynamic access to build parameters, allowing retrieval by name at runtime.
-    ///     It is useful for scenarios where parameter names are looked up dynamically
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">
-    ///     Thrown if <paramref name="paramName"/> is <c>null</c>.
-    /// </exception>
-    /// <exception cref="KeyNotFoundException">
-    ///     Thrown if the specified parameter name does not exist in <see cref="ParamDefinitions"/>.
-    /// </exception>
-    object? AccessParam(string paramName);
-
-    /// <summary>
     ///     Gets the collection of global workflow options.
     /// </summary>
     /// <remarks>
@@ -137,6 +116,27 @@ public interface IBuildDefinition
     IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions { get; }
 
     bool SuppressParamResolution { get; protected internal set; }
+
+    /// <summary>
+    ///     Retrieves the value of a build parameter by its name.
+    /// </summary>
+    /// <param name="paramName">
+    ///     The name of the parameter to access. This should match the key defined in <see cref="ParamDefinitions" />.
+    /// </param>
+    /// <returns>
+    ///     The value of the specified parameter, or <c>null</c> if the parameter is not defined or has no value.
+    /// </returns>
+    /// <remarks>
+    ///     This method provides dynamic access to build parameters, allowing retrieval by name at runtime.
+    ///     It is useful for scenarios where parameter names are looked up dynamically
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if <paramref name="paramName" /> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="KeyNotFoundException">
+    ///     Thrown if the specified parameter name does not exist in <see cref="ParamDefinitions" />.
+    /// </exception>
+    object? AccessParam(string paramName);
 
     IDisposable CreateParamResolutionSuppressionScope() =>
         new ParamResolutionSuppressionScope(this);

@@ -18,7 +18,7 @@ public interface IAtomFileSystem : IFileSystem
     ///     Gets the underlying <see cref="IFileSystem" /> instance providing
     ///     general file system functionality used internally.
     /// </summary>
-    public IFileSystem FileSystem { get; }
+    IFileSystem FileSystem { get; }
 
     /// <summary>
     ///     Gets the root directory of the Atom project.
@@ -100,13 +100,9 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
             return path;
         }
 
-        var locate = (string locatorKey) =>
-        {
-            if (locatorKey == key)
-                throw new InvalidOperationException($"Locator for key '{key}' is circular");
-
-            return GetPath(locatorKey);
-        };
+        var locate = (string locatorKey) => locatorKey == key
+            ? throw new InvalidOperationException($"Locator for key '{key}' is circular")
+            : GetPath(locatorKey);
 
         path = PathLocators
             .Select(x => x.Locate(key, locate))
