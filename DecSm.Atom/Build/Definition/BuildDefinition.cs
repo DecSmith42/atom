@@ -58,9 +58,15 @@ public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinit
     /// <inheritdoc cref="IBuildDefinition.ParamDefinitions" />
     public abstract IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; }
 
+    /// <inheritdoc cref="IBuildDefinition.AccessParam" />
+    public abstract object? AccessParam(string paramName);
+
     /// <inheritdoc cref="IBuildDefinition.Workflows" />
     public virtual IReadOnlyList<WorkflowDefinition> Workflows => [];
 
     /// <inheritdoc cref="IBuildDefinition.GlobalWorkflowOptions" />
     public virtual IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => [];
+
+    /// <inheritdoc cref="IBuildDefinition.SuppressParamResolution" />
+    public bool SuppressParamResolution { get; set; }
 }

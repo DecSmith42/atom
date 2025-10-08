@@ -43,9 +43,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder()
@@ -79,9 +79,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder()
@@ -115,9 +115,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder()
@@ -153,9 +153,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = true,
+            ChainedParams = [],
         };
 
         var vaultProvider = A.Fake<ISecretsProvider>();
@@ -188,9 +188,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         var vaultProvider = A.Fake<ISecretsProvider>();
@@ -223,9 +223,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = true,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder().Build();
@@ -261,9 +261,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder().Build();
@@ -299,9 +299,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder().Build();
@@ -344,9 +344,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.None,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
@@ -385,9 +385,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.CommandLineArgs,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
@@ -426,9 +426,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.EnvironmentVariables,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
@@ -467,9 +467,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.Configuration,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
@@ -508,9 +508,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.Secrets,
             IsSecret = true,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "NotTestParam", "ArgValue")]);
@@ -549,9 +549,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.Secrets,
             IsSecret = true,
+            ChainedParams = [],
         };
 
         _args = new(true, [new ParamArg("test-param", "TestParam", "ArgValue")]);
@@ -590,9 +590,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder().Build();
@@ -619,9 +619,9 @@ public class ParamServiceTests
         {
             ArgName = "test-param",
             Description = "Test parameter",
-            DefaultValue = null,
             Sources = ParamSource.All,
             IsSecret = false,
+            ChainedParams = [],
         };
 
         _config = new ConfigurationBuilder().Build();

@@ -9,7 +9,7 @@ public partial class ParamBuild : BuildDefinition, IParamTarget1, IParamTarget2
 [TargetDefinition]
 public partial interface IParamTarget1
 {
-    [ParamDefinition("param-1", "Param 1", "DefaultValue")]
+    [ParamDefinition("param-1", "Param 1")]
     string Param1 => GetParam(() => Param1, "DefaultValue");
 
     string? ExecuteValue { get; set; }

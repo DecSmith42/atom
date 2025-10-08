@@ -58,10 +58,10 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildName", new("BuildName")
             {
                 ArgName = "build-name",
-                Description = "Name of the build",
-                DefaultValue = "{Solution name if provided, otherwise the root directory name}",
+                Description = "Name of the build (Solution name if provided, otherwise the root directory name)",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
+                ChainedParams = [],
             }
         },
         {
@@ -69,9 +69,9 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             {
                 ArgName = "build-id",
                 Description = "Build/run ID",
-                DefaultValue = "{From IBuildIdProvider}",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
+                ChainedParams = [],
             }
         },
         {
@@ -79,9 +79,9 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             {
                 ArgName = "build-version",
                 Description = "Build version",
-                DefaultValue = "{From IBuildVersionProvider}",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
+                ChainedParams = [],
             }
         },
         {
@@ -89,9 +89,9 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             {
                 ArgName = "build-timestamp",
                 Description = "Build timestamp (seconds since unix epoch)",
-                DefaultValue = "{From IBuildTimestampProvider}",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
+                ChainedParams = [],
             }
         },
         {
@@ -99,12 +99,23 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             {
                 ArgName = "build-slice",
                 Description = "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs",
-                DefaultValue = null,
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
+                ChainedParams = [],
             }
         },
     };
+
+    public override object? AccessParam(string paramName) =>
+        paramName switch
+        {
+            "BuildName" => ((DecSm.Atom.BuildInfo.IBuildInfo)this).BuildName,
+            "BuildId" => ((DecSm.Atom.BuildInfo.IBuildInfo)this).BuildId,
+            "BuildVersion" => ((DecSm.Atom.BuildInfo.IBuildInfo)this).BuildVersion,
+            "BuildTimestamp" => ((DecSm.Atom.BuildInfo.IBuildInfo)this).BuildTimestamp,
+            "BuildSlice" => ((DecSm.Atom.BuildInfo.IBuildInfo)this).BuildSlice,
+        _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName)),
+        };
 
     [JetBrains.Annotations.PublicAPI]
     private static class Targets

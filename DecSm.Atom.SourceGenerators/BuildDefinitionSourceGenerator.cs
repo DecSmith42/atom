@@ -210,24 +210,29 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .Skip(1)
                     .First()
                     .Value!,
-                DefaultValue = x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(2)
-                    .First()
-                    .Value is string s
-                    ? $"\"{s}\""
-                    : "null",
                 Sources = $"({x
                     .Attribute
                     .ConstructorArguments
-                    .Skip(3)
+                    .Skip(2)
                     .First().Type!.ToDisplayString()}){x
                     .Attribute
                     .ConstructorArguments
-                    .Skip(3)
+                    .Skip(2)
                     .First().Value}",
                 IsSecret = x.Attribute.AttributeClass?.Name is SecretDefinitionAttribute,
+                ChainedParams = x
+                    .Attribute
+                    .ConstructorArguments
+                    .Skip(3)
+                    .FirstOrDefault()
+                    .Kind is TypedConstantKind.Array
+                    ? x
+                        .Attribute
+                        .ConstructorArguments
+                        .Skip(3)
+                        .First()
+                        .Values
+                    : [],
             })
             .Select(static p => $$"""
                                           {
@@ -235,13 +240,14 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                                               {
                                                   ArgName = "{{p.ArgName}}",
                                                   Description = "{{p.Description}}",
-                                                  DefaultValue = {{p.DefaultValue}},
                                                   Sources = {{p.Sources}},
                                                   IsSecret = {{p.IsSecret.ToString().ToLower()}},
+                                                  ChainedParams = {{(p.ChainedParams.IsDefaultOrEmpty ? "[]" : $"[ {string.Join(", ", p.ChainedParams.Select(v => $"\"{v.Value?.ToString() ?? string.Empty}\""))} ]")}},
                                               }
                                           },
                                   """)
             .ToArray();
+
 
         var paramDefinitionsProperty = paramDefinitionsPropertyBodyLines.Any()
             ? $$"""
@@ -251,6 +257,24 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     };
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
+
+        var accessParamMethodLines = interfacesWithParams
+            .Select(p => p.Property)
+            .Select(p => $"""
+                                      "{SimpleName(p.Name)}" => (({p.ContainingType})this).{SimpleName(p.Name)},
+                          """)
+            .ToArray();
+
+        var accessParamMethod = accessParamMethodLines.Any()
+            ? $$"""
+                    public override object? AccessParam(string paramName) =>
+                        paramName switch
+                        {
+                {{string.Join("\n", accessParamMethodLines)}}
+                        _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName)),
+                        };
+                """
+            : """    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));""";
 
         var targetsPropertiesLines = interfacesWithTargets
             .Select(static p =>
@@ -385,6 +409,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {{targetDefinitionsProperty}}
 
                      {{paramDefinitionsProperty}}
+
+                     {{accessParamMethod}}
 
                      {{targetsClass}}
 

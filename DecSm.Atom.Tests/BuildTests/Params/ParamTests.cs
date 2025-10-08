@@ -80,4 +80,52 @@ public class ParamTests
         build.ExecuteValue1.ShouldBe("TestValue");
         build.ExecuteValue2.ShouldBeNull();
     }
+
+    [Test]
+    public void Param_WhenRequiredParamChainedAndNotSupplied_StopsAndReturnsError()
+    {
+        // Arrange
+        var loggerProvider = new TestLoggerProvider();
+
+        var host = CreateTestHost<ChainedParamBuild>(
+            commandLineArgs: new(true,
+            [
+                new CommandArg(nameof(IChainedParamTarget.ChainedParamTarget1)),
+                new ParamArg("param-2", nameof(IChainedParamTarget.Param2), "TestValue"),
+            ]),
+            configure: builder => builder.Logging.AddProvider(loggerProvider));
+
+        // Act
+        host.Run();
+
+        // Assert
+        Environment.ExitCode.ShouldBe(1);
+
+        loggerProvider
+            .Logger
+            .LogContent
+            .ToString()
+            .ShouldContain("Missing required parameter 'param-1' for target ChainedParamTarget");
+    }
+
+    [Test]
+    public void Param_WhenUsedParamChainedAndNotSupplied_IgnoresMissingParam()
+    {
+        // Arrange
+        var loggerProvider = new TestLoggerProvider();
+
+        var host = CreateTestHost<ChainedParamBuild>(
+            commandLineArgs: new(true,
+            [
+                new CommandArg(nameof(IChainedParamTarget.ChainedParamTarget2)),
+                new ParamArg("param-2", nameof(IChainedParamTarget.Param2), "TestValue"),
+            ]),
+            configure: builder => builder.Logging.AddProvider(loggerProvider));
+
+        // Act
+        host.Run();
+
+        // Assert
+        TestContext.Out.WriteLine(loggerProvider.Logger.LogContent.ToString());
+    }
 }

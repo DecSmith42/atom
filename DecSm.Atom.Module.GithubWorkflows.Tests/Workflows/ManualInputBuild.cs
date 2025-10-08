@@ -36,20 +36,20 @@ public partial interface IManualInputTarget
     [ParamDefinition("string-param-without-default", "String param")]
     string StringParamWithoutDefault => GetParam(() => StringParamWithoutDefault)!;
 
-    [ParamDefinition("string-param-with-default", "String param", "default-value")]
-    string StringParamWithDefault => GetParam(() => StringParamWithDefault)!;
+    [ParamDefinition("string-param-with-default", "String param")]
+    string StringParamWithDefault => GetParam(() => StringParamWithDefault, "default-value");
 
     [ParamDefinition("bool-param-without-default", "Bool param")]
-    bool BoolParamWithoutDefault => GetParam(() => BoolParamWithoutDefault);
+    bool? BoolParamWithoutDefault => GetParam(() => BoolParamWithoutDefault);
 
-    [ParamDefinition("bool-param-with-default", "Bool param", "true")]
-    bool BoolParamWithDefault => GetParam(() => BoolParamWithDefault);
+    [ParamDefinition("bool-param-with-default", "Bool param")]
+    bool BoolParamWithDefault => GetParam(() => BoolParamWithDefault, true);
 
     [ParamDefinition("choice-param-without-default", "Choice param")]
     string ChoiceParamWithoutDefault => GetParam(() => ChoiceParamWithoutDefault)!;
 
-    [ParamDefinition("choice-param-with-default", "Choice param", "choice 1")]
-    string ChoiceParamWithDefault => GetParam(() => ChoiceParamWithDefault)!;
+    [ParamDefinition("choice-param-with-default", "Choice param")]
+    string ChoiceParamWithDefault => GetParam(() => ChoiceParamWithDefault, "choice 1");
 
     Target ManualInputTarget => t => t;
 }

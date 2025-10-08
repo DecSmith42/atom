@@ -15,4 +15,6 @@ public sealed record ParamModel(string Name)
     public required ParamSource Sources { get; init; }
 
     public required bool IsSecret { get; init; }
+
+    public required IReadOnlyList<string> ChainedParams { get; init; }
 }

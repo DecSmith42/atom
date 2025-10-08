@@ -58,7 +58,7 @@ public class DefaultBuildVersionProviderTests
     [Test]
     [NonParallelizable]
     [SuppressMessage("ReSharper", "MoveLocalFunctionAfterJumpStatement")]
-    public void Version_WhenDirectoryBuildPropsDoesNotExist_ThrowsInvalidOperationException()
+    public void Version_WhenDirectoryBuildPropsDoesNotExist_ReturnsDefaultVersion()
     {
         // Arrange
 
@@ -72,12 +72,9 @@ public class DefaultBuildVersionProviderTests
         var provider = new DefaultBuildVersionProvider(fileSystem);
 
         // Act
-        void Act()
-        {
-            _ = provider.Version;
-        }
+        var version = provider.Version;
 
         // Assert
-        Assert.Throws<InvalidOperationException>(Act);
+        version.ShouldBe(SemVer.Parse("1.0.0"));
     }
 }

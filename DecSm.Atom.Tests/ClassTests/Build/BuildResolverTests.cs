@@ -22,6 +22,9 @@ public class BuildResolverTests
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => ManualTargetDefinitions;
 
         public override IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions => ManualParamDefinitions;
+
+        public override Func<object?> AccessParam(string paramName) =>
+            throw new NotImplementedException();
     }
 
     private ServiceProvider _services = null!;

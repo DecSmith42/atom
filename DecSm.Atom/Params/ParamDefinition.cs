@@ -23,23 +23,6 @@ public sealed record ParamDefinition(string Name)
     public required string Description { get; init; }
 
     /// <summary>
-    ///     The default value for the parameter.
-    ///     This value will be used if the parameter is not provided by the user or other sources.
-    /// </summary>
-    /// <remarks>
-    ///     When a parameter marked as required by a target has a default value,
-    ///     it will instead be treated as optional and the default value will be used if the parameter is not provided
-    ///     from non-interactive sources.
-    ///     <br /><br />
-    ///     NOTE: If the parameter starts with `{` and ends with `}` e.g. {value}, it is treated as an optional parameter,
-    ///     but the value will not be used as a default value if the parameter is not provided.
-    ///     <br />
-    ///     To use a default value that starts with `{` and ends with `}` e.g. {value} (and have it used if the parameter is not provided),
-    ///     an extra pair of curly braces is required e.g. {{value}}.
-    /// </remarks>
-    public required string? DefaultValue { get; init; }
-
-    /// <summary>
     ///     The source/s that this parameter can be provided from.
     ///     Defaults to <see cref="ParamSource.All" />.
     /// </summary>
@@ -51,4 +34,10 @@ public sealed record ParamDefinition(string Name)
     ///     and are masked in logs and other output.
     /// </summary>
     public required bool IsSecret { get; init; }
+
+    /// <summary>
+    /// A collection of other parameters that are required and associated with this parameter.
+    /// These additional parameters are defined as dependencies for the current parameter.
+    /// </summary>
+    public required IReadOnlyList<string> ChainedParams { get; init; }
 }

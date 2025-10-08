@@ -37,29 +37,89 @@ internal sealed class GithubWorkflowWriter(
                                 using (WriteSection($"{input.Name}:"))
                                 {
                                     WriteLine($"description: {input.Description}");
-                                    WriteLine($"required: {input.Required.ToString().ToLower()}");
+
+                                    var inputParamName = buildDefinition.ParamDefinitions.FirstOrDefault(x => x.Value.ArgName == input.Name)
+                                        .Key;
+
+                                    if (inputParamName is null)
+                                        throw new InvalidOperationException(
+                                            $"Workflow {workflow.Name} has a manual trigger input named {input.Name} that does not correspond to any parameter in the build definition");
 
                                     switch (input)
                                     {
                                         case ManualBoolInput boolInput:
 
+                                            bool? defaultBoolValue = null;
+
+                                            if (boolInput.DefaultValue.HasValue)
+                                                defaultBoolValue = boolInput.DefaultValue.Value;
+                                            else
+                                            {
+                                                var accessedParam = buildDefinition.AccessParam(inputParamName);
+
+                                                switch (accessedParam)
+                                                {
+                                                    case bool boolParam:
+                                                        defaultBoolValue = boolParam;
+
+                                                        break;
+                                                    case string stringParam:
+                                                    {
+                                                        if (bool.TryParse(stringParam, out var parsedBool))
+                                                            defaultBoolValue = parsedBool;
+
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            var isBoolRequired = (input.Required ?? defaultBoolValue is null)
+                                                ? "true"
+                                                : "false";
+
+                                            WriteLine($"required: {isBoolRequired}");
+
                                             WriteLine("type: boolean");
 
-                                            if (boolInput.DefaultValue is not null)
-                                                WriteLine($"default: {boolInput.DefaultValue.ToString()?.ToLower()}");
+                                            if (defaultBoolValue.HasValue)
+                                                WriteLine($"default: {(defaultBoolValue.Value ? "true" : "false")}");
 
                                             break;
 
                                         case ManualStringInput stringInput:
 
+                                            var defaultStringValue = stringInput.DefaultValue is { Length: > 0 }
+                                                ? stringInput.DefaultValue
+                                                : buildDefinition
+                                                    .AccessParam(inputParamName)
+                                                    ?.ToString();
+
+                                            var isStringRequired = (input.Required ?? defaultStringValue is not { Length: > 0 })
+                                                ? "true"
+                                                : "false";
+
+                                            WriteLine($"required: {isStringRequired}");
+
                                             WriteLine("type: string");
 
-                                            if (stringInput.DefaultValue is not null)
-                                                WriteLine($"default: {stringInput.DefaultValue}");
+                                            if (defaultStringValue is not null)
+                                                WriteLine($"default: {defaultStringValue}");
 
                                             break;
 
                                         case ManualChoiceInput choiceInput:
+
+                                            var defaultChoiceValue = choiceInput.DefaultValue is { Length: > 0 }
+                                                ? choiceInput.DefaultValue
+                                                : buildDefinition
+                                                    .AccessParam(inputParamName)
+                                                    ?.ToString();
+
+                                            var isChoiceRequired = (input.Required ?? defaultChoiceValue is not { Length: > 0 })
+                                                ? "true"
+                                                : "false";
+
+                                            WriteLine($"required: {isChoiceRequired}");
 
                                             WriteLine("type: choice");
 
@@ -69,8 +129,8 @@ internal sealed class GithubWorkflowWriter(
                                                     WriteLine($"- {choice}");
                                             }
 
-                                            if (choiceInput.DefaultValue is not null)
-                                                WriteLine($"default: {choiceInput.DefaultValue}");
+                                            if (defaultChoiceValue is not null)
+                                                WriteLine($"default: {defaultChoiceValue}");
 
                                             break;
                                     }

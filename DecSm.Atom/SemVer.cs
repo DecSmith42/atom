@@ -377,6 +377,17 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     }
 
     /// <summary>
+    ///     Gets a semantic version representing version 1.0.0.
+    /// </summary>
+    /// <value>A <see cref="SemVer" /> instance with Major set to 1, Minor set to 0, and Patch set to 0.</value>
+    public static SemVer One { get; } = new()
+    {
+        Major = 1,
+        Minor = 0,
+        Patch = 0,
+    };
+
+    /// <summary>
     ///     Parses a string representation of a semantic version.
     /// </summary>
     /// <param name="s">The string to parse.</param>

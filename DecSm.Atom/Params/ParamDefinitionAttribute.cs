@@ -11,17 +11,17 @@
 public class ParamDefinitionAttribute(
     string argName,
     string description,
-    string? defaultValue = null,
-    ParamSource sources = ParamSource.All
+    ParamSource sources = ParamSource.All,
+    string[]? chainedParams = null
 ) : Attribute
 {
     public string ArgName => argName;
 
     public string Description => description;
 
-    public string? DefaultValue => defaultValue;
-
     public ParamSource Sources => sources;
 
     public bool IsSecret { get; protected init; }
+
+    public string[] ChainedParams { get; protected init; } = chainedParams ?? [];
 }

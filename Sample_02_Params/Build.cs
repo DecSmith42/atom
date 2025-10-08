@@ -33,7 +33,7 @@ internal partial class Build : BuildDefinition
     private string? ConfigItem1 => GetParam(() => ConfigItem1);
 
     // This property has a default value, which will be used if the parameter is not provided.
-    [ParamDefinition("config-item-2", "Configuration item 2", "Default Value")]
+    [ParamDefinition("config-item-2", "Configuration item 2")]
     private string ConfigItem2 => GetParam(() => ConfigItem2, "Default Value");
 
     // The build will fail immediately if any of the required parameters are not provided.

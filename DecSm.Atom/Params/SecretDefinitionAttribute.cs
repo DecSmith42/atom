@@ -7,8 +7,11 @@ namespace DecSm.Atom.Params;
 [PublicAPI]
 public class SecretDefinitionAttribute : ParamDefinitionAttribute
 {
-    public SecretDefinitionAttribute(string argName, string description, string? defaultValue = null, ParamSource sources = ParamSource.All)
-        : base(argName, description, defaultValue, sources)
+    public SecretDefinitionAttribute(
+        string argName,
+        string description,
+        ParamSource sources = ParamSource.All,
+        string[]? chainedParams = null) : base(argName, description, sources, chainedParams)
     {
         IsSecret = true;
     }

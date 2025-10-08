@@ -2,9 +2,9 @@
 
 internal interface ITestTargets : IDotnetTestHelper
 {
-    public const string AtomTestsProjectName = "DecSm.Atom.Tests";
-    public const string AtomSourceGeneratorTestsProjectName = "DecSm.Atom.SourceGenerators.Tests";
-    public const string AtomGithubWorkflowsTestsProjectName = "DecSm.Atom.Module.GithubWorkflows.Tests";
+    const string AtomTestsProjectName = "DecSm.Atom.Tests";
+    const string AtomSourceGeneratorTestsProjectName = "DecSm.Atom.SourceGenerators.Tests";
+    const string AtomGithubWorkflowsTestsProjectName = "DecSm.Atom.Module.GithubWorkflows.Tests";
 
     Target TestAtom =>
         t => t

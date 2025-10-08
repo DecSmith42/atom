@@ -12,4 +12,4 @@
 ///     true.
 /// </param>
 [PublicAPI]
-public abstract record ManualInput(string Name, string Description, bool Required = true);
+public abstract record ManualInput(string Name, string Description, bool? Required);

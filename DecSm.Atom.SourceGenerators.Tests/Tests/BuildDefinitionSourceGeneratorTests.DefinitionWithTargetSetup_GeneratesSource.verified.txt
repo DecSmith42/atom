@@ -50,6 +50,8 @@ partial class TestDefinitionWithSetup : DecSm.Atom.Build.Definition.IBuildDefini
 
     public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>();
 
+    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));
+
     // Build has no defined targets
 
     // Build has no defined params

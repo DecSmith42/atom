@@ -45,7 +45,7 @@ public interface IBuildInfo : IBuildAccessor
     ///         <item>Falling back to the root directory name if no solution file is found</item>
     ///     </list>
     /// </remarks>
-    [ParamDefinition("build-name", "Name of the build", "{Solution name if provided, otherwise the root directory name}")]
+    [ParamDefinition("build-name", "Name of the build (Solution name if provided, otherwise the root directory name)")]
     string BuildName => GetParam(() => BuildName, DefaultBuildName);
 
     /// <summary>
@@ -58,7 +58,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     Can be configured via the <c>--build-id</c> command-line parameter.
     ///     If not explicitly provided, defaults to the value from the registered <see cref="IBuildIdProvider" />.
     /// </remarks>
-    [ParamDefinition("build-id", "Build/run ID", "{From IBuildIdProvider}")]
+    [ParamDefinition("build-id", "Build/run ID")]
     string BuildId => GetParam(() => BuildId, DefaultBuildId);
 
     /// <summary>
@@ -72,7 +72,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     If not explicitly provided, defaults to the version from the registered <see cref="IBuildVersionProvider" />.
     ///     The value is automatically converted from string to <see cref="SemVer" /> using the built-in converter.
     /// </remarks>
-    [ParamDefinition("build-version", "Build version", "{From IBuildVersionProvider}")]
+    [ParamDefinition("build-version", "Build version")]
     SemVer BuildVersion => GetParam(() => BuildVersion, DefaultBuildVersion, BuildVersionConverter);
 
     /// <summary>
@@ -101,7 +101,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     If not explicitly provided, defaults to the timestamp from the registered <see cref="IBuildTimestampProvider" />.
     ///     Represents the moment when the build was initiated or a significant build milestone occurred.
     /// </remarks>
-    [ParamDefinition("build-timestamp", "Build timestamp (seconds since unix epoch)", "{From IBuildTimestampProvider}")]
+    [ParamDefinition("build-timestamp", "Build timestamp (seconds since unix epoch)")]
     long BuildTimestamp => GetParam(() => BuildTimestamp, DefaultBuildTimestamp);
 
     /// <summary>

@@ -2,14 +2,14 @@ namespace Atom.Targets;
 
 internal interface IBuildTargets : IDotnetPackHelper
 {
-    public const string AtomProjectName = "DecSm.Atom";
-    public const string GitVersionModuleProjectName = "DecSm.Atom.Module.GitVersion";
-    public const string AtomGithubWorkflowsModuleProjectName = "DecSm.Atom.Module.GithubWorkflows";
-    public const string DotnetModuleProjectName = "DecSm.Atom.Module.Dotnet";
-    public const string AtomDevopsWorkflowsModuleProjectName = "DecSm.Atom.Module.DevopsWorkflows";
-    public const string AzureStorageModuleProjectName = "DecSm.Atom.Module.AzureStorage";
-    public const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
-    public const string AtomToolProjectName = "DecSm.Atom.Tool";
+    const string AtomProjectName = "DecSm.Atom";
+    const string GitVersionModuleProjectName = "DecSm.Atom.Module.GitVersion";
+    const string AtomGithubWorkflowsModuleProjectName = "DecSm.Atom.Module.GithubWorkflows";
+    const string DotnetModuleProjectName = "DecSm.Atom.Module.Dotnet";
+    const string AtomDevopsWorkflowsModuleProjectName = "DecSm.Atom.Module.DevopsWorkflows";
+    const string AzureStorageModuleProjectName = "DecSm.Atom.Module.AzureStorage";
+    const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
+    const string AtomToolProjectName = "DecSm.Atom.Tool";
 
     Target PackAtom =>
         t => t

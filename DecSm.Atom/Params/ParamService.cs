@@ -245,14 +245,16 @@ internal sealed class ParamService(
     {
         var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(paramName);
 
-        if (paramDefinition is null)
-            throw new InvalidOperationException($"Parameter '{paramName}' not found.");
-
-        return GetParam(paramDefinition, defaultValue, converter);
+        return paramDefinition is null
+            ? throw new InvalidOperationException($"Parameter '{paramName}' not found.")
+            : GetParam(paramDefinition, defaultValue, converter);
     }
 
     private T? GetParam<T>(ParamDefinition paramDefinition, T? defaultValue = default, Func<string?, T?>? converter = null)
     {
+        if (buildDefinition.SuppressParamResolution)
+            return defaultValue;
+
         T? result;
 
         if (paramDefinition.Sources.HasFlag(ParamSource.Cache) &&
@@ -287,7 +289,7 @@ internal sealed class ParamService(
             logger.LogDebug("Resolved param {ParamName} from secrets", paramDefinition.Name);
         }
         else if (args is { HasHeadless: false, HasInteractive: true, HasHelp: false } &&
-                 TryGetParamFromConsole(paramDefinition, console, _cache, converter) is (true, { } userValue))
+                 TryGetParamFromConsole(paramDefinition, console, defaultValue, _cache, converter) is (true, { } userValue))
         {
             result = userValue;
             logger.LogDebug("Resolved param {ParamName} from user input", paramDefinition.Name);
@@ -419,6 +421,7 @@ internal sealed class ParamService(
     private static (bool HasValue, T? Value) TryGetParamFromConsole<T>(
         ParamDefinition paramDefinition,
         IAnsiConsole ansiConsole,
+        T? defaultValue,
         Dictionary<string, object?> cache,
         Func<string?, T?>? converter)
     {
@@ -426,8 +429,8 @@ internal sealed class ParamService(
         {
             IsSecret = paramDefinition.IsSecret,
             Mask = '*',
-            ShowDefaultValue = paramDefinition.DefaultValue is { Length: > 0 },
-            AllowEmpty = paramDefinition.DefaultValue is { Length: > 0 },
+            ShowDefaultValue = defaultValue is not null,
+            AllowEmpty = defaultValue is not null,
         });
 
         if (result is not { Length: > 0 })

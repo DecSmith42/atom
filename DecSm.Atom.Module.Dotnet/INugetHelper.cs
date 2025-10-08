@@ -3,7 +3,7 @@
 [PublicAPI]
 public interface INugetHelper : IBuildInfo
 {
-    [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.", "false")]
+    [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
 
     RootedPath NugetConfigPath
