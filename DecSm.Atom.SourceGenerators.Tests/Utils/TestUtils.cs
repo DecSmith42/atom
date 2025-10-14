@@ -27,7 +27,7 @@ public static class TestUtils
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
-        var references = Net90.References.All.Concat(additionalAssemblies.Select(a => MetadataReference.CreateFromFile(a.Location)));
+        var references = Net100.References.All.Concat(additionalAssemblies.Select(a => MetadataReference.CreateFromFile(a.Location)));
 
         var compilation = CSharpCompilation.Create("Tests", [syntaxTree], references);
 

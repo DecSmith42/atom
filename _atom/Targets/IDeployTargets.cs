@@ -37,15 +37,6 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
                 await PushAtomTool(cancellationToken);
             });
 
-    private async Task PushAtomTool(CancellationToken cancellationToken)
-    {
-        var atomToolDirectory = FileSystem.AtomArtifactsDirectory / AtomToolProjectName;
-        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
-
-        foreach (var atomToolPackagePath in atomToolPackagePaths)
-            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-    }
-
     Target PushToRelease =>
         d => d
             .DescribedAs("Pushes the package to the release feed.")
@@ -79,4 +70,13 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
                 await UploadArtifactToRelease(AtomGithubWorkflowsModuleProjectName, releaseTag);
                 await UploadArtifactToRelease(GitVersionModuleProjectName, releaseTag);
             });
+
+    private async Task PushAtomTool(CancellationToken cancellationToken)
+    {
+        var atomToolDirectory = FileSystem.AtomArtifactsDirectory / AtomToolProjectName;
+        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
+
+        foreach (var atomToolPackagePath in atomToolPackagePaths)
+            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+    }
 }
