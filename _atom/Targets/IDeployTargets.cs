@@ -74,9 +74,18 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
     private async Task PushAtomTool(CancellationToken cancellationToken)
     {
         var atomToolDirectory = FileSystem.AtomArtifactsDirectory / AtomToolProjectName;
-        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
+        var artifactProvider = GetService<IArtifactProvider>();
 
-        foreach (var atomToolPackagePath in atomToolPackagePaths)
-            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+        foreach (var buildPlatformName in BuildPlatformNames)
+        {
+            await artifactProvider.RetrieveArtifacts([AtomToolProjectName], BuildId, buildPlatformName, cancellationToken);
+            var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
+
+            foreach (var atomToolPackagePath in atomToolPackagePaths)
+                await PushPackageToNuget(atomToolDirectory / atomToolPackagePath,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+        }
     }
 }
