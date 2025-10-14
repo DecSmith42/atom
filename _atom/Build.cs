@@ -47,7 +47,7 @@ internal partial class Build : DefaultBuildDefinition,
                 ManualTrigger.Empty,
                 new GitPushTrigger
                 {
-                    IncludedBranches = ["main", "feat/**"],
+                    IncludedBranches = ["main", "feature/**", "patch/**"],
                 },
                 GithubReleaseTrigger.OnReleased,
             ],

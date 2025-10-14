@@ -294,22 +294,22 @@ jobs:
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom"
       
       - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool-macos-latest
+        displayName: DecSm.Atom.Tool
         inputs:
-          artifact: DecSm.Atom.Tool-macos-latest
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool-macos-latest"
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool-ubuntu-latest
+        displayName: DecSm.Atom.Tool
         inputs:
-          artifact: DecSm.Atom.Tool-ubuntu-latest
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool-ubuntu-latest"
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool-windows-latest
+        displayName: DecSm.Atom.Tool
         inputs:
-          artifact: DecSm.Atom.Tool-windows-latest
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool-windows-latest"
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Module.AzureKeyVault

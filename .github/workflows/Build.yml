@@ -8,7 +8,8 @@ on:
   push:
     branches:
       - 'main'
-      - 'feat/**'
+      - 'feature/**'
+      - 'patch/**'
 
 jobs:
   
@@ -285,23 +286,23 @@ jobs:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
       
-      - name: Download DecSm.Atom.Tool-macos-latest
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool-macos-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-macos-latest"
-      
-      - name: Download DecSm.Atom.Tool-ubuntu-latest
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool-ubuntu-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-ubuntu-latest"
-      
-      - name: Download DecSm.Atom.Tool-windows-latest
+      - name: Download DecSm.Atom.Tool
         uses: actions/download-artifact@v4
         with:
           name: DecSm.Atom.Tool-windows-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool-windows-latest"
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-ubuntu-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-macos-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: Download DecSm.Atom.Module.AzureKeyVault
         uses: actions/download-artifact@v4

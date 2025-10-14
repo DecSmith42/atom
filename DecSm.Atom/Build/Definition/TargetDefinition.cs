@@ -300,6 +300,58 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     ensuring that the target has access to the necessary artifacts before execution.
+    /// </summary>
+    /// <param name="targetName">The name of the target that produces the artifact.</param>
+    /// <param name="artifactName">The name of the artifact being consumed.</param>
+    /// <param name="buildSlices">The build slices associated with the consumed artifacts.</param>
+    /// <returns>The current target definition.</returns>
+    public TargetDefinition ConsumesArtifact(string targetName, string artifactName, IEnumerable<string> buildSlices)
+    {
+        foreach (var buildSlice in buildSlices)
+            ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     ensuring that the target has access to the necessary artifacts before execution.
+    /// </summary>
+    /// <param name="targetName">The name of the target that produces the artifact.</param>
+    /// <param name="artifactNames">The names of the artifacts being consumed.</param>
+    /// <param name="buildSlice">An optional build slice associated with the consumed artifact.</param>
+    /// <returns>The current target definition.</returns>
+    public TargetDefinition ConsumesArtifact(string targetName, IEnumerable<string> artifactNames, string? buildSlice = null)
+    {
+        foreach (var artifactName in artifactNames)
+            ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     ensuring that the target has access to the necessary artifacts before execution.
+    /// </summary>
+    /// <param name="targetName">The name of the target that produces the artifact.</param>
+    /// <param name="artifactNames">The names of the artifacts being consumed.</param>
+    /// <param name="buildSlices">The build slices associated with the consumed artifacts.</param>
+    /// <returns>The current target definition.</returns>
+    public TargetDefinition ConsumesArtifact(string targetName, IEnumerable<string> artifactNames, IEnumerable<string> buildSlices)
+    {
+        foreach (var artifactName in artifactNames)
+        foreach (var buildSlice in buildSlices)
+            ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds the specified variable name to the list of variables that this target produces.
     /// </summary>
     /// <param name="variableName">The name of the variable that this target produces.</param>
