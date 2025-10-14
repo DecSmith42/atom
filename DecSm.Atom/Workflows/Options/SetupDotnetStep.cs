@@ -17,6 +17,7 @@
 [PublicAPI]
 public sealed record SetupDotnetStep(string? DotnetVersion = null, SetupDotnetStep.DotnetQuality? Quality = null) : CustomStep
 {
+    [PublicAPI]
     public enum DotnetQuality
     {
         Daily,
