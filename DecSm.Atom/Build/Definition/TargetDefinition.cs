@@ -344,8 +344,10 @@ public sealed class TargetDefinition
     /// <returns>The current target definition.</returns>
     public TargetDefinition ConsumesArtifact(string targetName, IEnumerable<string> artifactNames, IEnumerable<string> buildSlices)
     {
+        var buildSlicesArray = buildSlices.ToArray();
+
         foreach (var artifactName in artifactNames)
-        foreach (var buildSlice in buildSlices)
+        foreach (var buildSlice in buildSlicesArray)
             ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
 
         return this;

@@ -56,7 +56,12 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
         var result = await ProcessRunner.RunAsync(new("dotnet",
             [
                 $"test {projectPath.Path}",
-                $"--configuration {options.Configuration}",
+                options.Configuration is not null
+                    ? $"--configuration {options.Configuration}"
+                    : string.Empty,
+                options.Framework is not null
+                    ? $"--framework {options.Framework}"
+                    : string.Empty,
                 $"--logger \"trx;LogFileName={options.ProjectName}.trx\"",
                 $"--logger \"html;LogFileName={options.ProjectName}.html\"",
                 "--collect:\"XPlat Code Coverage\"",
@@ -70,7 +75,7 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
         FileSystem.File.Copy(testOutputDirectory / $"{options.ProjectName}.html",
             testResultsPublishDirectory / $"{options.ProjectName}.html");
 
-        GenerateTestReport(options.ProjectName, testOutputDirectory / $"{options.ProjectName}.trx");
+        GenerateTestReport(options, testOutputDirectory / $"{options.ProjectName}.trx");
 
         // Install/update reportgenerator
         await InstallToolAsync("dotnet-reportgenerator-globaltool", cancellationToken: cancellationToken);
@@ -88,14 +93,14 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
             },
             cancellationToken);
 
-        GenerateCoverageReport(options.ProjectName, coverageResultsPublishDirectory / "Summary.json");
+        GenerateCoverageReport(options, coverageResultsPublishDirectory / "Summary.json");
 
         Logger.LogInformation("Ran unit tests for Atom project {AtomProjectName}", options.ProjectName);
 
         return result.ExitCode;
     }
 
-    private void GenerateTestReport(string projectName, string trxFile)
+    private void GenerateTestReport(DotnetTestOptions options, string trxFile)
     {
         var serializer = new XmlSerializer(typeof(TestRun));
 
@@ -110,7 +115,7 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
             ["⏩ Skipped tests", testRun.ResultSummary.Counters.NotExecuted.ToString()],
         ])
         {
-            Title = $"{projectName} - Test run summary",
+            Title = $"Test run summary | {options.ProjectName} | {options.Configuration} | {options.Framework}",
             ColumnAlignments = [ColumnAlignment.Left, ColumnAlignment.Right],
         });
 
@@ -139,25 +144,22 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
             });
     }
 
-    private void GenerateCoverageReport(string projectName, string coverageJsonFile)
+    private void GenerateCoverageReport(DotnetTestOptions options, string coverageJsonFile)
     {
         var coverageJson = FileSystem.File.ReadAllText(coverageJsonFile);
 
         var summary = JsonSerializer.Deserialize<CoverageModel>(coverageJson)!.Summary;
 
         AddReportData(new TableReportData([
-            [
-                summary.TotalLines.ToString(),
-                summary.CoveredLines.ToString(),
-                summary.UncoveredLines.ToString(),
-                summary.CoverableLines.ToString(),
-                (summary.LineCoverage / 100).ToString("P"),
-                (summary.BranchCoverage / 100).ToString("P"),
-            ],
+            ["Lines", summary.TotalLines.ToString()],
+            ["Covered", summary.CoveredLines.ToString()],
+            ["Uncovered", summary.UncoveredLines.ToString()],
+            ["Coverable", summary.CoverableLines.ToString()],
+            ["Line coverage", (summary.LineCoverage / 100).ToString("P")],
+            ["Branch coverage", (summary.BranchCoverage / 100).ToString("P")],
         ])
         {
-            Title = $"{projectName} - Coverage summary",
-            Header = ["Lines", "Covered", "Uncovered", "Coverable", "Line coverage", "Branch coverage"],
+            Title = $"Coverage summary | {options.ProjectName} | {options.Configuration} | {options.Framework}",
             ColumnAlignments = [ColumnAlignment.Left, ColumnAlignment.Right],
         });
     }

@@ -47,7 +47,7 @@ public sealed record WorkflowTargetDefinition(string Name)
                 .ToList(),
         };
 
-    public WorkflowTargetDefinition WithOptions(params IWorkflowOption[] options) =>
+    public WorkflowTargetDefinition WithOptions(params IEnumerable<IWorkflowOption> options) =>
         this with
         {
             Options = Options

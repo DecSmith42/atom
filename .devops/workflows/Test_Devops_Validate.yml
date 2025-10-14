@@ -171,6 +171,14 @@ jobs:
           version: '10.0.x'
 
           includePreviewVersions: 'true'
+      - task: UseDotNet@2
+        inputs:
+          version: '8.0.x'
+
+      - task: UseDotNet@2
+        inputs:
+          version: '9.0.x'
+
       - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
         name: TestAtom
         env:
