@@ -1,5 +1,8 @@
-﻿global using System.Text.Json;
+﻿global using System.Diagnostics.CodeAnalysis;
+global using System.Text.Json;
 global using DecSm.Atom.Build.Definition;
+global using DecSm.Atom.BuildInfo;
+global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Module.Dotnet;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Workflows.Definition.Options;

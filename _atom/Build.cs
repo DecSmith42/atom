@@ -13,7 +13,10 @@ internal partial class Build : DefaultBuildDefinition,
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("9.0.x"),
+        UseAzureKeyVault.Enabled,
+        UseGitVersionForBuildId.Enabled,
+        new DevopsVariableGroup("Atom"),
+        new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -33,29 +36,39 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
                 Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
                 Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets
+                    .TestAtom
+                    .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
         new("Build")
         {
-            Triggers = [ManualTrigger.Empty, GitPushTrigger.ToMain, GithubReleaseTrigger.OnReleased],
+            Triggers =
+            [
+                ManualTrigger.Empty,
+                new GitPushTrigger
+                {
+                    IncludedBranches = ["main", "feature/**", "patch/**"],
+                },
+                GithubReleaseTrigger.OnReleased,
+            ],
             Targets =
             [
                 Targets.SetupBuildInfo,
                 Targets.PackAtom,
-                Targets.PackAtomTool,
+                Targets.PackAtomTool.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
                 Targets.PackAzureKeyVaultModule,
                 Targets.PackAzureStorageModule,
                 Targets.PackDevopsWorkflowsModule,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets
+                    .TestAtom
+                    .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
                 Targets
                     .PushToRelease
@@ -86,9 +99,10 @@ internal partial class Build : DefaultBuildDefinition,
                     .TestAtom
                     .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
                     {
-                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
+                        Values = IBuildTargets.BuildPlatformNames,
                     })
-                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
+                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Devops.WorkflowType],
         },
@@ -105,9 +119,10 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackDotnetModule,
                 Targets.PackGithubWorkflowsModule,
                 Targets.PackGitVersionModule,
-                Targets.TestAtom.WithDevopsPoolMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets
+                    .TestAtom
+                    .WithDevopsPoolMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],

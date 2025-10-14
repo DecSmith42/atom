@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace Atom.Targets;
 
 internal interface IBuildTargets : IDotnetPackHelper
@@ -10,6 +12,8 @@ internal interface IBuildTargets : IDotnetPackHelper
     const string AzureStorageModuleProjectName = "DecSm.Atom.Module.AzureStorage";
     const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
     const string AtomToolProjectName = "DecSm.Atom.Tool";
+
+    static readonly string[] BuildPlatformNames = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag];
 
     Target PackAtom =>
         t => t
@@ -57,5 +61,30 @@ internal interface IBuildTargets : IDotnetPackHelper
         t => t
             .DescribedAs("Builds the DecSm.Atom.Tool project into a nuget package")
             .ProducesArtifact(AtomToolProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomToolProjectName), cancellationToken));
+            .Executes(async cancellationToken =>
+            {
+                var runtimeIdentifier = RuntimeInformation.RuntimeIdentifier;
+
+                Logger.LogInformation("Packing AOT Atom tool for runtime {RuntimeIdentifier}", runtimeIdentifier);
+
+                await DotnetPackProject(new(AtomToolProjectName)
+                    {
+                        Configuration = "Release",
+                        RuntimeIdentifier = runtimeIdentifier,
+                        NativeAot = true,
+                    },
+                    cancellationToken);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Logger.LogInformation("Packing Atom tool for non-native AOT");
+
+                    await DotnetPackProject(new(AtomToolProjectName)
+                        {
+                            Configuration = "Release",
+                            SuppressClearingPublishDirectory = true,
+                        },
+                        cancellationToken);
+                }
+            });
 }

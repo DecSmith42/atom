@@ -16,8 +16,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
         env:
@@ -33,8 +34,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
         name: PackAtom
         env:
@@ -57,8 +59,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
         name: PackAtomTool
         env:
@@ -81,8 +84,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
         name: PackAzureKeyVaultModule
         env:
@@ -105,8 +109,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
         name: PackAzureStorageModule
         env:
@@ -129,8 +134,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
         name: PackDevopsWorkflowsModule
         env:
@@ -153,8 +159,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
         name: PackDotnetModule
         env:
@@ -177,8 +184,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
         name: PackGithubWorkflowsModule
         env:
@@ -201,8 +209,9 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
         name: PackGitVersionModule
         env:
@@ -231,6 +240,15 @@ jobs:
       - checkout: self
         fetchDepth: 0
       
+      - task: UseDotNet@2
+        inputs:
+          version: '10.0.x'
+
+          includePreviewVersions: 'true'
+      - task: UseDotNet@2
+        inputs:
+          version: '8.0.x'
+
       - task: UseDotNet@2
         inputs:
           version: '9.0.x'
@@ -262,9 +280,11 @@ jobs:
       
   
   - job: PushToNuget
-    dependsOn: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule ]
+    dependsOn: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
+    variables:
+      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
     steps:
       
       - checkout: self
@@ -272,13 +292,26 @@ jobs:
       
       - task: UseDotNet@2
         inputs:
-          version: '9.0.x'
+          version: '10.0.x'
 
+          includePreviewVersions: 'true'
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom
         inputs:
           artifact: DecSm.Atom
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Tool
@@ -325,6 +358,7 @@ jobs:
       - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         name: PushToNuget
         env:
+          build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
           azure-vault-address: $(AZURE_VAULT_ADDRESS)
           azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)

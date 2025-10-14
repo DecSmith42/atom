@@ -80,8 +80,12 @@ public interface INugetHelper : IBuildInfo
             ? $" --configfile \"{configFile}\""
             : string.Empty;
 
-        await ProcessRunner.RunAsync(new("dotnet", $"nuget push \"{packagePath}\"{configFileFlag} --source {feed} --api-key {apiKey}"),
-            cancellationToken);
+        var processRunResult =
+            await ProcessRunner.RunAsync(new("dotnet", $"nuget push \"{packagePath}\"{configFileFlag} --source {feed} --api-key {apiKey}"),
+                cancellationToken);
+
+        if (processRunResult.ExitCode is not 0)
+            Logger.LogError("Failed to push package to Nuget: {ProcessRunResult}", processRunResult.Error);
 
         Logger.LogInformation("Package pushed");
     }

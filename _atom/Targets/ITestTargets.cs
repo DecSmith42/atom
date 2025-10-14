@@ -16,9 +16,18 @@ internal interface ITestTargets : IDotnetTestHelper
             {
                 var exitCode = 0;
 
-                exitCode += await RunDotnetUnitTests(new(AtomTestsProjectName), cancellationToken);
-                exitCode += await RunDotnetUnitTests(new(AtomSourceGeneratorTestsProjectName), cancellationToken);
-                exitCode += await RunDotnetUnitTests(new(AtomGithubWorkflowsTestsProjectName), cancellationToken);
+                string[] projects = [AtomTestsProjectName, AtomSourceGeneratorTestsProjectName, AtomGithubWorkflowsTestsProjectName];
+                string[] frameworks = ["net8.0", "net9.0", "net10.0"];
+
+                // ReSharper disable once LoopCanBeConvertedToQuery
+                foreach (var project in projects)
+                foreach (var framework in frameworks)
+                    exitCode += await RunDotnetUnitTests(new(project)
+                        {
+                            Configuration = "Release",
+                            Framework = framework,
+                        },
+                        cancellationToken);
 
                 if (exitCode != 0)
                     throw new StepFailedException("One or more unit tests failed");

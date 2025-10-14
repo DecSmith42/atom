@@ -7,9 +7,15 @@ public sealed record DotnetPackOptions(string ProjectName)
 
     public string Configuration { get; init; } = "Release";
 
+    public string? RuntimeIdentifier { get; init; }
+
+    public bool NativeAot { get; init; }
+
     public string? OutputArtifactName { get; init; }
 
     public Func<string, string>? CustomPropertiesTransform { get; init; }
 
     public string? CustomPackageId { get; init; }
+
+    public bool SuppressClearingPublishDirectory { get; init; }
 }

@@ -2,25 +2,56 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net9.0;net8.0</TargetFrameworks>
+    <StripSymbols>true</StripSymbols>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>atom</ToolCommandName>
+    <PackageId>DecSm.Atom.Tool</PackageId>
+  </PropertyGroup>
+
+  <!-- Conditional framework version to support NuGet tool -->
+  <PropertyGroup Condition="$(RuntimeIdentifier) != ''">
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(RuntimeIdentifier) == ''">
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net10.0'">
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <PublishAot>true</PublishAot>
+
+    <!--  Size optimisation bits for Native AOT -->
+    <DebuggerSupport>false</DebuggerSupport>
+    <EventSourceSupport>false</EventSourceSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
+    <StripSymbols>true</StripSymbols>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <IlcDisableReflection>true</IlcDisableReflection>
+    <IlcTrimMetadata>true</IlcTrimMetadata>
+    <IlcOptimizationPreference>Size</IlcOptimizationPreference>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.14.0">
+    <PackageReference Include="ConsoleAppFramework" Version="5.6.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.14.0">
+    <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
+    <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.0">
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="4.14.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.CommandLine" Version="2.0.0-rc.1.25451.107" />
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

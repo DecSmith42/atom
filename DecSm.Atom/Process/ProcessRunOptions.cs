@@ -67,7 +67,7 @@ public sealed record ProcessRunOptions(string Name, string Args)
     /// // Equivalent to: new ProcessRunOptions("docker", "run -it --rm ubuntu:latest /bin/bash")
     /// </code>
     /// </example>
-    public ProcessRunOptions(string Name, string[] Args) : this(Name, string.Join(" ", Args)) { }
+    public ProcessRunOptions(string Name, string[] Args) : this(Name, string.Join(" ", Args.Where(a => !string.IsNullOrWhiteSpace(a)))) { }
 
     /// <summary>
     ///     Gets or sets the working directory for the process execution.

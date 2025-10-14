@@ -1,18 +1,16 @@
-﻿using DecSm.Atom.BuildInfo;
-
-namespace DecSm.Atom.Module.GitVersion;
+﻿namespace DecSm.Atom.Module.GitVersion;
 
 internal sealed class GitVersionBuildVersionProvider(IDotnetToolInstallHelper dotnetToolInstallHelper, IProcessRunner processRunner)
     : IBuildVersionProvider
 {
-    private SemVer? _version;
-
+    [field: AllowNull]
+    [field: MaybeNull]
     public SemVer Version
     {
         get
         {
-            if (_version is not null)
-                return _version;
+            if (field is not null)
+                return field;
 
             dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
@@ -39,7 +37,7 @@ internal sealed class GitVersionBuildVersionProvider(IDotnetToolInstallHelper do
                 .GetProperty("PreReleaseTag")
                 .GetString()!;
 
-            return _version = preReleaseTagProp is { Length: > 0 }
+            return field = preReleaseTagProp is { Length: > 0 }
                 ? SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}")
                 : SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}");
         }

@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.BuildInfo;
-
-namespace DecSm.Atom.Module.GitVersion;
+﻿namespace DecSm.Atom.Module.GitVersion;
 
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
@@ -8,8 +6,8 @@ internal sealed class GitVersionBuildIdProvider(
     IBuildDefinition buildDefinition
 ) : IBuildIdProvider
 {
-    private string? _buildId;
-
+    [field: AllowNull]
+    [field: MaybeNull]
     public string BuildId
     {
         get
@@ -17,8 +15,8 @@ internal sealed class GitVersionBuildIdProvider(
             if (!UseGitVersionForBuildId.IsEnabled(IWorkflowOption.GetOptionsForCurrentTarget(buildDefinition)))
                 throw new InvalidOperationException("GitVersion is not enabled");
 
-            if (_buildId is { Length: > 0 })
-                return _buildId;
+            if (field is { Length: > 0 })
+                return field;
 
             dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
@@ -33,7 +31,7 @@ internal sealed class GitVersionBuildIdProvider(
                 .GetProperty("FullSemVer")
                 .GetString();
 
-            return _buildId = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
+            return field = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
         }
     }
 
