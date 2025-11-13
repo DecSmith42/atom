@@ -1,27 +1,33 @@
-﻿assembly-versioning-scheme: MajorMinorPatch
-assembly-file-versioning-scheme: MajorMinorPatch
-assembly-informational-format: '{Major}.{Minor}.{Patch}{PreReleaseTagWithDash}'
-assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{PreReleaseNumber}'
+﻿assembly-informational-format: '{Major}.{Minor}.{Patch}{PreReleaseTagWithDash}'
+assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber ?? 0}'
+mode: ContinuousDelivery
 tag-prefix: '[vV]?'
-version-in-branch-pattern: (?<version>[vV]?\d+(\.\d+)?(\.\d+)?).*
 next-version: 1.0.0
+
 major-version-bump-message: '^(breaking|major)\(?[A-Za-z0-9\-]*\)?:'
 minor-version-bump-message: '^(feat|feature|minor)\(?[A-Za-z0-9\-]*\)?:'
 patch-version-bump-message: '^(fix|patch)\(?[A-Za-z0-9\-]*\)?:'
 no-bump-message: '^(semver-none|semver-skip)'
-tag-pre-release-weight: 60000
-commit-date-format: yyyy-MM-dd
-merge-message-formats: { }
-update-build-number: true
-semantic-version-format: Strict
-strategies:
-  - Fallback
-  - ConfiguredNextVersion
-  - MergeMessage
-  - TaggedCommit
-  - TrackReleaseBranches
-  - VersionInBranchName
+
+# Tagged releases get the highest band
+tag-pre-release-weight: 6000
+
 branches:
+
+  # Prevent default GitFlow configs from matching
+  feature:
+    regex: ^$
+  release:
+    regex: ^$
+  hotfix:
+    regex: ^$
+  support:
+    regex: ^$
+
+  #####################################
+  #   MAINLINE / PRIMARY BRANCHES
+  #####################################
+
   main:
     label: 'rc'
     increment: Minor
@@ -30,14 +36,11 @@ branches:
     track-merge-target: false
     track-merge-message: true
     regex: ^master$|^main$
-    source-branches: [ ]
-    is-source-branch-for: [ ]
-    tracks-release-branches: false
     is-release-branch: false
     is-main-branch: true
-    pre-release-weight: 40000
+    pre-release-weight: 5000     # 5,000–5,999
+
   develop:
-    mode: ContinuousDelivery
     label: 'preview'
     increment: Minor
     prevent-increment:
@@ -45,15 +48,11 @@ branches:
     track-merge-target: true
     track-merge-message: true
     regex: ^dev(elop)?(ment)?$
-    source-branches:
-      - main
-    is-source-branch-for: [ ]
-    tracks-release-branches: true
     is-release-branch: false
     is-main-branch: false
-    pre-release-weight: 30000
+    pre-release-weight: 4000     # 4,000–4,999
+
   pull-request:
-    mode: ContinuousDelivery
     label: 'pr'
     increment: Inherit
     prevent-increment:
@@ -61,13 +60,15 @@ branches:
       when-current-commit-tagged: false
     track-merge-message: true
     regex: ^(pull|pull\-requests|pr)[/-]
-    source-branches:
-      - main
-      - develop
-    is-source-branch-for: [ ]
-    pre-release-weight: 20000
+    is-release-branch: false
+    is-main-branch: false
+    pre-release-weight: 3000     # 3,000–3,999
+
+  #####################################
+  #   FEATURE BRANCHES
+  #####################################
+
   beta-minor:
-    mode: ContinuousDelivery
     label: beta.{BranchName}
     increment: Minor
     prevent-increment:
@@ -75,16 +76,11 @@ branches:
     track-merge-target: true
     track-merge-message: true
     regex: ^(feat|feature|features|improvement|chore)?[/-](?<BranchName>.+)
-    source-branches:
-      - main
-      - develop
-    is-source-branch-for: [ ]
-    tracks-release-branches: true
     is-release-branch: false
     is-main-branch: false
-    pre-release-weight: 10000
+    pre-release-weight: 1000     # 1,000–1,999
+
   beta-patch:
-    mode: ContinuousDelivery
     label: beta.{BranchName}
     increment: Patch
     prevent-increment:
@@ -92,16 +88,15 @@ branches:
     track-merge-target: true
     track-merge-message: true
     regex: ^(fix|bugfix|hotfix|patch)?[/-](?<BranchName>.+)
-    source-branches:
-      - main
-      - develop
-    is-source-branch-for: [ ]
-    tracks-release-branches: true
     is-release-branch: false
     is-main-branch: false
-    pre-release-weight: 10000
+    pre-release-weight: 2000     # 2,000–2,999
+
+  #####################################
+  #   CATCH-ALL (ALPHA)
+  #####################################
+
   alpha:
-    mode: ContinuousDelivery
     label: alpha.{BranchName}
     increment: None
     prevent-increment:
@@ -109,13 +104,6 @@ branches:
     track-merge-target: true
     track-merge-message: true
     regex: (?<BranchName>.+)
-    source-branches:
-      - main
-      - develop
-    is-source-branch-for: [ ]
-    tracks-release-branches: true
     is-release-branch: false
     is-main-branch: false
-    pre-release-weight: 0
-ignore:
-  sha: [ ]
+    pre-release-weight: 0        #   0–999
