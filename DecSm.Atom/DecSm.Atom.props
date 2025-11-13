@@ -8,6 +8,7 @@
         <Using Include="DecSm.Atom.Build.Model" Global="true"/>
         <Using Include="DecSm.Atom.BuildInfo" Global="true"/>
         <Using Include="DecSm.Atom.Hosting" Global="true"/>
+        <Using Include="DecSm.Atom.Nuget" Global="true"/>
         <Using Include="DecSm.Atom.Params" Global="true"/>
         <Using Include="DecSm.Atom.Paths" Global="true"/>
         <Using Include="DecSm.Atom.Process" Global="true"/>
