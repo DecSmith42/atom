@@ -41,7 +41,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     Can be configured via the <c>--build-name</c> command-line parameter.
     ///     If not explicitly provided, automatically determined by:
     ///     <list type="number">
-    ///         <item>First checking for .sln files in the root directory and using the solution name (without extension)</item>
+    ///         <item>First checking for .slnx or .sln files in the root directory and using the solution name (without extension)</item>
     ///         <item>Falling back to the root directory name if no solution file is found</item>
     ///     </list>
     /// </remarks>
@@ -124,9 +124,13 @@ public interface IBuildInfo : IBuildAccessor
         get
         {
             var solutionFile = FileSystem
-                .Directory
-                .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
-                .FirstOrDefault();
+                                   .Directory
+                                   .GetFiles(FileSystem.AtomRootDirectory, "*.slnx", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault() ??
+                               FileSystem
+                                   .Directory
+                                   .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault();
 
             Logger.LogDebug("Determined solution file: {SolutionFile}", solutionFile);
 

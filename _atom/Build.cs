@@ -4,7 +4,6 @@
 [GenerateEntryPoint]
 internal partial class Build : DefaultBuildDefinition,
     IAzureKeyVault,
-    IAzureArtifactStorage,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,
@@ -13,10 +12,7 @@ internal partial class Build : DefaultBuildDefinition,
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled,
-        UseGitVersionForBuildId.Enabled,
-        new DevopsVariableGroup("Atom"),
-        new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -105,6 +101,7 @@ internal partial class Build : DefaultBuildDefinition,
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Devops.WorkflowType],
+            Options = [new DevopsVariableGroup("Atom")],
         },
         new("Test_Devops_Build")
         {
@@ -126,7 +123,7 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],
-            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
+            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],
         },
         Github.DependabotDefaultWorkflow(),
     ];

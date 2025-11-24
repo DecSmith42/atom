@@ -41,7 +41,11 @@ internal sealed class BuildExecutor(
             }
 
         if (buildModel.TargetStates.Values.Any(state => state.Status is TargetRunState.Failed or TargetRunState.NotRun))
+        {
+            Environment.ExitCode = 1;
+
             throw new StepFailedException("Build failed");
+        }
     }
 
     private void ValidateTargetParameters(TargetModel target)

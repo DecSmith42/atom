@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Atom.Targets;
 
 internal interface IBuildTargets : IDotnetPackHelper

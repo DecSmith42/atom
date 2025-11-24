@@ -22,7 +22,7 @@ public interface IAtomFileSystem : IFileSystem
 
     /// <summary>
     ///     Gets the root directory of the Atom project.
-    ///     Defined by locating a directory containing project markers (e.g., *.git, *.sln).
+    ///     Defined by locating a directory containing project markers (e.g., *.git, *.slnx, *.sln).
     /// </summary>
     RootedPath AtomRootDirectory => GetPath(AtomPaths.Root);
 

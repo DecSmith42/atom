@@ -73,11 +73,10 @@
 internal sealed class AtomService(
     CommandLineArgs args,
     BuildExecutor executor,
-    BuildModel buildModel,
-    IHostApplicationLifetime lifetime,
-    ILogger<AtomService> logger,
     IHelpService helpService,
-    WorkflowGenerator workflowGenerator
+    WorkflowGenerator workflowGenerator,
+    IHostApplicationLifetime lifetime,
+    ILogger<AtomService> logger
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -85,11 +84,7 @@ internal sealed class AtomService(
         try
         {
             if (!args.IsValid)
-            {
-                Environment.ExitCode = 1;
-
-                return;
-            }
+                throw new ArgumentException("Invalid command-line arguments");
 
             if (args is { HasHelp: false, HasHeadless: false, HasGen: false, Commands.Count: 0, Params.Count: 0 })
             {
@@ -112,9 +107,6 @@ internal sealed class AtomService(
                 throw new InvalidOperationException("One or more workflows are dirty. Run 'atom -g' to regenerate them");
 
             await executor.Execute(stoppingToken);
-
-            if (buildModel.Targets.Any(x => buildModel.TargetStates[x].Status is TargetRunState.Failed))
-                Environment.ExitCode = 1;
         }
         catch (Exception ex)
         {
