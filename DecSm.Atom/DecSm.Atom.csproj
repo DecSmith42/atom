@@ -31,4 +31,8 @@
     <None Include="..\DecSm.Atom.Analyzers\bin\$(Configuration)\netstandard2.0\DecSm.Atom.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="DecSm.Atom.props" Pack="true" PackagePath="buildTransitive/" />
+  </ItemGroup>
+
 </Project>

@@ -33,4 +33,8 @@
     <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="DecSm.Atom.Module.AzureStorage.props" Pack="true" PackagePath="buildTransitive/" />
+  </ItemGroup>
+
 </Project>
