@@ -70,113 +70,111 @@ public static class ServiceStaticAccessor<T>
 /// </remarks>
 internal static class ServiceAccessorExtensions
 {
-    /// <summary>
-    ///     Registers a singleton service with static accessor functionality using the implementation type
-    ///     as both the service type and implementation type.
-    /// </summary>
-    /// <typeparam name="TImplementation">
-    ///     The type of the implementation to register. Must be a class with public constructors.
-    ///     This type will be used as both the service interface and the concrete implementation.
-    /// </typeparam>
-    /// <param name="services">The <see cref="IServiceCollection" /> to add the service to.</param>
-    /// <remarks>
-    ///     <para>
-    ///         This method registers the service as a singleton and ensures that the
-    ///         <see cref="ServiceStaticAccessor{T}.Service" /> property is populated when the service
-    ///         is first resolved from the container.
-    ///     </para>
-    ///     <para>
-    ///         The service is registered using both keyed and regular service registration to enable
-    ///         static access without creating circular dependencies.
-    ///     </para>
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    /// // Register a concrete class for static access
-    /// services.AddSingletonWithStaticAccessor&lt;ReportService&gt;();
-    /// // Later access the service
-    /// ServiceStaticAccessor&lt;ReportService&gt;.Service?.AddReportData(data, command);
-    /// </code>
-    /// </example>
-    public static void AddSingletonWithStaticAccessor<
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
-        where TImplementation : class =>
-        services
-            .AddKeyedSingleton<TImplementation>("StaticAccess")
-            .AddSingleton<TImplementation>(x =>
-                ServiceStaticAccessor<TImplementation>.Service = x.GetRequiredKeyedService<TImplementation>("StaticAccess"));
+    extension(IServiceCollection services)
+    {
+        /// <summary>
+        ///     Registers a singleton service with static accessor functionality using the implementation type
+        ///     as both the service type and implementation type.
+        /// </summary>
+        /// <typeparam name="TImplementation">
+        ///     The type of the implementation to register. Must be a class with public constructors.
+        ///     This type will be used as both the service interface and the concrete implementation.
+        /// </typeparam>
+        /// <remarks>
+        ///     <para>
+        ///         This method registers the service as a singleton and ensures that the
+        ///         <see cref="ServiceStaticAccessor{T}.Service" /> property is populated when the service
+        ///         is first resolved from the container.
+        ///     </para>
+        ///     <para>
+        ///         The service is registered using both keyed and regular service registration to enable
+        ///         static access without creating circular dependencies.
+        ///     </para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        /// // Register a concrete class for static access
+        /// services.AddSingletonWithStaticAccessor&lt;ReportService&gt;();
+        /// // Later access the service
+        /// ServiceStaticAccessor&lt;ReportService&gt;.Service?.AddReportData(data, command);
+        /// </code>
+        /// </example>
+        public void AddSingletonWithStaticAccessor<
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>()
+            where TImplementation : class =>
+            services
+                .AddKeyedSingleton<TImplementation>("StaticAccess")
+                .AddSingleton<TImplementation>(x =>
+                    ServiceStaticAccessor<TImplementation>.Service = x.GetRequiredKeyedService<TImplementation>("StaticAccess"));
 
-    /// <summary>
-    ///     Registers a singleton service with static accessor functionality using separate service
-    ///     and implementation types.
-    /// </summary>
-    /// <typeparam name="TService">
-    ///     The type of the service interface to register. Must be a class.
-    /// </typeparam>
-    /// <typeparam name="TImplementation">
-    ///     The type of the implementation. Must be a class with public constructors that implements <typeparamref name="TService" />.
-    /// </typeparam>
-    /// <param name="services">The <see cref="IServiceCollection" /> to add the service to.</param>
-    /// <remarks>
-    ///     <para>
-    ///         This overload allows registration of services using interface/implementation separation,
-    ///         which is the recommended approach for dependency injection. The static accessor will
-    ///         provide access to the service through the <typeparamref name="TService" /> interface.
-    ///     </para>
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    /// // Register with interface separation
-    /// services.AddSingletonWithStaticAccessor&lt;IParamService, ParamService&gt;();
-    /// // Access through the interface
-    /// var masked = ServiceStaticAccessor&lt;IParamService&gt;.Service?.MaskMatchingSecrets(text);
-    /// </code>
-    /// </example>
-    public static void AddSingletonWithStaticAccessor<TService,
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
-        where TService : class
-        where TImplementation : class, TService =>
-        services
-            .AddKeyedSingleton<TService, TImplementation>("StaticAccess")
-            .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+        /// <summary>
+        ///     Registers a singleton service with static accessor functionality using separate service
+        ///     and implementation types.
+        /// </summary>
+        /// <typeparam name="TService">
+        ///     The type of the service interface to register. Must be a class.
+        /// </typeparam>
+        /// <typeparam name="TImplementation">
+        ///     The type of the implementation. Must be a class with public constructors that implements <typeparamref name="TService" />.
+        /// </typeparam>
+        /// <remarks>
+        ///     <para>
+        ///         This overload allows registration of services using interface/implementation separation,
+        ///         which is the recommended approach for dependency injection. The static accessor will
+        ///         provide access to the service through the <typeparamref name="TService" /> interface.
+        ///     </para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        /// // Register with interface separation
+        /// services.AddSingletonWithStaticAccessor&lt;IParamService, ParamService&gt;();
+        /// // Access through the interface
+        /// var masked = ServiceStaticAccessor&lt;IParamService&gt;.Service?.MaskMatchingSecrets(text);
+        /// </code>
+        /// </example>
+        public void AddSingletonWithStaticAccessor<TService,
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>()
+            where TService : class
+            where TImplementation : class, TService =>
+            services
+                .AddKeyedSingleton<TService, TImplementation>("StaticAccess")
+                .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
 
-    /// <summary>
-    ///     Registers a singleton service with static accessor functionality using a factory function.
-    /// </summary>
-    /// <typeparam name="TService">
-    ///     The type of the service to register. Must be a class.
-    /// </typeparam>
-    /// <param name="services">The <see cref="IServiceCollection" /> to add the service to.</param>
-    /// <param name="implementationFactory">
-    ///     The factory function that creates the service instance. The function receives an
-    ///     <see cref="IServiceProvider" /> and an optional key object.
-    /// </param>
-    /// <returns>The <see cref="IServiceCollection" /> for method chaining.</returns>
-    /// <remarks>
-    ///     <para>
-    ///         This overload provides maximum flexibility by allowing custom service creation logic
-    ///         through a factory function. This is useful when the service requires complex initialization
-    ///         or depends on runtime configuration.
-    ///     </para>
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    /// // Register with custom factory
-    /// services.AddSingletonWithStaticAccessor&lt;IAnsiConsole&gt;((provider, key) =>
-    /// {
-    ///     var console = AnsiConsole.Create(new AnsiConsoleSettings
-    ///     {
-    ///         ColorSystem = ColorSystemSupport.Detect()
-    ///     });
-    ///     return console;
-    /// });
-    /// </code>
-    /// </example>
-    public static IServiceCollection AddSingletonWithStaticAccessor<TService>(
-        this IServiceCollection services,
-        Func<IServiceProvider, object?, TService> implementationFactory)
-        where TService : class =>
-        services
-            .AddKeyedSingleton("StaticAccess", implementationFactory)
-            .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+        /// <summary>
+        ///     Registers a singleton service with static accessor functionality using a factory function.
+        /// </summary>
+        /// <typeparam name="TService">
+        ///     The type of the service to register. Must be a class.
+        /// </typeparam>
+        /// <param name="implementationFactory">
+        ///     The factory function that creates the service instance. The function receives an
+        ///     <see cref="IServiceProvider" /> and an optional key object.
+        /// </param>
+        /// <returns>The <see cref="IServiceCollection" /> for method chaining.</returns>
+        /// <remarks>
+        ///     <para>
+        ///         This overload provides maximum flexibility by allowing custom service creation logic
+        ///         through a factory function. This is useful when the service requires complex initialization
+        ///         or depends on runtime configuration.
+        ///     </para>
+        /// </remarks>
+        /// <example>
+        ///     <code>
+        /// // Register with custom factory
+        /// services.AddSingletonWithStaticAccessor&lt;IAnsiConsole&gt;((provider, key) =>
+        /// {
+        ///     var console = AnsiConsole.Create(new AnsiConsoleSettings
+        ///     {
+        ///         ColorSystem = ColorSystemSupport.Detect()
+        ///     });
+        ///     return console;
+        /// });
+        /// </code>
+        /// </example>
+        public IServiceCollection AddSingletonWithStaticAccessor<TService>(Func<IServiceProvider, object?, TService> implementationFactory)
+            where TService : class =>
+            services
+                .AddKeyedSingleton("StaticAccess", implementationFactory)
+                .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+    }
 }
