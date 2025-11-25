@@ -1,8 +1,10 @@
-﻿namespace DecSm.Atom.Module.Dotnet;
+namespace DecSm.Atom.Module.Dotnet;
 
 [PublicAPI]
 public sealed record DotnetPackOptions(string ProjectName)
 {
+    public DotnetPackOptions(RootedPath projectPath) : this(projectPath.FileSystem.Path.GetFileNameWithoutExtension(projectPath.Path)) { }
+
     public bool AutoSetVersion { get; init; } = true;
 
     public string Configuration { get; init; } = "Release";

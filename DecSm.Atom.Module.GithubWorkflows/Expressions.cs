@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows;
+namespace DecSm.Atom.Module.GithubWorkflows;
 
 [PublicAPI]
 public abstract record IGithubExpression
@@ -24,7 +24,7 @@ public abstract record IGithubExpression
         new IndexedExpression(this);
 
     public IGithubExpression Property(params IGithubExpression[] sections) =>
-        new PropertyExpression([this, ..sections]);
+        new PropertyExpression([this, .. sections]);
 
     public IGithubExpression Not() =>
         new NotExpression(this);

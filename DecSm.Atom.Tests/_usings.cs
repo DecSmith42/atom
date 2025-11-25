@@ -1,4 +1,4 @@
-﻿global using System.Diagnostics;
+global using System.Diagnostics;
 global using System.Diagnostics.CodeAnalysis;
 global using System.IO.Abstractions;
 global using System.IO.Abstractions.TestingHelpers;
@@ -15,11 +15,11 @@ global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
 global using DecSm.Atom.Process;
 global using DecSm.Atom.Reports;
+global using DecSm.Atom.Secrets;
 global using DecSm.Atom.Tests.BuildTests.Core;
 global using DecSm.Atom.TestUtils;
 global using DecSm.Atom.Util;
 global using DecSm.Atom.Variables;
-global using DecSm.Atom.Secrets;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Writer;

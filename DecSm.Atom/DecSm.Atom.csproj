@@ -8,6 +8,7 @@
     <PackageReference Include="JetBrains.Annotations" Version="2025.2.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-rc.1.25451.107" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="Microsoft.VisualStudio.SolutionPersistence" Version="1.0.52" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,6 +34,7 @@
 
   <ItemGroup>
     <None Include="DecSm.Atom.props" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="DecSm.Atom.targets" Pack="true" PackagePath="build/" />
   </ItemGroup>
 
 </Project>

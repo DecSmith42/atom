@@ -31,4 +31,8 @@
     <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <CompilerVisibleProperty Include="SolutionPath" />
+  </ItemGroup>
+
 </Project>

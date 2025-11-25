@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Paths;
+namespace DecSm.Atom.Paths;
 
 /// <summary>
 ///     Represents the abstraction layer over the file system specifically tailored for Atom,
@@ -70,6 +70,10 @@ public interface IAtomFileSystem : IFileSystem
     /// <param name="key">The key identifying the path within Atom context.</param>
     /// <returns>A <see cref="RootedPath" /> instance corresponding to the key.</returns>
     RootedPath GetPath(string key);
+
+    RootedPath GetPath<T>()
+        where T : IFileMarker =>
+        T.Path(this);
 
     /// <summary>
     ///     Creates a new <see cref="RootedPath" /> based on the specified path string.

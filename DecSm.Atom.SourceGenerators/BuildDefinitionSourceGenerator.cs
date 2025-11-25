@@ -248,7 +248,6 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                                   """)
             .ToArray();
 
-
         var paramDefinitionsProperty = paramDefinitionsPropertyBodyLines.Any()
             ? $$"""
                     public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>

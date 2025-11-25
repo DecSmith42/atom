@@ -5,7 +5,7 @@
 ///     Implicitly convertible to a string.
 /// </summary>
 [PublicAPI]
-public sealed record RootedPath(IAtomFileSystem FileSystem, string Path)
+public record RootedPath(IAtomFileSystem FileSystem, string Path)
 {
     /// <summary>
     ///     Gets the parent directory of the current path if it exists.
