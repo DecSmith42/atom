@@ -171,7 +171,10 @@ internal sealed class BuildExecutor(
             }
             catch (StepFailedException failedCheckException)
             {
-                logger.LogInformation(failedCheckException, "A check failed for target {TargetDefinitionName}", target.Name);
+                logger.LogInformation(failedCheckException,
+                    "A check failed for target {TargetDefinitionName}",
+                    target.Name);
+
                 buildModel.TargetStates[target].Status = TargetRunState.Failed;
 
                 reportService.AddReportData(new TextReportData(failedCheckException.Message)

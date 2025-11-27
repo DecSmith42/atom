@@ -65,7 +65,8 @@ public interface ICustomReportData : IReportData
 ///     chronological order within each group.
 /// </remarks>
 [PublicAPI]
-public sealed record LogReportData(string Message, Exception? Exception, LogLevel Level, DateTimeOffset Timestamp) : IReportData;
+public sealed record LogReportData(string Message, Exception? Exception, LogLevel Level, DateTimeOffset Timestamp)
+    : IReportData;
 
 /// <summary>
 ///     Represents information about build artifacts (output files) generated during execution.

@@ -13,7 +13,8 @@ namespace DecSm.Atom.Analyzers;
 /// <summary>
 ///     Provides a code fix for direct parameter references in RequiresParam by replacing them with nameof expressions.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp,
+    Name = nameof(AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider))]
 [Shared]
 public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider : CodeFixProvider
 {

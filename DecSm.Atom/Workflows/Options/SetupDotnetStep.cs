@@ -15,7 +15,8 @@
 ///     This record is typically used within a collection of workflow options to customize the .NET environment.
 /// </remarks>
 [PublicAPI]
-public sealed record SetupDotnetStep(string? DotnetVersion = null, SetupDotnetStep.DotnetQuality? Quality = null) : CustomStep
+public sealed record SetupDotnetStep(string? DotnetVersion = null, SetupDotnetStep.DotnetQuality? Quality = null)
+    : CustomStep
 {
     [PublicAPI]
     public enum DotnetQuality

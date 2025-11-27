@@ -63,7 +63,10 @@ public interface IDotnetPackHelper : IBuildAccessor
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;
         var publishDir = FileSystem.AtomPublishDirectory / outputArtifactName;
-        Logger.LogInformation("Moving package {PackagePath} to {PublishDir}", packagePath, publishDir / packagePath.FileName!);
+
+        Logger.LogInformation("Moving package {PackagePath} to {PublishDir}",
+            packagePath,
+            publishDir / packagePath.FileName!);
 
         if (!options.SuppressClearingPublishDirectory && FileSystem.Directory.Exists(publishDir))
             FileSystem.Directory.Delete(publishDir, true);

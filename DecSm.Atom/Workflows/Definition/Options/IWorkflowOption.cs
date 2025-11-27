@@ -149,11 +149,15 @@ public interface IWorkflowOption
     ///     </para>
     ///     <list type="bullet">
     ///         <item>
-    ///             <description>When <see cref="AllowMultiple" /> is <c>true</c>: Returns the current instance followed by all provided entries</description>
+    ///             <description>
+    ///                 When <see cref="AllowMultiple" /> is <c>true</c>: Returns the current instance followed by all
+    ///                 provided entries
+    ///             </description>
     ///         </item>
     ///         <item>
     ///             <description>
-    ///                 When <see cref="AllowMultiple" /> is <c>false</c>: Returns only the last entry, or the current instance if no
+    ///                 When <see cref="AllowMultiple" /> is <c>false</c>: Returns only the last entry, or the current instance
+    ///                 if no
     ///                 entries are provided
     ///             </description>
     ///         </item>

@@ -29,12 +29,14 @@ public partial interface ITargetWithConfigureBuilderAndConfigureHost
         builder.Configuration.AddInMemoryCollection([new("SetupExecuted2", "true")]);
 
     protected static partial void ConfigureHost(IHost host) =>
-        ((ITargetWithConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>()).IsSetupExecuted2 = true;
+        ((ITargetWithConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>())
+        .IsSetupExecuted2 = true;
 }
 
 [ConfigureHostBuilder]
 [ConfigureHost]
-public partial interface ITargetWithInheritAndConfigureBuilderAndConfigureHost : ITargetWithConfigureBuilderAndConfigureHost
+public partial interface
+    ITargetWithInheritAndConfigureBuilderAndConfigureHost : ITargetWithConfigureBuilderAndConfigureHost
 {
     bool IsSetupExecuted3 { get; set; }
 
@@ -42,6 +44,6 @@ public partial interface ITargetWithInheritAndConfigureBuilderAndConfigureHost :
         builder.Configuration.AddInMemoryCollection([new("SetupExecuted3", "true")]);
 
     protected new static partial void ConfigureHost(IHost host) =>
-        ((ITargetWithInheritAndConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>()).IsSetupExecuted3 =
-        true;
+        ((ITargetWithInheritAndConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>())
+        .IsSetupExecuted3 = true;
 }

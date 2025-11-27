@@ -90,7 +90,10 @@ public interface IBuildAccessor
     ///     typically checking command line arguments, environment variables, configuration files, and secrets.
     /// </remarks>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+    protected T? GetParam<T>(
+        Expression<Func<T?>> parameterExpression,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
             .GetParam(parameterExpression, defaultValue, converter);

@@ -52,8 +52,9 @@ public static class StringUtil
                     ? 0
                     : 1;
 
-                distance.Span[i * (toLength + 1) + j] =
-                    Math.Min(Math.Min(distance.Span[(i - 1) * (toLength + 1) + j] + 1, distance.Span[i * (toLength + 1) + (j - 1)] + 1),
+                distance.Span[i * (toLength + 1) + j] = Math.Min(
+                    Math.Min(distance.Span[(i - 1) * (toLength + 1) + j] + 1,
+                        distance.Span[i * (toLength + 1) + (j - 1)] + 1),
                         distance.Span[(i - 1) * (toLength + 1) + (j - 1)] + cost);
             }
 

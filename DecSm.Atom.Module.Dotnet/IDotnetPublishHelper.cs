@@ -36,7 +36,8 @@ public partial interface IDotnetPublishHelper : IBuildInfo
         if (FileSystem.Directory.Exists(buildDir))
             FileSystem.Directory.Delete(buildDir, true);
 
-        await ProcessRunner.RunAsync(new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"),
+        await ProcessRunner.RunAsync(
+            new("dotnet", $"publish {projectPath.Path} -c {options.Configuration} -o {buildDir}"),
             cancellationToken);
 
         var outputArtifactName = options.OutputArtifactName ?? options.ProjectName;

@@ -82,7 +82,12 @@ public static class MsBuildUtil
         AddProperty("Version", version.Prefix, xmlDocument, propertyGroupNode);
         AddProperty("PackageVersion", version, xmlDocument, propertyGroupNode);
         AddProperty("AssemblyVersion", $"{version.Prefix}.0", xmlDocument, propertyGroupNode);
-        AddProperty("FileVersion", $"{version.Prefix}.{version.BuildNumberFromPreRelease}", xmlDocument, propertyGroupNode);
+
+        AddProperty("FileVersion",
+            $"{version.Prefix}.{version.BuildNumberFromPreRelease}",
+            xmlDocument,
+            propertyGroupNode);
+
         AddProperty("InformationalVersion", version, xmlDocument, propertyGroupNode);
 
         xmlDocument.DocumentElement?.AppendChild(propertyGroupNode);

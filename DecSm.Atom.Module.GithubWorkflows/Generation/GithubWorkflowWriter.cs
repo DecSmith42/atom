@@ -38,7 +38,8 @@ internal sealed class GithubWorkflowWriter(
                                 {
                                     WriteLine($"description: {input.Description}");
 
-                                    var inputParamName = buildDefinition.ParamDefinitions.FirstOrDefault(x => x.Value.ArgName == input.Name)
+                                    var inputParamName = buildDefinition.ParamDefinitions
+                                        .FirstOrDefault(x => x.Value.ArgName == input.Name)
                                         .Key;
 
                                     if (inputParamName is null)
@@ -96,9 +97,10 @@ internal sealed class GithubWorkflowWriter(
                                                     .AccessParam(inputParamName)
                                                     ?.ToString();
 
-                                            var isStringRequired = input.Required ?? defaultStringValue is not { Length: > 0 }
-                                                ? "true"
-                                                : "false";
+                                            var isStringRequired =
+                                                input.Required ?? defaultStringValue is not { Length: > 0 }
+                                                    ? "true"
+                                                    : "false";
 
                                             WriteLine($"required: {isStringRequired}");
 
@@ -117,9 +119,10 @@ internal sealed class GithubWorkflowWriter(
                                                     .AccessParam(inputParamName)
                                                     ?.ToString();
 
-                                            var isChoiceRequired = input.Required ?? defaultChoiceValue is not { Length: > 0 }
-                                                ? "true"
-                                                : "false";
+                                            var isChoiceRequired =
+                                                input.Required ?? defaultChoiceValue is not { Length: > 0 }
+                                                    ? "true"
+                                                    : "false";
 
                                             WriteLine($"required: {isChoiceRequired}");
 
@@ -267,7 +270,8 @@ internal sealed class GithubWorkflowWriter(
                 using (WriteSection("matrix:"))
                 {
                     foreach (var dimension in job.MatrixDimensions)
-                        WriteLine($"{buildDefinition.ParamDefinitions[dimension.Name].ArgName}: [ {string.Join(", ", dimension.Values)} ]");
+                        WriteLine(
+                            $"{buildDefinition.ParamDefinitions[dimension.Name].ArgName}: [ {string.Join(", ", dimension.Values)} ]");
                 }
 
             var githubPlatformOption = job
@@ -544,7 +548,8 @@ internal sealed class GithubWorkflowWriter(
             if (includeId)
                 WriteLine($"id: {workflowStep.Name}");
 
-            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
+            WriteLine(
+                $"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
 
             var env = new Dictionary<string, string>();
 
@@ -576,7 +581,8 @@ internal sealed class GithubWorkflowWriter(
                 {
                     if (injectedSecret.Value is null)
                     {
-                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
+                        logger.LogWarning(
+                            "Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
                             workflowStep.Name);
 
@@ -586,7 +592,8 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.ArgName] = $"${{{{ secrets.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] =
+                            $"${{{{ secrets.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
 
                 foreach (var injectedEvVar in workflow.Options.OfType<WorkflowSecretsEnvironmentInjection>())
@@ -604,7 +611,8 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEvVar.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.ArgName] = $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] =
+                            $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
             }
 
@@ -617,7 +625,8 @@ internal sealed class GithubWorkflowWriter(
                     .FirstOrDefault(x => x.Value == requiredSecret.Param.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.Param.ArgName] = $"${{{{ secrets.{requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    env[requiredSecret.Param.ArgName] =
+                        $"${{{{ secrets.{requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();

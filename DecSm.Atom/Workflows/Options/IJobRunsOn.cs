@@ -5,8 +5,10 @@
 ///     Implementations of this interface specify where a job will run.
 /// </summary>
 /// <remarks>
-///     This interface is typically implemented by specific workflow definitions (e.g., for GitHub Actions or Azure DevOps).
-///     It provides common constants for operating system tags like <see cref="WindowsLatestTag" />, <see cref="UbuntuLatestTag" />, and
+///     This interface is typically implemented by specific workflow definitions (e.g., for GitHub Actions or Azure
+///     DevOps).
+///     It provides common constants for operating system tags like <see cref="WindowsLatestTag" />,
+///     <see cref="UbuntuLatestTag" />, and
 ///     <see cref="MacOsLatestTag" />.
 ///     The actual runner is determined by the <see cref="JobRunsOn" /> property, which is often configured externally.
 ///     It can be used in build matrices to run jobs across multiple environments.

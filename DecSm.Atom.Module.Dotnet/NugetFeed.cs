@@ -17,7 +17,12 @@ public record NugetFeed
         PlainTextPassword = plainTextPassword ?? (() => null);
     }
 
-    public NugetFeed(string url, string? name = null, string? username = null, string? password = null, string? plainTextPassword = null)
+    public NugetFeed(
+        string url,
+        string? name = null,
+        string? username = null,
+        string? password = null,
+        string? plainTextPassword = null)
     {
         Url = url;
         Name = name;

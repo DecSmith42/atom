@@ -303,10 +303,12 @@ internal sealed partial class DevopsWorkflowWriter(
                     continue;
 
                 if (target.ConsumedArtifacts.Count > 0)
-                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
+                    targetsForConsumedVariableDeclaration.Add(
+                        buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)));
 
                 if (target.ProducedArtifacts.Count > 0)
-                    targetsForConsumedVariableDeclaration.Add(buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
+                    targetsForConsumedVariableDeclaration.Add(
+                        buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)));
             }
 
             foreach (var consumedVariable in targetsForConsumedVariableDeclaration.SelectMany(x => x.ConsumedVariables))
@@ -408,7 +410,8 @@ internal sealed partial class DevopsWorkflowWriter(
                 using (WriteSection("env:"))
                 {
                     foreach (var feedToAdd in feedsToAdd)
-                        WriteLine($"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
+                        WriteLine(
+                            $"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
                 }
 
                 WriteLine();
@@ -436,7 +439,8 @@ internal sealed partial class DevopsWorkflowWriter(
                     new(nameof(IRetrieveArtifact.RetrieveArtifact)),
                     buildModel.GetTarget(nameof(IRetrieveArtifact.RetrieveArtifact)),
                     [
-                        ("atom-artifacts", string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
+                        ("atom-artifacts",
+                            string.Join(",", commandStepTarget.ConsumedArtifacts.Select(x => x.ArtifactName))),
                         !string.IsNullOrWhiteSpace(buildSlice.Value)
                             ? buildSlice
                             : default,
@@ -482,7 +486,8 @@ internal sealed partial class DevopsWorkflowWriter(
                     new(nameof(IStoreArtifact.StoreArtifact)),
                     buildModel.GetTarget(nameof(IStoreArtifact.StoreArtifact)),
                     [
-                        ("atom-artifacts", string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
+                        ("atom-artifacts",
+                            string.Join(",", commandStepTarget.ProducedArtifacts.Select(x => x.ArtifactName))),
                         !string.IsNullOrWhiteSpace(buildSlice.Value)
                             ? buildSlice
                             : default,
@@ -526,7 +531,8 @@ internal sealed partial class DevopsWorkflowWriter(
     {
         var projectName = _fileSystem.ProjectName;
 
-        using (WriteSection($"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless"))
+        using (WriteSection(
+                   $"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless"))
         {
             if (includeName)
                 WriteLine($"name: {workflowStep.Name}");
@@ -561,7 +567,8 @@ internal sealed partial class DevopsWorkflowWriter(
                 {
                     if (injectedSecret.Value is null)
                     {
-                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
+                        logger.LogWarning(
+                            "Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
                             workflowStep.Name);
 
@@ -602,7 +609,8 @@ internal sealed partial class DevopsWorkflowWriter(
                     .FirstOrDefault(x => x.Value == requiredSecret.Param.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.Param.ArgName] = $"$({requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')})";
+                    env[requiredSecret.Param.ArgName] =
+                        $"$({requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')})";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();

@@ -58,7 +58,8 @@ public sealed class TargetDefinition
     public List<ProducedArtifact> ProducedArtifacts { get; private set; } = [];
 
     /// <summary>
-    ///     Variables that must be produced by other targets (see <see cref="ProducedVariables" />) before this target can be executed.
+    ///     Variables that must be produced by other targets (see <see cref="ProducedVariables" />) before this target can be
+    ///     executed.
     /// </summary>
     /// <remarks>
     ///     By default, Atom will automatically acquire the variables from the workflow host or a custom variable provider.
@@ -76,11 +77,15 @@ public sealed class TargetDefinition
     private List<(Func<IBuildDefinition, Target> GetExtension, bool RunExtensionAfter)> Extensions { get; } = [];
 
     /// <summary>
-    ///     Marks this target as an extension of another (the 'base'), allowing it to inherit the tasks, dependencies, and other properties of the
+    ///     Marks this target as an extension of another (the 'base'), allowing it to inherit the tasks, dependencies, and
+    ///     other properties of the
     ///     base.
     /// </summary>
     /// <param name="targetToExtend">The base target to extend.</param>
-    /// <param name="runExtensionAfter">If true, the tasks of this target will be executed after the inherited tasks of the base target.</param>
+    /// <param name="runExtensionAfter">
+    ///     If true, the tasks of this target will be executed after the inherited tasks of the
+    ///     base target.
+    /// </param>
     /// <typeparam name="T">The type of the base target.</typeparam>
     /// <returns>This target definition.</returns>
     /// <remarks>
@@ -236,7 +241,10 @@ public sealed class TargetDefinition
     ///     Adds a dependency to another target by name, indicating prerequisite tasks to complete first.
     /// </summary>
     /// <param name="target">The target upon which this target depends.</param>
-    /// <param name="targetName">The name of the target upon which this target depends (automatically inferred from the target).</param>
+    /// <param name="targetName">
+    ///     The name of the target upon which this target depends (automatically inferred from the
+    ///     target).
+    /// </param>
     /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
     [SuppressMessage("ReSharper", "LocalizableElement")]
     public TargetDefinition DependsOn(Target target, [CallerArgumentExpression("target")] string? targetName = null)
@@ -289,7 +297,8 @@ public sealed class TargetDefinition
 
     /// <summary>
     ///     Adds an artifact to the list of artifacts produced by the target.
-    ///     This build system will automatically publish the produced artifacts to the workflow host or a custom artifact provider,
+    ///     This build system will automatically publish the produced artifacts to the workflow host or a custom artifact
+    ///     provider,
     ///     allowing other targets to consume them as dependencies.
     /// </summary>
     /// <param name="artifactName">The name of the artifact being produced.</param>
@@ -304,7 +313,8 @@ public sealed class TargetDefinition
 
     /// <summary>
     ///     Adds an artifact to the list of artifacts that this target consumes, indicating a dependency on its production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
+    ///     provider,
     ///     ensuring that the target has access to the necessary artifacts before execution.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
@@ -319,8 +329,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
+    ///     production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
+    ///     provider,
     ///     ensuring that the target has access to the necessary artifacts before execution.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
@@ -336,15 +348,20 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
+    ///     production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
+    ///     provider,
     ///     ensuring that the target has access to the necessary artifacts before execution.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
     /// <param name="artifactNames">The names of the artifacts being consumed.</param>
     /// <param name="buildSlice">An optional build slice associated with the consumed artifact.</param>
     /// <returns>The current target definition.</returns>
-    public TargetDefinition ConsumesArtifact(string targetName, IEnumerable<string> artifactNames, string? buildSlice = null)
+    public TargetDefinition ConsumesArtifact(
+        string targetName,
+        IEnumerable<string> artifactNames,
+        string? buildSlice = null)
     {
         foreach (var artifactName in artifactNames)
             ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
@@ -353,15 +370,20 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact provider,
+    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
+    ///     production.
+    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
+    ///     provider,
     ///     ensuring that the target has access to the necessary artifacts before execution.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
     /// <param name="artifactNames">The names of the artifacts being consumed.</param>
     /// <param name="buildSlices">The build slices associated with the consumed artifacts.</param>
     /// <returns>The current target definition.</returns>
-    public TargetDefinition ConsumesArtifact(string targetName, IEnumerable<string> artifactNames, IEnumerable<string> buildSlices)
+    public TargetDefinition ConsumesArtifact(
+        string targetName,
+        IEnumerable<string> artifactNames,
+        IEnumerable<string> buildSlices)
     {
         var buildSlicesArray = buildSlices.ToArray();
 
@@ -378,7 +400,8 @@ public sealed class TargetDefinition
     /// <param name="variableName">The name of the variable that this target produces.</param>
     /// <returns>This target definition with the updated list of produced variables.</returns>
     /// <remarks>
-    ///     This does not automatically write to the variable; it simply indicates that this target will produce a variable with the given
+    ///     This does not automatically write to the variable; it simply indicates that this target will produce a variable
+    ///     with the given
     ///     name. The variable will need to be written using <see cref="WorkflowVariableService.WriteVariable" />.
     /// </remarks>
     public TargetDefinition ProducesVariable(string variableName)
@@ -389,7 +412,8 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Specifies a variable that this target consumes during execution, identified by its associated target name and variable name.
+    ///     Specifies a variable that this target consumes during execution, identified by its associated target name and
+    ///     variable name.
     /// </summary>
     /// <param name="targetName">
     ///     The name of the target or command associated with the consumed variable.
@@ -398,7 +422,8 @@ public sealed class TargetDefinition
     /// <param name="outputName">The name of the variable being consumed by this target.</param>
     /// <returns>This target definition, allowing for method chaining.</returns>
     /// <remarks>
-    ///     The build system will automatically acquire the consumed variables from the workflow host or a custom variable provider
+    ///     The build system will automatically acquire the consumed variables from the workflow host or a custom variable
+    ///     provider
     ///     and inject them into matching params that are required or used by this target.
     /// </remarks>
     public TargetDefinition ConsumesVariable(string targetName, string outputName)

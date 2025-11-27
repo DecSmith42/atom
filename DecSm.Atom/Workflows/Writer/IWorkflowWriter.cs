@@ -81,7 +81,10 @@ public interface IWorkflowWriter
 /// <summary>
 ///     Provides a strongly-typed version of <see cref="IWorkflowWriter" /> for a specific workflow type.
 /// </summary>
-/// <typeparam name="T">The specific workflow type that this writer handles, which must implement <see cref="IWorkflowType" />.</typeparam>
+/// <typeparam name="T">
+///     The specific workflow type that this writer handles, which must implement
+///     <see cref="IWorkflowType" />.
+/// </typeparam>
 /// <remarks>
 ///     <para>
 ///         This generic interface provides compile-time type safety by constraining the workflow type
@@ -130,5 +133,7 @@ public interface IWorkflowWriter<T> : IWorkflowWriter
     ///     Implementing classes must provide a concrete implementation of this method
     ///     that performs the dirty check for the specific workflow format of type <typeparamref name="T" />.
     /// </remarks>
-    abstract Task<bool> IWorkflowWriter.CheckForDirtyWorkflow(WorkflowModel workflow, CancellationToken cancellationToken);
+    abstract Task<bool> IWorkflowWriter.CheckForDirtyWorkflow(
+        WorkflowModel workflow,
+        CancellationToken cancellationToken);
 }

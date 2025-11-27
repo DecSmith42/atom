@@ -12,16 +12,20 @@
 ///         to generate partial class implementations. This generated code typically includes:
 ///         <list type="bullet">
 ///             <item>
-///                 Implementation of <see cref="IBuildDefinition" /> properties like <see cref="IBuildDefinition.TargetDefinitions" /> and
-///                 <see cref="IBuildDefinition.ParamDefinitions" /> by discovering targets and parameters from implemented interfaces.
+///                 Implementation of <see cref="IBuildDefinition" /> properties like
+///                 <see cref="IBuildDefinition.TargetDefinitions" /> and
+///                 <see cref="IBuildDefinition.ParamDefinitions" /> by discovering targets and parameters from implemented
+///                 interfaces.
 ///             </item>
 ///             <item>
-///                 Implementation of <see cref="DecSm.Atom.Hosting.IConfigureHost" /> methods if the build definition class or its
+///                 Implementation of <see cref="DecSm.Atom.Hosting.IConfigureHost" /> methods if the build definition
+///                 class or its
 ///                 implemented interfaces use <see cref="DecSm.Atom.Hosting.ConfigureHostBuilderAttribute" /> or
 ///                 <see cref="DecSm.Atom.Hosting.ConfigureHostAttribute" />.
 ///             </item>
 ///             <item>
-///                 Static helper classes (e.g., <c>Targets</c> and <c>Params</c>) for easier access to defined targets and parameters within
+///                 Static helper classes (e.g., <c>Targets</c> and <c>Params</c>) for easier access to defined targets and
+///                 parameters within
 ///                 the build definition.
 ///             </item>
 ///         </list>

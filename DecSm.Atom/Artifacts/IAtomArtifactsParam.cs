@@ -39,6 +39,7 @@ public partial interface IAtomArtifactsParam
     ///     If the <c>--atom-artifacts</c> command-line argument is <c>"MyPackage,MySymbols"</c>,
     ///     this property will return <c>["MyPackage", "MySymbols"]</c>.
     /// </example>
-    [ParamDefinition("atom-artifacts", "The name of the artifact/s to work with, use ',' to separate multiple artifacts")]
+    [ParamDefinition("atom-artifacts",
+        "The name of the artifact/s to work with, use ',' to separate multiple artifacts")]
     string[] AtomArtifacts => GetParam(() => AtomArtifacts, []);
 }

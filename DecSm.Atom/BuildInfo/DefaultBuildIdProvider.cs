@@ -4,8 +4,10 @@
 ///     Default Build ID provider, used if no custom implementation is provided.
 ///     The build ID is composed of the build version and the build timestamp.
 /// </summary>
-internal sealed class DefaultBuildIdProvider(IBuildVersionProvider buildVersionProvider, IBuildTimestampProvider buildTimestampProvider)
-    : IBuildIdProvider
+internal sealed class DefaultBuildIdProvider(
+    IBuildVersionProvider buildVersionProvider,
+    IBuildTimestampProvider buildTimestampProvider
+) : IBuildIdProvider
 {
     /// <summary>
     ///     Gets the build ID.

@@ -1,6 +1,12 @@
 ﻿namespace Atom;
 
-public sealed record Command(string Name, string? Description, List<Argument> Arguments, List<Option> Options, List<Command> SubCommands);
+public sealed record Command(
+    string Name,
+    string? Description,
+    List<Argument> Arguments,
+    List<Option> Options,
+    List<Command> SubCommands
+);
 
 public sealed record Argument(string Name, string? Description, string ValueType);
 

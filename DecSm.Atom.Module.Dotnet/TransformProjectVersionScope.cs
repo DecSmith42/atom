@@ -10,7 +10,9 @@ public static class TransformProjectVersionScope
         RootedPath file,
         SemVer version,
         CancellationToken cancellationToken = default) =>
-        await TransformFileScope.CreateAsync(file, text => MsBuildUtil.SetVersionInfo(text, version), cancellationToken);
+        await TransformFileScope.CreateAsync(file,
+            text => MsBuildUtil.SetVersionInfo(text, version),
+            cancellationToken);
 
     public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, SemVer version) =>
         TransformMultiFileScope.Create(files, text => MsBuildUtil.SetVersionInfo(text, version));
@@ -19,5 +21,7 @@ public static class TransformProjectVersionScope
         IEnumerable<RootedPath> files,
         SemVer version,
         CancellationToken cancellationToken = default) =>
-        await TransformMultiFileScope.CreateAsync(files, text => MsBuildUtil.SetVersionInfo(text, version), cancellationToken);
+        await TransformMultiFileScope.CreateAsync(files,
+            text => MsBuildUtil.SetVersionInfo(text, version),
+            cancellationToken);
 }

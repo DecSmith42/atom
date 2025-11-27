@@ -12,7 +12,8 @@ public sealed class AzureBlobArtifactProvider(
 {
     public IReadOnlyList<string> RequiredParams =>
     [
-        nameof(IAzureArtifactStorage.AzureArtifactStorageContainer), nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
+        nameof(IAzureArtifactStorage.AzureArtifactStorageContainer),
+        nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
     ];
 
     public async Task StoreArtifacts(
@@ -29,7 +30,9 @@ public sealed class AzureBlobArtifactProvider(
         var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
-        var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+        var connectionString =
+            paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = buildInfo.BuildName;
 
@@ -71,7 +74,9 @@ public sealed class AzureBlobArtifactProvider(
             if (files.Length == 0)
                 throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
 
-            logger.LogInformation("Uploading {FileCount} files to {BlobDir}", files.Length, artifactBlobDir.SanitizeForLogging());
+            logger.LogInformation("Uploading {FileCount} files to {BlobDir}",
+                files.Length,
+                artifactBlobDir.SanitizeForLogging());
 
             foreach (var file in files)
             {
@@ -89,7 +94,8 @@ public sealed class AzureBlobArtifactProvider(
             }
 
             // Add report data for the artifact - name and url
-            reportService.AddReportData(new ArtifactReportData($"{artifactName} - {buildId}", $"{containerClient.Uri}/{artifactBlobDir}"));
+            reportService.AddReportData(new ArtifactReportData($"{artifactName} - {buildId}",
+                $"{containerClient.Uri}/{artifactBlobDir}"));
         }
     }
 
@@ -107,7 +113,9 @@ public sealed class AzureBlobArtifactProvider(
         var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
-        var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+        var connectionString =
+            paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = buildInfo.BuildName;
 
@@ -149,7 +157,8 @@ public sealed class AzureBlobArtifactProvider(
 
             var hasAtLeastOneBlob = false;
 
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: artifactBlobDir, cancellationToken: cancellationToken);
+            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: artifactBlobDir,
+                cancellationToken: cancellationToken);
 
             await foreach (var blobItem in blobs)
             {
@@ -165,7 +174,8 @@ public sealed class AzureBlobArtifactProvider(
                 if (blobName.StartsWith(artifactBlobDir))
                     blobName = blobName[artifactBlobDir.Length..];
                 else
-                    throw new InvalidOperationException($"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
+                    throw new InvalidOperationException(
+                        $"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
 
                 var blobPath = artifactDir / blobName;
                 var blobDir = fileSystem.Path.GetDirectoryName(blobPath);
@@ -189,7 +199,9 @@ public sealed class AzureBlobArtifactProvider(
 
     public async Task Cleanup(IReadOnlyList<string> runIdentifiers, CancellationToken cancellationToken = default)
     {
-        var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+        var connectionString =
+            paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = buildInfo.BuildName;
         var containerClient = new BlobContainerClient(connectionString, container);
@@ -218,7 +230,9 @@ public sealed class AzureBlobArtifactProvider(
         string? buildSlice = null,
         CancellationToken cancellationToken = default)
     {
-        var connectionString = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+        var connectionString =
+            paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString));
+
         var container = paramService.GetParam(nameof(IAzureArtifactStorage.AzureArtifactStorageContainer));
         var buildName = buildInfo.BuildName;
         var containerClient = new BlobContainerClient(connectionString, container);
@@ -227,14 +241,17 @@ public sealed class AzureBlobArtifactProvider(
         {
             var invalidPathChars = fileSystem.Path.GetInvalidPathChars();
             var pathSafeRegex = new Regex($"[{Regex.Escape(new(invalidPathChars))}]");
-            buildSlice ??= pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
+
+            buildSlice ??=
+                pathSafeRegex.Replace(paramService.GetParam(nameof(IBuildInfo.BuildSlice)) ?? string.Empty, "-");
 
             artifactName = buildSlice is { Length: > 0 }
                 ? $"{artifactName}/{buildSlice}/"
                 : $"{artifactName}/";
         }
 
-        var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/", cancellationToken: cancellationToken);
+        var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/",
+            cancellationToken: cancellationToken);
 
         var buildIds = new List<string>();
 

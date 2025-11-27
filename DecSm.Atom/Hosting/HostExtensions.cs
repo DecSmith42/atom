@@ -4,7 +4,8 @@
 ///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
 /// </summary>
 /// <remarks>
-///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent configuration
+///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent
+///     configuration
 ///     of required services, logging providers, dependency injections, and system defaults for Atom-based hosts.
 /// </remarks>
 /// <example>
@@ -71,19 +72,20 @@ public static class HostExtensions
         builder
             .Services
             .AddKeyedSingleton<IFileSystem>("RootFileSystem", new FileSystem())
-            .AddSingletonWithStaticAccessor<IAtomFileSystem>((x, _) => new AtomFileSystem(x.GetRequiredService<ILogger<AtomFileSystem>>())
-            {
-                FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
-                PathLocators = x
-                    .GetServices<IPathProvider>()
-                    .OrderByDescending(l => l.Priority)
-                    .ToList(),
-                ProjectName = x.GetRequiredService<CommandLineArgs>()
-                    .ProjectName is { Length: > 0 } p
-                    ? p
-                    : Assembly.GetEntryAssembly()!.GetName()
-                        .Name!,
-            })
+            .AddSingletonWithStaticAccessor<IAtomFileSystem>((x, _) =>
+                new AtomFileSystem(x.GetRequiredService<ILogger<AtomFileSystem>>())
+                {
+                    FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
+                    PathLocators = x
+                        .GetServices<IPathProvider>()
+                        .OrderByDescending(l => l.Priority)
+                        .ToList(),
+                    ProjectName = x.GetRequiredService<CommandLineArgs>()
+                        .ProjectName is { Length: > 0 } p
+                        ? p
+                        : Assembly.GetEntryAssembly()!.GetName()
+                            .Name!,
+                })
             .AddSingletonWithStaticAccessor<IFileSystem>((x, _) => x.GetRequiredService<IAtomFileSystem>());
 
         builder.Services.AddSingleton<BuildExecutor>();

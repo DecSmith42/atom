@@ -11,7 +11,9 @@ internal partial class Build : DefaultBuildDefinition,
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
+        UseAzureKeyVault.Enabled,
+        UseGitVersionForBuildId.Enabled,
+        new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>

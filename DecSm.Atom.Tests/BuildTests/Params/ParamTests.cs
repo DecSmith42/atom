@@ -7,7 +7,8 @@ public class ParamTests
     public void Param_IsReadFromCommandLine()
     {
         // Arrange
-        var host = CreateTestHost<ParamBuild>(commandLineArgs: new(true, [new CommandArg(nameof(IParamTarget1.ParamTarget1))]));
+        var host = CreateTestHost<ParamBuild>(commandLineArgs: new(true,
+            [new CommandArg(nameof(IParamTarget1.ParamTarget1))]));
 
         var build = (ParamBuild)host.Services.GetRequiredService<IBuildDefinition>();
 
@@ -23,7 +24,10 @@ public class ParamTests
     {
         // Arrange
         var host = CreateTestHost<ParamBuild>(commandLineArgs: new(true,
-            [new CommandArg(nameof(IParamTarget1.ParamTarget1)), new ParamArg("param-1", nameof(IParamTarget1.Param1), "TestValue")]));
+        [
+            new CommandArg(nameof(IParamTarget1.ParamTarget1)),
+            new ParamArg("param-1", nameof(IParamTarget1.Param1), "TestValue"),
+        ]));
 
         var build = (ParamBuild)host.Services.GetRequiredService<IBuildDefinition>();
 
@@ -40,7 +44,8 @@ public class ParamTests
         // Arrange
         var loggerProvider = new TestLoggerProvider();
 
-        var host = CreateTestHost<ParamBuild>(commandLineArgs: new(true, [new CommandArg(nameof(IParamTarget2.ParamTarget2))]),
+        var host = CreateTestHost<ParamBuild>(
+            commandLineArgs: new(true, [new CommandArg(nameof(IParamTarget2.ParamTarget2))]),
             configure: builder => builder.Logging.AddProvider(loggerProvider));
 
         // Act

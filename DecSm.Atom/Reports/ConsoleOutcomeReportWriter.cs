@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Reports;
 
 /// <summary>
-///     Console-based implementation of <see cref="IOutcomeReportWriter" /> that provides formatted output for build outcomes and report data.
+///     Console-based implementation of <see cref="IOutcomeReportWriter" /> that provides formatted output for build
+///     outcomes and report data.
 /// </summary>
 internal partial class ConsoleOutcomeReportWriter(
     CommandLineArgs args,
@@ -36,7 +37,8 @@ internal partial class ConsoleOutcomeReportWriter(
 
             var targetDuration = state.RunDuration;
 
-            var durationText = state.Status is TargetRunState.Succeeded or TargetRunState.Failed && targetDuration is not null
+            var durationText = state.Status is TargetRunState.Succeeded or TargetRunState.Failed &&
+                               targetDuration is not null
                 ? $"{targetDuration.Value.TotalSeconds:0.00}s"
                 : string.Empty;
 
@@ -321,6 +323,7 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
-    [GeneratedRegex(@"([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])")]
+    [GeneratedRegex(
+        @"([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])")]
     private static partial Regex EmojiRegex();
 }

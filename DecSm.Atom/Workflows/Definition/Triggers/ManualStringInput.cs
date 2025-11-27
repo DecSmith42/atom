@@ -5,8 +5,14 @@ namespace DecSm.Atom.Workflows.Definition.Triggers;
 /// </summary>
 /// <param name="Name">The programmatic name or identifier for the input.</param>
 /// <param name="Description">A human-readable description of the input, explaining its purpose.</param>
-/// <param name="Required">A flag indicating whether this input must be provided by the user. True if required, false otherwise.</param>
-/// <param name="DefaultValue">An optional default value for the string input if the user does not provide one. Defaults to null.</param>
+/// <param name="Required">
+///     A flag indicating whether this input must be provided by the user. True if required, false
+///     otherwise.
+/// </param>
+/// <param name="DefaultValue">
+///     An optional default value for the string input if the user does not provide one. Defaults to
+///     null.
+/// </param>
 [PublicAPI]
 public sealed record ManualStringInput(string Name, string Description, bool? Required, string? DefaultValue)
     : ManualInput(Name, Description, Required)
@@ -21,6 +27,9 @@ public sealed record ManualStringInput(string Name, string Description, bool? Re
     /// </param>
     /// <param name="defaultValue"></param>
     /// <returns>A new instance of <see cref="ManualStringInput" /> configured from the provided parameter definition.</returns>
-    public static ManualStringInput ForParam(ParamDefinition paramDefinition, bool? required = null, string? defaultValue = null) =>
+    public static ManualStringInput ForParam(
+        ParamDefinition paramDefinition,
+        bool? required = null,
+        string? defaultValue = null) =>
         new(paramDefinition.ArgName, paramDefinition.Description, required, defaultValue);
 }

@@ -25,8 +25,8 @@ public sealed class FileSystemTests
     public void Minimal_BuildDefinition_WithCustomLocator_Locates_AtomRootDirectory()
     {
         // Arrange
-        var host = CreateTestHost<MinimalAtomBuild>(configure: builder => builder.Services.AddSingleton<IPathProvider>(provider =>
-            new PathProvider
+        var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
+            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
             {
                 Locator = (key, _) => key is AtomPaths.Root
                     ? provider
@@ -72,8 +72,8 @@ public sealed class FileSystemTests
     public void Minimal_BuildDefinition_WithCustomLocator_Locates_AtomArtifactsDirectory()
     {
         // Arrange
-        var host = CreateTestHost<MinimalAtomBuild>(configure: builder => builder.Services.AddSingleton<IPathProvider>(provider =>
-            new PathProvider
+        var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
+            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
             {
                 Locator = (key, _) => key is AtomPaths.Artifacts
                     ? provider
@@ -119,8 +119,8 @@ public sealed class FileSystemTests
     public void Minimal_BuildDefinition_WithCustomLocator_Locates_AtomPublishDirectory()
     {
         // Arrange
-        var host = CreateTestHost<MinimalAtomBuild>(configure: builder => builder.Services.AddSingleton<IPathProvider>(provider =>
-            new PathProvider
+        var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
+            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
             {
                 Locator = (key, _) => key is AtomPaths.Publish
                     ? provider
@@ -166,8 +166,8 @@ public sealed class FileSystemTests
     public void Minimal_BuildDefinition_WithCustomLocator_Locates_AtomTempDirectory()
     {
         // Arrange
-        var host = CreateTestHost<MinimalAtomBuild>(configure: builder => builder.Services.AddSingleton<IPathProvider>(provider =>
-            new PathProvider
+        var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
+            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
             {
                 Locator = (key, _) => key is AtomPaths.Temp
                     ? provider

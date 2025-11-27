@@ -129,7 +129,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<ManualInputBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<ManualInputBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -152,7 +154,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<SetupDotnetBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<SetupDotnetBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -175,7 +179,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<ReleaseTriggerBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<ReleaseTriggerBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -198,7 +204,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<EnvironmentBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<EnvironmentBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();

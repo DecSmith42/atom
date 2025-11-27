@@ -11,8 +11,11 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateSolutionModelAttributeFull = "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
-    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+    private const string GenerateSolutionModelAttributeFull =
+        "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

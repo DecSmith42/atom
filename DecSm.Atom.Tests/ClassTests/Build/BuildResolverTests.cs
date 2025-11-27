@@ -15,9 +15,11 @@ public class BuildResolverTests
 
     private class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services)
     {
-        public IReadOnlyDictionary<string, Target> ManualTargetDefinitions { get; init; } = new Dictionary<string, Target>();
+        public IReadOnlyDictionary<string, Target> ManualTargetDefinitions { get; init; } =
+            new Dictionary<string, Target>();
 
-        private IReadOnlyDictionary<string, ParamDefinition> ManualParamDefinitions { get; } = new Dictionary<string, ParamDefinition>();
+        private IReadOnlyDictionary<string, ParamDefinition> ManualParamDefinitions { get; } =
+            new Dictionary<string, ParamDefinition>();
 
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => ManualTargetDefinitions;
 

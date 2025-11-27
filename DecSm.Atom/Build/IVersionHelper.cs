@@ -4,7 +4,8 @@
 ///     Provides convenient access to the current build version.
 /// </summary>
 /// <remarks>
-///     Intended as a helper interface that simplifies obtaining the build version from the current service provider context.
+///     Intended as a helper interface that simplifies obtaining the build version from the current service provider
+///     context.
 /// </remarks>
 /// <example>
 ///     Example usage:

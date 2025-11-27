@@ -2,7 +2,8 @@
 
 /// <summary>
 ///     A comprehensive abstract base class for creating build definitions in the Atom framework.
-///     It inherits from <see cref="BuildDefinition" /> and pre-configures a rich set of common build targets and global options.
+///     It inherits from <see cref="BuildDefinition" /> and pre-configures a rich set of common build targets and global
+///     options.
 /// </summary>
 /// <remarks>
 ///     <para>

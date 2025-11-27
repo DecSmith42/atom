@@ -71,7 +71,9 @@ internal sealed class WorkflowResolver(
             foreach (var consumedVariable in target.ConsumedVariables)
             {
                 var consumedTarget = buildModel.GetTarget(consumedVariable.TargetName);
-                var jobOutput = consumedTarget.ProducedVariables.SingleOrDefault(x => x == consumedVariable.VariableName);
+
+                var jobOutput =
+                    consumedTarget.ProducedVariables.SingleOrDefault(x => x == consumedVariable.VariableName);
 
                 if (jobOutput is null)
                     throw new InvalidOperationException(

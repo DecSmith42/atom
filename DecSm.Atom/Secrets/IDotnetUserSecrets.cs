@@ -7,14 +7,18 @@
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Implement this interface in the Build definition to enable sourcing of secrets from the .NET user secrets store.
+///         Implement this interface in the Build definition to enable sourcing of secrets from the .NET user secrets
+///         store.
 ///     </para>
 ///     <para>
-///         The interface automatically configures the dependency injection container with a <see cref="DotnetUserSecretsProvider" />
-///         that can retrieve secrets from the standard user secrets location using the Microsoft.Extensions.Configuration framework.
+///         The interface automatically configures the dependency injection container with a
+///         <see cref="DotnetUserSecretsProvider" />
+///         that can retrieve secrets from the standard user secrets location using the Microsoft.Extensions.Configuration
+///         framework.
 ///     </para>
 ///     <para>
-///         User secrets are stored per-user and per-project, making them ideal for development-time secrets that should not
+///         User secrets are stored per-user and per-project, making them ideal for development-time secrets that should
+///         not
 ///         be committed to source control. The secrets are identified by a UserSecretsId that should be configured in the
 ///         project file or through the UserSecretsIdAttribute.
 ///     </para>

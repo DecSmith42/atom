@@ -1,7 +1,10 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
-internal sealed class DevopsSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService, IParamService paramService)
-    : IOutcomeReportWriter
+internal sealed class DevopsSummaryOutcomeReportWriter(
+    IAtomFileSystem fileSystem,
+    ReportService reportService,
+    IParamService paramService
+) : IOutcomeReportWriter
 {
     public async Task ReportRunOutcome(CancellationToken cancellationToken)
     {

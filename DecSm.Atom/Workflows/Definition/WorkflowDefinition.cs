@@ -12,12 +12,15 @@
 ///         </para>
 ///         Special Behaviors and Edge Cases:
 ///         - The <c>Name</c> property is a crucial identifier for the workflow.
-///         - <c>Triggers</c>: Defines what events will start the workflow (e.g., a git push, a manual trigger). If empty, the workflow might
+///         - <c>Triggers</c>: Defines what events will start the workflow (e.g., a git push, a manual trigger). If empty,
+///         the workflow might
 ///         need to be invoked via other means or is a sub-workflow.
 ///         - <c>Options</c>: Allows for configuring various aspects of the workflow's behavior or environment.
-///         - <c>Targets</c>: A list of <see cref="WorkflowTargetDefinition" /> which represent the actual tasks or operations the
+///         - <c>Targets</c>: A list of <see cref="WorkflowTargetDefinition" /> which represent the actual tasks or
+///         operations the
 ///         workflow will perform. The order is generally significant.
-///         - <c>WorkflowTypes</c>: Can be used to categorize or specialize workflows, potentially influencing how they are processed or where
+///         - <c>WorkflowTypes</c>: Can be used to categorize or specialize workflows, potentially influencing how they are
+///         processed or where
 ///         they are deployed (e.g., differentiating between a standard build workflow and a Dependabot workflow).
 ///     </para>
 ///     Examples of Usage:
@@ -60,7 +63,8 @@
 ///       WorkflowTypes = [new DependabotWorkflowType()],
 ///   }
 ///   </code>
-///     The properties <c>Triggers</c>, <c>Options</c>, <c>Targets</c>, and <c>WorkflowTypes</c> are initialized as empty lists by
+///     The properties <c>Triggers</c>, <c>Options</c>, <c>Targets</c>, and <c>WorkflowTypes</c> are initialized as empty
+///     lists by
 ///     default but can be set during object initialization.
 /// </remarks>
 [PublicAPI]

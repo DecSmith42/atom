@@ -52,7 +52,8 @@
 public sealed record ProcessRunOptions(string Name, string Args)
 {
     /// <summary>
-    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and argument array.
+    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and argument
+    ///     array.
     /// </summary>
     /// <param name="Name">The name or path of the executable to run.</param>
     /// <param name="Args">An array of command-line arguments that will be joined with spaces.</param>
@@ -67,7 +68,8 @@ public sealed record ProcessRunOptions(string Name, string Args)
     /// // Equivalent to: new ProcessRunOptions("docker", "run -it --rm ubuntu:latest /bin/bash")
     /// </code>
     /// </example>
-    public ProcessRunOptions(string Name, string[] Args) : this(Name, string.Join(" ", Args.Where(a => !string.IsNullOrWhiteSpace(a)))) { }
+    public ProcessRunOptions(string Name, string[] Args) : this(Name,
+        string.Join(" ", Args.Where(a => !string.IsNullOrWhiteSpace(a)))) { }
 
     /// <summary>
     ///     Gets or sets the working directory for the process execution.
@@ -205,11 +207,13 @@ public sealed record ProcessRunOptions(string Name, string Args)
     ///     Gets or sets the environment variables to be used by the process during execution.
     /// </summary>
     /// <value>
-    ///     A dictionary where keys represent the names of the environment variables and values represent their corresponding values.
+    ///     A dictionary where keys represent the names of the environment variables and values represent their corresponding
+    ///     values.
     ///     A value of <c>null</c> for any variable indicates that it should be removed from the environment.
     /// </value>
     /// <remarks>
-    ///     These environment variables are passed to the process when it is executed, potentially overriding inherited variables
+    ///     These environment variables are passed to the process when it is executed, potentially overriding inherited
+    ///     variables
     ///     from the current environment. If not set, the process will inherit the current environment's variables by default.
     /// </remarks>
     public Dictionary<string, string?> EnvironmentVariables { get; init; } = [];

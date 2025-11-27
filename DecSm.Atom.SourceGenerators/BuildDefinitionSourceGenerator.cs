@@ -13,7 +13,10 @@ namespace DecSm.Atom.SourceGenerators;
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
     private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
-    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
     private const string Target = "Target";
     private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
     private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
@@ -62,7 +65,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private static void GenerateCode(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
+        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
+            compilationWithClassDeclarations)
     {
         foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
             if (compilationWithClassDeclarations
@@ -154,25 +158,29 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .ToArray();
 
-        var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
+        var interfacesWithTargets =
+            DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
 
         var interfacesWithParams = interfacesWithProperties
             .Where(static p => p
                 .Property
                 .GetAttributes()
-                .Any(static attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
+                .Any(static attribute =>
+                    attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
             .Select(static interfaceWithProperty => new PropertyWithAttribute(interfaceWithProperty.Property,
                 interfaceWithProperty
                     .Property
                     .GetAttributes()
-                    .First(attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
+                    .First(attribute =>
+                        attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
             .ToList();
 
         var interfacesWithConfigureBuilder = classSymbol
             .AllInterfaces
             .Where(static @interface => @interface
                 .GetAttributes()
-                .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
+                .Any(static attribute =>
+                    attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
             .ToArray();
 
         var interfacesWithConfigureHost = classSymbol
@@ -298,7 +306,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             : "    // Build has no defined targets";
 
         var paramsPropertiesLines = interfacesWithParams
-            .Select(static p => $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
+            .Select(static p =>
+                $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
             .ToArray();
 
         var paramsClass = paramsPropertiesLines.Any()
@@ -335,27 +344,30 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Select(static @interface => $"        {@interface}.ConfigureHost(builder);")
             .ToArray();
 
-        var configureBuildHostBuilderMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? $$"""
-                    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
-                    {
-                {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
-                    }
-                """
-            : "    // Build has no defined HostBuilder configuration";
+        var configureBuildHostBuilderMethod =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? $$"""
+                        public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
+                        {
+                    {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
+                        }
+                    """
+                : "    // Build has no defined HostBuilder configuration";
 
-        var configureBuildHostMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? $$"""
-                    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
-                    {
-                {{string.Join("\n", configureBuildHostMethodBodyLines)}}
-                    }
-                """
-            : "    // Build has no defined Host configuration";
+        var configureBuildHostMethod =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? $$"""
+                        public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
+                        {
+                    {{string.Join("\n", configureBuildHostMethodBodyLines)}}
+                        }
+                    """
+                : "    // Build has no defined Host configuration";
 
-        var configureHostInherit = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? ", DecSm.Atom.Hosting.IConfigureHost"
-            : string.Empty;
+        var configureHostInherit =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? ", DecSm.Atom.Hosting.IConfigureHost"
+                : string.Empty;
 
         var code = $$"""
                      // <auto-generated/>

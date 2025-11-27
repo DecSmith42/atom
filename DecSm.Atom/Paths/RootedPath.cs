@@ -11,7 +11,8 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     ///     Gets the parent directory of the current path if it exists.
     /// </summary>
     /// <remarks>
-    ///     The <c>Parent</c> property calculates the parent directory of the current path by trimming the last segment of the path.
+    ///     The <c>Parent</c> property calculates the parent directory of the current path by trimming the last segment of the
+    ///     path.
     ///     This property handles both forward slashes ("/") and backslashes ("\") as path separators,
     ///     retaining compatibility with various file system conventions.
     /// </remarks>
@@ -47,7 +48,8 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     ///     Indicates whether the current path exists in the file system as either a file or a directory.
     /// </summary>
     /// <remarks>
-    ///     The <c>PathExists</c> property returns <c>true</c> if either <c>FileExists</c> or <c>DirectoryExists</c> evaluates to <c>true</c>,
+    ///     The <c>PathExists</c> property returns <c>true</c> if either <c>FileExists</c> or <c>DirectoryExists</c> evaluates
+    ///     to <c>true</c>,
     ///     ensuring that the path is valid and points to an existing entity in the file system.
     /// </remarks>
     public bool PathExists => FileExists || DirectoryExists;
@@ -66,7 +68,8 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     ///     Gets the file name from the current path if the file exists.
     /// </summary>
     /// <remarks>
-    ///     The <c>FileName</c> property retrieves the name of the file from the specified path using the file system's path utilities.
+    ///     The <c>FileName</c> property retrieves the name of the file from the specified path using the file system's path
+    ///     utilities.
     /// </remarks>
     public string? FileName =>
         FileExists
@@ -77,7 +80,8 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     ///     Gets the file name of the current path without its extension.
     /// </summary>
     /// <remarks>
-    ///     The <c>FileNameWithoutExtension</c> property retrieves the file name from the current path while excluding its extension.
+    ///     The <c>FileNameWithoutExtension</c> property retrieves the file name from the current path while excluding its
+    ///     extension.
     ///     This is useful for scenarios where only the base name of the file is needed, without any file type information.
     ///     If the path does not refer to a valid file, this property returns an empty string or handles it appropriately
     ///     depending on the implementation details.
@@ -102,7 +106,8 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     /// <param name="left">The original <see cref="RootedPath" /> instance.</param>
     /// <param name="right">The string to combine with the path of the <see cref="RootedPath" />.</param>
     /// <remarks>
-    ///     This operator uses <see cref="Path.Combine(string, string)" /> to combine the original path with the provided string.
+    ///     This operator uses <see cref="Path.Combine(string, string)" /> to combine the original path with the provided
+    ///     string.
     /// </remarks>
     public static RootedPath operator /(RootedPath left, string right) =>
         left with

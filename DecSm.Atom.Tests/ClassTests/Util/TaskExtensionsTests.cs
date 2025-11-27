@@ -44,7 +44,8 @@ public class TaskExtensionsTests
         var task = Task.FromException(original);
 
         // Act
-        var ex = await Should.ThrowAsync<InvalidOperationException>(async () => await task.WithRetry(0, TimeSpan.FromMilliseconds(1)));
+        var ex = await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await task.WithRetry(0, TimeSpan.FromMilliseconds(1)));
 
         // Assert
         ex.Message.ShouldBe("boom");
@@ -58,8 +59,8 @@ public class TaskExtensionsTests
         const int retryCount = 2; // total attempts = retryCount + 1 = 3
 
         // Act
-        var aggregate =
-            await Should.ThrowAsync<AggregateException>(async () => await task.WithRetry(retryCount, TimeSpan.FromMilliseconds(1)));
+        var aggregate = await Should.ThrowAsync<AggregateException>(async () =>
+            await task.WithRetry(retryCount, TimeSpan.FromMilliseconds(1)));
 
         // Assert
         aggregate.InnerExceptions.Count.ShouldBe(retryCount + 1);
@@ -79,7 +80,8 @@ public class TaskExtensionsTests
         var task = Task.FromCanceled(cts.Token);
 
         // Act
-        var ex = await Should.ThrowAsync<TaskCanceledException>(async () => await task.WithRetry(3, TimeSpan.FromMilliseconds(25)));
+        var ex = await Should.ThrowAsync<TaskCanceledException>(async () =>
+            await task.WithRetry(3, TimeSpan.FromMilliseconds(25)));
 
         // Assert
         ex.ShouldNotBeNull();
@@ -92,7 +94,8 @@ public class TaskExtensionsTests
         var task = Task.Run(() => throw new OperationCanceledException());
 
         // Act
-        var ex = await Should.ThrowAsync<OperationCanceledException>(async () => await task.WithRetry(3, TimeSpan.FromMilliseconds(25)));
+        var ex = await Should.ThrowAsync<OperationCanceledException>(async () =>
+            await task.WithRetry(3, TimeSpan.FromMilliseconds(25)));
 
         // Assert
         ex.ShouldNotBeNull();

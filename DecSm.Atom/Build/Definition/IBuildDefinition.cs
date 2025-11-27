@@ -8,7 +8,8 @@
 ///         Outlines the fundamental components that constitute a build, including its targets,
 ///         parameters, associated project file, workflow configurations, and global options.
 ///         Implementations of this interface, typically through the <see cref="BuildDefinition" /> or
-///         <see cref="DefaultBuildDefinition" /> base classes and decorated with the <see cref="BuildDefinitionAttribute" />,
+///         <see cref="DefaultBuildDefinition" /> base classes and decorated with the
+///         <see cref="BuildDefinitionAttribute" />,
 ///         serve as the central point for Atom to understand and execute a build.
 ///     </para>
 ///     <para>
@@ -78,7 +79,8 @@ public interface IBuildDefinition
     /// <remarks>
     ///     Parameters allow for external input to customize the build process.
     ///     This collection is typically populated by the <c>DecSm.Atom.SourceGenerators.BuildDefinitionSourceGenerator</c>
-    ///     based on properties within interfaces marked with <see cref="ParamDefinitionAttribute" /> or <see cref="SecretDefinitionAttribute" />
+    ///     based on properties within interfaces marked with <see cref="ParamDefinitionAttribute" /> or
+    ///     <see cref="SecretDefinitionAttribute" />
     ///     that are part of the build definition class.
     /// </remarks>
     /// <example>

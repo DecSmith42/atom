@@ -13,7 +13,8 @@ namespace DecSm.Atom.Analyzers.Tests;
 public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzerTests
 {
     private void Configure(
-        CSharpAnalyzerTest<AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer, DefaultVerifier> configuration)
+        CSharpAnalyzerTest<AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer, DefaultVerifier>
+            configuration)
     {
         configuration.SolutionTransforms.Add((solution, projectId) =>
         {

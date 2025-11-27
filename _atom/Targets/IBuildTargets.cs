@@ -11,7 +11,10 @@ internal interface IBuildTargets : IDotnetPackHelper
     const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
     const string AtomToolProjectName = "DecSm.Atom.Tool";
 
-    static readonly string[] BuildPlatformNames = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag];
+    static readonly string[] BuildPlatformNames =
+    [
+        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+    ];
 
     Target PackAtom =>
         t => t
@@ -29,7 +32,8 @@ internal interface IBuildTargets : IDotnetPackHelper
         t => t
             .DescribedAs("Builds the GithubWorkflows extension project into a nuget package")
             .ProducesArtifact(AtomGithubWorkflowsModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomGithubWorkflowsModuleProjectName), cancellationToken));
+            .Executes(cancellationToken =>
+                DotnetPackProject(new(AtomGithubWorkflowsModuleProjectName), cancellationToken));
 
     Target PackDotnetModule =>
         t => t
@@ -41,7 +45,8 @@ internal interface IBuildTargets : IDotnetPackHelper
         t => t
             .DescribedAs("Builds the DevopsWorkflows extension project into a nuget package")
             .ProducesArtifact(AtomDevopsWorkflowsModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomDevopsWorkflowsModuleProjectName), cancellationToken));
+            .Executes(cancellationToken =>
+                DotnetPackProject(new(AtomDevopsWorkflowsModuleProjectName), cancellationToken));
 
     Target PackAzureStorageModule =>
         t => t

@@ -1,7 +1,10 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
-internal sealed class GithubSummaryOutcomeReportWriter(IAtomFileSystem fileSystem, ReportService reportService, IParamService paramService)
-    : IOutcomeReportWriter
+internal sealed class GithubSummaryOutcomeReportWriter(
+    IAtomFileSystem fileSystem,
+    ReportService reportService,
+    IParamService paramService
+) : IOutcomeReportWriter
 {
     public async Task ReportRunOutcome(CancellationToken cancellationToken)
     {

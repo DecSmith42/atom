@@ -102,7 +102,8 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 var dependencyTargetDefinition = targetDefinitions.FirstOrDefault(x => x.Name == dependencyName);
 
                 if (dependencyTargetDefinition is null)
-                    throw new($"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
+                    throw new(
+                        $"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
 
                 targetModelDependencyMap[targetModel.Name]
                     .Add(targetModels.First(x => x.Name == dependencyName));
@@ -182,7 +183,8 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 return;
 
             if (marks.Temporary)
-                throw new($"Circular dependency detected: {string.Join(" -> ", depthFirstTargets.Select(x => x.Name))}.");
+                throw new(
+                    $"Circular dependency detected: {string.Join(" -> ", depthFirstTargets.Select(x => x.Name))}.");
 
             targetMarks[target] = (true, marks.Permenant);
 

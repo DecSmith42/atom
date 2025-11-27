@@ -20,8 +20,12 @@ internal sealed partial class Build : DefaultBuildDefinition
             foreach (var subCommand in rootCommand.SubCommands)
                 DotnetCliParser.FlattenCommands(string.Empty, subCommand, flattenedCommands);
 
-            if (!FileSystem.Directory.Exists(FileSystem.AtomRootDirectory / "DecSm.Atom.Module.DotnetCli" / "Generated"))
-                FileSystem.Directory.CreateDirectory(FileSystem.AtomRootDirectory / "DecSm.Atom.Module.DotnetCli" / "Generated");
+            if (!FileSystem.Directory.Exists(FileSystem.AtomRootDirectory /
+                                             "DecSm.Atom.Module.DotnetCli" /
+                                             "Generated"))
+                FileSystem.Directory.CreateDirectory(FileSystem.AtomRootDirectory /
+                                                     "DecSm.Atom.Module.DotnetCli" /
+                                                     "Generated");
 
             foreach (var command in flattenedCommands.Where(x => !x.Name.StartsWith('-')))
             {

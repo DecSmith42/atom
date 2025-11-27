@@ -8,7 +8,8 @@
 ///     build information throughout the build lifecycle.
 ///     <br /><br />
 ///     NOTE: Some parameters that change over time (e.g. <see cref="BuildTimestamp" />) should only be calculated
-///     once and then cached. This can be done by declaring IBuildInfo parameters as consumed in targets that use the param,
+///     once and then cached. This can be done by declaring IBuildInfo parameters as consumed in targets that use the
+///     param,
 ///     so the workflow host can pass the values as workflow variables (see <see cref="ISetupBuildInfo" /> for more).
 /// </remarks>
 /// <example>
@@ -41,7 +42,10 @@ public interface IBuildInfo : IBuildAccessor
     ///     Can be configured via the <c>--build-name</c> command-line parameter.
     ///     If not explicitly provided, automatically determined by:
     ///     <list type="number">
-    ///         <item>First checking for .slnx or .sln files in the root directory and using the solution name (without extension)</item>
+    ///         <item>
+    ///             First checking for .slnx or .sln files in the root directory and using the solution name (without
+    ///             extension)
+    ///         </item>
     ///         <item>Falling back to the root directory name if no solution file is found</item>
     ///     </list>
     /// </remarks>
@@ -81,7 +85,8 @@ public interface IBuildInfo : IBuildAccessor
     ///     <br />
     ///     <b>***WARNING***</b><br />
     ///     This value is not consistent across different builds / targets / process instances.<br />
-    ///     It is instead recommended to consume the <c>BuildTimestamp</c> parameter from <see cref="ISetupBuildInfo.SetupBuildInfo" />
+    ///     It is instead recommended to consume the <c>BuildTimestamp</c> parameter from
+    ///     <see cref="ISetupBuildInfo.SetupBuildInfo" />
     ///     so a consistent value can be used across all targets.
     ///     <code>
     ///     interface IMyTarget : IBuildInfo
@@ -116,7 +121,8 @@ public interface IBuildInfo : IBuildAccessor
     ///     are executed in parallel (e.g., different target frameworks, operating systems, or configurations).
     ///     Has no default value and remains <c>null</c> unless explicitly provided.
     /// </remarks>
-    [ParamDefinition("build-slice", "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs")]
+    [ParamDefinition("build-slice",
+        "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs")]
     string? BuildSlice => GetParam(() => BuildSlice);
 
     string DefaultBuildName

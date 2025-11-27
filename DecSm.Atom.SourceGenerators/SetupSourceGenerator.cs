@@ -4,7 +4,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using DeclarationResult =
-    (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax Declaration, bool HasConfigureBuilder, bool HasConfigureHost);
+    (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax Declaration, bool HasConfigureBuilder, bool
+    HasConfigureHost);
 
 namespace DecSm.Atom.SourceGenerators;
 
@@ -19,7 +20,8 @@ public class SetupSourceGenerator : IIncrementalGenerator
                 .SyntaxProvider
                 .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is InterfaceDeclarationSyntax,
                     static (context, _) => GetInterfaceDeclaration(context))
-                .Where(static declarationResult => declarationResult.HasConfigureBuilder || declarationResult.HasConfigureHost)
+                .Where(static declarationResult =>
+                    declarationResult.HasConfigureBuilder || declarationResult.HasConfigureHost)
                 .Select(static (declarationResult, _) => declarationResult.Declaration)
                 .Collect()),
             GenerateCode);
@@ -64,7 +66,8 @@ public class SetupSourceGenerator : IIncrementalGenerator
 
     private static void GenerateCode(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<InterfaceDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
+        (Compilation Compilation, ImmutableArray<InterfaceDeclarationSyntax> ClassDeclarations)
+            compilationWithClassDeclarations)
     {
         foreach (var interfaceDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
             if (compilationWithClassDeclarations

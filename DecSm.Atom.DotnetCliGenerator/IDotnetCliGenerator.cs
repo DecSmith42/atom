@@ -168,7 +168,10 @@ public static class DotnetCliGenerator
                     CsharpWriter.ToPascalCase(arg.Name, true),
                     XmlDescription: arg.Description))
                 .Append(command.Options.Count > 0
-                    ? new MethodParam($"{CsharpWriter.ToPascalCase(command.Name)}Options?", "options", "null", "Options")
+                    ? new MethodParam($"{CsharpWriter.ToPascalCase(command.Name)}Options?",
+                        "options",
+                        "null",
+                        "Options")
                     : null)
                 .Append(new("CancellationToken", "cancellationToken", "default", "Cancellation token"))
                 .ToArray(),
@@ -179,7 +182,8 @@ public static class DotnetCliGenerator
                     switch (command)
                     {
                         case { Arguments.Count: 0, Options.Count: 0 }:
-                            bodyWriter.WriteLine("processRunner.RunAsync(new(\"dotnet\", string.Empty), cancellationToken);");
+                            bodyWriter.WriteLine(
+                                "processRunner.RunAsync(new(\"dotnet\", string.Empty), cancellationToken);");
 
                             return;
                         case { Arguments.Count: 0, Options.Count: > 0 }:

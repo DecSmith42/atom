@@ -27,10 +27,14 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
 
     // The message that will be displayed to the user.
     private static readonly LocalizableString MessageFormat =
-        new LocalizableResourceString(nameof(Resources.AT0001MessageFormat), Resources.ResourceManager, typeof(Resources));
+        new LocalizableResourceString(nameof(Resources.AT0001MessageFormat),
+            Resources.ResourceManager,
+            typeof(Resources));
 
     private static readonly LocalizableString Description =
-        new LocalizableResourceString(nameof(Resources.AT0001Description), Resources.ResourceManager, typeof(Resources));
+        new LocalizableResourceString(nameof(Resources.AT0001Description),
+            Resources.ResourceManager,
+            typeof(Resources));
 
     private static readonly DiagnosticDescriptor Rule = new(DiagnosticId,
         Title,
@@ -73,7 +77,9 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
         }
     }
 
-    private static void AnalyzeInvocationOperation(OperationAnalysisContext context, IInvocationOperation invocationOperation)
+    private static void AnalyzeInvocationOperation(
+        OperationAnalysisContext context,
+        IInvocationOperation invocationOperation)
     {
         if (invocationOperation.ChildOperations.Count <= 1)
             return;
@@ -86,7 +92,8 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer 
         foreach (var argumentOperation in argOperations)
         {
             if (argumentOperation.Value is not ICollectionExpressionOperation collectionExpressionOperation ||
-                collectionExpressionOperation.Elements.First() is not IPropertyReferenceOperation propertyReferenceOperation)
+                collectionExpressionOperation.Elements.First() is not IPropertyReferenceOperation
+                    propertyReferenceOperation)
                 return;
 
             // Check that propertyReferenceOperation is a property with the [ParamDefinition] attribute

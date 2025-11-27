@@ -10,11 +10,13 @@
 ///         This parser is a core component of the Atom framework's command-line interface.
 ///         It takes raw string arguments and converts them into a structured <see cref="CommandLineArgs" /> object.
 ///         The parser relies on an <see cref="IBuildDefinition" /> to understand available targets and their parameters.
-///         It also uses an <see cref="Spectre.Console.IAnsiConsole" /> for displaying error messages or help information related to argument
+///         It also uses an <see cref="Spectre.Console.IAnsiConsole" /> for displaying error messages or help information
+///         related to argument
 ///         parsing.
 ///     </para>
 ///     <para>
-///         Ambiguous or unknown arguments will result in the <see cref="CommandLineArgs.IsValid" /> property being set to false,
+///         Ambiguous or unknown arguments will result in the <see cref="CommandLineArgs.IsValid" /> property being set to
+///         false,
 ///         and diagnostic messages may be printed to the console.
 ///     </para>
 /// </remarks>
@@ -24,15 +26,18 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
     ///     Parses the provided raw command-line arguments into a structured <see cref="CommandLineArgs" /> object.
     /// </summary>
     /// <param name="rawArgs">
-    ///     A read-only list of string arguments, typically obtained from the application's entry point (e.g., `string[] args` in
+    ///     A read-only list of string arguments, typically obtained from the application's entry point (e.g., `string[] args`
+    ///     in
     ///     `Main`).
     /// </param>
     /// <returns>
     ///     A <see cref="CommandLineArgs" /> object representing the parsed arguments.
-    ///     The <see cref="CommandLineArgs.IsValid" /> property will indicate if parsing was successful and all arguments were recognized.
+    ///     The <see cref="CommandLineArgs.IsValid" /> property will indicate if parsing was successful and all arguments were
+    ///     recognized.
     /// </returns>
     /// <exception cref="System.ArgumentException">
-    ///     Thrown if a parameter requiring a value is provided without one (e.g., `--project` without a project name following it, or a custom
+    ///     Thrown if a parameter requiring a value is provided without one (e.g., `--project` without a project name following
+    ///     it, or a custom
     ///     parameter `--paramName` without its value).
     /// </exception>
     /// <example>

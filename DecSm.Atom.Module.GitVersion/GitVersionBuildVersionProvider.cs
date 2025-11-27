@@ -1,7 +1,9 @@
 ﻿namespace DecSm.Atom.Module.GitVersion;
 
-internal sealed class GitVersionBuildVersionProvider(IDotnetToolInstallHelper dotnetToolInstallHelper, IProcessRunner processRunner)
-    : IBuildVersionProvider
+internal sealed class GitVersionBuildVersionProvider(
+    IDotnetToolInstallHelper dotnetToolInstallHelper,
+    IProcessRunner processRunner
+) : IBuildVersionProvider
 {
     [field: AllowNull]
     [field: MaybeNull]

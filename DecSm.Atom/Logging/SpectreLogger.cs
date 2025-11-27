@@ -120,14 +120,17 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             .HideHeaders()
             .AddColumn("Info")
             .AddColumn("Message")
-            .AddRow($"[dim]{time:yy-MM-dd zzz}[/]", $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
-            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]", $"[{messageStyle}]{message}[/]")
+            .AddRow($"[dim]{time:yy-MM-dd zzz}[/]",
+                $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
+            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]",
+                $"[{messageStyle}]{message}[/]")
             .AddRow(string.Empty);
 
         if (exception != null)
         {
-            const ExceptionFormats exceptionFormat =
-                ExceptionFormats.ShortenPaths | ExceptionFormats.ShortenTypes | ExceptionFormats.ShortenMethods;
+            const ExceptionFormats exceptionFormat = ExceptionFormats.ShortenPaths |
+                                                     ExceptionFormats.ShortenTypes |
+                                                     ExceptionFormats.ShortenMethods;
 
             table.AddRow(new Text(string.Empty), exception.GetRenderable(exceptionFormat));
             table.AddRow(string.Empty);

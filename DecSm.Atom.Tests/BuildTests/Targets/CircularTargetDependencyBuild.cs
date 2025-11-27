@@ -41,7 +41,10 @@ public partial interface ICircularTarget2
 }
 
 [BuildDefinition]
-public partial class CircularTargetDependencyBuild2 : BuildDefinition, ITestCircularTarget3, ITestCircularTarget4, ITestCircularTarget5
+public partial class CircularTargetDependencyBuild2 : BuildDefinition,
+    ITestCircularTarget3,
+    ITestCircularTarget4,
+    ITestCircularTarget5
 {
     public bool CircularTarget3Executed { get; set; }
 

@@ -1,8 +1,12 @@
 ﻿namespace DecSm.Atom.Variables;
 
-internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, BuildModel buildModel) : IWorkflowVariableProvider
+internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, BuildModel buildModel)
+    : IWorkflowVariableProvider
 {
-    public async Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
+    public async Task<bool> WriteVariable(
+        string variableName,
+        string variableValue,
+        CancellationToken cancellationToken = default)
     {
         var variablesPath = fileSystem.AtomTempDirectory / "variables";
 
@@ -26,7 +30,10 @@ internal sealed class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, B
         return true;
     }
 
-    public async Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default)
+    public async Task<bool> ReadVariable(
+        string jobName,
+        string variableName,
+        CancellationToken cancellationToken = default)
     {
         var variablesPath = fileSystem.AtomTempDirectory / "variables";
 

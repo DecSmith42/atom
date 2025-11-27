@@ -5,11 +5,14 @@
 /// </summary>
 /// <remarks>
 ///     This interface, when implemented by a build definition, provides the <see cref="RetrieveArtifact" /> target.
-///     This target is responsible for downloading specified artifacts using the configured <see cref="IArtifactProvider" />.
-///     It typically consumes build information like <c>ISetupBuildInfo.BuildName</c> and <c>ISetupBuildInfo.BuildId</c> to identify the
+///     This target is responsible for downloading specified artifacts using the configured
+///     <see cref="IArtifactProvider" />.
+///     It typically consumes build information like <c>ISetupBuildInfo.BuildName</c> and <c>ISetupBuildInfo.BuildId</c> to
+///     identify the
 ///     correct artifacts.
 ///     The artifacts to be retrieved are specified via the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
-///     The target is hidden by default as it's primarily for internal use by the Atom framework or custom artifact provider workflows.
+///     The target is hidden by default as it's primarily for internal use by the Atom framework or custom artifact
+///     provider workflows.
 /// </remarks>
 /// <example>
 ///     A workflow might use this target to download previously stored packages:

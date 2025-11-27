@@ -28,7 +28,10 @@ internal static class RunCommand
                         .Replace("\n", string.Empty)
                         .Replace("\r", string.Empty);
 
-                    if (project.Contains(';') || project.Contains('&') || project.Contains('|') || project.Contains(' '))
+                    if (project.Contains(';') ||
+                        project.Contains('&') ||
+                        project.Contains('|') ||
+                        project.Contains(' '))
                         project = $"\"{project}\"";
                 }
 
@@ -45,7 +48,9 @@ internal static class RunCommand
         }
 
         Console.WriteLine($"Could not find project '{project}'");
-        Console.WriteLine("The project option must be the name of an atom project in the current directory or a parent directory.");
+
+        Console.WriteLine(
+            "The project option must be the name of an atom project in the current directory or a parent directory.");
 
         return 1;
     }

@@ -13,7 +13,8 @@ public interface INugetHelper : IBuildInfo
             // Windows: %APPDATA%\NuGet\NuGet.Config
             // Linux: $HOME/.nuget/NuGet.Config
             // Mac: $HOME/.nuget/NuGet.Config
-            var appDataPath = FileSystem.CreateRootedPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
+            var appDataPath =
+                FileSystem.CreateRootedPath(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 
             return Environment.OSVersion.Platform switch
             {
@@ -32,7 +33,8 @@ public interface INugetHelper : IBuildInfo
     /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    ///     Requires the <see cref="IBuildInfo.BuildVersion" /> param, which should be marked as consumed by the target that calls this method.
+    ///     Requires the <see cref="IBuildInfo.BuildVersion" /> param, which should be marked as consumed by the target that
+    ///     calls this method.
     ///     <br /><br />
     ///     Requires the project to have been built and the package to be available in the artifacts directory.
     ///     <br /><br />
@@ -71,7 +73,9 @@ public interface INugetHelper : IBuildInfo
 
         if (NugetDryRun)
         {
-            Logger.LogInformation("Dry run: skipping nuget push \"{PackagePath}\" --soure {Feed} --api-key ***", packagePath, feed);
+            Logger.LogInformation("Dry run: skipping nuget push \"{PackagePath}\" --soure {Feed} --api-key ***",
+                packagePath,
+                feed);
 
             return;
         }
@@ -80,9 +84,9 @@ public interface INugetHelper : IBuildInfo
             ? $" --configfile \"{configFile}\""
             : string.Empty;
 
-        var processRunResult =
-            await ProcessRunner.RunAsync(new("dotnet", $"nuget push \"{packagePath}\"{configFileFlag} --source {feed} --api-key {apiKey}"),
-                cancellationToken);
+        var processRunResult = await ProcessRunner.RunAsync(new("dotnet",
+                $"nuget push \"{packagePath}\"{configFileFlag} --source {feed} --api-key {apiKey}"),
+            cancellationToken);
 
         if (processRunResult.ExitCode is not 0)
             Logger.LogError("Failed to push package to Nuget: {ProcessRunResult}", processRunResult.Error);
@@ -142,10 +146,15 @@ public interface INugetHelper : IBuildInfo
         return response.StatusCode is HttpStatusCode.OK;
     }
 
-    async Task<TransformFileScope> CreateNugetConfigOverwriteScope(string contents, CancellationToken cancellationToken = default) =>
+    async Task<TransformFileScope> CreateNugetConfigOverwriteScope(
+        string contents,
+        CancellationToken cancellationToken = default) =>
         await TransformFileScope.CreateAsync(NugetConfigPath, _ => contents, cancellationToken);
 
-    async Task CreateNugetConfigOverwriteScope(NugetFeed[] feeds, bool skipIfExists = false, CancellationToken cancellationToken = default)
+    async Task CreateNugetConfigOverwriteScope(
+        NugetFeed[] feeds,
+        bool skipIfExists = false,
+        CancellationToken cancellationToken = default)
     {
         if (skipIfExists)
         {
@@ -159,7 +168,8 @@ public interface INugetHelper : IBuildInfo
             }
         }
 
-        var sources = string.Join(Environment.NewLine, feeds.Select((x, i) => $"<add key=\"{x.Name ?? $"Feed{i}"}\" value=\"{x.Url}\" />"));
+        var sources = string.Join(Environment.NewLine,
+            feeds.Select((x, i) => $"<add key=\"{x.Name ?? $"Feed{i}"}\" value=\"{x.Url}\" />"));
 
         var credentials = string.Join(Environment.NewLine,
             feeds.Select((x, i) =>

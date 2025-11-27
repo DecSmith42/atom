@@ -5,7 +5,9 @@ internal sealed class TransformFileScopeTests
 {
     // Explicitly return IAtomFileSystem as it's better in this context
 #pragma warning disable CA1859
-    private static IAtomFileSystem CreateFileSystem(IDictionary<string, MockFileData> files, string currentDirectory = "") =>
+    private static IAtomFileSystem CreateFileSystem(
+        IDictionary<string, MockFileData> files,
+        string currentDirectory = "") =>
         new AtomFileSystem(A.Fake<ILogger<AtomFileSystem>>())
         {
             PathLocators = [],

@@ -47,7 +47,8 @@ public sealed class PathProvider : IPathProvider
 {
     /// <summary>
     ///     Delegate used to resolve a rooted path based on a provided key and a fallback mechanism.
-    ///     The function takes a string key and a fallback function, returning a <see cref="RootedPath" /> if available or null.
+    ///     The function takes a string key and a fallback function, returning a <see cref="RootedPath" /> if available or
+    ///     null.
     /// </summary>
     public required Func<string, Func<string, RootedPath>, RootedPath?> Locator { get; init; }
 

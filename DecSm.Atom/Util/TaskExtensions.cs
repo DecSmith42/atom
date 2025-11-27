@@ -14,7 +14,8 @@ public static class TaskExtensions
     /// <param name="retryDelay">The delay between attempts.</param>
     /// <returns>A task that completes when the underlying task completes successfully, or throws after the final attempt.</returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final attempt.
+    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
+    ///     attempt.
     ///     Cancellation-related exceptions are rethrown immediately and are not retried.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
@@ -51,7 +52,8 @@ public static class TaskExtensions
                     exception = exception switch
                     {
                         null => ex,
-                        AggregateException aggregateException => new AggregateException(aggregateException.InnerExceptions.Append(ex)),
+                        AggregateException aggregateException => new AggregateException(
+                            aggregateException.InnerExceptions.Append(ex)),
                         _ => new AggregateException(exception, ex),
                     };
 
@@ -74,7 +76,8 @@ public static class TaskExtensions
     /// <param name="retryDelay">The delay between attempts. If <see cref="TimeSpan.Zero" />, a default of 1 second is used.</param>
     /// <returns>A task that completes with the task's result if a try succeeds, or throws after the final attempt.</returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final attempt.
+    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
+    ///     attempt.
     ///     Cancellation-related exceptions are rethrown immediately and are not retried.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
@@ -116,7 +119,8 @@ public static class TaskExtensions
                     exception = exception switch
                     {
                         null => ex,
-                        AggregateException aggregateException => new AggregateException(aggregateException.InnerExceptions.Append(ex)),
+                        AggregateException aggregateException => new AggregateException(
+                            aggregateException.InnerExceptions.Append(ex)),
                         _ => new AggregateException(exception, ex),
                     };
 
@@ -144,7 +148,8 @@ public static class TaskExtensions
     /// <param name="cancellationToken">A token observed before each attempt and during delay between retries.</param>
     /// <returns>A task that completes when one attempt succeeds, or throws after the final attempt.</returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final attempt.
+    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
+    ///     attempt.
     ///     Cancellation-related exceptions are rethrown immediately and are not retried.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="taskFactory" /> is <c>null</c>.</exception>
@@ -195,7 +200,8 @@ public static class TaskExtensions
                         exception = exception switch
                         {
                             null => ex,
-                            AggregateException aggregateException => new AggregateException(aggregateException.InnerExceptions.Append(ex)),
+                            AggregateException aggregateException => new AggregateException(
+                                aggregateException.InnerExceptions.Append(ex)),
                             _ => new AggregateException(exception, ex),
                         };
 
@@ -216,13 +222,17 @@ public static class TaskExtensions
     ///     A new task is created for each attempt by invoking the factory.
     /// </summary>
     /// <typeparam name="T">The result type produced by the task.</typeparam>
-    /// <param name="taskFactory">A delegate that creates a new <see cref="Task{TResult}" /> each attempt. Cannot be <c>null</c>.</param>
+    /// <param name="taskFactory">
+    ///     A delegate that creates a new <see cref="Task{TResult}" /> each attempt. Cannot be
+    ///     <c>null</c>.
+    /// </param>
     /// <param name="retryCount">The number of retries after the initial attempt. Must be zero or greater.</param>
     /// <param name="retryDelay">The delay between attempts. If <see cref="TimeSpan.Zero" />, a default of 1 second is used.</param>
     /// <param name="cancellationToken">A token observed before each attempt and during delay between retries.</param>
     /// <returns>A task that completes with a result when one attempt succeeds, or throws after the final attempt.</returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final attempt.
+    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
+    ///     attempt.
     ///     Cancellation-related exceptions are rethrown immediately and are not retried.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="taskFactory" /> is <c>null</c>.</exception>
@@ -271,7 +281,8 @@ public static class TaskExtensions
                         exception = exception switch
                         {
                             null => ex,
-                            AggregateException aggregateException => new AggregateException(aggregateException.InnerExceptions.Append(ex)),
+                            AggregateException aggregateException => new AggregateException(
+                                aggregateException.InnerExceptions.Append(ex)),
                             _ => new AggregateException(exception, ex),
                         };
 

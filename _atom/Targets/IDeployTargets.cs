@@ -26,12 +26,37 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
             .Executes(async cancellationToken =>
             {
                 await PushProject(AtomProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AzureKeyVaultModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AzureStorageModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomDevopsWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(DotnetModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomGithubWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(GitVersionModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+
+                await PushProject(AzureKeyVaultModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
+                await PushProject(AzureStorageModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
+                await PushProject(AtomDevopsWorkflowsModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
+                await PushProject(DotnetModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
+                await PushProject(AtomGithubWorkflowsModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
+                await PushProject(GitVersionModuleProjectName,
+                    NugetFeed,
+                    NugetApiKey,
+                    cancellationToken: cancellationToken);
+
                 await PushAtomTool(cancellationToken);
             });
 
@@ -72,9 +97,14 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
     private async Task PushAtomTool(CancellationToken cancellationToken)
     {
         var atomToolDirectory = FileSystem.AtomArtifactsDirectory / AtomToolProjectName;
-        var atomToolPackagePaths = FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
+
+        var atomToolPackagePaths =
+            FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
 
         foreach (var atomToolPackagePath in atomToolPackagePaths)
-            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath,
+                NugetFeed,
+                NugetApiKey,
+                cancellationToken: cancellationToken);
     }
 }

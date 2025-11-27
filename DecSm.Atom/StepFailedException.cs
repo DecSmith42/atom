@@ -34,7 +34,8 @@
 ///     </code>
 /// </example>
 [PublicAPI]
-public sealed class StepFailedException(string message, Exception? innerException = null) : Exception(message, innerException)
+public sealed class StepFailedException(string message, Exception? innerException = null)
+    : Exception(message, innerException)
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="StepFailedException" /> class with an empty message.

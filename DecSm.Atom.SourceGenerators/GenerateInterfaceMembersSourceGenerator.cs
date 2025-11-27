@@ -10,8 +10,11 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateInterfaceMembersAttributeFull = "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
-    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+    private const string GenerateInterfaceMembersAttributeFull =
+        "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
@@ -50,7 +53,8 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
     private static void GenerateCode(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
+        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
+            compilationWithClassDeclarations)
     {
         foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
             if (compilationWithClassDeclarations

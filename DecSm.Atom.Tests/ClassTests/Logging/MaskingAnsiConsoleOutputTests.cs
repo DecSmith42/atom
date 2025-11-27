@@ -111,7 +111,10 @@ public class MaskingAnsiConsoleOutputTests
         public string MaskMatchingSecrets(string text) =>
             text.Replace(_secret, _mask, StringComparison.OrdinalIgnoreCase);
 
-        public T GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+        public T GetParam<T>(
+            Expression<Func<T?>> paramExpression,
+            T? defaultValue = default,
+            Func<string?, T?>? converter = null) =>
             throw new NotImplementedException();
 
         public T GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null) =>

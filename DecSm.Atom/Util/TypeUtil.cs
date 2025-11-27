@@ -96,16 +96,28 @@ public static class TypeUtil
     ///             <description><strong>Null Input</strong> - Returns default(T) immediately</description>
     ///         </item>
     ///         <item>
-    ///             <description><strong>Custom Converter</strong> - If provided, delegates all conversion logic to the custom function</description>
+    ///             <description>
+    ///                 <strong>Custom Converter</strong> - If provided, delegates all conversion logic to the custom
+    ///                 function
+    ///             </description>
     ///         </item>
     ///         <item>
-    ///             <description><strong>Array Types</strong> - Splits input by comma and converts each element to the array's element type</description>
+    ///             <description>
+    ///                 <strong>Array Types</strong> - Splits input by comma and converts each element to the array's
+    ///                 element type
+    ///             </description>
     ///         </item>
     ///         <item>
-    ///             <description><strong>Generic Types</strong> - Special handling for supported generic types like IReadOnlyList&lt;T&gt;</description>
+    ///             <description>
+    ///                 <strong>Generic Types</strong> - Special handling for supported generic types like
+    ///                 IReadOnlyList&lt;T&gt;
+    ///             </description>
     ///         </item>
     ///         <item>
-    ///             <description><strong>Standard Types</strong> - Uses TypeDescriptor.GetConverter() for built-in type conversion</description>
+    ///             <description>
+    ///                 <strong>Standard Types</strong> - Uses TypeDescriptor.GetConverter() for built-in type
+    ///                 conversion
+    ///             </description>
     ///         </item>
     ///     </list>
     ///     <para>

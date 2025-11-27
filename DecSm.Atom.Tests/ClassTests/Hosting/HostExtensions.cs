@@ -10,7 +10,8 @@ public class HostExtensionsTests
     {
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => new Dictionary<string, Target>();
 
-        public override IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions => new Dictionary<string, ParamDefinition>();
+        public override IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions =>
+            new Dictionary<string, ParamDefinition>();
 
         public override Func<object?> AccessParam(string paramName) =>
             throw new NotImplementedException();

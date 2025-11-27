@@ -83,7 +83,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         try
         {
             await Task.WhenAll(filesArray.Select((x, i) =>
-                x.FileSystem.File.WriteAllTextAsync(x, transform(initialContents[i] ?? string.Empty), cancellationToken)));
+                x.FileSystem.File.WriteAllTextAsync(x,
+                    transform(initialContents[i] ?? string.Empty),
+                    cancellationToken)));
         }
         catch (OperationCanceledException)
         {
@@ -96,7 +98,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     /// <summary>
     ///     See <see cref="TransformFileScope.AddAsync(Func{string, string},CancellationToken)" />
     /// </summary>
-    public async Task<TransformMultiFileScope> AddAsync(Func<string, string> transform, CancellationToken cancellationToken = default)
+    public async Task<TransformMultiFileScope> AddAsync(
+        Func<string, string> transform,
+        CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 

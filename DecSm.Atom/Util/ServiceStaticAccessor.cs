@@ -105,7 +105,8 @@ internal static class ServiceAccessorExtensions
             services
                 .AddKeyedSingleton<TImplementation>("StaticAccess")
                 .AddSingleton<TImplementation>(x =>
-                    ServiceStaticAccessor<TImplementation>.Service = x.GetRequiredKeyedService<TImplementation>("StaticAccess"));
+                    ServiceStaticAccessor<TImplementation>.Service =
+                        x.GetRequiredKeyedService<TImplementation>("StaticAccess"));
 
         /// <summary>
         ///     Registers a singleton service with static accessor functionality using separate service
@@ -115,7 +116,8 @@ internal static class ServiceAccessorExtensions
         ///     The type of the service interface to register. Must be a class.
         /// </typeparam>
         /// <typeparam name="TImplementation">
-        ///     The type of the implementation. Must be a class with public constructors that implements <typeparamref name="TService" />.
+        ///     The type of the implementation. Must be a class with public constructors that implements
+        ///     <typeparamref name="TService" />.
         /// </typeparam>
         /// <remarks>
         ///     <para>
@@ -138,7 +140,8 @@ internal static class ServiceAccessorExtensions
             where TImplementation : class, TService =>
             services
                 .AddKeyedSingleton<TService, TImplementation>("StaticAccess")
-                .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+                .AddSingleton<TService>(x =>
+                    ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
 
         /// <summary>
         ///     Registers a singleton service with static accessor functionality using a factory function.
@@ -171,10 +174,12 @@ internal static class ServiceAccessorExtensions
         /// });
         /// </code>
         /// </example>
-        public IServiceCollection AddSingletonWithStaticAccessor<TService>(Func<IServiceProvider, object?, TService> implementationFactory)
+        public IServiceCollection AddSingletonWithStaticAccessor<TService>(
+            Func<IServiceProvider, object?, TService> implementationFactory)
             where TService : class =>
             services
                 .AddKeyedSingleton("StaticAccess", implementationFactory)
-                .AddSingleton<TService>(x => ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
+                .AddSingleton<TService>(x =>
+                    ServiceStaticAccessor<TService>.Service = x.GetRequiredKeyedService<TService>("StaticAccess"));
     }
 }

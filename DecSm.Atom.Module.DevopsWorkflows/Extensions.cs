@@ -3,7 +3,9 @@
 [PublicAPI]
 public static class Extensions
 {
-    public static WorkflowTargetDefinition WithDevopsPoolMatrix(this WorkflowTargetDefinition workflowTargetDefinition, string[] labels) =>
+    public static WorkflowTargetDefinition WithDevopsPoolMatrix(
+        this WorkflowTargetDefinition workflowTargetDefinition,
+        string[] labels) =>
         workflowTargetDefinition
             .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
             {

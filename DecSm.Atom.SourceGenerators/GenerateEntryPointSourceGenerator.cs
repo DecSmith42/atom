@@ -12,14 +12,17 @@ namespace DecSm.Atom.SourceGenerators;
 public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 {
     private const string GenerateEntryPointAttributeFull = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
-    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Filter classes annotated with the BuildDefinition attribute. Only filtered Syntax Nodes can trigger code generation.
         var provider = context
             .SyntaxProvider
-            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclarationForSourceGen(ctx))
+            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax,
+                (ctx, _) => GetClassDeclarationForSourceGen(ctx))
             .Where(t => t.attributeFound)
             .Select((t, _) => t.Item1);
 
@@ -28,7 +31,8 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             (ctx, t) => GenerateCode(ctx, t.Left, t.Right));
     }
 
-    private static (ClassDeclarationSyntax, bool attributeFound) GetClassDeclarationForSourceGen(GeneratorSyntaxContext context)
+    private static (ClassDeclarationSyntax, bool attributeFound) GetClassDeclarationForSourceGen(
+        GeneratorSyntaxContext context)
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
@@ -71,7 +75,10 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
         }
     }
 
-    private static void GeneratePartialBuild(SourceProductionContext context, INamedTypeSymbol classSymbol, string className)
+    private static void GeneratePartialBuild(
+        SourceProductionContext context,
+        INamedTypeSymbol classSymbol,
+        string className)
     {
         var containingNamespace = classSymbol.ContainingNamespace.ToDisplayString();
 

@@ -16,7 +16,11 @@ internal interface ITestTargets : IDotnetTestHelper
             {
                 var exitCode = 0;
 
-                string[] projects = [AtomTestsProjectName, AtomSourceGeneratorTestsProjectName, AtomGithubWorkflowsTestsProjectName];
+                string[] projects =
+                [
+                    AtomTestsProjectName, AtomSourceGeneratorTestsProjectName, AtomGithubWorkflowsTestsProjectName,
+                ];
+
                 string[] frameworks = ["net8.0", "net9.0", "net10.0"];
 
                 // ReSharper disable once LoopCanBeConvertedToQuery

@@ -37,7 +37,8 @@ public interface IArtifactProvider
     ///     Uploads the specified artifacts to the configured storage.
     /// </summary>
     /// <remarks>
-    ///     Artifacts to be stored are expected to be located in the directory specified by <see cref="IAtomFileSystem.AtomPublishDirectory" />.
+    ///     Artifacts to be stored are expected to be located in the directory specified by
+    ///     <see cref="IAtomFileSystem.AtomPublishDirectory" />.
     ///     The Atom framework calls this method as part of targets like <see cref="IStoreArtifact.StoreArtifact" />.
     /// </remarks>
     /// <param name="artifactNames">
@@ -82,10 +83,14 @@ public interface IArtifactProvider
     /// </remarks>
     /// <param name="artifactNames">A list of names for the artifacts to be downloaded.</param>
     /// <param name="buildId">
-    ///     The unique identifier of the build from which to retrieve the artifacts. If not provided, the current run's ID might
+    ///     The unique identifier of the build from which to retrieve the artifacts. If not provided, the current run's ID
+    ///     might
     ///     be assumed or it might retrieve the latest.
     /// </param>
-    /// <param name="buildSlice">An optional identifier for a specific slice or variation of the build from which to retrieve artifacts.</param>
+    /// <param name="buildSlice">
+    ///     An optional identifier for a specific slice or variation of the build from which to retrieve
+    ///     artifacts.
+    /// </param>
     /// <param name="cancellationToken"></param>
     /// <returns>A <see cref="Task" /> representing the asynchronous download operation.</returns>
     /// <example>
@@ -126,7 +131,10 @@ public interface IArtifactProvider
     /// </param>
     /// <param name="buildSlice">Optional. The build slice to filter run identifiers by.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>A <see cref="Task{TResult}" /> representing the asynchronous operation, with a list of stored run identifiers as the result.</returns>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> representing the asynchronous operation, with a list of stored run identifiers
+    ///     as the result.
+    /// </returns>
     /// <remarks>
     ///     This can be used to list available builds or to find specific runs for retrieval or cleanup.
     ///     The <c>AzureBlobArtifactProvider</c> uses this to find build IDs for cleanup.

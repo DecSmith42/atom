@@ -317,7 +317,9 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
     /// }
     /// </code>
     /// </example>
-    public async Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default)
+    public async Task<ProcessRunResult> RunAsync(
+        ProcessRunOptions options,
+        CancellationToken cancellationToken = default)
     {
         switch (options)
         {

@@ -17,7 +17,8 @@ public class BuildDefinitionSourceGeneratorTests
                               """;
 
         // Act
-        var generatedText = TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+        var generatedText =
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
@@ -37,7 +38,8 @@ public class BuildDefinitionSourceGeneratorTests
                               """;
 
         // Act
-        var generatedText = TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+        var generatedText =
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
@@ -64,7 +66,8 @@ public class BuildDefinitionSourceGeneratorTests
                               """;
 
         // Act
-        var generatedText = TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+        var generatedText =
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
@@ -100,7 +103,8 @@ public class BuildDefinitionSourceGeneratorTests
                               """;
 
         // Act
-        var generatedText = TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+        var generatedText =
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);

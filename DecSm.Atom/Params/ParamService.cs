@@ -89,7 +89,10 @@ public interface IParamService
     ///     in the build definition's parameter definitions.
     /// </exception>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null);
+    T? GetParam<T>(
+        Expression<Func<T?>> paramExpression,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null);
 
     /// <summary>
     ///     Retrieves a parameter value by its string name.
@@ -226,7 +229,10 @@ internal sealed class ParamService(
                 ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
                 : current);
 
-    public T? GetParam<T>(Expression<Func<T?>> paramExpression, T? defaultValue = default, Func<string?, T?>? converter = null)
+    public T? GetParam<T>(
+        Expression<Func<T?>> paramExpression,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null)
     {
         var paramName = paramExpression switch
         {
@@ -250,7 +256,10 @@ internal sealed class ParamService(
             : GetParam(paramDefinition, defaultValue, converter);
     }
 
-    private T? GetParam<T>(ParamDefinition paramDefinition, T? defaultValue = default, Func<string?, T?>? converter = null)
+    private T? GetParam<T>(
+        ParamDefinition paramDefinition,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null)
     {
         if (buildDefinition.SuppressParamResolution)
             return defaultValue;
@@ -289,7 +298,8 @@ internal sealed class ParamService(
             logger.LogDebug("Resolved param {ParamName} from secrets", paramDefinition.Name);
         }
         else if (args is { HasHeadless: false, HasInteractive: true, HasHelp: false } &&
-                 TryGetParamFromConsole(paramDefinition, console, defaultValue, _cache, converter) is (true, { } userValue))
+                 TryGetParamFromConsole(paramDefinition, console, defaultValue, _cache, converter)
+                     is (true, { } userValue))
         {
             result = userValue;
             logger.LogDebug("Resolved param {ParamName} from user input", paramDefinition.Name);
@@ -425,13 +435,14 @@ internal sealed class ParamService(
         Dictionary<string, object?> cache,
         Func<string?, T?>? converter)
     {
-        var result = ansiConsole.Prompt(new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
-        {
-            IsSecret = paramDefinition.IsSecret,
-            Mask = '*',
-            ShowDefaultValue = defaultValue is not null,
-            AllowEmpty = defaultValue is not null,
-        });
+        var result = ansiConsole.Prompt(
+            new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
+            {
+                IsSecret = paramDefinition.IsSecret,
+                Mask = '*',
+                ShowDefaultValue = defaultValue is not null,
+                AllowEmpty = defaultValue is not null,
+            });
 
         if (result is not { Length: > 0 })
             return (false, default);

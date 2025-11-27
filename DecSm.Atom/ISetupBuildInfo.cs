@@ -54,39 +54,53 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         The <c>SetupBuildInfo</c> target is a foundational step in the Atom build pipeline. It performs several key actions:
+    ///         The <c>SetupBuildInfo</c> target is a foundational step in the Atom build pipeline. It performs several key
+    ///         actions:
     ///         <list type="bullet">
     ///             <item>
     ///                 <description>
-    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildName" />) and writes it as a build variable named
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildName" />) and writes it as a build
+    ///                     variable named
     ///                     "BuildName".
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Uses <see cref="BuildIdProvider" /> to get the build ID and writes it as a build variable named "BuildId".</description>
+    ///                 <description>
+    ///                     Uses <see cref="BuildIdProvider" /> to get the build ID and writes it as a build variable
+    ///                     named "BuildId".
+    ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Uses <see cref="BuildVersionProvider" /> to get the build version and writes it as a build variable named
+    ///                     Uses <see cref="BuildVersionProvider" /> to get the build version and writes it as a build variable
+    ///                     named
     ///                     "BuildVersion".
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Uses <see cref="BuildTimestampProvider" /> to get the build timestamp, converts it to a string, and writes it
+    ///                     Uses <see cref="BuildTimestampProvider" /> to get the build timestamp, converts it to a string, and
+    ///                     writes it
     ///                     as a build variable named "BuildTimestamp".
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Adds a "Run Information" section to the build report, displaying the build name, version, ID, and timestamp.</description>
+    ///                 <description>
+    ///                     Adds a "Run Information" section to the build report, displaying the build name, version,
+    ///                     ID, and timestamp.
+    ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Logs the build ID, version, and timestamp using the configured logger for <c>ISetupBuildInfo</c>.</description>
+    ///                 <description>
+    ///                     Logs the build ID, version, and timestamp using the configured logger for
+    ///                     <c>ISetupBuildInfo</c>.
+    ///                 </description>
     ///             </item>
     ///         </list>
     ///     </para>
     ///     <para>
-    ///         This target is marked as hidden (<c>IsHidden()</c>), meaning it's not typically intended for direct invocation by users but is
+    ///         This target is marked as hidden (<c>IsHidden()</c>), meaning it's not typically intended for direct invocation
+    ///         by users but is
     ///         expected to run as a dependency for other targets or as part of an initial setup sequence.
     ///     </para>
     ///     <para>
@@ -120,7 +134,8 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     ///     </para>
     ///     <para>
     ///         Successful execution relies on the correct registration and functioning of <see cref="IBuildIdProvider" />,
-    ///         <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" /> services within the Atom framework.
+    ///         <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" /> services within the Atom
+    ///         framework.
     ///     </para>
     /// </remarks>
     /// <example>
