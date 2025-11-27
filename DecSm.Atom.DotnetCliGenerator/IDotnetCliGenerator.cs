@@ -111,7 +111,7 @@ public static class DotnetCliGenerator
         {
             foreach (var option in command.Options.Where(x => x.ValueType is not (null or "System.Void")))
                 writer.WriteProperty("public",
-                    Type.GetType(option.ValueType) is not null
+                    IsKnownAotFriendlyType(option.ValueType)
                         ? $"{option.ValueType}?"
                         : "string?",
                     CsharpWriter.ToPascalCase(option.Name),
@@ -160,11 +160,11 @@ public static class DotnetCliGenerator
             CsharpWriter.ToPascalCase(command.Name),
             command
                 .Arguments
-                .Select(arg => new MethodParam(Type.GetType(arg.ValueType) is null
-                        ? arg.ValueType is "DecSm.Atom.Paths.RootedPath"
+                .Select(arg => new MethodParam(IsKnownAotFriendlyType(arg.ValueType)
+                        ? arg.ValueType
+                        : arg.ValueType is "DecSm.Atom.Paths.RootedPath"
                             ? "DecSm.Atom.Paths.RootedPath"
-                            : "System.String"
-                        : arg.ValueType,
+                            : "System.String",
                     CsharpWriter.ToPascalCase(arg.Name, true),
                     XmlDescription: arg.Description))
                 .Append(command.Options.Count > 0
@@ -221,4 +221,30 @@ public static class DotnetCliGenerator
             isStub
                 ? command.Description
                 : null);
+
+    // Avoid reflection in AOT/trimmed contexts by classifying known type names via simple rules.
+    // This prevents IL2057 and improves compatibility with NativeAOT and trimming.
+    private static bool IsKnownAotFriendlyType(string? typeName)
+    {
+        if (string.IsNullOrWhiteSpace(typeName))
+            return false;
+
+        // Exclude void explicitly
+        if (typeName is "void" or "System.Void")
+            return false;
+
+        // Handle single-dimensional arrays by checking the element type
+        if (typeName.EndsWith("[]", StringComparison.Ordinal))
+            typeName = typeName[..^2];
+
+        // Explicitly allow our known custom types
+        if (typeName is "DecSm.Atom.Paths.RootedPath")
+            return true;
+
+        // Consider all BCL types under System.* as known
+        if (typeName.StartsWith("System.", StringComparison.Ordinal))
+            return true;
+
+        return false;
+    }
 }
