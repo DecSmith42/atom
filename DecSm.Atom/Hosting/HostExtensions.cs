@@ -36,7 +36,10 @@ public static class HostExtensions
     /// <returns>
     ///     The configured host application builder instance.
     /// </returns>
-    public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)
+    public static TBuilder AddAtom<TBuilder,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TBuild>(
+        this TBuilder builder,
+        string[] args)
         where TBuilder : IHostApplicationBuilder
         where TBuild : BuildDefinition
     {

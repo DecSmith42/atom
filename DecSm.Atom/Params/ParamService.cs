@@ -89,7 +89,7 @@ public interface IParamService
     ///     in the build definition's parameter definitions.
     /// </exception>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    T? GetParam<T>(
+    T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         Expression<Func<T?>> paramExpression,
         T? defaultValue = default,
         Func<string?, T?>? converter = null);
@@ -118,7 +118,10 @@ public interface IParamService
     ///     parameter definitions.
     /// </exception>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    T? GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null);
+    T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        string paramName,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null);
 
     /// <summary>
     ///     Convenience method for retrieving string parameters without explicit type specification.
@@ -229,7 +232,7 @@ internal sealed class ParamService(
                 ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
                 : current);
 
-    public T? GetParam<T>(
+    public T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         Expression<Func<T?>> paramExpression,
         T? defaultValue = default,
         Func<string?, T?>? converter = null)
@@ -247,7 +250,10 @@ internal sealed class ParamService(
         return GetParam(paramName, defaultValue, converter);
     }
 
-    public T? GetParam<T>(string paramName, T? defaultValue = default, Func<string?, T?>? converter = null)
+    public T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        string paramName,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null)
     {
         var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(paramName);
 
@@ -256,7 +262,7 @@ internal sealed class ParamService(
             : GetParam(paramDefinition, defaultValue, converter);
     }
 
-    private T? GetParam<T>(
+    private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         ParamDefinition paramDefinition,
         T? defaultValue = default,
         Func<string?, T?>? converter = null)
@@ -338,10 +344,11 @@ internal sealed class ParamService(
         return result;
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromCache<T>(
-        ParamDefinition paramDefinition,
-        Dictionary<string, object?> cache,
-        Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value)
+        TryGetParamFromCache<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+            ParamDefinition paramDefinition,
+            Dictionary<string, object?> cache,
+            Func<string?, T?>? converter)
     {
         if (cache.TryGetValue(paramDefinition.Name, out var value))
             return (true, value switch
@@ -354,10 +361,11 @@ internal sealed class ParamService(
         return (false, default);
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromArgs<T>(
-        ParamDefinition paramDefinition,
-        CommandLineArgs commandLineArgs,
-        Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value)
+        TryGetParamFromArgs<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+            ParamDefinition paramDefinition,
+            CommandLineArgs commandLineArgs,
+            Func<string?, T?>? converter)
     {
         var matchingArg = commandLineArgs.Params.FirstOrDefault(x => x.ParamName == paramDefinition.Name);
 
@@ -369,7 +377,8 @@ internal sealed class ParamService(
         return (true, convertedMatchingArg);
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromEnvironmentVariables<T>(
+    private static (bool HasValue, T? Value) TryGetParamFromEnvironmentVariables<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         ParamDefinition paramDefinition,
         Func<string?, T?>? converter)
     {
@@ -392,26 +401,30 @@ internal sealed class ParamService(
         return (true, convertedEnvVar);
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromConfig<T>(
-        ParamDefinition paramDefinition,
-        IConfiguration configuration,
-        Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value)
+        TryGetParamFromConfig<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+            ParamDefinition paramDefinition,
+            IConfiguration configuration,
+            Func<string?, T?>? converter)
     {
         var configSection = configuration
             .GetSection("Params")
             .GetSection(paramDefinition.ArgName);
 
         var configValue = configSection.Exists()
-            ? configSection.Get<T?>() ?? TypeUtil.Convert(configSection.Value, converter)
+
+            // Avoid using ConfigurationBinder generic APIs to be compatible with trimming/AOT (SYSLIB1104)
+            ? TypeUtil.Convert(configSection.Value, converter)
             : default;
 
         return (configSection.Exists(), configValue);
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromSecrets<T>(
-        ParamDefinition paramDefinition,
-        ISecretsProvider[] vaultProviders,
-        Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value)
+        TryGetParamFromSecrets<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+            ParamDefinition paramDefinition,
+            ISecretsProvider[] vaultProviders,
+            Func<string?, T?>? converter)
     {
         foreach (var vaultProvider in vaultProviders)
         {
@@ -428,12 +441,13 @@ internal sealed class ParamService(
         return (false, default);
     }
 
-    private static (bool HasValue, T? Value) TryGetParamFromConsole<T>(
-        ParamDefinition paramDefinition,
-        IAnsiConsole ansiConsole,
-        T? defaultValue,
-        Dictionary<string, object?> cache,
-        Func<string?, T?>? converter)
+    private static (bool HasValue, T? Value)
+        TryGetParamFromConsole<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+            ParamDefinition paramDefinition,
+            IAnsiConsole ansiConsole,
+            T? defaultValue,
+            Dictionary<string, object?> cache,
+            Func<string?, T?>? converter)
     {
         var result = ansiConsole.Prompt(
             new TextPrompt<string>($"Enter value for parameter '{paramDefinition.ArgName}': ")
