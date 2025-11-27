@@ -22,18 +22,6 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPackHelper2, IDotne
             .ProducesArtifact(AtomProjectName)
             .Executes(cancellationToken => DotnetPackProject(new(AtomProjectName), cancellationToken));
 
-    Target PublishDotnetCliGenerator =>
-        t => t.Executes(cancellationToken => DotnetPublishAndStage(
-            FileSystem.GetPath<Projects.DecSm_Atom_DotnetCliGenerator>(),
-            new()
-            {
-                PublishOptions = new()
-                {
-                    Property = "PublishSingleFile=true;PublishTrimmed=true;TrimMode=link",
-                },
-            },
-            cancellationToken));
-
     List<RootedPath> ProjectsToPack =>
     [
         FileSystem.GetPath<Projects.DecSm_Atom>(),
