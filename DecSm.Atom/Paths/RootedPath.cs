@@ -74,6 +74,17 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
             : null;
 
     /// <summary>
+    ///     Gets the file name of the current path without its extension.
+    /// </summary>
+    /// <remarks>
+    ///     The <c>FileNameWithoutExtension</c> property retrieves the file name from the current path while excluding its extension.
+    ///     This is useful for scenarios where only the base name of the file is needed, without any file type information.
+    ///     If the path does not refer to a valid file, this property returns an empty string or handles it appropriately
+    ///     depending on the implementation details.
+    /// </remarks>
+    public string FileNameWithoutExtension => FileSystem.Path.GetFileNameWithoutExtension(Path);
+
+    /// <summary>
     ///     Gets the directory name of the current path if it exists and represents a directory.
     /// </summary>
     /// <remarks>
