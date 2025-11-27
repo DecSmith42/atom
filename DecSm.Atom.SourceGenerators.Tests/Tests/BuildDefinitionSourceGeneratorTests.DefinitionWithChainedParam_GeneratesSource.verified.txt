@@ -27,20 +27,20 @@ partial class ChainedParamBuild : DecSm.Atom.Build.Definition.IBuildDefinition
 
     private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
 
-    private T GetService<T>()
+    private T GetService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
         where T : notnull =>
         typeof(T).GetInterface(nameof(IBuildDefinition)) != null
             ? (T)(IBuildDefinition)this
             : Services.GetRequiredService<T>();
 
-   private IEnumerable<T> GetServices<T>()
+   private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
         where T : notnull =>
         typeof(T).GetInterface(nameof(IBuildDefinition)) != null
             ? [(T)(IBuildDefinition)this]
             : Services.GetServices<T>();
 
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    private T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+    private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
             .GetParam(parameterExpression, defaultValue, converter);
