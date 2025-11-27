@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Util;
+﻿namespace DecSm.Atom.Module.Dotnet;
 
 /// <summary>
 ///     Provides utility methods for working with MSBuild project files, specifically for managing version information.

@@ -312,6 +312,22 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
+    ///     Adds an artifact to the list of artifacts produced by the target.
+    ///     This build system will automatically publish the produced artifacts to the workflow host or a custom artifact
+    ///     provider,
+    ///     allowing other targets to consume them as dependencies.
+    /// </summary>
+    /// <param name="artifactName">The name of the artifact being produced.</param>
+    /// <param name="buildSlice">An optional build slice associated with the produced artifact.</param>
+    /// <returns>The current target definition.</returns>
+    public TargetDefinition ProducesArtifacts(IEnumerable<string> artifactName, string? buildSlice = null)
+    {
+        ProducedArtifacts.AddRange(artifactName.Select(x => new ProducedArtifact(x, buildSlice)));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds an artifact to the list of artifacts that this target consumes, indicating a dependency on its production.
     ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
     ///     provider,

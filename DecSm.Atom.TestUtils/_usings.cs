@@ -8,6 +8,7 @@ global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.BuildInfo;
 global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Util;
+global using DecSm.Atom.Util.Scope;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Options;
 global using DecSm.Atom.Workflows.Model;

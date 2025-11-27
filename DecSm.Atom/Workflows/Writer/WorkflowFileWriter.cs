@@ -257,7 +257,7 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
         WriteLine(header);
         IndentLevel += TabSize;
 
-        return new DisposableAction(() => IndentLevel -= TabSize);
+        return new ActionScope(() => IndentLevel -= TabSize);
     }
 
     /// <summary>

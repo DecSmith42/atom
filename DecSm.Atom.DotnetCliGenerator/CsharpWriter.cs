@@ -22,7 +22,7 @@ public sealed partial class CsharpWriter
         {
             _indent++;
 
-            return new DisposableAction(() => _indent--);
+            return new ActionScope(() => _indent--);
         }
     }
 
@@ -38,7 +38,7 @@ public sealed partial class CsharpWriter
 
         _indent++;
 
-        return new DisposableAction(() =>
+        return new ActionScope(() =>
         {
             _indent--;
             WriteLine("}");

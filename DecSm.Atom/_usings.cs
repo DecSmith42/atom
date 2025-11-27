@@ -28,6 +28,7 @@ global using DecSm.Atom.Process;
 global using DecSm.Atom.Reports;
 global using DecSm.Atom.Secrets;
 global using DecSm.Atom.Util;
+global using DecSm.Atom.Util.Scope;
 global using DecSm.Atom.Variables;
 global using DecSm.Atom.Workflows;
 global using DecSm.Atom.Workflows.Definition;
