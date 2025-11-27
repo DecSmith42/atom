@@ -15,7 +15,6 @@
     
     <PublishTrimmed>false</PublishTrimmed>
     <PublishAot>false</PublishAot>
-    <NoWarn>$(NoWarn);IL2090;IL2091;IL2057;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
