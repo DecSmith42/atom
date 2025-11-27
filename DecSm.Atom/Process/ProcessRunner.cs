@@ -244,6 +244,13 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             if (e.Data is null)
                 return;
 
+            var text = options.TransformError is not null
+                ? options.TransformError(e.Data)
+                : e.Data;
+
+            if (text is null)
+                return;
+
             errorBuilder.AppendLine(e.Data);
             logger.Log(options.ErrorLogLevel, "{Error}", e.Data);
         }
@@ -251,6 +258,13 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
         void OnProcessOnOutputDataReceived(object _, DataReceivedEventArgs e)
         {
             if (e.Data is null)
+                return;
+
+            var text = options.TransformOutput is not null
+                ? options.TransformOutput(e.Data)
+                : e.Data;
+
+            if (text is null)
                 return;
 
             outputBuilder.AppendLine(e.Data);

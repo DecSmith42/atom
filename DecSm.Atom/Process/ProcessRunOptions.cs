@@ -213,4 +213,57 @@ public sealed record ProcessRunOptions(string Name, string Args)
     ///     from the current environment. If not set, the process will inherit the current environment's variables by default.
     /// </remarks>
     public Dictionary<string, string?> EnvironmentVariables { get; init; } = [];
+
+    /// <summary>
+    ///     An optional per-line transformation applied to the standard output (stdout) of the executed process.
+    /// </summary>
+    /// <value>
+    ///     A delegate that receives the raw line of text read from stdout (without a trailing newline) and
+    ///     returns the transformed text to be logged and captured. Returning <c>null</c> suppresses the line
+    ///     completely (it will neither be logged nor stored in <see cref="ProcessRunResult.Output" />).
+    ///     If not set, the original text is used as-is.
+    /// </value>
+    /// <remarks>
+    ///     The transformation is invoked once for each line of stdout as it is produced by the process.
+    ///     Use this to filter noisy lines, redact sensitive data (like tokens), or normalize output
+    ///     (e.g., remove ANSI color codes). Keep the transformation fast and side-effect free; it may be
+    ///     called frequently for verbose tools.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// var options = new ProcessRunOptions("dotnet", "restore")
+    /// {
+    ///     // Hide lines that start with "info :"
+    ///     TransformOutput = line => line.StartsWith("info :", StringComparison.OrdinalIgnoreCase) ? null : line
+    /// };
+    /// </code>
+    /// </example>
+    /// <seealso cref="TransformError" />
+    public Func<string, string?>? TransformOutput { get; init; }
+
+    /// <summary>
+    ///     An optional per-line transformation applied to the standard error (stderr) of the executed process.
+    /// </summary>
+    /// <value>
+    ///     A delegate that receives the raw line of text read from stderr (without a trailing newline) and
+    ///     returns the transformed text to be logged and captured. Returning <c>null</c> suppresses the line
+    ///     completely (it will neither be logged nor stored in <see cref="ProcessRunResult.Error" />).
+    ///     If not set, the original text is used as-is.
+    /// </value>
+    /// <remarks>
+    ///     Some tools write progress or informational messages to stderr. Use this transformation to downsample,
+    ///     redact, or normalize such messages. As with <see cref="TransformOutput" />, keep the delegate efficient
+    ///     to avoid affecting process throughput.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// var options = new ProcessRunOptions("wget", "https://example.com/file.zip")
+    /// {
+    ///     // Strip ANSI escape sequences from stderr
+    ///     TransformError = line => System.Text.RegularExpressions.Regex.Replace(line, "\u001B\\[[0-9;]*[A-Za-z]", string.Empty)
+    /// };
+    /// </code>
+    /// </example>
+    /// <seealso cref="TransformOutput" />
+    public Func<string, string?>? TransformError { get; init; }
 }
