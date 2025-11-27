@@ -233,6 +233,25 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
+    ///     Adds a dependency to another target by name, indicating prerequisite tasks to complete first.
+    /// </summary>
+    /// <param name="target">The target upon which this target depends.</param>
+    /// <param name="targetName">The name of the target upon which this target depends (automatically inferred from the target).</param>
+    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    [SuppressMessage("ReSharper", "LocalizableElement")]
+    public TargetDefinition DependsOn(Target target, [CallerArgumentExpression("target")] string? targetName = null)
+    {
+        if (string.IsNullOrWhiteSpace(targetName))
+            throw new ArgumentException(
+                "Unable to infer target name from argument expression. Please use DependsOn(\"TargetName\") overload.",
+                nameof(target));
+
+        Dependencies.Add(targetName);
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds a dependency on another defined command target.
     /// </summary>
     /// <param name="workflowTarget">The target or command instance defining the dependency.</param>
