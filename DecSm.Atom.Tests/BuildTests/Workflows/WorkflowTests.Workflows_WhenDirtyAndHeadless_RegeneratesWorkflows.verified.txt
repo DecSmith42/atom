@@ -4,5 +4,5 @@
                  InvalidOperationException: One or more workflows are dirty. 
                  Run 'atom -g' to regenerate them                            
                    at async Task ExecuteAsync(CancellationToken stoppingToken
-                      ) in AtomService.cs:112                                
+                      ) in AtomService.cs:107                                
                                                                              
