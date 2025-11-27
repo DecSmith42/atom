@@ -68,6 +68,11 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
             ])
             {
                 AllowFailedResult = true,
+
+                // Suppress warning about invalid character in error stream
+                TransformError = s => s.Contains("hexadecimal value 0x1B, is an invalid character")
+                    ? null
+                    : s,
             },
             cancellationToken);
 
