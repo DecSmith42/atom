@@ -152,9 +152,6 @@ public partial interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsH
             });
     }
 
-    [JsonSerializable(typeof(CoverageModel))]
-    internal partial class CoverageModelContext : JsonSerializerContext;
-
     private void GenerateCoverageReport(DotnetTestOptions options, string coverageJsonFile)
     {
         var coverageJson = FileSystem.File.ReadAllText(coverageJsonFile);
@@ -182,4 +179,7 @@ public partial interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsH
             < 3600 => $"{duration.Minutes}m {duration.TotalSeconds % 60:0.##}s",
             _ => $"{duration.Hours}h {duration.Minutes}m {duration.Seconds}s",
         };
+
+    [JsonSerializable(typeof(CoverageModel))]
+    internal partial class CoverageModelContext : JsonSerializerContext;
 }

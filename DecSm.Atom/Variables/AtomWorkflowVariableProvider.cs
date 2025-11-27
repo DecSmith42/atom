@@ -3,9 +3,6 @@
 internal sealed partial class AtomWorkflowVariableProvider(IAtomFileSystem fileSystem, BuildModel buildModel)
     : IWorkflowVariableProvider
 {
-    [JsonSerializable(typeof(Dictionary<string, string>))]
-    internal partial class AppJsonContext : JsonSerializerContext;
-
     public async Task<bool> WriteVariable(
         string variableName,
         string variableValue,
@@ -57,4 +54,7 @@ internal sealed partial class AtomWorkflowVariableProvider(IAtomFileSystem fileS
 
         return true;
     }
+
+    [JsonSerializable(typeof(Dictionary<string, string>))]
+    internal partial class AppJsonContext : JsonSerializerContext;
 }
