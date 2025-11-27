@@ -13,6 +13,7 @@ namespace DecSm.Atom.SourceGenerators;
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
     private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
     private const string Target = "Target";
     private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
     private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
@@ -52,7 +53,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName == BuildDefinitionAttributeFull)
+            if (attributeName is BuildDefinitionAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 

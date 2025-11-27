@@ -11,16 +11,18 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 {
+    private const string GenerateSolutionModelAttributeFull = "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
+    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // 1. Create the provider for the Solution Path (from MSBuild)
         var solutionPathProvider = context.AnalyzerConfigOptionsProvider.Select((options, _) =>
-        {
-            if (options.GlobalOptions.TryGetValue("build_property.SolutionPath", out var path) && !string.IsNullOrWhiteSpace(path))
-                return path;
-
-            return null;
-        });
+            options.GlobalOptions.TryGetValue("build_property.SolutionPath", out var path) &&
+            !string.IsNullOrWhiteSpace(path) &&
+            path != "*Undefined*"
+                ? Path.GetFullPath(path)
+                : null);
 
         // 2. Your existing provider for Classes with the specific Attribute
         var classesProvider = context
@@ -58,7 +60,7 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName == "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute")
+            if (attributeName is GenerateSolutionModelAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -112,6 +114,9 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                                              public const string Name = @"{{kvp.Key}}";
 
                                              static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
+                                                 fileSystem.CreateRootedPath(@"{{kvp.Value.Replace("\\", "/")}}");
+
+                                             new static RootedPath Path(IAtomFileSystem fileSystem) =>
                                                  fileSystem.CreateRootedPath(@"{{kvp.Value.Replace("\\", "/")}}");
                                          }
                                      """));

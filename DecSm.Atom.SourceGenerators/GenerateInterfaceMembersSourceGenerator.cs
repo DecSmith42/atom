@@ -11,6 +11,7 @@ namespace DecSm.Atom.SourceGenerators;
 public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 {
     private const string GenerateInterfaceMembersAttributeFull = "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
+    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
@@ -38,7 +39,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName == GenerateInterfaceMembersAttributeFull)
+            if (attributeName is GenerateInterfaceMembersAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -79,6 +80,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
         var interfacesWithProperties = classSymbol
             .AllInterfaces
+            .Where(x => x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IPropertySymbol>()
@@ -104,6 +106,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
         var interfacesWithMethods = classSymbol
             .AllInterfaces
+            .Where(x => x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IMethodSymbol>()

@@ -11,6 +11,9 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 {
+    private const string GenerateEntryPointAttributeFull = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
+    private const string DefaultBuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Filter classes annotated with the BuildDefinition attribute. Only filtered Syntax Nodes can trigger code generation.
@@ -40,7 +43,7 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
             // Check the full name of the BuildDefinition attribute.
-            if (attributeName == "DecSm.Atom.Hosting.GenerateEntryPointAttribute")
+            if (attributeName is GenerateEntryPointAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 

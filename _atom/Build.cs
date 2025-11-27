@@ -1,8 +1,6 @@
 namespace Atom;
 
-[BuildDefinition]
-[GenerateEntryPoint]
-[GenerateSolutionModel]
+[DefaultBuildDefinition]
 internal partial class Build : DefaultBuildDefinition,
     IAzureKeyVault,
     IDevopsWorkflows,

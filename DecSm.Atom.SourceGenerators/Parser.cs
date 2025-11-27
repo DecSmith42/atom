@@ -93,10 +93,9 @@ public static class Parser
                 ? path
                 : Path.Combine(solutionDirectory, path);
 
-            var projectName = Path.GetFileNameWithoutExtension(name);
-
-            if (string.IsNullOrWhiteSpace(projectName))
-                projectName = Path.GetFileNameWithoutExtension(path);
+            var projectName = string.IsNullOrWhiteSpace(name)
+                ? Path.GetFileNameWithoutExtension(fullPath)
+                : name;
 
             result[projectName] = fullPath;
         }
