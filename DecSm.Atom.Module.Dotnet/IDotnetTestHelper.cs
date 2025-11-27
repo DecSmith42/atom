@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet;
 
-public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
+public partial interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
 {
     async Task<int> RunDotnetUnitTests(DotnetTestOptions options, CancellationToken cancellationToken = default)
     {
@@ -105,6 +105,9 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
         return result.ExitCode;
     }
 
+    [UnconditionalSuppressMessage("Trimming",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Deserialized type `TestRun` is manually preserved via DynamicallyAccessedMembers.")]
     private void GenerateTestReport(DotnetTestOptions options, string trxFile)
     {
         var serializer = new XmlSerializer(typeof(TestRun));
@@ -149,11 +152,14 @@ public interface IDotnetTestHelper : IDotnetToolInstallHelper, IReportsHelper
             });
     }
 
+    [JsonSerializable(typeof(CoverageModel))]
+    internal partial class CoverageModelContext : JsonSerializerContext;
+
     private void GenerateCoverageReport(DotnetTestOptions options, string coverageJsonFile)
     {
         var coverageJson = FileSystem.File.ReadAllText(coverageJsonFile);
 
-        var summary = JsonSerializer.Deserialize<CoverageModel>(coverageJson)!.Summary;
+        var summary = JsonSerializer.Deserialize(coverageJson, CoverageModelContext.Default.CoverageModel)!.Summary;
 
         AddReportData(new TableReportData([
             ["Lines", summary.TotalLines.ToString()],

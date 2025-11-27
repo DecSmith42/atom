@@ -21,7 +21,8 @@ internal sealed class GitVersionBuildVersionProvider(
                 InvocationLogLevel = LogLevel.Debug,
             });
 
-            var jsonOutput = JsonSerializer.Deserialize<JsonElement>(gitVersionResult.Output);
+            var jsonOutput =
+                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
 
             var majorProp = jsonOutput
                 .GetProperty("Major")

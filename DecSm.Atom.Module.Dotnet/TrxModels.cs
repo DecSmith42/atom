@@ -2,6 +2,7 @@
 
 [PublicAPI]
 [XmlRoot(ElementName = "TestRun", Namespace = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010")]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record TestRun
 {
     [XmlAttribute(AttributeName = "id")]
@@ -40,6 +41,7 @@ public sealed record TestRun
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Times
 {
     [XmlAttribute(AttributeName = "creation")]
@@ -56,6 +58,7 @@ public sealed record Times
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record TestSettings
 {
     [XmlAttribute(AttributeName = "name")]
@@ -69,6 +72,7 @@ public sealed record TestSettings
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Deployment
 {
     [XmlAttribute(AttributeName = "runDeploymentRoot")]
@@ -76,6 +80,7 @@ public sealed record Deployment
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record UnitTestResult
 {
     [XmlAttribute(AttributeName = "executionId")]
@@ -116,6 +121,7 @@ public sealed record UnitTestResult
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record ResultOutput
 {
     [XmlElement(ElementName = "ErrorInfo")]
@@ -123,6 +129,7 @@ public sealed record ResultOutput
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record ErrorInfo
 {
     [XmlElement(ElementName = "Message")]
@@ -139,6 +146,7 @@ public sealed record ErrorInfo
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record UnitTest
 {
     [XmlAttribute(AttributeName = "name")]
@@ -158,6 +166,7 @@ public sealed record UnitTest
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Execution
 {
     [XmlAttribute(AttributeName = "id")]
@@ -165,6 +174,7 @@ public sealed record Execution
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record TestMethod
 {
     [XmlAttribute(AttributeName = "codeBase")]
@@ -181,6 +191,7 @@ public sealed record TestMethod
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record TestEntry
 {
     [XmlAttribute(AttributeName = "testId")]
@@ -194,6 +205,7 @@ public sealed record TestEntry
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record TestList
 {
     [XmlAttribute(AttributeName = "name")]
@@ -204,6 +216,7 @@ public sealed record TestList
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record ResultSummary
 {
     [XmlAttribute(AttributeName = "outcome")]
@@ -221,6 +234,7 @@ public sealed record ResultSummary
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Counters
 {
     [XmlAttribute(AttributeName = "total")]
@@ -273,6 +287,7 @@ public sealed record Counters
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Output
 {
     [XmlElement(ElementName = "StdOut")]
@@ -280,6 +295,7 @@ public sealed record Output
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record Collector
 {
     [XmlAttribute(AttributeName = "agentName")]
@@ -297,6 +313,7 @@ public sealed record Collector
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record UriAttachment
 {
     [XmlElement(ElementName = "A")]
@@ -304,6 +321,7 @@ public sealed record UriAttachment
 }
 
 [PublicAPI]
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)]
 public sealed record A
 {
     [XmlAttribute(AttributeName = "href")]

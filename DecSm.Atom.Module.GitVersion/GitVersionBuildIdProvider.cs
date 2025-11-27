@@ -25,7 +25,8 @@ internal sealed class GitVersionBuildIdProvider(
                 InvocationLogLevel = LogLevel.Debug,
             });
 
-            var jsonOutput = JsonSerializer.Deserialize<JsonElement>(gitVersionResult.Output);
+            var jsonOutput =
+                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
 
             var buildId = jsonOutput
                 .GetProperty("FullSemVer")
