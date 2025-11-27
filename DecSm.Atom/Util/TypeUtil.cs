@@ -536,6 +536,10 @@ public static class TypeUtil
         "IL2072:UnrecognizedReflectionPattern",
         Justification =
             "The analyzer cannot prove at compile time the safety of using typeof(T).GetElementType() and Array.CreateInstance for arbitrary T. This method only operates on array types (T is TElement[]), and the reflection usage is limited to creating an array and passing the element Type into narrowly-scoped conversion helpers. The remaining risky path is the explicit RUC-marked fallback, which is documented above.")]
+    [UnconditionalSuppressMessage("AssemblyLoadTrimming",
+        "IL3050:RequiresUnreferencedCode",
+        Justification =
+            "May fall back to the TypeDescriptor-based Convert(string, Type) helper when no AOT-safe TryConvert path can handle the input. This is a last-resort conversion; in trimmed/AOT builds callers should prefer passing explicit converters for unsupported types.")]
     private static T ConvertArray<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(string value)
     {
         var elementType = typeof(T).GetElementType()!;
@@ -562,6 +566,10 @@ public static class TypeUtil
         "IL2062:UnrecognizedReflectionPattern",
         Justification =
             "This method inspects the generic type (GetGenericTypeDefinition/GetGenericArguments) and creates an array via Array.CreateInstance. The usage is bounded to supported shape IReadOnlyList<TElement>. The generic parameter T is annotated with DynamicallyAccessedMembers(All) at the call site, improving member preservation. Any remaining reflection risk exists only on the documented RUC-marked fallback path.")]
+    [UnconditionalSuppressMessage("AssemblyLoadTrimming",
+        "IL3050:RequiresUnreferencedCode",
+        Justification =
+            "May fall back to the TypeDescriptor-based Convert(string, Type) helper when no AOT-safe TryConvert path can handle the input. This is a last-resort conversion; in trimmed/AOT builds callers should prefer passing explicit converters for unsupported types.")]
     private static T ConvertGeneric<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
         string value,
         Type type)

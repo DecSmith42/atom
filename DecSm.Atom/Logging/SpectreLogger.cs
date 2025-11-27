@@ -126,13 +126,21 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
                 $"[{messageStyle}]{message}[/]")
             .AddRow(string.Empty);
 
-        if (exception != null)
+        if (exception is not null)
         {
-            const ExceptionFormats exceptionFormat = ExceptionFormats.ShortenPaths |
-                                                     ExceptionFormats.ShortenTypes |
-                                                     ExceptionFormats.ShortenMethods;
+            if (RuntimeFeature.IsDynamicCodeSupported)
+            {
+                const ExceptionFormats exceptionFormat = ExceptionFormats.ShortenPaths |
+                                                         ExceptionFormats.ShortenTypes |
+                                                         ExceptionFormats.ShortenMethods;
 
-            table.AddRow(new Text(string.Empty), exception.GetRenderable(exceptionFormat));
+                table.AddRow(new Text(string.Empty), exception.GetRenderable(exceptionFormat));
+            }
+            else
+            {
+                table.AddRow(new Text(string.Empty), new Text(exception.ToString()));
+            }
+
             table.AddRow(string.Empty);
         }
 
