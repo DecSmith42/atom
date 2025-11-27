@@ -1,4 +1,3 @@
-global using System.Collections;
 global using System.Collections.Concurrent;
 global using System.ComponentModel;
 global using System.Diagnostics;
@@ -12,7 +11,6 @@ global using System.Text;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Text.RegularExpressions;
-global using System.Xml;
 global using DecSm.Atom.Args;
 global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Build;

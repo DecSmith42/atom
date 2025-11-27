@@ -274,8 +274,8 @@ public static class TypeUtil
             return false;
         }
 
-        var styleInteger = NumberStyles.Integer;
-        var styleFloat = NumberStyles.Float | NumberStyles.AllowThousands;
+        const NumberStyles styleInteger = NumberStyles.Integer;
+        const NumberStyles styleFloat = NumberStyles.Float | NumberStyles.AllowThousands;
         var ci = CultureInfo.InvariantCulture;
 
         // Boolean
@@ -549,10 +549,10 @@ public static class TypeUtil
 
         for (var i = 0; i < values.Length; i++)
         {
-            if (TryConvert(values[i], elementType, out var elem))
-                array.SetValue(elem, i);
-            else
-                array.SetValue(Convert(values[i], elementType), i);
+            array.SetValue(TryConvert(values[i], elementType, out var elem)
+                    ? elem
+                    : Convert(values[i], elementType),
+                i);
         }
 
         return (T)(object)array;
@@ -587,10 +587,10 @@ public static class TypeUtil
             var array = Array.CreateInstance(genericArgument, values.Length);
 
             for (var i = 0; i < values.Length; i++)
-                if (TryConvert(values[i], genericArgument, out var elem))
-                    array.SetValue(elem, i);
-                else
-                    array.SetValue(Convert(values[i], genericArgument), i);
+                array.SetValue(TryConvert(values[i], genericArgument, out var elem)
+                        ? elem
+                        : Convert(values[i], genericArgument),
+                    i);
 
             return (T)(object)array;
         }

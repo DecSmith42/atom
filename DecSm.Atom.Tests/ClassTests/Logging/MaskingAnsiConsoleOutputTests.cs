@@ -94,22 +94,13 @@ public class MaskingAnsiConsoleOutputTests
         TestContext.Out.WriteLine(output);
     }
 
-    private sealed class StubParamService : IParamService
+    private sealed class StubParamService(string secret, string mask) : IParamService
     {
-        private readonly string _mask;
-        private readonly string _secret;
-
-        public StubParamService(string secret, string mask)
-        {
-            _secret = secret;
-            _mask = mask;
-        }
-
         public IDisposable CreateNoCacheScope() =>
             new DummyDisposable();
 
         public string MaskMatchingSecrets(string text) =>
-            text.Replace(_secret, _mask, StringComparison.OrdinalIgnoreCase);
+            text.Replace(secret, mask, StringComparison.OrdinalIgnoreCase);
 
         public T GetParam<T>(
             Expression<Func<T?>> paramExpression,
@@ -132,18 +123,13 @@ public class MaskingAnsiConsoleOutputTests
         }
     }
 
-    private sealed class TestAnsiConsoleOutput : IAnsiConsoleOutput
+    private sealed class TestAnsiConsoleOutput(TextWriter writer) : IAnsiConsoleOutput
     {
-        public TestAnsiConsoleOutput(TextWriter writer)
-        {
-            Writer = writer;
-        }
-
         public int Width => 120;
 
         public int Height => 40;
 
-        public TextWriter Writer { get; }
+        public TextWriter Writer { get; } = writer;
 
         public bool IsTerminal => false;
 

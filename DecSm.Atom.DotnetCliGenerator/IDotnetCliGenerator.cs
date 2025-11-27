@@ -237,14 +237,7 @@ public static class DotnetCliGenerator
         if (typeName.EndsWith("[]", StringComparison.Ordinal))
             typeName = typeName[..^2];
 
-        // Explicitly allow our known custom types
-        if (typeName is "DecSm.Atom.Paths.RootedPath")
-            return true;
-
-        // Consider all BCL types under System.* as known
-        if (typeName.StartsWith("System.", StringComparison.Ordinal))
-            return true;
-
-        return false;
+        // Explicitly allow our known custom types and consider all BCL types under System.* as known
+        return typeName is "DecSm.Atom.Paths.RootedPath" || typeName.StartsWith("System.", StringComparison.Ordinal);
     }
 }

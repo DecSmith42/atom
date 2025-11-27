@@ -93,6 +93,7 @@ public interface IDotnetPackHelper2 : IUseDotnetCli, IBuildInfo
     }
 }
 
+[PublicAPI]
 public sealed record DotnetPackOptions2
 {
     public PackOptions? PackOptions { get; init; }

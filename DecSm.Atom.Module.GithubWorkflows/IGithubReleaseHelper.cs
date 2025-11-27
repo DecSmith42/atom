@@ -21,7 +21,13 @@ public partial interface IGithubReleaseHelper : IGithubHelper
         if (assetPath.DirectoryExists)
         {
             var zipPath = FileSystem.CreateRootedPath($"{assetPath}.zip");
+
+            #if NET10_0_OR_GREATER
+            await ZipFile.CreateFromDirectoryAsync(assetPath, zipPath);
+            #else
             ZipFile.CreateFromDirectory(assetPath, zipPath);
+            #endif
+
             assetPath = zipPath;
         }
 
@@ -31,7 +37,13 @@ public partial interface IGithubReleaseHelper : IGithubHelper
         {
             // zip the file
             var zipPath = FileSystem.CreateRootedPath($"{assetPath}.zip");
+
+            #if NET10_0_OR_GREATER
+            await ZipFile.CreateFromDirectoryAsync(assetPath.Parent!, zipPath);
+            #else
             ZipFile.CreateFromDirectory(assetPath.Parent!, zipPath);
+            #endif
+
             assetPath = zipPath;
         }
 

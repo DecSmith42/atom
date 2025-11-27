@@ -84,6 +84,7 @@ public interface IDotnetPublishHelper2 : IUseDotnetCli, IBuildInfo
     }
 }
 
+[PublicAPI]
 public sealed record DotnetPublishOptions2
 {
     public PublishOptions? PublishOptions { get; init; }
