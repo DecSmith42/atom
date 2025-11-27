@@ -10,7 +10,7 @@ public sealed record PropertyGetter(Action<CsharpWriter>? Body);
 public sealed record PropertySetter(Action<CsharpWriter>? Body, bool InitOnly);
 
 [PublicAPI]
-public sealed class CsharpWriter
+public sealed partial class CsharpWriter
 {
     private readonly StringBuilder _sb = new();
 
@@ -25,6 +25,9 @@ public sealed class CsharpWriter
             return new DisposableAction(() => _indent--);
         }
     }
+
+    [GeneratedRegex("(?<!^)(?=[A-Z])")]
+    private static partial Regex UppercaseRegex { get; }
 
     public IDisposable Block(string text = "")
     {
@@ -240,7 +243,7 @@ public sealed class CsharpWriter
         text = text.Replace("|", "or");
 
         // Add a space before each uppercase letter that is not at the start, and is not followed by another uppercase letter
-        text = Regex.Replace(text, "(?<!^)(?=[A-Z])", " ");
+        text = UppercaseRegex.Replace(text, " ");
 
         // Split by non-letter characters
         var parts = text.Split(['-', '_', ' ', ':'], StringSplitOptions.RemoveEmptyEntries);

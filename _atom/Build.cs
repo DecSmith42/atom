@@ -9,12 +9,6 @@ internal partial class Build : DefaultBuildDefinition,
     IDeployTargets,
     ITestTargets
 {
-    private Target Sandbox =>
-        t => t.Executes(() =>
-        {
-            var atomProject = FileSystem.GetPath<Projects._atom>();
-        });
-
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
         UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),

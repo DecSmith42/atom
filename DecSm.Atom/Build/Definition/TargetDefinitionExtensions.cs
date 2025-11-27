@@ -7,6 +7,7 @@ public static class TargetDefinitionExtensions
         /// <summary>
         ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
         /// </summary>
+        [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public TargetDefinition DependsOn(
             Target target1,
@@ -32,6 +33,7 @@ public static class TargetDefinitionExtensions
         /// <summary>
         ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
         /// </summary>
+        [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public TargetDefinition DependsOn(
             Target target1,
@@ -65,6 +67,7 @@ public static class TargetDefinitionExtensions
         /// <summary>
         ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
         /// </summary>
+        [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public TargetDefinition DependsOn(
             Target target1,
@@ -106,6 +109,7 @@ public static class TargetDefinitionExtensions
         /// <summary>
         ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
         /// </summary>
+        [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
         public TargetDefinition DependsOn(
             Target target1,

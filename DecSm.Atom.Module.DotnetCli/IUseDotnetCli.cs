@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable RedundantExtendsListEntry
 
 namespace DecSm.Atom.Module.DotnetCli;
 
@@ -13,10 +14,10 @@ namespace DecSm.Atom.Module.DotnetCli;
 [ConfigureHostBuilder]
 public partial interface IUseDotnetCli : IBuildAccessor
 {
+    IDotnetCli DotnetCli => GetService<IDotnetCli>();
+
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
         builder.Services.AddSingleton<IDotnetCli, DotnetCli>();
-
-    IDotnetCli DotnetCli => GetService<IDotnetCli>();
 }
 
 [PublicAPI]
