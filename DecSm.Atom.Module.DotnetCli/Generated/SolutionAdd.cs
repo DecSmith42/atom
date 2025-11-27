@@ -80,11 +80,11 @@ public sealed record SolutionAddOptions
         return string.Join(' ',
         new[]
         {
-            InRoot is not null
-                ? $"--in-root {InRoot}"
+            InRoot is true
+                ? "--in-root"
                 : null,
-            IncludeReferences is not null
-                ? $"--include-references {IncludeReferences}"
+            IncludeReferences is true
+                ? "--include-references"
                 : null,
             SolutionFolder is not null
                 ? $"--solution-folder {SolutionFolder}"

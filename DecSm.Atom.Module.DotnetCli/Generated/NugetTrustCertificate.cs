@@ -74,8 +74,8 @@ public sealed record NugetTrustCertificateOptions
             Algorithm is not null
                 ? $"--algorithm {Algorithm}"
                 : null,
-            AllowUntrustedRoot is not null
-                ? $"--allow-untrusted-root {AllowUntrustedRoot}"
+            AllowUntrustedRoot is true
+                ? "--allow-untrusted-root"
                 : null,
             Configfile is not null
                 ? $"--configfile {Configfile}"

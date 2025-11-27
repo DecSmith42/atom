@@ -140,17 +140,17 @@ public sealed record PackageAddOptions
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
             PackageDirectory is not null
                 ? $"--package-directory {PackageDirectory}"
                 : null,
-            Prerelease is not null
-                ? $"--prerelease {Prerelease}"
+            Prerelease is true
+                ? "--prerelease"
                 : null,
             Project is not null
                 ? $"--project {Project}"

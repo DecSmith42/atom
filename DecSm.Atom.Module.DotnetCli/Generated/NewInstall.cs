@@ -149,11 +149,11 @@ public sealed record NewInstallOptions
             AddSource is not null
                 ? $"--add-source {AddSource}"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
         }
         );

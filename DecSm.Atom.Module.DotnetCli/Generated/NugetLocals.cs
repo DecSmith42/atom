@@ -59,14 +59,14 @@ public sealed record NugetLocalsOptions
         return string.Join(' ',
         new[]
         {
-            Clear is not null
-                ? $"--clear {Clear}"
+            Clear is true
+                ? "--clear"
                 : null,
-            ForceEnglishOutput is not null
-                ? $"--force-english-output {ForceEnglishOutput}"
+            ForceEnglishOutput is true
+                ? "--force-english-output"
                 : null,
-            List is not null
-                ? $"--list {List}"
+            List is true
+                ? "--list"
                 : null,
         }
         );

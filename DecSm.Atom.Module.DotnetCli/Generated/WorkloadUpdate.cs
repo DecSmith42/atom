@@ -236,14 +236,14 @@ public sealed record WorkloadUpdateOptions
         return string.Join(' ',
         new[]
         {
-            AdvertisingManifestsOnly is not null
-                ? $"--advertising-manifests-only {AdvertisingManifestsOnly}"
+            AdvertisingManifestsOnly is true
+                ? "--advertising-manifests-only"
                 : null,
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
             DownloadToCache is not null
                 ? $"--download-to-cache {DownloadToCache}"
@@ -254,41 +254,41 @@ public sealed record WorkloadUpdateOptions
             FromHistory is not null
                 ? $"--from-history {FromHistory}"
                 : null,
-            FromPreviousSdk is not null
-                ? $"--from-previous-sdk {FromPreviousSdk}"
+            FromPreviousSdk is true
+                ? "--from-previous-sdk"
                 : null,
             FromRollbackFile is not null
                 ? $"--from-rollback-file {FromRollbackFile}"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            IncludePreviews is not null
-                ? $"--include-previews {IncludePreviews}"
+            IncludePreviews is true
+                ? "--include-previews"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             ManifestsOnly is not null
                 ? $"--manifests-only {ManifestsOnly}"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
-            PrintDownloadLinkOnly is not null
-                ? $"--print-download-link-only {PrintDownloadLinkOnly}"
+            PrintDownloadLinkOnly is true
+                ? "--print-download-link-only"
                 : null,
-            PrintRollback is not null
-                ? $"--print-rollback {PrintRollback}"
+            PrintRollback is true
+                ? "--print-rollback"
                 : null,
             SdkVersion is not null
                 ? $"--sdk-version {SdkVersion}"
                 : null,
-            SkipSignCheck is not null
-                ? $"--skip-sign-check {SkipSignCheck}"
+            SkipSignCheck is true
+                ? "--skip-sign-check"
                 : null,
             Source is not null
                 ? $"--source {Source}"

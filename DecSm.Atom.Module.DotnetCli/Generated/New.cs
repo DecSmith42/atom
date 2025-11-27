@@ -305,44 +305,44 @@ public sealed record NewOptions
             Columns is not null
                 ? $"--columns {Columns}"
                 : null,
-            ColumnsAll is not null
-                ? $"--columns-all {ColumnsAll}"
+            ColumnsAll is true
+                ? "--columns-all"
                 : null,
-            DebugAttach is not null
-                ? $"--debug:attach {DebugAttach}"
+            DebugAttach is true
+                ? "--debug:attach"
                 : null,
             DebugCustomHive is not null
                 ? $"--debug:custom-hive {DebugCustomHive}"
                 : null,
-            DebugDisableProjectContext is not null
-                ? $"--debug:disable-project-context {DebugDisableProjectContext}"
+            DebugDisableProjectContext is true
+                ? "--debug:disable-project-context"
                 : null,
-            DebugDisableSdkTemplates is not null
-                ? $"--debug:disable-sdk-templates {DebugDisableSdkTemplates}"
+            DebugDisableSdkTemplates is true
+                ? "--debug:disable-sdk-templates"
                 : null,
-            DebugEphemeralHive is not null
-                ? $"--debug:ephemeral-hive {DebugEphemeralHive}"
+            DebugEphemeralHive is true
+                ? "--debug:ephemeral-hive"
                 : null,
-            DebugRebuildCache is not null
-                ? $"--debug:rebuild-cache {DebugRebuildCache}"
+            DebugRebuildCache is true
+                ? "--debug:rebuild-cache"
                 : null,
-            DebugReinit is not null
-                ? $"--debug:reinit {DebugReinit}"
+            DebugReinit is true
+                ? "--debug:reinit"
                 : null,
-            DebugShowConfig is not null
-                ? $"--debug:show-config {DebugShowConfig}"
+            DebugShowConfig is true
+                ? "--debug:show-config"
                 : null,
-            Diagnostics is not null
-                ? $"--diagnostics {Diagnostics}"
+            Diagnostics is true
+                ? "--diagnostics"
                 : null,
-            DryRun is not null
-                ? $"--dry-run {DryRun}"
+            DryRun is true
+                ? "--dry-run"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             Language is not null
                 ? $"--language {Language}"
@@ -350,8 +350,8 @@ public sealed record NewOptions
             Name is not null
                 ? $"--name {Name}"
                 : null,
-            NoUpdateCheck is not null
-                ? $"--no-update-check {NoUpdateCheck}"
+            NoUpdateCheck is true
+                ? "--no-update-check"
                 : null,
             Output is not null
                 ? $"--output {Output}"

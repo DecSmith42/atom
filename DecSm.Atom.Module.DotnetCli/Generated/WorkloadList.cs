@@ -128,26 +128,26 @@ public sealed record WorkloadListOptions
         return string.Join(' ',
         new[]
         {
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            IncludePreviews is not null
-                ? $"--include-previews {IncludePreviews}"
+            IncludePreviews is true
+                ? "--include-previews"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            MachineReadable is not null
-                ? $"--machine-readable {MachineReadable}"
+            MachineReadable is true
+                ? "--machine-readable"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
             SdkVersion is not null
                 ? $"--sdk-version {SdkVersion}"

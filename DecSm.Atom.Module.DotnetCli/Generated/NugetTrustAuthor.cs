@@ -65,8 +65,8 @@ public sealed record NugetTrustAuthorOptions
         return string.Join(' ',
         new[]
         {
-            AllowUntrustedRoot is not null
-                ? $"--allow-untrusted-root {AllowUntrustedRoot}"
+            AllowUntrustedRoot is true
+                ? "--allow-untrusted-root"
                 : null,
             Configfile is not null
                 ? $"--configfile {Configfile}"

@@ -149,8 +149,8 @@ public sealed record StoreOptions
         return string.Join(' ',
         new[]
         {
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
             Framework is not null
                 ? $"--framework {Framework}"
@@ -167,14 +167,14 @@ public sealed record StoreOptions
             Runtime is not null
                 ? $"--runtime {Runtime}"
                 : null,
-            SkipOptimization is not null
-                ? $"--skip-optimization {SkipOptimization}"
+            SkipOptimization is true
+                ? "--skip-optimization"
                 : null,
-            SkipSymbols is not null
-                ? $"--skip-symbols {SkipSymbols}"
+            SkipSymbols is true
+                ? "--skip-symbols"
                 : null,
-            UseCurrentRuntime is not null
-                ? $"--use-current-runtime {UseCurrentRuntime}"
+            UseCurrentRuntime is true
+                ? "--use-current-runtime"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

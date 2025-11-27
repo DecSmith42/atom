@@ -62,8 +62,8 @@ public sealed record NewUpdateCheckOptions
             AddSource is not null
                 ? $"--add-source {AddSource}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
         }
         );

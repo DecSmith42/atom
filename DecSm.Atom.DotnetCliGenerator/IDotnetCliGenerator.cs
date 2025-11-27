@@ -132,11 +132,16 @@ public static class DotnetCliGenerator
                     {
                         foreach (var option in command.Options.Where(x => x.ValueType is not (null or "System.Void")))
                         {
-                            bodyWriter.WriteLine($"{CsharpWriter.ToPascalCase(option.Name)} is not null");
+                            bodyWriter.WriteLine(option.ValueType is "System.Boolean"
+                                ? $"{CsharpWriter.ToPascalCase(option.Name)} is true"
+                                : $"{CsharpWriter.ToPascalCase(option.Name)} is not null");
 
                             using (bodyWriter.Indent)
                             {
-                                bodyWriter.WriteLine($"? $\"{option.Name} {{{CsharpWriter.ToPascalCase(option.Name)}}}\"");
+                                bodyWriter.WriteLine(option.ValueType is "System.Boolean"
+                                    ? $"? \"{option.Name}\""
+                                    : $"? $\"{option.Name} {{{CsharpWriter.ToPascalCase(option.Name)}}}\"");
+
                                 bodyWriter.WriteLine(": null,");
                             }
                         }

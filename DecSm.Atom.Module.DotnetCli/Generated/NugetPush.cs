@@ -122,23 +122,23 @@ public sealed record NugetPushOptions
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            DisableBuffering is not null
-                ? $"--disable-buffering {DisableBuffering}"
+            DisableBuffering is true
+                ? "--disable-buffering"
                 : null,
-            ForceEnglishOutput is not null
-                ? $"--force-english-output {ForceEnglishOutput}"
+            ForceEnglishOutput is true
+                ? "--force-english-output"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoServiceEndpoint is not null
-                ? $"--no-service-endpoint {NoServiceEndpoint}"
+            NoServiceEndpoint is true
+                ? "--no-service-endpoint"
                 : null,
-            NoSymbols is not null
-                ? $"--no-symbols {NoSymbols}"
+            NoSymbols is true
+                ? "--no-symbols"
                 : null,
-            SkipDuplicate is not null
-                ? $"--skip-duplicate {SkipDuplicate}"
+            SkipDuplicate is true
+                ? "--skip-duplicate"
                 : null,
             Source is not null
                 ? $"--source {Source}"

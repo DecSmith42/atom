@@ -412,17 +412,17 @@ public sealed record BuildOptions
             Configuration is not null
                 ? $"--configuration {Configuration}"
                 : null,
-            Debug is not null
-                ? $"--debug {Debug}"
+            Debug is true
+                ? "--debug"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
             Framework is not null
                 ? $"--framework {Framework}"
@@ -439,32 +439,32 @@ public sealed record BuildOptions
             GetTargetResult is not null
                 ? $"--getTargetResult {GetTargetResult}"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoDependencies is not null
-                ? $"--no-dependencies {NoDependencies}"
+            NoDependencies is true
+                ? "--no-dependencies"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
-            NoIncremental is not null
-                ? $"--no-incremental {NoIncremental}"
+            NoIncremental is true
+                ? "--no-incremental"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
-            NoSelfContained is not null
-                ? $"--no-self-contained {NoSelfContained}"
+            NoSelfContained is true
+                ? "--no-self-contained"
                 : null,
-            Nologo is not null
-                ? $"--nologo {Nologo}"
+            Nologo is true
+                ? "--nologo"
                 : null,
             Os is not null
                 ? $"--os {Os}"
@@ -484,8 +484,8 @@ public sealed record BuildOptions
             Runtime is not null
                 ? $"--runtime {Runtime}"
                 : null,
-            SelfContained is not null
-                ? $"--self-contained {SelfContained}"
+            SelfContained is true
+                ? "--self-contained"
                 : null,
             Source is not null
                 ? $"--source {Source}"
@@ -493,8 +493,8 @@ public sealed record BuildOptions
             Target is not null
                 ? $"--target {Target}"
                 : null,
-            UseCurrentRuntime is not null
-                ? $"--use-current-runtime {UseCurrentRuntime}"
+            UseCurrentRuntime is true
+                ? "--use-current-runtime"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

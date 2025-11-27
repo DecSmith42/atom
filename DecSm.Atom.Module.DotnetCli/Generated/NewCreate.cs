@@ -113,17 +113,17 @@ public sealed record NewCreateOptions
         return string.Join(' ',
         new[]
         {
-            DryRun is not null
-                ? $"--dry-run {DryRun}"
+            DryRun is true
+                ? "--dry-run"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
             Name is not null
                 ? $"--name {Name}"
                 : null,
-            NoUpdateCheck is not null
-                ? $"--no-update-check {NoUpdateCheck}"
+            NoUpdateCheck is true
+                ? "--no-update-check"
                 : null,
             Output is not null
                 ? $"--output {Output}"

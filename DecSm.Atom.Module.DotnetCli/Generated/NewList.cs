@@ -152,11 +152,11 @@ public sealed record NewListOptions
             Columns is not null
                 ? $"--columns {Columns}"
                 : null,
-            ColumnsAll is not null
-                ? $"--columns-all {ColumnsAll}"
+            ColumnsAll is true
+                ? "--columns-all"
                 : null,
-            IgnoreConstraints is not null
-                ? $"--ignore-constraints {IgnoreConstraints}"
+            IgnoreConstraints is true
+                ? "--ignore-constraints"
                 : null,
             Language is not null
                 ? $"--language {Language}"

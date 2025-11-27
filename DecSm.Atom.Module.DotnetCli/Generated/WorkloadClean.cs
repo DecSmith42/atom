@@ -50,8 +50,8 @@ public sealed record WorkloadCleanOptions
         return string.Join(' ',
         new[]
         {
-            All is not null
-                ? $"--all {All}"
+            All is true
+                ? "--all"
                 : null,
         }
         );

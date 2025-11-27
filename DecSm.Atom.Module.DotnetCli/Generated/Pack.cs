@@ -393,14 +393,14 @@ public sealed record PackOptions
             Configuration is not null
                 ? $"--configuration {Configuration}"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
             GetItem is not null
                 ? $"--getItem {GetItem}"
@@ -414,35 +414,35 @@ public sealed record PackOptions
             GetTargetResult is not null
                 ? $"--getTargetResult {GetTargetResult}"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            IncludeSource is not null
-                ? $"--include-source {IncludeSource}"
+            IncludeSource is true
+                ? "--include-source"
                 : null,
-            IncludeSymbols is not null
-                ? $"--include-symbols {IncludeSymbols}"
+            IncludeSymbols is true
+                ? "--include-symbols"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoBuild is not null
-                ? $"--no-build {NoBuild}"
+            NoBuild is true
+                ? "--no-build"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoDependencies is not null
-                ? $"--no-dependencies {NoDependencies}"
+            NoDependencies is true
+                ? "--no-dependencies"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
-            Nologo is not null
-                ? $"--nologo {Nologo}"
+            Nologo is true
+                ? "--nologo"
                 : null,
             Output is not null
                 ? $"--output {Output}"
@@ -459,8 +459,8 @@ public sealed record PackOptions
             Runtime is not null
                 ? $"--runtime {Runtime}"
                 : null,
-            Serviceable is not null
-                ? $"--serviceable {Serviceable}"
+            Serviceable is true
+                ? "--serviceable"
                 : null,
             Source is not null
                 ? $"--source {Source}"
@@ -468,8 +468,8 @@ public sealed record PackOptions
             Target is not null
                 ? $"--target {Target}"
                 : null,
-            UseCurrentRuntime is not null
-                ? $"--use-current-runtime {UseCurrentRuntime}"
+            UseCurrentRuntime is true
+                ? "--use-current-runtime"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

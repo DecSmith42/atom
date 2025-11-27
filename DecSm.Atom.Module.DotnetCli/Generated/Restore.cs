@@ -357,17 +357,17 @@ public sealed record RestoreOptions
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
-            ForceEvaluate is not null
-                ? $"--force-evaluate {ForceEvaluate}"
+            ForceEvaluate is true
+                ? "--force-evaluate"
                 : null,
             GetItem is not null
                 ? $"--getItem {GetItem}"
@@ -381,26 +381,26 @@ public sealed record RestoreOptions
             GetTargetResult is not null
                 ? $"--getTargetResult {GetTargetResult}"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             LockFilePath is not null
                 ? $"--lock-file-path {LockFilePath}"
                 : null,
-            LockedMode is not null
-                ? $"--locked-mode {LockedMode}"
+            LockedMode is true
+                ? "--locked-mode"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoDependencies is not null
-                ? $"--no-dependencies {NoDependencies}"
+            NoDependencies is true
+                ? "--no-dependencies"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
             Os is not null
                 ? $"--os {Os}"
@@ -423,11 +423,11 @@ public sealed record RestoreOptions
             Target is not null
                 ? $"--target {Target}"
                 : null,
-            UseCurrentRuntime is not null
-                ? $"--use-current-runtime {UseCurrentRuntime}"
+            UseCurrentRuntime is true
+                ? "--use-current-runtime"
                 : null,
-            UseLockFile is not null
-                ? $"--use-lock-file {UseLockFile}"
+            UseLockFile is true
+                ? "--use-lock-file"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

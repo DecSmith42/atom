@@ -50,8 +50,8 @@ public sealed record SolutionListOptions
         return string.Join(' ',
         new[]
         {
-            SolutionFolders is not null
-                ? $"--solution-folders {SolutionFolders}"
+            SolutionFolders is true
+                ? "--solution-folders"
                 : null,
         }
         );

@@ -74,8 +74,8 @@ public sealed record ReferenceAddOptions
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
         }
         );

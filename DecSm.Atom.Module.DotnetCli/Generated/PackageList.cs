@@ -188,8 +188,8 @@ public sealed record PackageListOptions
             Config is not null
                 ? $"--config {Config}"
                 : null,
-            Deprecated is not null
-                ? $"--deprecated {Deprecated}"
+            Deprecated is true
+                ? "--deprecated"
                 : null,
             Format is not null
                 ? $"--format {Format}"
@@ -197,26 +197,26 @@ public sealed record PackageListOptions
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            HighestMinor is not null
-                ? $"--highest-minor {HighestMinor}"
+            HighestMinor is true
+                ? "--highest-minor"
                 : null,
-            HighestPatch is not null
-                ? $"--highest-patch {HighestPatch}"
+            HighestPatch is true
+                ? "--highest-patch"
                 : null,
-            IncludePrerelease is not null
-                ? $"--include-prerelease {IncludePrerelease}"
+            IncludePrerelease is true
+                ? "--include-prerelease"
                 : null,
-            IncludeTransitive is not null
-                ? $"--include-transitive {IncludeTransitive}"
+            IncludeTransitive is true
+                ? "--include-transitive"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
-            Outdated is not null
-                ? $"--outdated {Outdated}"
+            Outdated is true
+                ? "--outdated"
                 : null,
             OutputVersion is not null
                 ? $"--output-version {OutputVersion}"
@@ -230,8 +230,8 @@ public sealed record PackageListOptions
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"
                 : null,
-            Vulnerable is not null
-                ? $"--vulnerable {Vulnerable}"
+            Vulnerable is true
+                ? "--vulnerable"
                 : null,
         }
         );

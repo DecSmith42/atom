@@ -71,11 +71,11 @@ public sealed record NewUpdateOptions
             AddSource is not null
                 ? $"--add-source {AddSource}"
                 : null,
-            CheckOnly is not null
-                ? $"--check-only {CheckOnly}"
+            CheckOnly is true
+                ? "--check-only"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
         }
         );

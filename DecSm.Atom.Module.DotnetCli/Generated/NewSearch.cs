@@ -134,8 +134,8 @@ public sealed record NewSearchOptions
             Columns is not null
                 ? $"--columns {Columns}"
                 : null,
-            ColumnsAll is not null
-                ? $"--columns-all {ColumnsAll}"
+            ColumnsAll is true
+                ? "--columns-all"
                 : null,
             Language is not null
                 ? $"--language {Language}"

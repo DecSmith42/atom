@@ -137,17 +137,17 @@ public sealed record PackageSearchOptions
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            ExactMatch is not null
-                ? $"--exact-match {ExactMatch}"
+            ExactMatch is true
+                ? "--exact-match"
                 : null,
             Format is not null
                 ? $"--format {Format}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            Prerelease is not null
-                ? $"--prerelease {Prerelease}"
+            Prerelease is true
+                ? "--prerelease"
                 : null,
             Skip is not null
                 ? $"--skip {Skip}"

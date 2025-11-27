@@ -140,8 +140,8 @@ public sealed record NugetSignOptions
             Output is not null
                 ? $"--output {Output}"
                 : null,
-            Overwrite is not null
-                ? $"--overwrite {Overwrite}"
+            Overwrite is true
+                ? "--overwrite"
                 : null,
             TimestampHashAlgorithm is not null
                 ? $"--timestamp-hash-algorithm {TimestampHashAlgorithm}"

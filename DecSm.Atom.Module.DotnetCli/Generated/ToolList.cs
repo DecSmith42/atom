@@ -92,11 +92,11 @@ public sealed record ToolListOptions
             Format is not null
                 ? $"--format {Format}"
                 : null,
-            Global is not null
-                ? $"--global {Global}"
+            Global is true
+                ? "--global"
                 : null,
-            Local is not null
-                ? $"--local {Local}"
+            Local is true
+                ? "--local"
                 : null,
             ToolPath is not null
                 ? $"--tool-path {ToolPath}"

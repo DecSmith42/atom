@@ -92,8 +92,8 @@ public sealed record RemovePackageOptions
         return string.Join(' ',
         new[]
         {
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
         }
         );

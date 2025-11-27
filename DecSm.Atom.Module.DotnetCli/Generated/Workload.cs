@@ -59,11 +59,11 @@ public sealed record WorkloadOptions
         return string.Join(' ',
         new[]
         {
-            Info is not null
-                ? $"--info {Info}"
+            Info is true
+                ? "--info"
                 : null,
-            Version is not null
-                ? $"--version {Version}"
+            Version is true
+                ? "--version"
                 : null,
         }
         );

@@ -23,4 +23,4 @@ public partial interface IUseDotnetCli : IBuildAccessor
 public partial interface IDotnetCli;
 
 [PublicAPI]
-internal partial class DotnetCli(ProcessRunner processRunner) : IDotnetCli;
+internal partial class DotnetCli(IProcessRunner processRunner) : IDotnetCli;

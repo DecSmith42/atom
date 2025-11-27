@@ -105,8 +105,8 @@ public sealed record WorkloadSearchVersionOptions
             Format is not null
                 ? $"--format {Format}"
                 : null,
-            IncludePreviews is not null
-                ? $"--include-previews {IncludePreviews}"
+            IncludePreviews is true
+                ? "--include-previews"
                 : null,
             Take is not null
                 ? $"--take {Take}"

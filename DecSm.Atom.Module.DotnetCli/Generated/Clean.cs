@@ -233,8 +233,8 @@ public sealed record CleanOptions
             Configuration is not null
                 ? $"--configuration {Configuration}"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
             Framework is not null
                 ? $"--framework {Framework}"
@@ -251,11 +251,11 @@ public sealed record CleanOptions
             GetTargetResult is not null
                 ? $"--getTargetResult {GetTargetResult}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            Nologo is not null
-                ? $"--nologo {Nologo}"
+            Nologo is true
+                ? "--nologo"
                 : null,
             Output is not null
                 ? $"--output {Output}"

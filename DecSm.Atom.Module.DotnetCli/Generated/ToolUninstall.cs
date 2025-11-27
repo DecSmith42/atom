@@ -89,11 +89,11 @@ public sealed record ToolUninstallOptions
         return string.Join(' ',
         new[]
         {
-            Global is not null
-                ? $"--global {Global}"
+            Global is true
+                ? "--global"
                 : null,
-            Local is not null
-                ? $"--local {Local}"
+            Local is true
+                ? "--local"
                 : null,
             ToolManifest is not null
                 ? $"--tool-manifest {ToolManifest}"

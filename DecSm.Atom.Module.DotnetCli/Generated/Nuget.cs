@@ -47,8 +47,8 @@ public sealed record NugetOptions
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"
                 : null,
-            Version is not null
-                ? $"--version {Version}"
+            Version is true
+                ? "--version"
                 : null,
         }
         );

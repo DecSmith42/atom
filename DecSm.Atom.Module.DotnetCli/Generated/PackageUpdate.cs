@@ -89,8 +89,8 @@ public sealed record PackageUpdateOptions
         return string.Join(' ',
         new[]
         {
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             Project is not null
                 ? $"--project {Project}"
@@ -98,8 +98,8 @@ public sealed record PackageUpdateOptions
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"
                 : null,
-            Vulnerable is not null
-                ? $"--vulnerable {Vulnerable}"
+            Vulnerable is true
+                ? "--vulnerable"
                 : null,
         }
         );

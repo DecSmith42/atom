@@ -279,8 +279,8 @@ public sealed record RunOptions
             Configuration is not null
                 ? $"--configuration {Configuration}"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
             Environment is not null
                 ? $"--environment {Environment}"
@@ -291,26 +291,26 @@ public sealed record RunOptions
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             LaunchProfile is not null
                 ? $"--launch-profile {LaunchProfile}"
                 : null,
-            NoBuild is not null
-                ? $"--no-build {NoBuild}"
+            NoBuild is true
+                ? "--no-build"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoLaunchProfile is not null
-                ? $"--no-launch-profile {NoLaunchProfile}"
+            NoLaunchProfile is true
+                ? "--no-launch-profile"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
-            NoSelfContained is not null
-                ? $"--no-self-contained {NoSelfContained}"
+            NoSelfContained is true
+                ? "--no-self-contained"
                 : null,
             Os is not null
                 ? $"--os {Os}"
@@ -324,8 +324,8 @@ public sealed record RunOptions
             Runtime is not null
                 ? $"--runtime {Runtime}"
                 : null,
-            SelfContained is not null
-                ? $"--self-contained {SelfContained}"
+            SelfContained is true
+                ? "--self-contained"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

@@ -65,14 +65,14 @@ public sealed record CleanFileBasedAppsOptions
         return string.Join(' ',
         new[]
         {
-            Automatic is not null
-                ? $"--automatic {Automatic}"
+            Automatic is true
+                ? "--automatic"
                 : null,
             Days is not null
                 ? $"--days {Days}"
                 : null,
-            DryRun is not null
-                ? $"--dry-run {DryRun}"
+            DryRun is true
+                ? "--dry-run"
                 : null,
         }
         );

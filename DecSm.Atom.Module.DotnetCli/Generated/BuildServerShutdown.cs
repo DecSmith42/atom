@@ -68,14 +68,14 @@ public sealed record BuildServerShutdownOptions
         return string.Join(' ',
         new[]
         {
-            Msbuild is not null
-                ? $"--msbuild {Msbuild}"
+            Msbuild is true
+                ? "--msbuild"
                 : null,
-            Razor is not null
-                ? $"--razor {Razor}"
+            Razor is true
+                ? "--razor"
                 : null,
-            Vbcscompiler is not null
-                ? $"--vbcscompiler {Vbcscompiler}"
+            Vbcscompiler is true
+                ? "--vbcscompiler"
                 : null,
         }
         );

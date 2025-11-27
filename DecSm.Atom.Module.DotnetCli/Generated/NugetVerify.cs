@@ -62,8 +62,8 @@ public sealed record NugetVerifyOptions
         return string.Join(' ',
         new[]
         {
-            All is not null
-                ? $"--all {All}"
+            All is true
+                ? "--all"
                 : null,
             CertificateFingerprint is not null
                 ? $"--certificate-fingerprint {CertificateFingerprint}"

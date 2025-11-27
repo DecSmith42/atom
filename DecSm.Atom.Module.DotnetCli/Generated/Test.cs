@@ -371,20 +371,20 @@ public sealed record TestOptions
             ArtifactsPath is not null
                 ? $"--artifacts-path {ArtifactsPath}"
                 : null,
-            Blame is not null
-                ? $"--blame {Blame}"
+            Blame is true
+                ? "--blame"
                 : null,
-            BlameCrash is not null
-                ? $"--blame-crash {BlameCrash}"
+            BlameCrash is true
+                ? "--blame-crash"
                 : null,
-            BlameCrashCollectAlways is not null
-                ? $"--blame-crash-collect-always {BlameCrashCollectAlways}"
+            BlameCrashCollectAlways is true
+                ? "--blame-crash-collect-always"
                 : null,
             BlameCrashDumpType is not null
                 ? $"--blame-crash-dump-type {BlameCrashDumpType}"
                 : null,
-            BlameHang is not null
-                ? $"--blame-hang {BlameHang}"
+            BlameHang is true
+                ? "--blame-hang"
                 : null,
             BlameHangDumpType is not null
                 ? $"--blame-hang-dump-type {BlameHangDumpType}"
@@ -401,8 +401,8 @@ public sealed record TestOptions
             Diag is not null
                 ? $"--diag {Diag}"
                 : null,
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
             Environment is not null
                 ? $"--environment {Environment}"
@@ -413,23 +413,23 @@ public sealed record TestOptions
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            ListTests is not null
-                ? $"--list-tests {ListTests}"
+            ListTests is true
+                ? "--list-tests"
                 : null,
             Logger is not null
                 ? $"--logger {Logger}"
                 : null,
-            NoBuild is not null
-                ? $"--no-build {NoBuild}"
+            NoBuild is true
+                ? "--no-build"
                 : null,
-            NoRestore is not null
-                ? $"--no-restore {NoRestore}"
+            NoRestore is true
+                ? "--no-restore"
                 : null,
-            Nologo is not null
-                ? $"--nologo {Nologo}"
+            Nologo is true
+                ? "--nologo"
                 : null,
             Os is not null
                 ? $"--os {Os}"

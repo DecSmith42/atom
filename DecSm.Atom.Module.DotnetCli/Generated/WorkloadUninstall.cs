@@ -71,8 +71,8 @@ public sealed record WorkloadUninstallOptions
         return string.Join(' ',
         new[]
         {
-            SkipSignCheck is not null
-                ? $"--skip-sign-check {SkipSignCheck}"
+            SkipSignCheck is true
+                ? "--skip-sign-check"
                 : null,
             Verbosity is not null
                 ? $"--verbosity {Verbosity}"

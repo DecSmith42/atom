@@ -95,8 +95,8 @@ public sealed record MsbuildOptions
         return string.Join(' ',
         new[]
         {
-            DisableBuildServers is not null
-                ? $"--disable-build-servers {DisableBuildServers}"
+            DisableBuildServers is true
+                ? "--disable-build-servers"
                 : null,
             Target is not null
                 ? $"--target {Target}"

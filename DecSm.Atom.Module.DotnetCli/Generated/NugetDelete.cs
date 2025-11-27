@@ -83,17 +83,17 @@ public sealed record NugetDeleteOptions
             ApiKey is not null
                 ? $"--api-key {ApiKey}"
                 : null,
-            ForceEnglishOutput is not null
-                ? $"--force-english-output {ForceEnglishOutput}"
+            ForceEnglishOutput is true
+                ? "--force-english-output"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoServiceEndpoint is not null
-                ? $"--no-service-endpoint {NoServiceEndpoint}"
+            NoServiceEndpoint is true
+                ? "--no-service-endpoint"
                 : null,
-            NonInteractive is not null
-                ? $"--non-interactive {NonInteractive}"
+            NonInteractive is true
+                ? "--non-interactive"
                 : null,
             Source is not null
                 ? $"--source {Source}"

@@ -236,11 +236,11 @@ public sealed record ToolInstallOptions
             AddSource is not null
                 ? $"--add-source {AddSource}"
                 : null,
-            AllowDowngrade is not null
-                ? $"--allow-downgrade {AllowDowngrade}"
+            AllowDowngrade is true
+                ? "--allow-downgrade"
                 : null,
-            AllowRollForward is not null
-                ? $"--allow-roll-forward {AllowRollForward}"
+            AllowRollForward is true
+                ? "--allow-roll-forward"
                 : null,
             Arch is not null
                 ? $"--arch {Arch}"
@@ -248,35 +248,35 @@ public sealed record ToolInstallOptions
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            CreateManifestIfNeeded is not null
-                ? $"--create-manifest-if-needed {CreateManifestIfNeeded}"
+            CreateManifestIfNeeded is true
+                ? "--create-manifest-if-needed"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
             Framework is not null
                 ? $"--framework {Framework}"
                 : null,
-            Global is not null
-                ? $"--global {Global}"
+            Global is true
+                ? "--global"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            Local is not null
-                ? $"--local {Local}"
+            Local is true
+                ? "--local"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
-            Prerelease is not null
-                ? $"--prerelease {Prerelease}"
+            Prerelease is true
+                ? "--prerelease"
                 : null,
             Source is not null
                 ? $"--source {Source}"

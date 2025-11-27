@@ -68,8 +68,8 @@ public sealed record ToolRunOptions
         return string.Join(' ',
         new[]
         {
-            AllowRollForward is not null
-                ? $"--allow-roll-forward {AllowRollForward}"
+            AllowRollForward is true
+                ? "--allow-roll-forward"
                 : null,
         }
         );

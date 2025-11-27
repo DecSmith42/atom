@@ -89,11 +89,11 @@ public sealed record ToolSearchOptions
         return string.Join(' ',
         new[]
         {
-            Detail is not null
-                ? $"--detail {Detail}"
+            Detail is true
+                ? "--detail"
                 : null,
-            Prerelease is not null
-                ? $"--prerelease {Prerelease}"
+            Prerelease is true
+                ? "--prerelease"
                 : null,
             Skip is not null
                 ? $"--skip {Skip}"

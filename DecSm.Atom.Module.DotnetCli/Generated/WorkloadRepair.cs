@@ -134,26 +134,26 @@ public sealed record WorkloadRepairOptions
             Configfile is not null
                 ? $"--configfile {Configfile}"
                 : null,
-            DisableParallel is not null
-                ? $"--disable-parallel {DisableParallel}"
+            DisableParallel is true
+                ? "--disable-parallel"
                 : null,
-            IgnoreFailedSources is not null
-                ? $"--ignore-failed-sources {IgnoreFailedSources}"
+            IgnoreFailedSources is true
+                ? "--ignore-failed-sources"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
-            NoCache is not null
-                ? $"--no-cache {NoCache}"
+            NoCache is true
+                ? "--no-cache"
                 : null,
-            NoHttpCache is not null
-                ? $"--no-http-cache {NoHttpCache}"
+            NoHttpCache is true
+                ? "--no-http-cache"
                 : null,
             SdkVersion is not null
                 ? $"--sdk-version {SdkVersion}"
                 : null,
-            SkipSignCheck is not null
-                ? $"--skip-sign-check {SkipSignCheck}"
+            SkipSignCheck is true
+                ? "--skip-sign-check"
                 : null,
             Source is not null
                 ? $"--source {Source}"

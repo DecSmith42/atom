@@ -113,8 +113,8 @@ public sealed record PackageRemoveOptions
             File is not null
                 ? $"--file {File}"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             Project is not null
                 ? $"--project {Project}"

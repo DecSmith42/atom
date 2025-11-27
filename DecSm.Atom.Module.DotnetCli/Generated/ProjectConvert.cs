@@ -119,14 +119,14 @@ public sealed record ProjectConvertOptions
         return string.Join(' ',
         new[]
         {
-            DryRun is not null
-                ? $"--dry-run {DryRun}"
+            DryRun is true
+                ? "--dry-run"
                 : null,
-            Force is not null
-                ? $"--force {Force}"
+            Force is true
+                ? "--force"
                 : null,
-            Interactive is not null
-                ? $"--interactive {Interactive}"
+            Interactive is true
+                ? "--interactive"
                 : null,
             Output is not null
                 ? $"--output {Output}"
