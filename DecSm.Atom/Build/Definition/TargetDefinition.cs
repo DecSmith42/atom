@@ -345,6 +345,27 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
+    ///     Specifies that this target consumes multiple artifacts produced by another target.
+    /// </summary>
+    /// <param name="targetName">The name of the target that produces the artifacts to be consumed.</param>
+    /// <param name="artifactNames">The collection of artifact names to be consumed.</param>
+    /// <param name="buildSlice">
+    ///     Optional. Defines the build slice context in which the artifacts will be consumed.
+    ///     If null, the artifacts are consumed from the default build slice.
+    /// </param>
+    /// <returns>The current target definition.</returns>
+    public TargetDefinition ConsumesArtifacts(
+        string targetName,
+        IEnumerable<string> artifactNames,
+        string? buildSlice = null)
+    {
+        ConsumedArtifacts.AddRange(artifactNames.Select(artifactName =>
+            new ConsumedArtifact(targetName, artifactName, buildSlice)));
+
+        return this;
+    }
+
+    /// <summary>
     ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
     ///     production.
     ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
