@@ -23,7 +23,7 @@ public partial interface IDotnetCli
         TestOptions? options = null,
         CancellationToken cancellationToken = default
     );
-    
+
 }
 internal partial class DotnetCli : IDotnetCli
 {
@@ -32,7 +32,7 @@ internal partial class DotnetCli : IDotnetCli
         CancellationToken cancellationToken = default
     ) =>
         processRunner.RunAsync(new("dotnet", (options ?? new()).ToString()), cancellationToken);
-    
+
 }
 [PublicAPI]
 public sealed record TestOptions
@@ -45,7 +45,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The artifacts path. All output from the project, including build, publish, and pack output, will go in subfolders under the specified path.
     /// </summary>
@@ -54,14 +54,14 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Runs the tests in blame mode. This option is helpful in isolating problematic tests that cause the test host to crash or hang, but it does not create a memory dump by default.
-    ///     
+    ///
     ///     When a crash is detected, it creates an sequence file in TestResults/guid/guid_Sequence.xml that captures the order of tests that were run before the crash.
-    ///     
+    ///
     ///     Based on the additional settings, hang dump or crash dump can also be collected.
-    ///     
+    ///
     ///     Example:
     ///       Timeout the test run when test takes more than the default timeout of 1 hour, and collect crash dump when the test host exits unexpectedly.
     ///       (Crash dumps require additional setup, see below.)
@@ -69,25 +69,25 @@ public sealed record TestOptions
     ///     Example:
     ///       Timeout the test run when a test takes more than 20 minutes and collect hang dump.
     ///       dotnet test --blame-hang-timeout 20min
-    ///     
+    ///
     /// </summary>
     public System.Boolean? Blame
     {
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Runs the tests in blame mode and collects a crash dump when the test host exits unexpectedly. This option depends on the version of .NET used, the type of error, and the operating system.
-    ///     
+    ///
     ///     For exceptions in managed code, a dump will be automatically collected on .NET 5.0 and later versions. It will generate a dump for testhost or any child process that also ran on .NET 5.0 and crashed. Crashes in native code will not generate a dump. This option works on Windows, macOS, and Linux.
-    ///     
+    ///
     ///     Crash dumps in native code, or when targetting .NET Framework, or .NET Core 3.1 and earlier versions, can only be collected on Windows, by using Procdump. A directory that contains procdump.exe and procdump64.exe must be in the PATH or PROCDUMP_PATH environment variable.
-    ///     
+    ///
     ///     The tools can be downloaded here: https://docs.microsoft.com/sysinternals/downloads/procdump
-    ///     
+    ///
     ///     To collect a crash dump from a native application running on .NET 5.0 or later, the usage of Procdump can be forced by setting the VSTEST_DUMP_FORCEPROCDUMP environment variable to 1.
-    ///     
+    ///
     ///     Implies --blame.
     /// </summary>
     public System.Boolean? BlameCrash
@@ -95,7 +95,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Enables collecting crash dump on expected as well as unexpected testhost exit.
     /// </summary>
@@ -104,7 +104,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The type of crash dump to be collected. Supported values are full (default) and mini. Implies --blame-crash.
     /// </summary>
@@ -113,7 +113,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Run the tests in blame mode and enables collecting hang dump when test exceeds the given timeout.
     /// </summary>
@@ -122,7 +122,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The type of crash dump to be collected. The supported values are full (default), mini, and none. When 'none' is used then test host is terminated on timeout, but no dump is collected. Implies --blame-hang.
     /// </summary>
@@ -131,7 +131,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Per-test timeout, after which hang dump is triggered and the testhost process is terminated. Default is 1h.
     ///     The timeout value is specified in the following format: 1.5h / 90m / 5400s / 5400000ms. When no unit is used (e.g. 5400000), the value is assumed to be in milliseconds.
@@ -143,7 +143,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The friendly name of the data collector to use for the test run.
     ///                                             More info here: https://aka.ms/vstest-collect
@@ -153,7 +153,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The configuration to use for running tests. The default for most projects is 'Debug'.
     /// </summary>
@@ -162,7 +162,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Enable verbose logging to the specified file.
     /// </summary>
@@ -171,7 +171,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Force the command to ignore any persistent build servers.
     /// </summary>
@@ -180,26 +180,26 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
-    ///     Sets the value of an environment variable. 
-    ///     Creates the variable if it does not exist, overrides if it does. 
-    ///     This will force the tests to be run in an isolated process. 
+    ///     Sets the value of an environment variable.
+    ///     Creates the variable if it does not exist, overrides if it does.
+    ///     This will force the tests to be run in an isolated process.
     ///     This argument can be specified multiple times to provide multiple variables.
-    ///     
+    ///
     ///     Examples:
     ///     -e VARIABLE=abc
     ///     -e VARIABLE="value with spaces"
     ///     -e VARIABLE="value;seperated with;semicolons"
     ///     -e VAR1=abc -e VAR2=def -e VAR3=ghi
-    ///     
+    ///
     /// </summary>
     public string? Environment
     {
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Run tests that match the given expression.
     ///                                             Examples:
@@ -207,14 +207,14 @@ public sealed record TestOptions
     ///                                             Run a test with the specified full name: --filter "FullyQualifiedName=Namespace.ClassName.MethodName"
     ///                                             Run tests that contain the specified name: --filter "FullyQualifiedName~Namespace.Class"
     ///                                             See https://aka.ms/vstest-filtering for more information on filtering support.
-    ///                                             
+    ///
     /// </summary>
     public System.String? Filter
     {
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The target framework to run tests for. The target framework must also be specified in the project file.
     /// </summary>
@@ -223,7 +223,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Allows the command to stop and wait for user input or action (for example to complete authentication).
     /// </summary>
@@ -232,7 +232,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     List the discovered tests instead of running the tests.
     /// </summary>
@@ -241,12 +241,12 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The logger to use for test results.
     ///                                             Examples:
     ///                                             Log in trx format using a unique file name: --logger trx
-    ///                                             Log in trx format using the specified file name: --logger "trx;LogFileName=<TestResults.trx>"
+    ///                                             Log in trx format using the specified file name: --logger "trx;LogFileName=&lt;TestResults.trx&gt;"
     ///                                             See https://aka.ms/vstest-report for more information on logger arguments.
     /// </summary>
     public string? Logger
@@ -254,7 +254,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Do not build the project before testing. Implies --no-restore.
     /// </summary>
@@ -263,7 +263,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Do not restore the project before building.
     /// </summary>
@@ -272,7 +272,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Run test(s), without displaying Microsoft Testplatform banner
     /// </summary>
@@ -281,7 +281,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The target operating system.
     /// </summary>
@@ -290,7 +290,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The output directory to place built artifacts in.
     /// </summary>
@@ -299,13 +299,13 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     public string? Property
     {
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The directory where the test results will be placed.
     ///     The specified directory will be created if it does not exist.
@@ -315,7 +315,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The target runtime to test for.
     /// </summary>
@@ -324,7 +324,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The settings file to use when running tests.
     /// </summary>
@@ -333,7 +333,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Build these targets in this project. Use a semicolon or a comma to separate multiple targets, or specify each target separately.
     /// </summary>
@@ -342,7 +342,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The path to the custom adapters to use for the test run.
     /// </summary>
@@ -351,7 +351,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Set the MSBuild verbosity level. Allowed values are q[uiet], m[inimal], n[ormal], d[etailed], and diag[nostic].
     /// </summary>
@@ -360,7 +360,7 @@ public sealed record TestOptions
         get;
         init;
     }
-    
+
     public override string ToString()    {
         return string.Join(' ',
         new[]
@@ -461,6 +461,6 @@ public sealed record TestOptions
         }
         );
     }
-    
+
 }
 

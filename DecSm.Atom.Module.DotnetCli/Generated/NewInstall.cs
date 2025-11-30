@@ -14,9 +14,9 @@ public partial interface IDotnetCli
     ///     Installs a template package.
     /// </summary>
     /// <param name="package">
-    ///     NuGet package ID or path to folder or NuGet package to install. 
-    ///     To install the NuGet package of certain version, use <package ID>::<version>.
-    ///     
+    ///     NuGet package ID or path to folder or NuGet package to install.
+    ///     To install the NuGet package of certain version, use &lt;package ID&gt;::&lt;version&gt;.
+    ///
     /// </param>
     /// <param name="options">
     ///     Options
@@ -29,14 +29,14 @@ public partial interface IDotnetCli
         NewInstallOptions? options = null,
         CancellationToken cancellationToken = default
     );
-    
+
     /// <summary>
     ///     Installs a template package.
     /// </summary>
     /// <param name="package">
-    ///     NuGet package ID or path to folder or NuGet package to install. 
-    ///     To install the NuGet package of certain version, use <package ID>::<version>.
-    ///     
+    ///     NuGet package ID or path to folder or NuGet package to install.
+    ///     To install the NuGet package of certain version, use &lt;package ID&gt;::&lt;version&gt;.
+    ///
     /// </param>
     /// <param name="options">
     ///     Options
@@ -49,14 +49,14 @@ public partial interface IDotnetCli
         NewInstallOptions? options = null,
         CancellationToken cancellationToken = default
     );
-    
+
     /// <summary>
     ///     Installs a template package.
     /// </summary>
     /// <param name="package">
-    ///     NuGet package ID or path to folder or NuGet package to install. 
-    ///     To install the NuGet package of certain version, use <package ID>::<version>.
-    ///     
+    ///     NuGet package ID or path to folder or NuGet package to install.
+    ///     To install the NuGet package of certain version, use &lt;package ID&gt;::&lt;version&gt;.
+    ///
     /// </param>
     /// <param name="options">
     ///     Options
@@ -69,7 +69,7 @@ public partial interface IDotnetCli
         NewInstallOptions? options = null,
         CancellationToken cancellationToken = default
     );
-    
+
 }
 
 internal partial class DotnetCli : IDotnetCli
@@ -85,7 +85,7 @@ internal partial class DotnetCli : IDotnetCli
                 string.Join(' ', package),
                 options?.ToString(),
             ])), cancellationToken);
-    
+
     public Task<ProcessRunResult> NewInstall(
         System.String package,
         NewInstallOptions? options = null,
@@ -97,7 +97,7 @@ internal partial class DotnetCli : IDotnetCli
                 package,
                 options?.ToString(),
             ])), cancellationToken);
-    
+
     public Task<ProcessRunResult> NewInstall(
         DecSm.Atom.Paths.RootedPath package,
         NewInstallOptions? options = null,
@@ -109,7 +109,7 @@ internal partial class DotnetCli : IDotnetCli
                 package,
                 options?.ToString(),
             ])), cancellationToken);
-    
+
 }
 
 [PublicAPI]
@@ -123,7 +123,7 @@ public sealed record NewInstallOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Allows installing template packages from the specified sources even if they would override a template package from another source.
     /// </summary>
@@ -132,7 +132,7 @@ public sealed record NewInstallOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Allows the command to stop and wait for user input or action (for example to complete authentication).
     /// </summary>
@@ -141,7 +141,7 @@ public sealed record NewInstallOptions
         get;
         init;
     }
-    
+
     public override string ToString()    {
         return string.Join(' ',
         new[]
@@ -158,6 +158,6 @@ public sealed record NewInstallOptions
         }
         );
     }
-    
+
 }
 

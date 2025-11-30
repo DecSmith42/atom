@@ -11,7 +11,7 @@ namespace DecSm.Atom.Module.DotnetCli;
 public partial interface IDotnetCli
 {
     /// <summary>
-    ///     Instantiates a template with given short name. An alias of 'dotnet new <template name>'.
+    ///     Instantiates a template with given short name. An alias of 'dotnet new &lt;template name&gt;'.
     /// </summary>
     /// <param name="templateShortName">
     ///     A short name of the template to create.
@@ -31,7 +31,7 @@ public partial interface IDotnetCli
         NewCreateOptions? options = null,
         CancellationToken cancellationToken = default
     );
-    
+
 }
 
 internal partial class DotnetCli : IDotnetCli
@@ -49,7 +49,7 @@ internal partial class DotnetCli : IDotnetCli
                 string.Join(' ', templateArgs),
                 options?.ToString(),
             ])), cancellationToken);
-    
+
 }
 
 [PublicAPI]
@@ -63,7 +63,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Forces content to be generated even if it would change existing files.
     /// </summary>
@@ -72,7 +72,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The name for the output being created. If no name is specified, the name of the output directory is used.
     /// </summary>
@@ -81,7 +81,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Disables checking for the template package updates when instantiating a template.
     /// </summary>
@@ -90,7 +90,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     Location to place the generated output.
     /// </summary>
@@ -99,7 +99,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     /// <summary>
     ///     The project that should be used for context evaluation.
     /// </summary>
@@ -108,7 +108,7 @@ public sealed record NewCreateOptions
         get;
         init;
     }
-    
+
     public override string ToString()    {
         return string.Join(' ',
         new[]
@@ -134,6 +134,6 @@ public sealed record NewCreateOptions
         }
         );
     }
-    
+
 }
 
