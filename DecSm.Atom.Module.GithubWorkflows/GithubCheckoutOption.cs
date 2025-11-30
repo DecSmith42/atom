@@ -4,6 +4,8 @@
 public sealed record
     GithubCheckoutOption : WorkflowOption<GithubCheckoutOption.GithubCheckoutOptionValues, GithubCheckoutOption>
 {
+    public override bool AllowMultiple => false;
+
     [PublicAPI]
     public sealed record GithubCheckoutOptionValues(
         string Version = "v4",
@@ -11,6 +13,4 @@ public sealed record
         string? Submodules = null,
         string? Token = null
     );
-
-    public override bool AllowMultiple => false;
 }

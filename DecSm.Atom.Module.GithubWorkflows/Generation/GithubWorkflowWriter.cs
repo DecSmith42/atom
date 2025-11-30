@@ -66,6 +66,7 @@ internal sealed class GithubWorkflowWriter(
                                                         defaultBoolValue = boolParam;
 
                                                         break;
+
                                                     case string stringParam:
                                                     {
                                                         if (bool.TryParse(stringParam, out var parsedBool))
