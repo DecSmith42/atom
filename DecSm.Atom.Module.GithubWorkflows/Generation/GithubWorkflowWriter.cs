@@ -357,6 +357,9 @@ internal sealed class GithubWorkflowWriter(
 
                     if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Submodules))
                         WriteLine($"submodules: {checkoutOption.Value.Submodules}");
+
+                    if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Token))
+                        WriteLine($"token: {checkoutOption.Value.Token}");
                 }
             }
         else
