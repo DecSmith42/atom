@@ -13,7 +13,9 @@ internal class RunArgsFilter(ConsoleAppFilter next) : ConsoleAppFilter(next)
 
         await Next.InvokeAsync(new(context.CommandName,
                 context.Arguments,
+                ReadOnlyMemory<string>.Empty,
                 context.State,
+                null,
                 context.CommandDepth,
                 context.Arguments[0] is "-p" or "--project"
                     ? 2
