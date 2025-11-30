@@ -294,6 +294,21 @@ internal sealed class GithubWorkflowWriter(
             else
                 WriteLine($"runs-on: {labelsDisplay}");
 
+            var snapshotImageOption = job
+                .Options
+                .Concat(workflow.Options)
+                .OfType<GithubSnapshotImageOption>()
+                .FirstOrDefault();
+
+            if (snapshotImageOption?.Value is not null)
+                using (WriteSection("snapshot:"))
+                {
+                    WriteLine($"image-name: {snapshotImageOption.Value.ImageName}");
+
+                    if (!string.IsNullOrWhiteSpace(snapshotImageOption.Value.Version))
+                        WriteLine($"version: {snapshotImageOption.Value.Version}");
+                }
+
             var environmentOptions = job
                 .Options
                 .Concat(workflow.Options)
