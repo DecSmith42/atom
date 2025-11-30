@@ -29,13 +29,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       
       - name: SetupBuildInfo
         id: SetupBuildInfo
         run: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
   
-  PackAtom:
+  PackProjects:
     runs-on: ubuntu-latest
     steps:
       
@@ -46,19 +45,54 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       
-      - name: PackAtom
-        id: PackAtom
-        run: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
+      - name: PackProjects
+        id: PackProjects
+        run: dotnet run --project _atom/_atom.csproj PackProjects --skip --headless
       
       - name: Upload DecSm.Atom
         uses: actions/upload-artifact@v4
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom"
+      
+      - name: Upload DecSm.Atom.Module.AzureKeyVault
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.AzureKeyVault
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureKeyVault"
+      
+      - name: Upload DecSm.Atom.Module.AzureStorage
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.AzureStorage
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureStorage"
+      
+      - name: Upload DecSm.Atom.Module.DevopsWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.DevopsWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.DevopsWorkflows"
+      
+      - name: Upload DecSm.Atom.Module.Dotnet
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.Dotnet
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.Dotnet"
+      
+      - name: Upload DecSm.Atom.Module.GitVersion
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GitVersion
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GitVersion"
+      
+      - name: Upload DecSm.Atom.Module.GithubWorkflows
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GithubWorkflows
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows"
   
-  PackAtomTool:
+  PackTool:
     strategy:
       matrix:
         job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -72,11 +106,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       
-      - name: PackAtomTool
-        id: PackAtomTool
-        run: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
+      - name: PackTool
+        id: PackTool
+        run: dotnet run --project _atom/_atom.csproj PackTool --skip --headless
         env:
           job-runs-on: ${{ matrix.job-runs-on }}
           build-slice: ${{ matrix.job-runs-on }}
@@ -87,145 +120,7 @@ jobs:
           name: DecSm.Atom.Tool-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool"
   
-  PackAzureKeyVaultModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackAzureKeyVaultModule
-        id: PackAzureKeyVaultModule
-        run: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.AzureKeyVault
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.AzureKeyVault
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureKeyVault"
-  
-  PackAzureStorageModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackAzureStorageModule
-        id: PackAzureStorageModule
-        run: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.AzureStorage
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.AzureStorage
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.AzureStorage"
-  
-  PackDevopsWorkflowsModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackDevopsWorkflowsModule
-        id: PackDevopsWorkflowsModule
-        run: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.DevopsWorkflows
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.DevopsWorkflows
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.DevopsWorkflows"
-  
-  PackDotnetModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackDotnetModule
-        id: PackDotnetModule
-        run: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.Dotnet
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.Dotnet
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.Dotnet"
-  
-  PackGithubWorkflowsModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackGithubWorkflowsModule
-        id: PackGithubWorkflowsModule
-        run: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.GithubWorkflows
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.GithubWorkflows
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows"
-  
-  PackGitVersionModule:
-    runs-on: ubuntu-latest
-    steps:
-      
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
-      
-      - name: PackGitVersionModule
-        id: PackGitVersionModule
-        run: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
-      
-      - name: Upload DecSm.Atom.Module.GitVersion
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.Module.GitVersion
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GitVersion"
-  
-  TestAtom:
+  TestProjects:
     strategy:
       matrix:
         job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
@@ -239,7 +134,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
@@ -247,9 +141,9 @@ jobs:
         with:
           dotnet-version: '9.0.x'
       
-      - name: TestAtom
-        id: TestAtom
-        run: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
+      - name: TestProjects
+        id: TestProjects
+        run: dotnet run --project _atom/_atom.csproj TestProjects --skip --headless
         env:
           job-runs-on: ${{ matrix.job-runs-on }}
           build-slice: ${{ matrix.job-runs-on }}
@@ -260,12 +154,6 @@ jobs:
           name: DecSm.Atom.Tests-${{ matrix.job-runs-on }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tests"
       
-      - name: Upload DecSm.Atom.SourceGenerators.Tests
-        uses: actions/upload-artifact@v4
-        with:
-          name: DecSm.Atom.SourceGenerators.Tests-${{ matrix.job-runs-on }}
-          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.SourceGenerators.Tests"
-      
       - name: Upload DecSm.Atom.Module.GithubWorkflows.Tests
         uses: actions/upload-artifact@v4
         with:
@@ -273,7 +161,7 @@ jobs:
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
   
   PushToNuget:
-    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    needs: [ TestProjects, PackProjects, PackTool, SetupBuildInfo ]
     runs-on: ubuntu-latest
     steps:
       
@@ -284,31 +172,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       
       - name: Download DecSm.Atom
         uses: actions/download-artifact@v4
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
-      
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool-windows-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
-      
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool-ubuntu-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
-      
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool-macos-latest
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: Download DecSm.Atom.Module.AzureKeyVault
         uses: actions/download-artifact@v4
@@ -334,17 +203,23 @@ jobs:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.Dotnet"
       
+      - name: Download DecSm.Atom.Module.GitVersion
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GitVersion
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GitVersion"
+      
       - name: Download DecSm.Atom.Module.GithubWorkflows
         uses: actions/download-artifact@v4
         with:
           name: DecSm.Atom.Module.GithubWorkflows
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GithubWorkflows"
       
-      - name: Download DecSm.Atom.Module.GitVersion
+      - name: Download DecSm.Atom.Tool
         uses: actions/download-artifact@v4
         with:
-          name: DecSm.Atom.Module.GitVersion
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GitVersion"
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: PushToNuget
         id: PushToNuget
@@ -357,7 +232,7 @@ jobs:
           azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
   
   PushToRelease:
-    needs: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
+    needs: [ TestProjects, PackProjects, PackTool, SetupBuildInfo ]
     runs-on: ubuntu-latest
     if: contains(needs.SetupBuildInfo.outputs.build-version, '-') == false
     steps:
@@ -369,19 +244,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-          dotnet-quality: 'preview'
       
       - name: Download DecSm.Atom
         uses: actions/download-artifact@v4
         with:
           name: DecSm.Atom
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom"
-      
-      - name: Download DecSm.Atom.Tool
-        uses: actions/download-artifact@v4
-        with:
-          name: DecSm.Atom.Tool
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: Download DecSm.Atom.Module.AzureKeyVault
         uses: actions/download-artifact@v4
@@ -407,17 +275,23 @@ jobs:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.Dotnet"
       
+      - name: Download DecSm.Atom.Module.GitVersion
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.GitVersion
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GitVersion"
+      
       - name: Download DecSm.Atom.Module.GithubWorkflows
         uses: actions/download-artifact@v4
         with:
           name: DecSm.Atom.Module.GithubWorkflows
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GithubWorkflows"
       
-      - name: Download DecSm.Atom.Module.GitVersion
+      - name: Download DecSm.Atom.Tool
         uses: actions/download-artifact@v4
         with:
-          name: DecSm.Atom.Module.GitVersion
-          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GitVersion"
+          name: DecSm.Atom.Tool
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: PushToRelease
         id: PushToRelease

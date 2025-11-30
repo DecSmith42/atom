@@ -6,14 +6,13 @@ internal partial class Build : DefaultBuildDefinition,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,
-    IDeployTargets,
-    ITestTargets
+    IBuildTargets,
+    ITestTargets,
+    IDeployTargets
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled,
-        UseGitVersionForBuildId.Enabled,
-        new SetupDotnetStep("10.0.x", SetupDotnetStep.DotnetQuality.Preview),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -25,16 +24,10 @@ internal partial class Build : DefaultBuildDefinition,
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom.WithSuppressedArtifactPublishing,
-                Targets.PackAtomTool.WithSuppressedArtifactPublishing,
-                Targets.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
-                Targets.PackAzureStorageModule.WithSuppressedArtifactPublishing,
-                Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
-                Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
+                Targets.PackProjects.WithSuppressedArtifactPublishing,
+                Targets.PackTool.WithSuppressedArtifactPublishing,
                 Targets
-                    .TestAtom
+                    .TestProjects
                     .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
@@ -54,16 +47,10 @@ internal partial class Build : DefaultBuildDefinition,
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom,
-                Targets.PackAtomTool.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
-                Targets.PackAzureKeyVaultModule,
-                Targets.PackAzureStorageModule,
-                Targets.PackDevopsWorkflowsModule,
-                Targets.PackDotnetModule,
-                Targets.PackGithubWorkflowsModule,
-                Targets.PackGitVersionModule,
+                Targets.PackProjects,
+                Targets.PackTool.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
                 Targets
-                    .TestAtom
+                    .TestProjects
                     .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
@@ -84,16 +71,10 @@ internal partial class Build : DefaultBuildDefinition,
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom.WithSuppressedArtifactPublishing,
-                Targets.PackAtomTool.WithSuppressedArtifactPublishing,
-                Targets.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
-                Targets.PackAzureStorageModule.WithSuppressedArtifactPublishing,
-                Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
-                Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
+                Targets.PackProjects.WithSuppressedArtifactPublishing,
+                Targets.PackTool.WithSuppressedArtifactPublishing,
                 Targets
-                    .TestAtom
+                    .TestProjects
                     .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
                     {
                         Values = IBuildTargets.BuildPlatformNames,
@@ -109,19 +90,13 @@ internal partial class Build : DefaultBuildDefinition,
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom,
-                Targets.PackAtomTool,
-                Targets.PackAzureKeyVaultModule,
-                Targets.PackAzureStorageModule,
-                Targets.PackDevopsWorkflowsModule,
-                Targets.PackDotnetModule,
-                Targets.PackGithubWorkflowsModule,
-                Targets.PackGitVersionModule,
+                Targets.PackProjects,
+                Targets.PackTool,
                 Targets
-                    .TestAtom
+                    .TestProjects
                     .WithDevopsPoolMatrix(IBuildTargets.BuildPlatformNames)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                Targets.PushToNuget,
+                // Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],

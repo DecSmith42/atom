@@ -18,13 +18,12 @@ jobs:
         inputs:
           version: '10.0.x'
 
-          includePreviewVersions: 'true'
       - script: dotnet run --project _atom/_atom.csproj SetupBuildInfo --skip --headless
         name: SetupBuildInfo
         env:
           nuget-dry-run: true
   
-  - job: PackAtom
+  - job: PackProjects
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -36,9 +35,8 @@ jobs:
         inputs:
           version: '10.0.x'
 
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackAtom --skip --headless
-        name: PackAtom
+      - script: dotnet run --project _atom/_atom.csproj PackProjects --skip --headless
+        name: PackProjects
         env:
           nuget-dry-run: true
       
@@ -48,8 +46,44 @@ jobs:
           artifactName: DecSm.Atom
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom"
       
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.AzureKeyVault
+        inputs:
+          artifactName: DecSm.Atom.Module.AzureKeyVault
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.AzureKeyVault"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.AzureStorage
+        inputs:
+          artifactName: DecSm.Atom.Module.AzureStorage
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.AzureStorage"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.DevopsWorkflows
+        inputs:
+          artifactName: DecSm.Atom.Module.DevopsWorkflows
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.DevopsWorkflows"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.Dotnet
+        inputs:
+          artifactName: DecSm.Atom.Module.Dotnet
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.Dotnet"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.GitVersion
+        inputs:
+          artifactName: DecSm.Atom.Module.GitVersion
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GitVersion"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.GithubWorkflows
+        inputs:
+          artifactName: DecSm.Atom.Module.GithubWorkflows
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows"
+      
   
-  - job: PackAtomTool
+  - job: PackTool
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -61,9 +95,8 @@ jobs:
         inputs:
           version: '10.0.x'
 
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackAtomTool --skip --headless
-        name: PackAtomTool
+      - script: dotnet run --project _atom/_atom.csproj PackTool --skip --headless
+        name: PackTool
         env:
           nuget-dry-run: true
       
@@ -74,157 +107,7 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tool"
       
   
-  - job: PackAzureKeyVaultModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackAzureKeyVaultModule --skip --headless
-        name: PackAzureKeyVaultModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.AzureKeyVault
-        inputs:
-          artifactName: DecSm.Atom.Module.AzureKeyVault
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.AzureKeyVault"
-      
-  
-  - job: PackAzureStorageModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackAzureStorageModule --skip --headless
-        name: PackAzureStorageModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.AzureStorage
-        inputs:
-          artifactName: DecSm.Atom.Module.AzureStorage
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.AzureStorage"
-      
-  
-  - job: PackDevopsWorkflowsModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackDevopsWorkflowsModule --skip --headless
-        name: PackDevopsWorkflowsModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.DevopsWorkflows
-        inputs:
-          artifactName: DecSm.Atom.Module.DevopsWorkflows
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.DevopsWorkflows"
-      
-  
-  - job: PackDotnetModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackDotnetModule --skip --headless
-        name: PackDotnetModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.Dotnet
-        inputs:
-          artifactName: DecSm.Atom.Module.Dotnet
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.Dotnet"
-      
-  
-  - job: PackGithubWorkflowsModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackGithubWorkflowsModule --skip --headless
-        name: PackGithubWorkflowsModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.GithubWorkflows
-        inputs:
-          artifactName: DecSm.Atom.Module.GithubWorkflows
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows"
-      
-  
-  - job: PackGitVersionModule
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - script: dotnet run --project _atom/_atom.csproj PackGitVersionModule --skip --headless
-        name: PackGitVersionModule
-        env:
-          nuget-dry-run: true
-      
-      - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.GitVersion
-        inputs:
-          artifactName: DecSm.Atom.Module.GitVersion
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GitVersion"
-      
-  
-  - job: TestAtom
+  - job: TestProjects
     strategy:
       matrix:
         001_windows-latest:
@@ -244,7 +127,6 @@ jobs:
         inputs:
           version: '10.0.x'
 
-          includePreviewVersions: 'true'
       - task: UseDotNet@2
         inputs:
           version: '8.0.x'
@@ -253,8 +135,8 @@ jobs:
         inputs:
           version: '9.0.x'
 
-      - script: dotnet run --project _atom/_atom.csproj TestAtom --skip --headless
-        name: TestAtom
+      - script: dotnet run --project _atom/_atom.csproj TestProjects --skip --headless
+        name: TestProjects
         env:
           nuget-dry-run: true
           job-runs-on: $(job-runs-on)
@@ -267,100 +149,8 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
-        inputs:
-          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
-      
-      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows.Tests"
       
-  
-  - job: PushToNuget
-    dependsOn: [ TestAtom, PackAtom, PackAtomTool, PackAzureKeyVaultModule, PackAzureStorageModule, PackDevopsWorkflowsModule, PackDotnetModule, PackGithubWorkflowsModule, PackGitVersionModule, SetupBuildInfo ]
-    pool:
-      vmImage: ubuntu-latest
-    variables:
-      build-id: $[ dependencies.SetupBuildInfo.outputs['SetupBuildInfo.build-id'] ]
-    steps:
-      
-      - checkout: self
-        fetchDepth: 0
-      
-      - task: UseDotNet@2
-        inputs:
-          version: '10.0.x'
-
-          includePreviewVersions: 'true'
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom
-        inputs:
-          artifact: DecSm.Atom
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool
-        inputs:
-          artifact: DecSm.Atom.Tool
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool
-        inputs:
-          artifact: DecSm.Atom.Tool
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool
-        inputs:
-          artifact: DecSm.Atom.Tool
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.AzureKeyVault
-        inputs:
-          artifact: DecSm.Atom.Module.AzureKeyVault
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.AzureKeyVault"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.AzureStorage
-        inputs:
-          artifact: DecSm.Atom.Module.AzureStorage
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.AzureStorage"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.DevopsWorkflows
-        inputs:
-          artifact: DecSm.Atom.Module.DevopsWorkflows
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.DevopsWorkflows"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.Dotnet
-        inputs:
-          artifact: DecSm.Atom.Module.Dotnet
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.Dotnet"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.GithubWorkflows
-        inputs:
-          artifact: DecSm.Atom.Module.GithubWorkflows
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.GithubWorkflows"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.GitVersion
-        inputs:
-          artifact: DecSm.Atom.Module.GitVersion
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.GitVersion"
-      
-      - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
-        name: PushToNuget
-        env:
-          build-id: $(build-id)
-          azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)
-          azure-vault-address: $(AZURE_VAULT_ADDRESS)
-          azure-vault-tenant-id: $(AZURE_VAULT_TENANT_ID)
-          azure-vault-app-id: $(AZURE_VAULT_APP_ID)
-          nuget-dry-run: true
