@@ -339,13 +339,34 @@ internal sealed class GithubWorkflowWriter(
 
     private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)
     {
-        using (WriteSection("- name: Checkout"))
-        {
-            WriteLine("uses: actions/checkout@v4");
+        if (workflow
+                .Options
+                .Concat(step.Options)
+                .OfType<GithubCheckoutOption>()
+                .FirstOrDefault() is { } checkoutOption)
+            using (WriteSection("- name: Checkout"))
+            {
+                WriteLine($"uses: actions/checkout@{checkoutOption.Value!.Version}");
 
-            using (WriteSection("with:"))
-                WriteLine("fetch-depth: 0");
-        }
+                using (WriteSection("with:"))
+                {
+                    WriteLine("fetch-depth: 0");
+
+                    if (checkoutOption.Value.Lfs)
+                        WriteLine("lfs: true");
+
+                    if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Submodules))
+                        WriteLine($"submodules: {checkoutOption.Value.Submodules}");
+                }
+            }
+        else
+            using (WriteSection("- name: Checkout"))
+            {
+                WriteLine("uses: actions/checkout@v4");
+
+                using (WriteSection("with:"))
+                    WriteLine("fetch-depth: 0");
+            }
 
         var commandStepTarget = buildModel.GetTarget(step.Name);
 
