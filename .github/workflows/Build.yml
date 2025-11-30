@@ -218,7 +218,19 @@ jobs:
       - name: Download DecSm.Atom.Tool
         uses: actions/download-artifact@v4
         with:
-          name: DecSm.Atom.Tool
+          name: DecSm.Atom.Tool-windows-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-ubuntu-latest
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
+      
+      - name: Download DecSm.Atom.Tool
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool-macos-latest
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool"
       
       - name: PushToNuget

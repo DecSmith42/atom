@@ -27,7 +27,9 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .ConsumesArtifacts(nameof(IBuildTargets.PackProjects),
                 ProjectsToPush.Select(project => project.FileNameWithoutExtension))
-            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool),
+                Projects.DecSm_Atom_Tool.Name,
+                IBuildTargets.BuildPlatformNames)
             .DependsOn(nameof(ITestTargets.TestProjects))
             .Executes(async cancellationToken =>
             {
