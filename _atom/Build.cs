@@ -96,7 +96,7 @@ internal partial class Build : DefaultBuildDefinition,
                     .TestProjects
                     .WithDevopsPoolMatrix(IBuildTargets.BuildPlatformNames)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                // Targets.PushToNuget,
+                Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],
