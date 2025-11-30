@@ -1,0 +1,22 @@
+﻿name: snapshotimageoption-workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  
+  CheckoutOptionTarget:
+    runs-on: ubuntu-latest
+    snapshot:
+      image-name: snapshot-image-test
+      version: 1.*.*
+    steps:
+      
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: CheckoutOptionTarget
+        id: CheckoutOptionTarget
+        run: dotnet run --project AtomTest/AtomTest.csproj CheckoutOptionTarget --skip --headless
