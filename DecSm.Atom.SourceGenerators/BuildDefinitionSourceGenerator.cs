@@ -146,7 +146,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             ? string.Empty
             : $"global using static {classFull};";
 
-        var interfacesWithProperties = classSymbol
+        var typesWithProperties = classSymbol
             .AllInterfaces
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
@@ -158,16 +158,17 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .ToArray();
 
-        var interfacesWithTargets =
-            DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
+        var typesWithTargets =
+            DeduplicateTargets(typesWithProperties.Where(static p => p.Property.Type.Name is Target));
 
-        var interfacesWithParams = interfacesWithProperties
+        var typesWithParams = typesWithProperties
             .Where(static p => p
                 .Property
                 .GetAttributes()
                 .Any(static attribute =>
                     attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
-            .Select(static interfaceWithProperty => new PropertyWithAttribute(interfaceWithProperty.Property,
+            .Select(static interfaceWithProperty => new TypeWithPropertyAndAttribute(interfaceWithProperty.Interface,
+                interfaceWithProperty.Property,
                 interfaceWithProperty
                     .Property
                     .GetAttributes()
@@ -190,7 +191,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull))
             .ToArray();
 
-        var targetDefinitionsPropertyBodyLines = interfacesWithTargets
+        var targetDefinitionsPropertyBodyLines = typesWithTargets
             .Select(static p =>
                 $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""")
             .ToArray();
@@ -208,7 +209,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{TargetFull}}>();""";
 
-        var paramDefinitionsPropertyBodyLines = interfacesWithParams
+        var paramDefinitionsPropertyBodyLines = typesWithParams
             .Select(static x => new
             {
                 x.Property.Name,
@@ -266,11 +267,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
 
-        var accessParamMethodLines = interfacesWithParams
+        var accessParamMethodLines = typesWithParams
+            .Where(typeWithPropertyAndAttribute => typeWithPropertyAndAttribute.Type.ToDisplayString() == classFull ||
+                                                   typeWithPropertyAndAttribute.Property.DeclaredAccessibility is
+                                                       Accessibility.Public
+                                                       or Accessibility.Protected
+                                                       or Accessibility.ProtectedOrInternal)
             .Select(p => p.Property)
-            .Where(p => p.DeclaredAccessibility is Accessibility.Public
-                or Accessibility.Protected
-                or Accessibility.ProtectedOrInternal)
             .Select(p => $"""
                                       "{SimpleName(p.Name)}" => (({p.ContainingType})this).{SimpleName(p.Name)},
                           """)
@@ -287,7 +290,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 """
             : """    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));""";
 
-        var targetsPropertiesLines = interfacesWithTargets
+        var targetsPropertiesLines = typesWithTargets
             .Select(static p =>
                 $"""        public static {WorkflowTargetDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""")
             .ToArray();
@@ -302,13 +305,13 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
                     private static {{WorkflowTargetDefinitionFull}} Target(string name) => name switch
                     {
-                {{string.Join("\n", interfacesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
+                {{string.Join("\n", typesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
                         _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name)),
                     };
                 """
             : "    // Build has no defined targets";
 
-        var paramsPropertiesLines = interfacesWithParams
+        var paramsPropertiesLines = typesWithParams
             .Select(static p =>
                 $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
             .ToArray();
@@ -443,5 +446,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private record struct TypeWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
 
-    private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
+    private record struct TypeWithPropertyAndAttribute(
+        INamedTypeSymbol Type,
+        IPropertySymbol Property,
+        AttributeData Attribute
+    );
 }

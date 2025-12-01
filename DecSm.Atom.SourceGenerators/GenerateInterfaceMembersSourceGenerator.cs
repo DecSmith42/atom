@@ -89,10 +89,6 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
                 .GetMembers()
                 .OfType<IPropertySymbol>()
                 .Select(propertySymbol => new TypeWithProperty(interfaceSymbol, propertySymbol)))
-            .Concat(classSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .Where(x => x.Property.DeclaredAccessibility is not Accessibility.Private &&
                         x.Property is
                         {
@@ -110,15 +106,12 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
         var interfacesWithMethods = classSymbol
             .AllInterfaces
-            .Where(x => x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
+            .Where(x => x.Name != classFull &&
+                        x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IMethodSymbol>()
                 .Select(methodSymbol => new TypeWithMethod(interfaceSymbol, methodSymbol)))
-            .Concat(classSymbol
-                .GetMembers()
-                .OfType<IMethodSymbol>()
-                .Select(methodSymbol => new TypeWithMethod(classSymbol, methodSymbol)))
             .Where(x => x.Method.DeclaredAccessibility is not Accessibility.Private &&
                         !x.Method.IsStatic &&
                         !x.Method.Name.StartsWith("get_") &&
