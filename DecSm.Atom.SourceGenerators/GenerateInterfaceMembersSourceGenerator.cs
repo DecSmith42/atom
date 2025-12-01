@@ -145,6 +145,9 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         // private string GetName() => ((IInterface)this).GetName();
 
         var propertyLines = interfacesWithProperties
+            .Where(t => t.Property.DeclaredAccessibility is Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal)
             .Select(typeWithProperty =>
             {
                 var interfaceName = typeWithProperty.Interface.ToDisplayString();
@@ -156,6 +159,9 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             .ToArray();
 
         var methodLines = interfacesWithMethods
+            .Where(t => t.Method.DeclaredAccessibility is Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal)
             .Select(typeWithMethod =>
             {
                 var interfaceName = typeWithMethod.Interface.ToDisplayString();
