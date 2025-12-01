@@ -268,6 +268,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         var accessParamMethodLines = interfacesWithParams
             .Select(p => p.Property)
+            .Where(p => p.DeclaredAccessibility is Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal)
             .Select(p => $"""
                                       "{SimpleName(p.Name)}" => (({p.ContainingType})this).{SimpleName(p.Name)},
                           """)
