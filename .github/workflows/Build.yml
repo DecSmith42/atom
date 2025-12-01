@@ -80,6 +80,12 @@ jobs:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.Dotnet"
       
+      - name: Upload DecSm.Atom.Module.DotnetCli
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Module.DotnetCli
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.DotnetCli"
+      
       - name: Upload DecSm.Atom.Module.GitVersion
         uses: actions/upload-artifact@v4
         with:
@@ -203,6 +209,12 @@ jobs:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.Dotnet"
       
+      - name: Download DecSm.Atom.Module.DotnetCli
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.DotnetCli
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.DotnetCli"
+      
       - name: Download DecSm.Atom.Module.GitVersion
         uses: actions/download-artifact@v4
         with:
@@ -286,6 +298,12 @@ jobs:
         with:
           name: DecSm.Atom.Module.Dotnet
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.Dotnet"
+      
+      - name: Download DecSm.Atom.Module.DotnetCli
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Module.DotnetCli
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.DotnetCli"
       
       - name: Download DecSm.Atom.Module.GitVersion
         uses: actions/download-artifact@v4

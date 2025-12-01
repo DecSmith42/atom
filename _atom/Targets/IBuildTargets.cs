@@ -14,6 +14,7 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPackHelper2, IDotne
         FileSystem.GetPath<Projects.DecSm_Atom_Module_AzureStorage>(),
         FileSystem.GetPath<Projects.DecSm_Atom_Module_DevopsWorkflows>(),
         FileSystem.GetPath<Projects.DecSm_Atom_Module_Dotnet>(),
+        FileSystem.GetPath<Projects.DecSm_Atom_Module_DotnetCli>(),
         FileSystem.GetPath<Projects.DecSm_Atom_Module_GitVersion>(),
         FileSystem.GetPath<Projects.DecSm_Atom_Module_GithubWorkflows>(),
     ];

@@ -71,6 +71,12 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.Dotnet"
       
       - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.DotnetCli
+        inputs:
+          artifactName: DecSm.Atom.Module.DotnetCli
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.DotnetCli"
+      
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Module.GitVersion
         inputs:
           artifactName: DecSm.Atom.Module.GitVersion
@@ -199,6 +205,12 @@ jobs:
         inputs:
           artifact: DecSm.Atom.Module.Dotnet
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.Dotnet"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Module.DotnetCli
+        inputs:
+          artifact: DecSm.Atom.Module.DotnetCli
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.DotnetCli"
       
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Module.GitVersion
