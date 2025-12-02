@@ -110,12 +110,33 @@ jobs:
   - job: TestProjects
     strategy:
       matrix:
-        001_windows-latest:
+        001_windows-latest_net8-0:
           job-runs-on: 'windows-latest'
-        002_ubuntu-latest:
+          test-framework: 'net8.0'
+        002_ubuntu-latest_net8-0:
           job-runs-on: 'ubuntu-latest'
-        003_macos-latest:
+          test-framework: 'net8.0'
+        003_macos-latest_net8-0:
           job-runs-on: 'macos-latest'
+          test-framework: 'net8.0'
+        004_windows-latest_net9-0:
+          job-runs-on: 'windows-latest'
+          test-framework: 'net9.0'
+        005_ubuntu-latest_net9-0:
+          job-runs-on: 'ubuntu-latest'
+          test-framework: 'net9.0'
+        006_macos-latest_net9-0:
+          job-runs-on: 'macos-latest'
+          test-framework: 'net9.0'
+        007_windows-latest_net10-0:
+          job-runs-on: 'windows-latest'
+          test-framework: 'net10.0'
+        008_ubuntu-latest_net10-0:
+          job-runs-on: 'ubuntu-latest'
+          test-framework: 'net10.0'
+        009_macos-latest_net10-0:
+          job-runs-on: 'macos-latest'
+          test-framework: 'net10.0'
     pool:
       vmImage: $(job-runs-on)
     steps:
@@ -140,30 +161,31 @@ jobs:
         env:
           nuget-dry-run: true
           job-runs-on: $(job-runs-on)
-          build-slice: $(job-runs-on)
+          test-framework: $(test-framework)
+          build-slice: $(job-runs-on)-$(test-framework)
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.Tests-$(job-runs-on)-$(test-framework)
         inputs:
-          artifactName: DecSm.Atom.Tests-$(job-runs-on)
+          artifactName: DecSm.Atom.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)-$(test-framework)
         inputs:
-          artifactName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)
+          artifactName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Analyzers.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)-$(test-framework)
         inputs:
-          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
+        displayName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
         inputs:
-          artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
+          artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows.Tests"
       
   

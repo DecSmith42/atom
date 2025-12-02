@@ -2,11 +2,6 @@ namespace Atom.Targets;
 
 internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
 {
-    static readonly string[] BuildPlatformNames =
-    [
-        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-    ];
-
     static readonly string[] ProjectsToPack =
     [
         Projects.DecSm_Atom.Name,

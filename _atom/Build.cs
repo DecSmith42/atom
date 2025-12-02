@@ -10,6 +10,16 @@ internal partial class Build : DefaultBuildDefinition,
     ITestTargets,
     IDeployTargets
 {
+    private static readonly string[] PlatformNames =
+    [
+        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+    ];
+
+    private static readonly MatrixDimension TestFrameworkMatrix = new(nameof(ITestTargets.TestFramework))
+    {
+        Values = ["net8.0", "net9.0", "net10.0"],
+    };
+
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
         UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x"),
@@ -28,7 +38,8 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackTool.WithSuppressedArtifactPublishing,
                 Targets
                     .TestProjects
-                    .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithGithubRunnerMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Github.WorkflowType],
@@ -48,10 +59,11 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackProjects,
-                Targets.PackTool.WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames),
+                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
                 Targets
                     .TestProjects
-                    .WithGithubRunnerMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithGithubRunnerMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
                 Targets
@@ -75,10 +87,8 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackTool.WithSuppressedArtifactPublishing,
                 Targets
                     .TestProjects
-                    .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
-                    {
-                        Values = IBuildTargets.BuildPlatformNames,
-                    })
+                    .WithDevopsPoolMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
@@ -94,7 +104,8 @@ internal partial class Build : DefaultBuildDefinition,
                 Targets.PackTool,
                 Targets
                     .TestProjects
-                    .WithDevopsPoolMatrix(IBuildTargets.BuildPlatformNames)
+                    .WithDevopsPoolMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
             ],

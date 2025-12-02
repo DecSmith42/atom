@@ -10,25 +10,26 @@ internal interface ITestTargets : IDotnetTestHelper
         Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
     ];
 
+    [ParamDefinition("test-framework", "Test framework to use for unit tests")]
+    string TestFramework => GetParam(() => TestFramework, "net10.0");
+
     Target TestProjects =>
         t => t
             .DescribedAs("Runs all unit tests for the Atom projects")
+            .RequiresParam(nameof(TestFramework))
             .ProducesArtifacts(ProjectsToTest)
             .Executes(async cancellationToken =>
             {
                 var exitCode = 0;
 
-                string[] frameworks = ["net8.0", "net9.0", "net10.0"];
-
                 // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (var project in ProjectsToTest)
-                foreach (var framework in frameworks)
                     exitCode += await DotnetTestAndStage(project,
                         new()
                         {
                             TestOptions = new()
                             {
-                                Framework = framework,
+                                Framework = TestFramework,
                             },
                             IncludeCoverage = !project.Contains("Analyzers") && !project.Contains("SourceGenerators"),
                         },
