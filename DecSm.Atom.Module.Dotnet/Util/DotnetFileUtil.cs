@@ -46,7 +46,7 @@ public static class DotnetFileUtil
     {
         var foundProjectPath = fileSystem
             .Directory
-            .GetFiles(fileSystem.AtomRootDirectory, $"{projectName}.*proj", SearchOption.AllDirectories)
+            .GetFiles(fileSystem.AtomRootDirectory, $"{projectName}.csproj", SearchOption.AllDirectories)
             .OrderBy(p => p.Split(Path.DirectorySeparatorChar)
                 .Length)
             .FirstOrDefault();
