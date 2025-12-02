@@ -1,5 +1,0 @@
-<Project>
-    <ItemGroup>
-        <Using Include="DecSm.Atom.Module.DotnetCli" Global="true"/>
-    </ItemGroup>
-</Project>

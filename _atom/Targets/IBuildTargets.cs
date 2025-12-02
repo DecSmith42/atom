@@ -1,28 +1,27 @@
 namespace Atom.Targets;
 
-internal interface IBuildTargets : IDotnetPackHelper, IDotnetPackHelper2, IDotnetPublishHelper2
+internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
 {
     static readonly string[] BuildPlatformNames =
     [
         IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
     ];
 
-    List<RootedPath> ProjectsToPack =>
+    static readonly string[] ProjectsToPack =
     [
-        FileSystem.GetPath<Projects.DecSm_Atom>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_AzureKeyVault>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_AzureStorage>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_DevopsWorkflows>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_Dotnet>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_DotnetCli>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_GitVersion>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_GithubWorkflows>(),
+        Projects.DecSm_Atom.Name,
+        Projects.DecSm_Atom_Module_AzureKeyVault.Name,
+        Projects.DecSm_Atom_Module_AzureStorage.Name,
+        Projects.DecSm_Atom_Module_DevopsWorkflows.Name,
+        Projects.DecSm_Atom_Module_Dotnet.Name,
+        Projects.DecSm_Atom_Module_GitVersion.Name,
+        Projects.DecSm_Atom_Module_GithubWorkflows.Name,
     ];
 
     Target PackProjects =>
         t => t
             .DescribedAs("Packs the Atom projects (excluding the tool) into nuget packages")
-            .ProducesArtifacts(ProjectsToPack.Select(project => project.FileNameWithoutExtension))
+            .ProducesArtifacts(ProjectsToPack)
             .Executes(async cancellationToken =>
             {
                 foreach (var project in ProjectsToPack)
@@ -45,7 +44,10 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPackHelper2, IDotne
                         PackOptions = new()
                         {
                             Runtime = runtimeIdentifier,
-                            Property = "PublishAot=true",
+                            Property = new Dictionary<string, string>
+                            {
+                                { "PublishAot", "true" },
+                            },
                         },
                     },
                     cancellationToken);

@@ -3,15 +3,39 @@
 [TargetDefinition]
 public partial interface IGithubReleaseHelper : IGithubHelper
 {
-    async Task UploadArtifactToRelease(string artifactName, string releaseTag)
+    async Task UploadArtifactToRelease(
+        string artifactName,
+        string releaseTag,
+        bool dryRunWhenNotRunningInGithubActions = true)
     {
         var artifactPath = FileSystem.AtomArtifactsDirectory / artifactName;
 
-        await UploadAssetToRelease(releaseTag, artifactPath);
+        await UploadAssetToRelease(releaseTag, artifactPath, dryRunWhenNotRunningInGithubActions);
     }
 
-    async Task UploadAssetToRelease(string releaseTag, RootedPath assetPath)
+    async Task UploadAssetToRelease(
+        string releaseTag,
+        RootedPath assetPath,
+        bool dryRunWhenNotRunningInGithubActions = true)
     {
+        if (!Github.IsGithubActions && dryRunWhenNotRunningInGithubActions)
+        {
+            Logger.LogWarning(
+                "Not running in GitHub Actions, simulating upload of artifact {AssetPath} to release {ReleaseTag}.",
+                assetPath,
+                releaseTag);
+
+            if (assetPath.DirectoryExists)
+                Logger.LogInformation("Artifact path {AssetPath} is a directory containing {FileCount} files.",
+                    assetPath,
+                    FileSystem.Directory.GetFiles(assetPath, "*", SearchOption.AllDirectories)
+                        .Length);
+            else
+                Logger.LogInformation("Artifact path {AssetPath} is a file.", assetPath);
+
+            return;
+        }
+
         var client = new GitHubClient(new("DecSm.Atom"), new InMemoryCredentialStore(new(GithubToken)));
 
         var releases = await client.Repository.Release.GetAll(long.Parse(Github.Variables.RepositoryId));

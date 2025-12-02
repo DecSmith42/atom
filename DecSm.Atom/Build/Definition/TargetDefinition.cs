@@ -393,14 +393,17 @@ public sealed class TargetDefinition
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
     /// <param name="artifactNames">The names of the artifacts being consumed.</param>
-    /// <param name="buildSlice">An optional build slice associated with the consumed artifact.</param>
+    /// <param name="buildSlices">An optional build slice associated with the consumed artifact.</param>
     /// <returns>The current target definition.</returns>
-    public TargetDefinition ConsumesArtifact(
+    public TargetDefinition ConsumesArtifacts(
         string targetName,
         IEnumerable<string> artifactNames,
-        string? buildSlice = null)
+        IEnumerable<string> buildSlices)
     {
+        var buildSlicesArray = buildSlices.ToArray();
+
         foreach (var artifactName in artifactNames)
+        foreach (var buildSlice in buildSlicesArray)
             ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
 
         return this;

@@ -88,6 +88,13 @@ public static class DotnetCliParser
                 .Select(static subCmd => GetCommand(subCmd.Name, subCmd.Value))
                 .OfType<Command>());
 
+        // If there is a framework option and not a project or solution argument, add one
+        if (options.Any(static opt => opt.Name is "--framework") &&
+            options.Any(static opt => opt.Name is "--configuration") &&
+            !arguments.Any(static arg => arg.Name is "PROJECT | SOLUTION | FILE"))
+            arguments.Insert(0,
+                new("PROJECT | SOLUTION | FILE", "The project, solution, or file to operate on.", "System.String[]"));
+
         return new(name, description, arguments, options, subCommands);
     }
 

@@ -71,12 +71,6 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.Dotnet"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.DotnetCli
-        inputs:
-          artifactName: DecSm.Atom.Module.DotnetCli
-          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.DotnetCli"
-      
-      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Module.GitVersion
         inputs:
           artifactName: DecSm.Atom.Module.GitVersion
@@ -155,6 +149,18 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
       - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)
+        inputs:
+          artifactName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Analyzers.Tests"
+      
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+        inputs:
+          artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
+      
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
         inputs:
           artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)
@@ -207,12 +213,6 @@ jobs:
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.Dotnet"
       
       - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Module.DotnetCli
-        inputs:
-          artifact: DecSm.Atom.Module.DotnetCli
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.DotnetCli"
-      
-      - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Module.GitVersion
         inputs:
           artifact: DecSm.Atom.Module.GitVersion
@@ -223,18 +223,6 @@ jobs:
         inputs:
           artifact: DecSm.Atom.Module.GithubWorkflows
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Module.GithubWorkflows"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool
-        inputs:
-          artifact: DecSm.Atom.Tool
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
-      
-      - task: DownloadPipelineArtifact@2
-        displayName: DecSm.Atom.Tool
-        inputs:
-          artifact: DecSm.Atom.Tool
-          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Tool

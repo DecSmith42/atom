@@ -21,13 +21,20 @@ internal sealed partial class Build : DefaultBuildDefinition
                 DotnetCliParser.FlattenCommands(string.Empty, subCommand, flattenedCommands);
 
             if (!FileSystem.Directory.Exists(FileSystem.AtomRootDirectory /
-                                             "DecSm.Atom.Module.DotnetCli" /
+                                             "DecSm.Atom.Module.Dotnet" /
+                                             "Cli" /
                                              "Generated"))
                 FileSystem.Directory.CreateDirectory(FileSystem.AtomRootDirectory /
-                                                     "DecSm.Atom.Module.DotnetCli" /
+                                                     "DecSm.Atom.Module.Dotnet" /
+                                                     "Cli" /
                                                      "Generated");
 
-            foreach (var command in flattenedCommands.Where(x => !x.Name.StartsWith('-')))
+            flattenedCommands = flattenedCommands
+                .Where(x => x.Name.ToLowerInvariant() is not "completions script" and not "help" &&
+                            !x.Name.StartsWith('-'))
+                .ToList();
+
+            foreach (var command in flattenedCommands)
             {
                 var writer = new CsharpWriter();
 
@@ -35,11 +42,7 @@ internal sealed partial class Build : DefaultBuildDefinition
                 writer.WriteLine(string.Empty);
                 writer.WriteLine("#nullable enable");
                 writer.WriteLine(string.Empty);
-                writer.WriteLine("using DecSm.Atom.Paths;");
-                writer.WriteLine("using DecSm.Atom.Process;");
-                writer.WriteLine("using JetBrains.Annotations;");
-                writer.WriteLine(string.Empty);
-                writer.WriteLine("namespace DecSm.Atom.Module.DotnetCli;");
+                writer.WriteLine("namespace DecSm.Atom.Module.Dotnet.Cli;");
                 writer.WriteLine(string.Empty);
 
                 DotnetCliGenerator.GenerateInterfaceCode(writer, command);
@@ -47,7 +50,8 @@ internal sealed partial class Build : DefaultBuildDefinition
                 DotnetCliGenerator.GenerateOptionsCode(writer, command);
 
                 await FileSystem.File.WriteAllTextAsync(FileSystem.AtomRootDirectory /
-                                                        "DecSm.Atom.Module.DotnetCli" /
+                                                        "DecSm.Atom.Module.Dotnet" /
+                                                        "Cli" /
                                                         "Generated" /
                                                         $"{CsharpWriter.ToPascalCase(command.Name)}.cs",
                     writer.ToString());

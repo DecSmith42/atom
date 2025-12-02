@@ -141,8 +141,12 @@ public interface IBuildInfo : IBuildAccessor
             Logger.LogDebug("Determined solution file: {SolutionFile}", solutionFile);
 
             return solutionFile is not null
-                ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
-                : FileSystem.AtomRootDirectory.DirectoryName!;
+                ? new RootedPath(FileSystem, solutionFile).FileNameWithoutExtension
+                : FileSystem
+                      .AtomRootDirectory
+                      .DirectoryName
+                      ?.Split(FileSystem.Path.DirectorySeparatorChar, FileSystem.Path.AltDirectorySeparatorChar)[^1] ??
+                  "Unknown";
         }
     }
 

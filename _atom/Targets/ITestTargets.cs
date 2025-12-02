@@ -2,16 +2,18 @@
 
 internal interface ITestTargets : IDotnetTestHelper
 {
-    List<RootedPath> ProjectsToTest =>
+    static readonly string[] ProjectsToTest =
     [
-        FileSystem.GetPath<Projects.DecSm_Atom_Tests>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_GithubWorkflows_Tests>(),
+        Projects.DecSm_Atom_Tests.Name,
+        Projects.DecSm_Atom_Analyzers_Tests.Name,
+        Projects.DecSm_Atom_SourceGenerators_Tests.Name,
+        Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
     ];
 
     Target TestProjects =>
         t => t
             .DescribedAs("Runs all unit tests for the Atom projects")
-            .ProducesArtifacts(ProjectsToTest.Select(project => project.FileNameWithoutExtension))
+            .ProducesArtifacts(ProjectsToTest)
             .Executes(async cancellationToken =>
             {
                 var exitCode = 0;
@@ -21,10 +23,14 @@ internal interface ITestTargets : IDotnetTestHelper
                 // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (var project in ProjectsToTest)
                 foreach (var framework in frameworks)
-                    exitCode += await RunDotnetUnitTests(new(project.FileNameWithoutExtension)
+                    exitCode += await DotnetTestAndStage(project,
+                        new()
                         {
-                            Configuration = "Release",
-                            Framework = framework,
+                            TestOptions = new()
+                            {
+                                Framework = framework,
+                            },
+                            IncludeCoverage = !project.Contains("Analyzers") && !project.Contains("SourceGenerators"),
                         },
                         cancellationToken);
 

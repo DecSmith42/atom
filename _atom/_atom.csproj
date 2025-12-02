@@ -26,8 +26,6 @@
     <ProjectReference Include="..\DecSm.Atom.Module.AzureKeyVault\DecSm.Atom.Module.AzureKeyVault.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.DevopsWorkflows\DecSm.Atom.Module.DevopsWorkflows.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.Dotnet\DecSm.Atom.Module.Dotnet.csproj" />
-    <ProjectReference Include="..\DecSm.Atom.Module.DotnetCli\DecSm.Atom.Module.DotnetCli.csproj" />
-    <ProjectReference Include="..\DecSm.Atom.Module.DotnetHelpers\DecSm.Atom.Module.DotnetHelpers.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.GitVersion\DecSm.Atom.Module.GitVersion.csproj" />
     <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj" />

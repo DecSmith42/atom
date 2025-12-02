@@ -72,6 +72,8 @@ public sealed partial class CsharpWriter
             WriteLine("/// <summary>");
 
             foreach (var line in xmlSummary
+                         .Replace("<", "&lt;")
+                         .Replace(">", "&gt;")
                          .Replace("\r", "")
                          .Split('\n'))
                 WriteLine($"///     {line}");
@@ -131,6 +133,8 @@ public sealed partial class CsharpWriter
             WriteLine("/// <summary>");
 
             foreach (var line in xmlSummary
+                         .Replace("<", "&lt;")
+                         .Replace(">", "&gt;")
                          .Replace("\r", "")
                          .Split('\n'))
                 WriteLine($"///     {line}");
@@ -141,9 +145,11 @@ public sealed partial class CsharpWriter
                          .Select(x => (x.Name, x.XmlDescription))
                          .Where(x => x.XmlDescription is not null))
             {
-                WriteLine($"/// <param name=\"{paramName}\">");
+                WriteLine($"/// <param name=\"{paramName.Replace("<", "&lt;").Replace(">", "&gt;")}\">");
 
                 foreach (var line in paramDesc!
+                             .Replace("<", "&lt;")
+                             .Replace(">", "&gt;")
                              .Replace("\r", "")
                              .Split('\n'))
                     WriteLine($"///     {line}");

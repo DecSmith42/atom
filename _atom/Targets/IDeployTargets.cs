@@ -8,16 +8,23 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
     [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
     string NugetApiKey => GetParam(() => NugetApiKey)!;
 
-    List<RootedPath> ProjectsToPush =>
+    static readonly string[] ProjectsToPush =
     [
-        FileSystem.GetPath<Projects.DecSm_Atom>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_AzureKeyVault>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_AzureStorage>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_DevopsWorkflows>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_Dotnet>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_DotnetCli>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_GitVersion>(),
-        FileSystem.GetPath<Projects.DecSm_Atom_Module_GithubWorkflows>(),
+        Projects.DecSm_Atom.Name,
+        Projects.DecSm_Atom_Module_AzureKeyVault.Name,
+        Projects.DecSm_Atom_Module_AzureStorage.Name,
+        Projects.DecSm_Atom_Module_DevopsWorkflows.Name,
+        Projects.DecSm_Atom_Module_Dotnet.Name,
+        Projects.DecSm_Atom_Module_GitVersion.Name,
+        Projects.DecSm_Atom_Module_GithubWorkflows.Name,
+    ];
+
+    static readonly string[] TestArtifactsToUpload =
+    [
+        Projects.DecSm_Atom_Tests.Name,
+        Projects.DecSm_Atom_Analyzers_Tests.Name,
+        Projects.DecSm_Atom_SourceGenerators_Tests.Name,
+        Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
     ];
 
     Target PushToNuget =>
@@ -26,21 +33,25 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
-            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects),
-                ProjectsToPush.Select(project => project.FileNameWithoutExtension))
-            .ConsumesArtifact(nameof(IBuildTargets.PackTool),
-                Projects.DecSm_Atom_Tool.Name,
-                IBuildTargets.BuildPlatformNames)
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name)
             .DependsOn(nameof(ITestTargets.TestProjects))
             .Executes(async cancellationToken =>
             {
+                // Push project packages
                 foreach (var project in ProjectsToPush)
-                    await PushProject(project.FileNameWithoutExtension,
+                    await PushProject(project, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+
+                // Push Atom tool package - platform-specific + multi-targeted
+                foreach (var atomToolPackagePath in FileSystem.Directory.GetFiles(
+                             FileSystem.AtomArtifactsDirectory / Projects.DecSm_Atom_Tool.Name,
+                             "*.nupkg",
+                             SearchOption.AllDirectories))
+                    await PushPackageToNuget(
+                        FileSystem.AtomArtifactsDirectory / Projects.DecSm_Atom_Tool.Name / atomToolPackagePath,
                         NugetFeed,
                         NugetApiKey,
                         cancellationToken: cancellationToken);
-
-                await PushAtomTool(cancellationToken);
             });
 
     Target PushToRelease =>
@@ -48,38 +59,12 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .DescribedAs("Pushes the packages to the release feed.")
             .RequiresParam(nameof(GithubToken))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
-            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects),
-                ProjectsToPush.Select(project => project.FileNameWithoutExtension))
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
             .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name)
-            .DependsOn(nameof(ITestTargets.TestProjects))
+            .ConsumesArtifacts(nameof(ITestTargets.TestProjects), TestArtifactsToUpload)
             .Executes(async () =>
             {
-                if (BuildVersion.IsPreRelease)
-                {
-                    Logger.LogInformation("Skipping release push for pre-release version");
-
-                    return;
-                }
-
-                var releaseTag = $"v{BuildVersion}";
-
-                foreach (var project in ProjectsToPush)
-                    await UploadArtifactToRelease(project.FileNameWithoutExtension, releaseTag);
-
-                await UploadArtifactToRelease(Projects.DecSm_Atom_Tool.Name, releaseTag);
+                foreach (var artifact in ProjectsToPush.Concat(TestArtifactsToUpload))
+                    await UploadArtifactToRelease(artifact, $"v{BuildVersion}");
             });
-
-    private async Task PushAtomTool(CancellationToken cancellationToken)
-    {
-        var atomToolDirectory = FileSystem.AtomArtifactsDirectory / Projects.DecSm_Atom_Tool.Name;
-
-        var atomToolPackagePaths =
-            FileSystem.Directory.GetFiles(atomToolDirectory, "*.nupkg", SearchOption.AllDirectories);
-
-        foreach (var atomToolPackagePath in atomToolPackagePaths)
-            await PushPackageToNuget(atomToolDirectory / atomToolPackagePath,
-                NugetFeed,
-                NugetApiKey,
-                cancellationToken: cancellationToken);
-    }
 }

@@ -53,7 +53,7 @@ public static class DotnetCliGenerator
 
     public static void GenerateImplementationCode(CsharpWriter writer, Command command)
     {
-        using (writer.Block("internal partial class DotnetCli : IDotnetCli"))
+        using (writer.Block("internal partial class DotnetCli"))
         {
             GenerateCommandMethod(writer, command, false);
 
@@ -112,7 +112,7 @@ public static class DotnetCliGenerator
             foreach (var option in command.Options.Where(x => x.ValueType is not (null or "System.Void")))
                 writer.WriteProperty("public",
                     IsKnownAotFriendlyType(option.ValueType)
-                        ? $"{option.ValueType}?"
+                        ? $"{FormatType(option.ValueType)}?"
                         : "string?",
                     CsharpWriter.ToPascalCase(option.Name),
                     new(null),
@@ -138,16 +138,15 @@ public static class DotnetCliGenerator
 
                             using (bodyWriter.Indent)
                             {
-                                bodyWriter.WriteLine(option.ValueType is "System.Boolean"
-                                    ? $"? \"{option.Name}\""
-                                    : $"? $\"{option.Name} {{{CsharpWriter.ToPascalCase(option.Name)}}}\"");
+                                bodyWriter.WriteLine(
+                                    $"? {FormatToPrint(option.ValueType, option.Name, CsharpWriter.ToPascalCase(option.Name))}");
 
                                 bodyWriter.WriteLine(": null,");
                             }
                         }
                     }
 
-                    bodyWriter.WriteLine(");");
+                    bodyWriter.WriteLine(".Where(x => x is { Length: > 0 }));");
                 });
         }
 
@@ -161,7 +160,7 @@ public static class DotnetCliGenerator
             command
                 .Arguments
                 .Select(arg => new MethodParam(IsKnownAotFriendlyType(arg.ValueType)
-                        ? arg.ValueType
+                        ? FormatType(arg.ValueType)
                         : arg.ValueType is "DecSm.Atom.Paths.RootedPath"
                             ? "DecSm.Atom.Paths.RootedPath"
                             : "System.String",
@@ -173,6 +172,10 @@ public static class DotnetCliGenerator
                         "null",
                         "Options")
                     : null)
+                .Append(new("ProcessRunOptions?",
+                    "processRunOptions",
+                    "null",
+                    "Process run options. NOTE: The command name will be overridden by the appropriate dotnet command"))
                 .Append(new("CancellationToken", "cancellationToken", "default", "Cancellation token"))
                 .ToArray(),
             isStub
@@ -182,45 +185,129 @@ public static class DotnetCliGenerator
                     switch (command)
                     {
                         case { Arguments.Count: 0, Options.Count: 0 }:
-                            bodyWriter.WriteLine(
-                                "processRunner.RunAsync(new(\"dotnet\", string.Empty), cancellationToken);");
-
-                            return;
-                        case { Arguments.Count: 0, Options.Count: > 0 }:
-                            bodyWriter.WriteLine(
-                                "processRunner.RunAsync(new(\"dotnet\", (options ?? new()).ToString()), cancellationToken);");
-
-                            return;
-                        default:
-                            bodyWriter.WriteLine("processRunner.RunAsync(new(\"dotnet\",");
+                        {
+                            bodyWriter.WriteLine("processRunner.RunAsync((processRunOptions is null");
 
                             using (bodyWriter.Indent)
                             {
-                                bodyWriter.WriteLine("string.Join(' ', [");
+                                bodyWriter.WriteLine("? new(\"dotnet\", string.Empty)");
 
-                                using (bodyWriter.Indent)
-                                {
-                                    bodyWriter.WriteLine($"\"{command.Name}\",");
-
-                                    foreach (var arg in command.Arguments)
-                                        bodyWriter.WriteLine(arg.ValueType.EndsWith("[]", StringComparison.Ordinal)
-                                            ? $"string.Join(' ', {CsharpWriter.ToPascalCase(arg.Name, true)}),"
-                                            : $"{CsharpWriter.ToPascalCase(arg.Name, true)},");
-
-                                    if (command.Options.Count > 0)
-                                        bodyWriter.WriteLine("options?.ToString(),");
-                                }
-
-                                bodyWriter.WriteLine("])), cancellationToken);");
+                                bodyWriter.WriteLine(
+                                    ": processRunOptions with { Name = \"dotnet\" }), cancellationToken);");
                             }
 
                             return;
+                        }
+
+                        case { Arguments.Count: 0, Options.Count: > 0 }:
+                        {
+                            bodyWriter.WriteLine("processRunner.RunAsync((processRunOptions is null");
+
+                            using (bodyWriter.Indent)
+                            {
+                                bodyWriter.WriteLine("? new(\"dotnet\", (options ?? new()).ToString())");
+
+                                bodyWriter.WriteLine(
+                                    ": processRunOptions with { Name = \"dotnet\", Args = (options ?? new()).ToString() }), cancellationToken);");
+                            }
+
+                            return;
+                        }
+
+                        default:
+                        {
+                            bodyWriter.WriteLine("var argsString = string.Join(' ', new string[] {");
+
+                            using (bodyWriter.Indent)
+                            {
+                                bodyWriter.WriteLine($"\"{command.Name}\",");
+
+                                foreach (var arg in command.Arguments)
+                                    bodyWriter.WriteLine($"{FormatToPrint(
+                                        arg.ValueType,
+                                        command.Name,
+                                        CsharpWriter.ToPascalCase(arg.Name, true), false)},");
+
+                                if (command.Options.Count > 0)
+                                    bodyWriter.WriteLine("(options ?? new()).ToString(),");
+                            }
+
+                            bodyWriter.WriteLine("}.Where(x => x is { Length: > 0 }));");
+
+                            bodyWriter.WriteLine(string.Empty);
+
+                            bodyWriter.WriteLine("return processRunner.RunAsync((processRunOptions is null");
+
+                            using (bodyWriter.Indent)
+                            {
+                                bodyWriter.WriteLine("? new(\"dotnet\", argsString)");
+
+                                bodyWriter.WriteLine(
+                                    ": processRunOptions with { Name = \"dotnet\", Args = argsString }), cancellationToken);");
+                            }
+
+                            return;
+                        }
                     }
                 },
-            true,
+            command is { Arguments.Count: 0 },
             isStub
                 ? command.Description
                 : null);
+
+    private static string FormatType(string type)
+    {
+        if (type.StartsWith("System.Nullable<", StringComparison.Ordinal))
+        {
+            var closingBracketIndex = type.LastIndexOf('>');
+            var innerType = type["System.Nullable<".Length..closingBracketIndex];
+            type = innerType;
+        }
+
+        return type
+            .Replace("System.Collections.ObjectModel.ReadOnlyDictionary",
+                "System.Collections.Generic.IReadOnlyDictionary")
+            .Replace("Microsoft.DotNet.Cli.PackageIdentityWithRange", "string")
+            .Replace("Microsoft.DotNet.Cli.Utils.VerbosityOptions", "VerbosityOptions")
+            .Replace("NuGet.CommandLine.XPlat.Commands.VerbosityEnum", "VerbosityOptions")
+            .Replace("NuGet.CommandLine.XPlat.Commands.Package.Update.Package", "string");
+    }
+
+    private static string FormatToPrint(string type, string argName, string propertyName, bool includeArgName = true)
+    {
+        if (type.StartsWith("System.Nullable<", StringComparison.Ordinal))
+        {
+            var closingBracketIndex = type.LastIndexOf('>');
+            var innerType = type["System.Nullable<".Length..closingBracketIndex];
+            type = innerType;
+        }
+
+        if (type is "System.Boolean")
+            return $"\"{argName}\"";
+
+        if (type.StartsWith("System.Collections.ObjectModel.ReadOnlyDictionary<") ||
+            type.StartsWith("System.Collections.Generic.IReadOnlyDictionary<"))
+            return $$"""
+                     $"{{argName}} {string.Join(" {{argName}} ", {{propertyName}}.Select(kv => $"{kv.Key}=\"{kv.Value}\""))}"
+                     """;
+
+        if (type.EndsWith("[]", StringComparison.Ordinal) ||
+            type.StartsWith("System.Collections.Generic.IEnumerable<") ||
+            type.StartsWith("System.Collections.Generic.IReadOnlyList<"))
+            return includeArgName
+                ? $$"""
+                    $"{{argName}} {string.Join(" {{argName}} ", {{propertyName}})}"
+                    """
+                : $$"""
+                    $"{string.Join(" ", {{propertyName}})}"
+                    """;
+
+        return includeArgName
+            ? $$"""
+                $"{{argName}} {{{propertyName}}}"
+                """
+            : propertyName;
+    }
 
     // Avoid reflection in AOT/trimmed contexts by classifying known type names via simple rules.
     // This prevents IL2057 and improves compatibility with NativeAOT and trimming.
@@ -237,7 +324,11 @@ public static class DotnetCliGenerator
         if (typeName.EndsWith("[]", StringComparison.Ordinal))
             typeName = typeName[..^2];
 
+        if (typeName.StartsWith("System.Nullable`", StringComparison.Ordinal))
+            typeName = typeName[(typeName.IndexOf('`') + 1)..];
+
         // Explicitly allow our known custom types and consider all BCL types under System.* as known
-        return typeName is "DecSm.Atom.Paths.RootedPath" || typeName.StartsWith("System.", StringComparison.Ordinal);
+        return typeName is "DecSm.Atom.Paths.RootedPath" or "Microsoft.DotNet.Cli.Utils.VerbosityOptions" ||
+               typeName.StartsWith("System.", StringComparison.Ordinal);
     }
 }
