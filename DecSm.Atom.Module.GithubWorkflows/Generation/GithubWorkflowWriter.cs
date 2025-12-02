@@ -417,10 +417,20 @@ internal sealed class GithubWorkflowWriter(
 
                     using (WriteSection("with:"))
                     {
-                        WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
+                        // TODO: Use this to correctly handle quotes throughout the rest of the writer
+                        var versionQuote = setupDotnetStep.DotnetVersion.Contains('\'')
+                            ? '"'
+                            : '\'';
+
+                        WriteLine($"dotnet-version: {versionQuote}{setupDotnetStep.DotnetVersion}{versionQuote}");
+
+                        var qualityQuote = setupDotnetStep.Quality.ToString()!.Contains('\'')
+                            ? '"'
+                            : '\'';
 
                         if (setupDotnetStep.Quality is not null)
-                            WriteLine($"dotnet-quality: '{setupDotnetStep.Quality.ToString()!.ToLower()}'");
+                            WriteLine(
+                                $"dotnet-quality: {qualityQuote}{setupDotnetStep.Quality.ToString()!.ToLower()}{qualityQuote}");
                     }
                 }
 
