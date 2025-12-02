@@ -34,7 +34,7 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .RequiresParam(nameof(NugetApiKey))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
             .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
-            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
             .DependsOn(nameof(ITestTargets.TestProjects))
             .Executes(async cancellationToken =>
             {
@@ -60,8 +60,10 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .RequiresParam(nameof(GithubToken))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
             .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
-            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name)
-            .ConsumesArtifacts(nameof(ITestTargets.TestProjects), TestArtifactsToUpload)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
+            .ConsumesArtifacts(nameof(ITestTargets.TestProjects),
+                TestArtifactsToUpload,
+                PlatformNames.SelectMany(platform => FrameworkNames.Select(framework => $"{platform}-{framework}")))
             .Executes(async () =>
             {
                 foreach (var artifact in ProjectsToPush.Concat(TestArtifactsToUpload))

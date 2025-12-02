@@ -252,6 +252,18 @@ jobs:
           artifact: DecSm.Atom.Tool
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
       - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
         name: PushToNuget
         env:

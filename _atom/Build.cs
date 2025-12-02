@@ -10,14 +10,16 @@ internal partial class Build : DefaultBuildDefinition,
     ITestTargets,
     IDeployTargets
 {
-    private static readonly string[] PlatformNames =
+    public static readonly string[] PlatformNames =
     [
         IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
     ];
 
+    public static readonly string[] FrameworkNames = ["net8.0", "net9.0", "net10.0"];
+
     private static readonly MatrixDimension TestFrameworkMatrix = new(nameof(ITestTargets.TestFramework))
     {
-        Values = ["net8.0", "net9.0", "net10.0"],
+        Values = FrameworkNames,
     };
 
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
