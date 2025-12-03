@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace DecSm.Atom.Module.GithubWorkflows.Tests;
+﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests;
 
 [TestFixture]
 public class ExpressionsTests
