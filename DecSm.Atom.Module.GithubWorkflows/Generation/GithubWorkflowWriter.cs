@@ -261,7 +261,10 @@ internal sealed class GithubWorkflowWriter(
     {
         using (WriteSection($"{job.Name}:"))
         {
-            var jobRequirementNames = job.JobDependencies;
+            var jobRequirementNames = job
+                .JobDependencies
+                .Distinct()
+                .ToList();
 
             if (jobRequirementNames.Count > 0)
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
