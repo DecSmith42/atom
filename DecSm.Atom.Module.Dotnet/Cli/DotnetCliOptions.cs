@@ -3,6 +3,7 @@
 /// <summary>
 ///     <see cref="ProcessRunOptions" />
 /// </summary>
+[PublicAPI]
 public sealed record DotnetCliOptions
 {
     /// <summary>

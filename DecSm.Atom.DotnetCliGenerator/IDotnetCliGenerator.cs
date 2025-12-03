@@ -257,6 +257,7 @@ public static class DotnetCliGenerator
 
     private static string FormatType(string type)
     {
+        // ReSharper disable once InvertIf
         if (type.StartsWith("System.Nullable<", StringComparison.Ordinal))
         {
             var closingBracketIndex = type.LastIndexOf('>');

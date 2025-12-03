@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Cli;
 
+[PublicAPI]
 public enum VerbosityOptions
 {
     Quiet,
@@ -9,10 +10,12 @@ public enum VerbosityOptions
     Diagnostic,
 }
 
+[PublicAPI]
 public static class VerbosityOptionsExtensions
 {
     extension(VerbosityOptions verbosityOptions)
     {
+        [PublicAPI]
         public string ToString() =>
             verbosityOptions switch
             {
