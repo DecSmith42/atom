@@ -37,21 +37,21 @@ internal sealed class TestArtifactProvider : IArtifactProvider
         string? buildId = null,
         string? buildSlice = null,
         CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        throw new();
 
     public Task RetrieveArtifacts(
         IReadOnlyList<string> artifactNames,
         string? buildId = null,
         string? buildSlice = null,
         CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        throw new();
 
     public Task Cleanup(IReadOnlyList<string> runIdentifiers, CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        throw new();
 
     public Task<IReadOnlyList<string>> GetStoredRunIdentifiers(
         string? artifactName = null,
         string? buildSlice = null,
         CancellationToken cancellationToken = default) =>
-        throw new NotImplementedException();
+        throw new();
 }
