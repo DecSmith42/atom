@@ -399,6 +399,9 @@ FodyWeavers.xsd
 *.sln.iml
 .idea
 
+# VS Code
+.vscode/
+
 # Atom
 !DecSm.Atom/Artifacts
 !DecSm.Atom.Tests/Artifacts
