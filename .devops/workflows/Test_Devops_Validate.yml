@@ -2,7 +2,6 @@ name: Test_Devops_Validate
 
 variables:
   - group: Atom
-trigger: none
 
 jobs:
   

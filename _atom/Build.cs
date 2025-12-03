@@ -82,6 +82,7 @@ internal partial class Build : DefaultBuildDefinition,
         // Test workflows
         new("Test_Devops_Validate")
         {
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
                 Targets.SetupBuildInfo,
@@ -99,6 +100,14 @@ internal partial class Build : DefaultBuildDefinition,
         },
         new("Test_Devops_Build")
         {
+            Triggers =
+            [
+                ManualTrigger.Empty,
+                new GitPushTrigger
+                {
+                    IncludedBranches = ["main", "feature/**", "patch/**"],
+                },
+            ],
             Targets =
             [
                 Targets.SetupBuildInfo,
