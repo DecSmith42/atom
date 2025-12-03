@@ -46,7 +46,10 @@ jobs:
         run: dotnet run --project _atom/_atom.csproj PackProjects --skip --headless
   
   PackTool:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job-runs-on: [ windows-latest, ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.job-runs-on }}
     steps:
       
       - name: Checkout
@@ -60,6 +63,9 @@ jobs:
       - name: PackTool
         id: PackTool
         run: dotnet run --project _atom/_atom.csproj PackTool --skip --headless
+        env:
+          job-runs-on: ${{ matrix.job-runs-on }}
+          build-slice: ${{ matrix.job-runs-on }}
   
   TestProjects:
     strategy:

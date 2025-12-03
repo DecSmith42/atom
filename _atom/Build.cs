@@ -37,7 +37,7 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackProjects.WithSuppressedArtifactPublishing,
-                Targets.PackTool.WithSuppressedArtifactPublishing,
+                Targets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
                 Targets
                     .TestProjects
                     .WithGithubRunnerMatrix(PlatformNames)
@@ -87,7 +87,7 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackProjects.WithSuppressedArtifactPublishing,
-                Targets.PackTool.WithSuppressedArtifactPublishing,
+                Targets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
                 Targets
                     .TestProjects
                     .WithDevopsPoolMatrix(PlatformNames)
@@ -112,7 +112,7 @@ internal partial class Build : DefaultBuildDefinition,
             [
                 Targets.SetupBuildInfo,
                 Targets.PackProjects,
-                Targets.PackTool,
+                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
                 Targets
                     .TestProjects
                     .WithDevopsPoolMatrix(PlatformNames)

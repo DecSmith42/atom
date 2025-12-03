@@ -89,6 +89,14 @@ jobs:
       
   
   - job: PackTool
+    strategy:
+      matrix:
+        001_windows-latest:
+          job-runs-on: 'windows-latest'
+        002_ubuntu-latest:
+          job-runs-on: 'ubuntu-latest'
+        003_macos-latest:
+          job-runs-on: 'macos-latest'
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -104,11 +112,13 @@ jobs:
         name: PackTool
         env:
           nuget-dry-run: true
+          job-runs-on: $(job-runs-on)
+          build-slice: $(job-runs-on)
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Tool
+        displayName: DecSm.Atom.Tool-$(job-runs-on)
         inputs:
-          artifactName: DecSm.Atom.Tool
+          artifactName: DecSm.Atom.Tool-$(job-runs-on)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tool"
       
   
