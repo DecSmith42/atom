@@ -27,14 +27,16 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildVersion" />) and writes it as a build variable
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildVersion" />) and writes it as a build
+    ///                     variable
     ///                     named
     ///                     "BuildVersion".
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildTimestamp" />), converts it to a string, and
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildTimestamp" />), converts it to a string,
+    ///                     and
     ///                     writes it
     ///                     as a build variable named "BuildTimestamp".
     ///                 </description>

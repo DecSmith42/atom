@@ -39,8 +39,8 @@ public static class DotnetFileUtil
     /// <returns>The full path to the project file.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the project file does not exist.</exception>
     /// <remarks>
-    /// Searches for a file matching the pattern {projectName}.*proj in all subdirectories of the root directory.
-    /// If multiple files match, the one with the shortest path ancestry (fewest directory levels) is returned.
+    ///     Searches for a file matching the pattern {projectName}.*proj in all subdirectories of the root directory.
+    ///     If multiple files match, the one with the shortest path ancestry (fewest directory levels) is returned.
     /// </remarks>
     public static RootedPath? GetProjectFilePathByName(IAtomFileSystem fileSystem, string projectName)
     {

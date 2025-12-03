@@ -2,12 +2,6 @@
 
 internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBuildInfo
 {
-    [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.")]
-    string NugetFeed => GetParam(() => NugetFeed, "https://api.nuget.org/v3/index.json");
-
-    [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
-    string NugetApiKey => GetParam(() => NugetApiKey)!;
-
     static readonly string[] ProjectsToPush =
     [
         Projects.DecSm_Atom.Name,
@@ -26,6 +20,12 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
         Projects.DecSm_Atom_SourceGenerators_Tests.Name,
         Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
     ];
+
+    [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.")]
+    string NugetFeed => GetParam(() => NugetFeed, "https://api.nuget.org/v3/index.json");
+
+    [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
+    string NugetApiKey => GetParam(() => NugetApiKey)!;
 
     Target PushToNuget =>
         t => t
