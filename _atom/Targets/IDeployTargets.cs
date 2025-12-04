@@ -2,25 +2,6 @@
 
 internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBuildInfo
 {
-    static readonly string[] ProjectsToPush =
-    [
-        Projects.DecSm_Atom.Name,
-        Projects.DecSm_Atom_Module_AzureKeyVault.Name,
-        Projects.DecSm_Atom_Module_AzureStorage.Name,
-        Projects.DecSm_Atom_Module_DevopsWorkflows.Name,
-        Projects.DecSm_Atom_Module_Dotnet.Name,
-        Projects.DecSm_Atom_Module_GitVersion.Name,
-        Projects.DecSm_Atom_Module_GithubWorkflows.Name,
-    ];
-
-    static readonly string[] TestArtifactsToUpload =
-    [
-        Projects.DecSm_Atom_Tests.Name,
-        Projects.DecSm_Atom_Analyzers_Tests.Name,
-        Projects.DecSm_Atom_SourceGenerators_Tests.Name,
-        Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
-    ];
-
     [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.")]
     string NugetFeed => GetParam(() => NugetFeed, "https://api.nuget.org/v3/index.json");
 
@@ -33,13 +14,13 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
-            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), IBuildTargets.ProjectsToPack)
             .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
             .DependsOn(nameof(ITestTargets.TestProjects))
             .Executes(async cancellationToken =>
             {
                 // Push project packages
-                foreach (var project in ProjectsToPush)
+                foreach (var project in IBuildTargets.ProjectsToPack)
                     await PushProject(project, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
 
                 // Push Atom tool package - platform-specific + multi-targeted
@@ -59,14 +40,14 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
             .DescribedAs("Pushes the packages to the release feed.")
             .RequiresParam(nameof(GithubToken))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
-            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), ProjectsToPush)
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), IBuildTargets.ProjectsToPack)
             .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
             .ConsumesArtifacts(nameof(ITestTargets.TestProjects),
-                TestArtifactsToUpload,
+                ITestTargets.ProjectsToTest,
                 PlatformNames.SelectMany(platform => FrameworkNames.Select(framework => $"{platform}-{framework}")))
             .Executes(async () =>
             {
-                foreach (var artifact in ProjectsToPush.Concat(TestArtifactsToUpload))
+                foreach (var artifact in IBuildTargets.ProjectsToPack.Concat(ITestTargets.ProjectsToTest))
                     await UploadArtifactToRelease(artifact, $"v{BuildVersion}");
             });
 }

@@ -136,6 +136,12 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
       
       - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Module.DevopsWorkflows.Tests
+        inputs:
+          artifactName: DecSm.Atom.Module.DevopsWorkflows.Tests-$(job-runs-on)-$(test-framework)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.DevopsWorkflows.Tests"
+      
+      - task: PublishPipelineArtifact@1
         displayName: DecSm.Atom.Module.GithubWorkflows.Tests
         inputs:
           artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
