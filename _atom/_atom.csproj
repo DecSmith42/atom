@@ -4,8 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Atom</RootNamespace>
     <UserSecretsId>661f5aa6-694c-4890-85c0-9b72f0bea988</UserSecretsId>
-    <SolutionPath>$(MSBuildThisFileDirectory)../DecSm.Atom.sln</SolutionPath>
+    <SolutionPath>$(MSBuildThisFileDirectory)../DecSm.Atom.slnx</SolutionPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <CompilerVisibleProperty Include="SolutionPath" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
@@ -30,10 +34,6 @@
     <ProjectReference Include="..\DecSm.Atom\DecSm.Atom.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.GithubWorkflows\DecSm.Atom.Module.GithubWorkflows.csproj" />
     <ProjectReference Include="..\DecSm.Atom.SourceGenerators\DecSm.Atom.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <CompilerVisibleProperty Include="SolutionPath" />
   </ItemGroup>
 
 </Project>
