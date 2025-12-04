@@ -362,10 +362,10 @@ internal sealed class GithubWorkflowWriter(
                 .Options
                 .Concat(step.Options)
                 .OfType<GithubCheckoutOption>()
-                .FirstOrDefault() is { } checkoutOption)
+                .FirstOrDefault() is { Value: not null } checkoutOption)
             using (WriteSection("- name: Checkout"))
             {
-                WriteLine($"uses: actions/checkout@{checkoutOption.Value!.Version}");
+                WriteLine($"uses: actions/checkout@{checkoutOption.Value.Version}");
 
                 using (WriteSection("with:"))
                 {

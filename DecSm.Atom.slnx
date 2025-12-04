@@ -18,6 +18,7 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="DecSm.Atom.Analyzers.Tests/DecSm.Atom.Analyzers.Tests.csproj" />
+    <Project Path="DecSm.Atom.Module.DevopsWorkflows.Tests/DecSm.Atom.Module.DevopsWorkflows.Tests.csproj" />
     <Project Path="DecSm.Atom.Module.GithubWorkflows.Tests/DecSm.Atom.Module.GithubWorkflows.Tests.csproj" />
     <Project Path="DecSm.Atom.SourceGenerators.Tests/DecSm.Atom.SourceGenerators.Tests.csproj" />
     <Project Path="DecSm.Atom.Tests/DecSm.Atom.Tests.csproj" />

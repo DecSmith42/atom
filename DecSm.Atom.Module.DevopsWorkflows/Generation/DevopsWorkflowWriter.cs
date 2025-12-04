@@ -340,8 +340,24 @@ internal sealed partial class DevopsWorkflowWriter(
 
     private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)
     {
-        using (WriteSection("- checkout: self"))
-            WriteLine("fetchDepth: 0");
+        if (workflow
+                .Options
+                .Concat(step.Options)
+                .OfType<DevopsCheckoutOption>()
+                .FirstOrDefault() is { Value: not null } checkoutOption)
+            using (WriteSection("- checkout: self"))
+            {
+                WriteLine("fetchDepth: 0");
+
+                if (checkoutOption.Value.Lfs)
+                    WriteLine("lfs: true");
+
+                if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Submodules))
+                    WriteLine($"submodules: {checkoutOption.Value.Submodules}");
+            }
+        else
+            using (WriteSection("- checkout: self"))
+                WriteLine("fetchDepth: 0");
 
         WriteLine();
 

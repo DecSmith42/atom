@@ -193,7 +193,7 @@ dotnet add package DecSm.Atom.Module.GithubWorkflows
 
 ```csharp
 [BuildDefinition]
-public partial class Build : BuildDefinition, IGithubWorkflows
+public partial class Build : BuildDefinition, IDevopsWorkflows
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
@@ -201,7 +201,7 @@ public partial class Build : BuildDefinition, IGithubWorkflows
         {
             Triggers = [new GitPullRequestTrigger { IncludedBranches = ["main"] }],
             StepDefinitions = [Targets.Test],
-            WorkflowTypes = [new GithubWorkflowType()]
+            WorkflowTypes = [Devops.WorkflowType]
         }
     ];
 }
@@ -225,7 +225,7 @@ public partial class Build : BuildDefinition, IDevopsWorkflows
         {
             Triggers = [new GitPullRequestTrigger { IncludedBranches = ["main"] }],
             StepDefinitions = [Targets.Test],
-            WorkflowTypes = [new DevopsWorkflowType()]
+            WorkflowTypes = [Devops.WorkflowType]
         }
     ];
 }
@@ -258,7 +258,7 @@ Add modules to your build definition:
 ```csharp
 [BuildDefinition]
 public partial class Build : BuildDefinition, 
-    IGithubWorkflows,
+    IDevopsWorkflows,
     IDotnetPackHelper,
     IAzureKeyVault
 {
