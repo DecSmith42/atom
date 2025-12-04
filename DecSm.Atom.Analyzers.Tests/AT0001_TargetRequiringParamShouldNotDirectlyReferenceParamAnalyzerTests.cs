@@ -1,9 +1,3 @@
-using DecSm.Atom.Build.Definition;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.Testing;
-using Xunit;
 using Verifier = DecSm.Atom.Analyzers.Tests.ExtendedAnalyzerVerifier<
     DecSm.Atom.Analyzers.AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer>;
 

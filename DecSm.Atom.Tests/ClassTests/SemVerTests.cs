@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace DecSm.Atom.Tests.ClassTests;
+﻿namespace DecSm.Atom.Tests.ClassTests;
 
 [TestFixture]
 internal sealed class SemVerTests

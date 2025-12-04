@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Util.Scope;
-
-namespace DecSm.Atom.Tests.ClassTests.Logging;
+﻿namespace DecSm.Atom.Tests.ClassTests.Logging;
 
 [TestFixture]
 public class SpectreLoggerTests

@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Help;
-
-namespace DecSm.Atom.Tests.ClassTests.Hosting;
+﻿namespace DecSm.Atom.Tests.ClassTests.Hosting;
 
 [TestFixture]
 public class HostExtensionsTests

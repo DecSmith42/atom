@@ -1,10 +1,4 @@
-﻿using DecSm.Atom.Build.Definition;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.Testing;
-using Xunit;
-using CodeFixVerifier = DecSm.Atom.Analyzers.Tests.ExtendedCodeFixVerifier<
+﻿using CodeFixVerifier = DecSm.Atom.Analyzers.Tests.ExtendedCodeFixVerifier<
     DecSm.Atom.Analyzers.AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer, DecSm.Atom.Analyzers.AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider>;
 
 namespace DecSm.Atom.Analyzers.Tests;

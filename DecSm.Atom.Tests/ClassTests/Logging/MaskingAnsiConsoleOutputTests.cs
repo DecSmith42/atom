@@ -1,7 +1,4 @@
-﻿using System.Linq.Expressions;
-using System.Text;
-
-namespace DecSm.Atom.Tests.ClassTests.Logging;
+﻿namespace DecSm.Atom.Tests.ClassTests.Logging;
 
 [TestFixture]
 public class MaskingAnsiConsoleOutputTests

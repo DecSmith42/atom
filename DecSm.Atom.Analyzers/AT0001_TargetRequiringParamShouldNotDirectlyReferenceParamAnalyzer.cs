@@ -1,10 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Operations;
-
-namespace DecSm.Atom.Analyzers;
+﻿namespace DecSm.Atom.Analyzers;
 
 // ReSharper disable once InconsistentNaming
 /// <summary>

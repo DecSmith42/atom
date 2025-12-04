@@ -1,7 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-
 namespace DecSm.Atom.SourceGenerators;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1035:Do not use APIs banned for analyzers")]

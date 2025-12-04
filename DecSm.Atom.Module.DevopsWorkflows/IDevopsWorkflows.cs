@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.Hosting;
-
-namespace DecSm.Atom.Module.DevopsWorkflows;
+﻿namespace DecSm.Atom.Module.DevopsWorkflows;
 
 [ConfigureHostBuilder]
 public partial interface IDevopsWorkflows : IJobRunsOn

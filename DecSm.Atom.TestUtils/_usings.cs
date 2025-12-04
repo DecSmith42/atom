@@ -10,6 +10,7 @@ global using DecSm.Atom.Hosting;
 global using DecSm.Atom.Util.Scope;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Options;
+global using DecSm.Atom.Workflows.Definition.Triggers;
 global using DecSm.Atom.Workflows.Model;
 global using DecSm.Atom.Workflows.Writer;
 global using JetBrains.Annotations;

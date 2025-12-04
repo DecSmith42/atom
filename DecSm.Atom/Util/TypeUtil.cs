@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace DecSm.Atom.Util;
+﻿namespace DecSm.Atom.Util;
 
 /// <summary>
 ///     Provides comprehensive type conversion utilities for the Atom framework.
