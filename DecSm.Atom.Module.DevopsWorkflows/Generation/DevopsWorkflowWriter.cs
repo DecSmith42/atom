@@ -453,17 +453,18 @@ internal sealed partial class DevopsWorkflowWriter(
             {
                 foreach (var artifact in commandStepTarget.ConsumedArtifacts)
                 {
-                    var name = !string.IsNullOrWhiteSpace(buildSlice.Value)
-                        ? $"{artifact.ArtifactName}-{buildSlice.Value}"
-                        : artifact.ArtifactName;
-
                     using (WriteSection("- task: DownloadPipelineArtifact@2"))
                     {
-                        WriteLine($"displayName: {name}");
+                        WriteLine($"displayName: {artifact.ArtifactName}");
 
                         using (WriteSection("inputs:"))
                         {
-                            WriteLine($"artifact: {name}");
+                            WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                ? $"artifact: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? $"artifact: {artifact.ArtifactName}-{buildSlice.Value}"
+                                    : $"artifact: {artifact.ArtifactName}");
+
                             WriteLine($"path: \"{Devops.PipelineArtifactDirectory}/{artifact.ArtifactName}\"");
                         }
                     }
@@ -501,17 +502,18 @@ internal sealed partial class DevopsWorkflowWriter(
 
                 foreach (var artifact in commandStepTarget.ProducedArtifacts)
                 {
-                    var name = !string.IsNullOrWhiteSpace(buildSlice.Value)
-                        ? $"{artifact.ArtifactName}-{buildSlice.Value}"
-                        : artifact.ArtifactName;
-
                     using (WriteSection("- task: PublishPipelineArtifact@1"))
                     {
-                        WriteLine($"displayName: {name}");
+                        WriteLine($"displayName: {artifact.ArtifactName}");
 
                         using (WriteSection("inputs:"))
                         {
-                            WriteLine($"artifactName: {name}");
+                            WriteLine(artifact.BuildSlice is { Length: > 0 }
+                                ? $"artifactName: {artifact.ArtifactName}-{artifact.BuildSlice}"
+                                : !string.IsNullOrWhiteSpace(buildSlice.Value)
+                                    ? $"artifactName: {artifact.ArtifactName}-{buildSlice.Value}"
+                                    : $"artifactName: {artifact.ArtifactName}");
+
                             WriteLine($"targetPath: \"{Devops.PipelinePublishDirectory}/{artifact.ArtifactName}\"");
                         }
                     }

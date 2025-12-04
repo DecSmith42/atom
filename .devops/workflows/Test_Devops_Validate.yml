@@ -118,25 +118,25 @@ jobs:
           build-slice: $(job-runs-on)-$(test-framework)
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Tests-$(job-runs-on)-$(test-framework)
+        displayName: DecSm.Atom.Tests
         inputs:
           artifactName: DecSm.Atom.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)-$(test-framework)
+        displayName: DecSm.Atom.Analyzers.Tests
         inputs:
           artifactName: DecSm.Atom.Analyzers.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Analyzers.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)-$(test-framework)
+        displayName: DecSm.Atom.SourceGenerators.Tests
         inputs:
           artifactName: DecSm.Atom.SourceGenerators.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.SourceGenerators.Tests"
       
       - task: PublishPipelineArtifact@1
-        displayName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
+        displayName: DecSm.Atom.Module.GithubWorkflows.Tests
         inputs:
           artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows.Tests"
