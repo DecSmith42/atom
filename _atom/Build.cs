@@ -80,34 +80,9 @@ internal partial class Build : DefaultBuildDefinition,
         },
 
         // Test workflows
-        new("Test_Devops_Validate")
-        {
-            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
-            Targets =
-            [
-                Targets.SetupBuildInfo,
-                Targets.PackProjects.WithSuppressedArtifactPublishing,
-                Targets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
-                Targets
-                    .TestProjects
-                    .WithDevopsPoolMatrix(PlatformNames)
-                    .WithMatrixDimensions(TestFrameworkMatrix)
-                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix)
-                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-            ],
-            WorkflowTypes = [Devops.WorkflowType],
-            Options = [new DevopsVariableGroup("Atom")],
-        },
         new("Test_Devops_Build")
         {
-            Triggers =
-            [
-                ManualTrigger.Empty,
-                new GitPushTrigger
-                {
-                    IncludedBranches = ["main", "feature/**", "patch/**"],
-                },
-            ],
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
                 Targets.SetupBuildInfo,
