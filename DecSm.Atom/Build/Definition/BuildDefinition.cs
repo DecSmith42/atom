@@ -1,72 +1,62 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     An abstract base class for creating custom build definitions in the Atom framework.
-///     It provides default implementations for the <see cref="IBuildDefinition" /> interface.
+///     A comprehensive abstract base class for creating build definitions in the Atom framework.
+///     It inherits from <see cref="MinimalBuildDefinition" /> and pre-configures a rich set of common build targets and
+///     global
+///     options.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Developers should typically inherit from <see cref="DefaultBuildDefinition" /> for a more comprehensive
-///         set of pre-configured targets and options. However, <c>BuildDefinition</c> can be used as a
-///         more minimal base if finer-grained control or a very lean setup is desired.
+///         <c>DefaultBuildDefinition</c> is the recommended starting point for most Atom build projects.
+///         It implements several standard interfaces, providing targets for common operations such as:
+///         <list type="bullet">
+///             <item><see cref="ISetupBuildInfo" />: Sets up essential build information (ID, name, version).</item>
+///             <item><see cref="IValidateBuild" />: A target for validating the build setup or outputs.</item>
+///             <item><see cref="IDotnetUserSecrets" />: Manages .NET user secrets for secure configuration.</item>
+///         </list>
 ///     </para>
 ///     <para>
-///         The properties <see cref="TargetDefinitions" /> and <see cref="ParamDefinitions" /> are intended to be
-///         populated by source generators based on the interfaces and attributes used in the derived class.
-///     </para>
-///     <para>
-///         A class deriving from <c>BuildDefinition</c> (or <see cref="DefaultBuildDefinition" />) must be
-///         decorated with the <see cref="BuildDefinitionAttribute" /> to be recognized by the Atom framework.
+///         The main build definition class in an Atom project (typically <c>_atom/Build.cs</c>) would inherit from
+///         <c>DefaultBuildDefinition</c>
+///         and be decorated with <see cref="MinimalBuildDefinitionAttribute" />.
 ///     </para>
 /// </remarks>
 /// <example>
-///     A minimal build definition:
+///     A typical build definition class in <c>_atom/Build.cs</c>:
 ///     <code>
 /// using DecSm.Atom.Build.Definition;
+/// using DecSm.Atom.Workflows.Definition;
+/// using DecSm.Atom.Workflows.Definition.Triggers;
 /// [BuildDefinition]
-/// internal partial class MinimalBuild : BuildDefinition, IMyTargets
+/// [GenerateEntryPoint] // Generates Program.cs
+/// internal partial class Build : DefaultBuildDefinition
 /// {
-///     // Override Workflows or GlobalOptions if needed
 ///     public override IReadOnlyList&lt;WorkflowDefinition&gt; Workflows =>
 ///     [
-///         new("MyWorkflow")
+///         new("BuildAndTest")
 ///         {
-///             Targets = [Targets.MyTarget], // Assumes IMyTargets defines MyTarget
-///             WorkflowTypes = [ Github.WorkflowType ] // Example for GitHub Actions
+///             Triggers = [GitPushTrigger.ToBranch("main"), GitPullRequestTrigger.ToBranch("main")],
+///             Targets =
+///             [
+///                 Targets.SetupBuildInfo,
+///                 Targets.DotnetRestore,
+///                 Targets.DotnetBuild,
+///                 Targets.DotnetTest,
+///                 Targets.DotnetPack
+///             ],
+///             WorkflowTypes = [ Github.WorkflowType ]
 ///         }
 ///     ];
 /// }
-/// [TargetDefinition]
-/// public partial interface IMyTargets
-/// {
-///     Target MyTarget => t => t.DescribedAs("A minimal target.").Executes(() => Console.WriteLine("Executing MyTarget"));
-/// }
 /// </code>
 /// </example>
+/// <seealso cref="MinimalBuildDefinition" />
 /// <seealso cref="IBuildDefinition" />
-/// <seealso cref="DefaultBuildDefinition" />
-/// <seealso cref="BuildDefinitionAttribute" />
+/// <seealso cref="MinimalBuildDefinitionAttribute" />
+/// <seealso cref="ISetupBuildInfo" />
+/// <seealso cref="IStoreArtifact" />
+/// <seealso cref="IRetrieveArtifact" />
 [PublicAPI]
-public abstract class BuildDefinition(IServiceProvider services) : IBuildDefinition
-{
-    /// <inheritdoc cref="IBuildAccessor.Services" />
-    public IServiceProvider Services => services;
-
-    /// <inheritdoc cref="IBuildDefinition.TargetDefinitions" />
-    public abstract IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
-
-    /// <inheritdoc cref="IBuildDefinition.ParamDefinitions" />
-    public abstract IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions { get; }
-
-    /// <inheritdoc cref="IBuildDefinition.AccessParam" />
-    public abstract object? AccessParam(string paramName);
-
-    /// <inheritdoc cref="IBuildDefinition.Workflows" />
-    public virtual IReadOnlyList<WorkflowDefinition> Workflows => [];
-
-    /// <inheritdoc cref="IBuildDefinition.GlobalWorkflowOptions" />
-    public virtual IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => [];
-
-    /// <inheritdoc cref="IBuildDefinition.SuppressParamResolution" />
-    public bool SuppressParamResolution { get; set; }
-}
+public abstract class BuildDefinition(IServiceProvider services)
+    : MinimalBuildDefinition(services), ISetupBuildInfo, IValidateBuild, IDotnetUserSecrets;

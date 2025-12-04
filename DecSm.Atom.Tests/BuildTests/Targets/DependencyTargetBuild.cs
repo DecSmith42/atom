@@ -1,8 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
-[BuildDefinition]
-public partial class DependencyTargetBuild : BuildDefinition,
-    IDependencyTarget1,
+[MinimalBuildDefinition]
+public partial class DependencyTargetBuild : IDependencyTarget1,
     IDependencyTarget2,
     IDependencyFailTarget1,
     IDependencyFailTarget2

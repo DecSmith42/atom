@@ -8,8 +8,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     private const string GenerateInterfaceMembersAttributeFull =
         "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
 
-    private const string DefaultBuildDefinitionAttributeFull =
-        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
@@ -37,7 +36,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName is GenerateInterfaceMembersAttributeFull or DefaultBuildDefinitionAttributeFull)
+            if (attributeName is GenerateInterfaceMembersAttributeFull or BuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 

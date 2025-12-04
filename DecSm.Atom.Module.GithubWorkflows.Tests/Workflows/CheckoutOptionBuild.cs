@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class CheckoutOptionBuild : BuildDefinition, IGithubWorkflows, ICheckoutOptionTarget
+[MinimalBuildDefinition]
+public partial class CheckoutOptionBuild : MinimalBuildDefinition, IGithubWorkflows, ICheckoutOptionTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

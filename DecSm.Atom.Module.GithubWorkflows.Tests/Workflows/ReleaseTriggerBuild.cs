@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class ReleaseTriggerBuild : BuildDefinition, IGithubWorkflows, IReleaseTriggerTarget
+[MinimalBuildDefinition]
+public partial class ReleaseTriggerBuild : MinimalBuildDefinition, IGithubWorkflows, IReleaseTriggerTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

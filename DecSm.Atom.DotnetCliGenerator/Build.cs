@@ -1,8 +1,8 @@
 ﻿namespace Atom;
 
-[BuildDefinition]
+[MinimalBuildDefinition]
 [GenerateEntryPoint]
-internal sealed partial class Build : DefaultBuildDefinition
+internal sealed partial class Build : BuildDefinition
 {
     private Target GenerateDotnetCliCode =>
         t => t.Executes(async () =>

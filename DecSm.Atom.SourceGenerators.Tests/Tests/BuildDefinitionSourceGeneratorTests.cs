@@ -4,7 +4,7 @@
 public class BuildDefinitionSourceGeneratorTests
 {
     [Test]
-    public async Task MinimalDefinition_GeneratesSource()
+    public async Task MinimalBuildDefinition_WithoutBaseType_GeneratesSource()
     {
         // Arrange
         const string source = """
@@ -12,20 +12,21 @@ public class BuildDefinitionSourceGeneratorTests
 
                               namespace TestNamespace;
 
-                              [BuildDefinition]
-                              public partial class MinimalTestDefinition : BuildDefinition;
+                              [MinimalBuildDefinition]
+                              public partial class MinimalTestDefinition;
                               """;
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
     }
 
     [Test]
-    public async Task DefaultDefinition_GeneratesSource()
+    public async Task MinimalBuildDefinition_WithBaseType_GeneratesSource()
     {
         // Arrange
         const string source = """
@@ -33,20 +34,21 @@ public class BuildDefinitionSourceGeneratorTests
 
                               namespace TestNamespace;
 
-                              [BuildDefinition]
-                              public partial class DefaultTestDefinition : DefaultBuildDefinition;
+                              [MinimalBuildDefinition]
+                              public partial class MinimalTestDefinition : MinimalBuildDefinition;
                               """;
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
     }
 
     [Test]
-    public async Task DefinitionWithTargetSetup_GeneratesSource()
+    public async Task BuildDefinition_GeneratesSource()
     {
         // Arrange
         const string source = """
@@ -55,19 +57,13 @@ public class BuildDefinitionSourceGeneratorTests
                               namespace TestNamespace;
 
                               [BuildDefinition]
-                              public partial class TestDefinitionWithSetup : BuildDefinition, ITestTargetDefinition;
-
-                              [TargetDefinition]
-                              [TargetSetup]
-                              public interface ITestTargetDefinition
-                              {
-                                  public void ConfigureBuilder(IHostApplicationBuilder builder);
-                              }
+                              public partial class DefaultTestDefinition : BuildDefinition;
                               """;
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);
@@ -84,7 +80,7 @@ public class BuildDefinitionSourceGeneratorTests
                               namespace TestNamespace;
 
                               [BuildDefinition]
-                              public partial class ChainedParamBuild : BuildDefinition, IChainedParamTarget;
+                              public partial class ChainedParamBuild : IChainedParamTarget;
 
                               [TargetDefinition]
                               public partial interface IChainedParamTarget
@@ -104,7 +100,8 @@ public class BuildDefinitionSourceGeneratorTests
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<BuildDefinitionSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);

@@ -21,7 +21,7 @@ public static class AtomHost
     ///     tailored for Atom applications with the specified build definition.
     /// </summary>
     /// <typeparam name="T">
-    ///     The type of <see cref="BuildDefinition" /> used to configure the Atom host.
+    ///     The type of <see cref="MinimalBuildDefinition" /> used to configure the Atom host.
     /// </typeparam>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <returns>
@@ -29,7 +29,7 @@ public static class AtomHost
     /// </returns>
     public static HostApplicationBuilder CreateAtomBuilder<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(string[] args)
-        where T : BuildDefinition
+        where T : MinimalBuildDefinition
     {
         var builder = Host.CreateEmptyApplicationBuilder(new()
         {
@@ -56,7 +56,7 @@ public static class AtomHost
     ///     Builds and runs an Atom-based application using the specified build definition.
     /// </summary>
     /// <typeparam name="T">
-    ///     The type of <see cref="BuildDefinition" /> used to configure and run the Atom application.
+    ///     The type of <see cref="MinimalBuildDefinition" /> used to configure and run the Atom application.
     /// </typeparam>
     /// <param name="args">Command-line arguments passed to the application.</param>
     /// <remarks>
@@ -70,7 +70,7 @@ public static class AtomHost
     /// </example>
     public static void Run<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(
         string[] args)
-        where T : BuildDefinition =>
+        where T : MinimalBuildDefinition =>
         CreateAtomBuilder<T>(args)
             .Build()
             .UseAtom()

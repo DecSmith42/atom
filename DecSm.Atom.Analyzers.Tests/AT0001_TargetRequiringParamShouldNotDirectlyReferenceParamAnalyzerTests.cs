@@ -32,7 +32,7 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzerT
             new("Microsoft.NETCore.App.Ref", "10.0.0-rc.1.25451.107"),
             Path.Combine("ref", "net10.0"));
 
-        var assemblyReference = MetadataReference.CreateFromFile(typeof(BuildDefinition).Assembly.Location);
+        var assemblyReference = MetadataReference.CreateFromFile(typeof(MinimalBuildDefinition).Assembly.Location);
         configuration.TestState.AdditionalReferences.AddRange([assemblyReference]);
     }
 

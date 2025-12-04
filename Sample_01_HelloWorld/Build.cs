@@ -6,8 +6,8 @@ using DecSm.Atom.Build.Definition;
 
 namespace Atom;
 
-[DefaultBuildDefinition]
-internal partial class Build : DefaultBuildDefinition
+[BuildDefinition]
+internal partial class Build
 {
     private Target HelloWorld =>
         t => t

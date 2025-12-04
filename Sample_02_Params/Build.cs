@@ -19,8 +19,8 @@ using DecSm.Atom.Params;
 
 namespace Atom;
 
-[DefaultBuildDefinition]
-internal partial class Build : DefaultBuildDefinition
+[BuildDefinition]
+internal partial class Build
 {
     // This property defines a parameter that can be set when executing the build.
     [ParamDefinition("my-name", "Name to greet")]

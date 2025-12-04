@@ -7,9 +7,9 @@
 ///     <para>
 ///         Outlines the fundamental components that constitute a build, including its targets,
 ///         parameters, associated project file, workflow configurations, and global options.
-///         Implementations of this interface, typically through the <see cref="BuildDefinition" /> or
-///         <see cref="DefaultBuildDefinition" /> base classes and decorated with the
-///         <see cref="BuildDefinitionAttribute" />,
+///         Implementations of this interface, typically through the <see cref="MinimalBuildDefinition" /> or
+///         <see cref="BuildDefinition" /> base classes and decorated with the
+///         <see cref="MinimalBuildDefinitionAttribute" />,
 ///         serve as the central point for Atom to understand and execute a build.
 ///     </para>
 ///     <para>
@@ -19,9 +19,9 @@
 ///         and properties marked with <see cref="ParamDefinitionAttribute" /> or <see cref="SecretDefinitionAttribute" />.
 ///     </para>
 /// </remarks>
-/// <seealso cref="BuildDefinitionAttribute" />
+/// <seealso cref="MinimalBuildDefinitionAttribute" />
+/// <seealso cref="MinimalBuildDefinition" />
 /// <seealso cref="BuildDefinition" />
-/// <seealso cref="DefaultBuildDefinition" />
 /// <seealso cref="TargetDefinition" />
 /// <seealso cref="ParamDefinition" />
 /// <seealso cref="DecSm.Atom.Workflows.Definition.WorkflowDefinition" />
@@ -104,7 +104,7 @@ public interface IBuildDefinition
     /// <remarks>
     ///     These options apply to all workflows unless overridden at the individual workflow level.
     ///     They can control aspects like .NET SDK setup, artifact provider usage, or custom step injections.
-    ///     <see cref="DefaultBuildDefinition" /> provides a set of common global options.
+    ///     <see cref="BuildDefinition" /> provides a set of common global options.
     /// </remarks>
     /// <example>
     ///     <code>

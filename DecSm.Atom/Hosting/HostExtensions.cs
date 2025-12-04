@@ -41,15 +41,16 @@ public static class HostExtensions
         this TBuilder builder,
         string[] args)
         where TBuilder : IHostApplicationBuilder
-        where TBuild : BuildDefinition
+        where TBuild : MinimalBuildDefinition
     {
         builder.Services.AddHostedService<AtomService>();
-        builder.Services.AddSingleton<BuildDefinition, TBuild>();
-        builder.Services.AddSingleton<IBuildDefinition>(x => x.GetRequiredService<BuildDefinition>());
+        builder.Services.AddSingleton<MinimalBuildDefinition, TBuild>();
+        builder.Services.AddSingleton<IBuildDefinition>(x => x.GetRequiredService<MinimalBuildDefinition>());
 
         // ReSharper disable once SuspiciousTypeConversion.Global - Checked before casting
         if (typeof(TBuild).IsAssignableTo(typeof(IConfigureHost)))
-            builder.Services.AddSingleton<IConfigureHost>(x => (IConfigureHost)x.GetRequiredService<BuildDefinition>());
+            builder.Services.AddSingleton<IConfigureHost>(x =>
+                (IConfigureHost)x.GetRequiredService<MinimalBuildDefinition>());
 
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();

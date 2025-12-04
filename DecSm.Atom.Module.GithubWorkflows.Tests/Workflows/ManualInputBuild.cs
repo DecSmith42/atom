@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class ManualInputBuild : BuildDefinition, IGithubWorkflows, IManualInputTarget
+[MinimalBuildDefinition]
+public partial class ManualInputBuild : MinimalBuildDefinition, IGithubWorkflows, IManualInputTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

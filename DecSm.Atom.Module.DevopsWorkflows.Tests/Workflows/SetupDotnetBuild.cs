@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class SetupDotnetBuild : BuildDefinition, IDevopsWorkflows, ISetupDotnetTarget
+[MinimalBuildDefinition]
+public partial class SetupDotnetBuild : MinimalBuildDefinition, IDevopsWorkflows, ISetupDotnetTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
