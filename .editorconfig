@@ -12,21 +12,77 @@ insert_final_newline = false
 indent_style = space
 indent_size = 2
 
-[{*.csproj,*.sln,*.Build.props}]
+[{*.csproj,*.slnx,*.sln,*.Build.props}]
 # Project file properties
 indent_style = space
 indent_size = 2
 ij_xml_space_inside_empty_tag = true
 
 [{*.cs,*.cshtml,*.razor}]
-# CSharp properties
+# CSharp file properties
 trim_trailing_whitespace = true
 insert_final_newline = true
 indent_size = 4
-max_line_length = 140
+max_line_length = 120
 
-# Microsoft .NET properties
+# CSharp style rules
+csharp_keep_blank_lines_in_code = 1
+csharp_keep_blank_lines_in_declarations = 1
+csharp_blank_lines_after_multiline_statements = 1
+csharp_blank_lines_after_block_statements = 1
+csharp_blank_lines_after_case = 0
+csharp_blank_lines_after_control_transfer_statements = 0
+csharp_blank_lines_after_file_scoped_namespace_directive = 1
+csharp_blank_lines_after_start_comment = 1
+csharp_blank_lines_after_using_list = 1
+csharp_blank_lines_around_accessor = 1
+csharp_blank_lines_around_auto_property = 1
+csharp_blank_lines_around_block_case_section = 1
+csharp_blank_lines_around_field = 1
+csharp_blank_lines_around_invocable = 1
+csharp_blank_lines_around_local_method = 1
+csharp_blank_lines_around_multiline_case_section = 0
+csharp_blank_lines_around_namespace = 1
+csharp_blank_lines_around_property = 1
+csharp_blank_lines_around_region = 1
+csharp_blank_lines_around_single_line_accessor = 1
+csharp_blank_lines_around_single_line_auto_property = 1
+csharp_blank_lines_around_single_line_field = 0
+csharp_blank_lines_around_single_line_invocable = 0
+csharp_blank_lines_around_single_line_local_method = 1
+csharp_blank_lines_around_single_line_property = 0
+csharp_blank_lines_around_single_line_type = 1
+csharp_blank_lines_around_type = 1
+csharp_blank_lines_inside_region = 0
+csharp_blank_lines_inside_type = 0
+csharp_blank_lines_before_case = 0
+csharp_blank_lines_before_block_statements = 1
+csharp_blank_lines_before_control_transfer_statements = 1
+csharp_blank_lines_before_multiline_statements = 1
+csharp_remove_blank_lines_near_braces_in_code = true
+csharp_remove_blank_lines_near_braces_in_declarations = true
+csharp_braces_for_ifelse = not_required_for_both # actually behaves as `required for either`
+csharp_braces_for_using = required_for_multiline
+csharp_braces_for_while = required_for_multiline
+csharp_empty_block_style = together_same_line
+csharp_indent_preprocessor_if = usual_indent
+csharp_instance_members_qualify_declared_in = base_class
+csharp_keep_existing_declaration_parens_arrangement = false
+csharp_keep_existing_embedded_arrangement = false
+csharp_keep_existing_expr_member_arrangement = false
+csharp_keep_existing_invocation_parens_arrangement = false
+csharp_keep_existing_linebreaks = false
+csharp_keep_existing_list_patterns_arrangement = false
+csharp_keep_existing_primary_constructor_declaration_parens_arrangement = false
+csharp_keep_existing_property_patterns_arrangement = false
+csharp_nested_ternary_style = expanded
 csharp_new_line_before_members_in_object_initializers = true
+csharp_object_creation_when_type_not_evident = target_typed
+csharp_place_accessorholder_attribute_on_same_line = false
+csharp_place_expr_method_on_single_line = false
+csharp_place_simple_embedded_statement_on_same_line = false
+csharp_place_simple_list_pattern_on_single_line = true
+csharp_place_type_constraints_on_same_line = false
 csharp_preferred_modifier_order = public, private, protected, internal, file, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async, required:suggestion
 csharp_style_expression_bodied_accessors = true:suggestion
 csharp_style_expression_bodied_methods = true:none
@@ -34,6 +90,24 @@ csharp_style_expression_bodied_properties = true:suggestion
 csharp_style_var_elsewhere = true:suggestion
 csharp_style_var_for_built_in_types = true:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_trailing_comma_in_multiline_lists = true
+csharp_trailing_comma_in_singleline_lists = false
+csharp_wrap_after_declaration_lpar = true
+csharp_wrap_after_property_in_chained_method_calls = true
+csharp_wrap_arguments_style = chop_if_long
+csharp_wrap_before_first_method_call = true
+csharp_wrap_before_primary_constructor_declaration_rpar = true
+csharp_wrap_chained_binary_expressions = chop_if_long
+csharp_wrap_chained_binary_patterns = chop_if_long
+csharp_wrap_chained_method_calls = chop_always
+csharp_wrap_extends_list_style = chop_if_long
+csharp_wrap_list_pattern = chop_if_long
+csharp_wrap_multiple_type_parameter_constraints_style = chop_always
+csharp_wrap_object_and_collection_initializer_style = chop_always
+csharp_wrap_parameters_style = chop_if_long
+csharp_wrap_ternary_expr_style = chop_always
+
+# .NET style rules
 dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:none
 dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:none
 dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:none
@@ -44,54 +118,9 @@ dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:suggestion
-
-# ReSharper properties
-resharper_blank_lines_after_multiline_statements = 1
-resharper_blank_lines_around_single_line_auto_property = 1
-resharper_blank_lines_before_block_statements = 1
-resharper_blank_lines_before_control_transfer_statements = 1
-resharper_blank_lines_before_multiline_statements = 1
-resharper_blank_lines_before_single_line_comment = 1
-resharper_braces_for_ifelse = not_required_for_both # actually behaves as `required for either`
-resharper_braces_for_using = required_for_multiline
-resharper_braces_for_while = required_for_multiline
-resharper_csharp_blank_lines_around_single_line_invocable = 1
-resharper_csharp_empty_block_style = together_same_line
-resharper_csharp_place_type_constraints_on_same_line = false
-resharper_csharp_trailing_comma_in_multiline_lists = true
-resharper_csharp_trailing_comma_in_singleline_lists = false
-resharper_csharp_wrap_after_declaration_lpar = true
-resharper_csharp_wrap_arguments_style = chop_if_long
-resharper_csharp_wrap_extends_list_style = chop_if_long
-resharper_csharp_wrap_multiple_type_parameter_constraints_style = chop_always
-resharper_csharp_wrap_object_and_collection_initializer_style = chop_always
-resharper_csharp_wrap_parameters_style = chop_if_long
-resharper_csharp_wrap_ternary_expr_style = chop_always
-resharper_indent_preprocessor_if = usual_indent
-resharper_instance_members_qualify_declared_in = base_class
-resharper_keep_existing_declaration_parens_arrangement = false
-resharper_keep_existing_embedded_arrangement = false
-resharper_keep_existing_expr_member_arrangement = false
-resharper_keep_existing_invocation_parens_arrangement = false
-resharper_keep_existing_linebreaks = false
-resharper_keep_existing_list_patterns_arrangement = false
-resharper_keep_existing_primary_constructor_declaration_parens_arrangement = false
-resharper_keep_existing_property_patterns_arrangement = false
-resharper_csharp_keep_existing_linebreaks = false
-resharper_nested_ternary_style = expanded
-resharper_object_creation_when_type_not_evident = target_typed
-resharper_place_accessorholder_attribute_on_same_line = false
-resharper_place_expr_method_on_single_line = false
-resharper_place_simple_embedded_statement_on_same_line = false
-resharper_place_simple_list_pattern_on_single_line = true
-resharper_trailing_comma_in_multiline_lists = true
-resharper_wrap_after_property_in_chained_method_calls = true
-resharper_wrap_before_first_method_call = true
-resharper_wrap_before_primary_constructor_declaration_rpar = true
-resharper_wrap_chained_binary_expressions = chop_if_long
-resharper_wrap_chained_binary_patterns = chop_if_long
-resharper_wrap_chained_method_calls = chop_always
-resharper_wrap_list_pattern = chop_if_long
+dotnet_style_prefer_collection_expression = true
+dotnet_separate_import_directive_groups = false
+dotnet_sort_system_directives_first = true
 
 [*.{received,verified}.{txt,xml,json}]
 # Verify settings

@@ -1,9 +1,6 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Testing;
 
 namespace DecSm.Atom.Analyzers.Tests;
 
@@ -54,10 +51,18 @@ public class ExtendedCodeFixVerifier<TAnalyzer, TTest, TVerifier>
     public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor) =>
         new(descriptor);
 
-    public static Task VerifyCodeFixAsync(string source, DiagnosticResult expected, string fixedSource, Action<TTest>? configure = null) =>
+    public static Task VerifyCodeFixAsync(
+        string source,
+        DiagnosticResult expected,
+        string fixedSource,
+        Action<TTest>? configure = null) =>
         VerifyCodeFixAsync(source, [expected], fixedSource, configure);
 
-    public static Task VerifyCodeFixAsync(string source, DiagnosticResult[] expected, string fixedSource, Action<TTest>? configure = null)
+    public static Task VerifyCodeFixAsync(
+        string source,
+        DiagnosticResult[] expected,
+        string fixedSource,
+        Action<TTest>? configure = null)
     {
         var test = new TTest
         {

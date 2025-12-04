@@ -101,7 +101,8 @@ public interface IWorkflowVariableService
     Task WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default);
 
     /// <summary>
-    ///     Reads a variable from the workflow context for a specific job, making it available in the current execution context.
+    ///     Reads a variable from the workflow context for a specific job, making it available in the current execution
+    ///     context.
     /// </summary>
     /// <param name="jobName">
     ///     The name of the job context from which to read the variable. This allows variables to be
@@ -174,7 +175,10 @@ internal sealed class WorkflowVariableService(
         .Where(x => x is not AtomWorkflowVariableProvider)
         .ToArray();
 
-    public async Task WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
+    public async Task WriteVariable(
+        string variableName,
+        string variableValue,
+        CancellationToken cancellationToken = default)
     {
         var variableArgName = buildDefinition.ParamDefinitions[variableName].ArgName;
 

@@ -43,6 +43,8 @@ internal sealed class ReportLogger(IExternalScopeProvider? scopeProvider) : ILog
         // If the message contains any secrets, we don't want to log it
         message = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(message) ?? message;
 
-        ServiceStaticAccessor<ReportService>.Service?.AddReportData(new LogReportData(message, exception, logLevel, time), command);
+        ServiceStaticAccessor<ReportService>.Service?.AddReportData(
+            new LogReportData(message, exception, logLevel, time),
+            command);
     }
 }

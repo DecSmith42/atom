@@ -30,10 +30,12 @@ public interface IArg;
 public sealed record CommandArg(string Name) : IArg;
 
 /// <summary>
-///     Represents an argument that instructs the Atom build system to generate or regenerate all associated workflow files.
+///     Represents an argument that instructs the Atom build system to generate or regenerate all associated workflow
+///     files.
 /// </summary>
 /// <remarks>
-///     This is typically used when changes to the build definition or workflow configurations require updating CI/CD pipeline files
+///     This is typically used when changes to the build definition or workflow configurations require updating CI/CD
+///     pipeline files
 ///     (e.g., GitHub Actions YAML files, Azure DevOps YAML files) managed by the Atom framework.
 ///     It is often triggered by a `--gen` or `--generate` flag on the command line.
 /// </remarks>
@@ -62,16 +64,21 @@ public sealed record GenArg : IArg;
 public sealed record HelpArg : IArg;
 
 /// <summary>
-///     Represents a parameter argument passed to the Atom build, consisting of an argument name, a parameter name, and its value.
+///     Represents a parameter argument passed to the Atom build, consisting of an argument name, a parameter name, and its
+///     value.
 /// </summary>
 /// <remarks>
 ///     Parameters are used to provide configurable values to build targets. The <paramref name="ParamName" /> should match
 ///     a parameter defined in the <see cref="DecSm.Atom.Build.Definition.IBuildDefinition" />.
 ///     The <paramref name="ArgName" /> is how the parameter was specified on the command line (e.g. `--my-param-name`).
-///     The Atom framework's <see cref="CommandLineArgsParser" /> resolves these arguments and makes their values available to targets.
+///     The Atom framework's <see cref="CommandLineArgsParser" /> resolves these arguments and makes their values available
+///     to targets.
 /// </remarks>
 /// <param name="ArgName">The name of the argument as specified on the command line (e.g., "--version", "-c").</param>
-/// <param name="ParamName">The canonical name of the parameter as defined in the build definition (e.g., "Version", "Configuration").</param>
+/// <param name="ParamName">
+///     The canonical name of the parameter as defined in the build definition (e.g., "Version",
+///     "Configuration").
+/// </param>
 /// <param name="ParamValue">The value provided for the parameter.</param>
 /// <example>
 ///     If the command line is `atom Build --configuration Release`, a <see cref="ParamArg" /> might be:
@@ -87,8 +94,10 @@ public sealed record ParamArg(string ArgName, string ParamName, string ParamValu
 ///     Represents an argument that instructs the Atom build system to skip the execution of dependent targets.
 /// </summary>
 /// <remarks>
-///     When this argument is present, only the explicitly specified targets will run; their declared dependencies will be ignored.
-///     This is useful for scenarios where a user wants to run a specific part of the build without triggering its prerequisites.
+///     When this argument is present, only the explicitly specified targets will run; their declared dependencies will be
+///     ignored.
+///     This is useful for scenarios where a user wants to run a specific part of the build without triggering its
+///     prerequisites.
 ///     It is often triggered by a `-s` or `--skip` flag on the command line.
 /// </remarks>
 /// <example>
@@ -153,8 +162,10 @@ public sealed record ProjectArg(string ProjectName) : IArg;
 ///     Represents an argument that instructs the Atom build to run in interactive mode.
 /// </summary>
 /// <remarks>
-///     Interactive mode allows the build process to prompt the user for input if needed by certain targets or configurations.
-///     This is the default mode if `--headless` is not specified. It can be explicitly requested using an `--interactive` flag.
+///     Interactive mode allows the build process to prompt the user for input if needed by certain targets or
+///     configurations.
+///     This is the default mode if `--headless` is not specified. It can be explicitly requested using an `--interactive`
+///     flag.
 ///     This mode is particularly useful for local development builds where user intervention might be required.
 /// </remarks>
 /// <example>

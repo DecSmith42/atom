@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace DecSm.Atom.Tests.ClassTests;
+﻿namespace DecSm.Atom.Tests.ClassTests;
 
 [TestFixture]
 internal sealed class SemVerTests
@@ -20,7 +18,11 @@ internal sealed class SemVerTests
     [TestCase("2.0.0", "1.0.0", "2.0.0", false)]
     [TestCase("1.0.0", "1.0.0", "1.0.0", true)]
     [TestCase("1.0.0", "1.0.0", "2.0.0", false)]
-    public void IsBetween_ShouldReturnExpectedResult(string firstBound, string secondBound, string version, bool expectedResult)
+    public void IsBetween_ShouldReturnExpectedResult(
+        string firstBound,
+        string secondBound,
+        string version,
+        bool expectedResult)
     {
         // Arrange
         var first = SemVer.Parse(firstBound);
@@ -188,7 +190,10 @@ internal sealed class SemVerTests
     [TestCase("1.0.0", "1.0.0", true)]
     [TestCase("2.0.0", "1.0.0", true)]
     [TestCase("1.0.0", "2.0.0", false)]
-    public void OperatorGreaterThanOrEqual_ShouldReturnExpectedResult(string version1, string version2, bool expectedResult)
+    public void OperatorGreaterThanOrEqual_ShouldReturnExpectedResult(
+        string version1,
+        string version2,
+        bool expectedResult)
     {
         var semVer1 = SemVer.Parse(version1);
         var semVer2 = SemVer.Parse(version2);
@@ -199,7 +204,10 @@ internal sealed class SemVerTests
     [TestCase("1.0.0", "1.0.0", true)]
     [TestCase("1.0.0", "2.0.0", true)]
     [TestCase("2.0.0", "1.0.0", false)]
-    public void OperatorLessThanOrEqual_ShouldReturnExpectedResult(string version1, string version2, bool expectedResult)
+    public void OperatorLessThanOrEqual_ShouldReturnExpectedResult(
+        string version1,
+        string version2,
+        bool expectedResult)
     {
         var semVer1 = SemVer.Parse(version1);
         var semVer2 = SemVer.Parse(version2);

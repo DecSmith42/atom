@@ -9,6 +9,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
         where TState : notnull =>
         scopeProvider?.Push(state) ?? NullScope.Instance;
 
+    // Secrets are not masked here because our custom Spectre output implementation does that.
     public void Log<TState>(
         LogLevel logLevel,
         EventId eventId,
@@ -97,9 +98,6 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
         if (message is "(null)")
             return;
 
-        // If the text contains any secrets, we don't want to log it
-        message = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(message) ?? message;
-
         message = message.EscapeMarkup();
 
         if (processOutput)
@@ -122,16 +120,27 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             .HideHeaders()
             .AddColumn("Info")
             .AddColumn("Message")
-            .AddRow($"[dim]{time:yy-MM-dd zzz}[/]", $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
-            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]", $"[{messageStyle}]{message}[/]")
+            .AddRow($"[dim]{time:yy-MM-dd zzz}[/]",
+                $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
+            .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]",
+                $"[{messageStyle}]{message}[/]")
             .AddRow(string.Empty);
 
-        if (exception != null)
+        if (exception is not null)
         {
-            const ExceptionFormats exceptionFormat =
-                ExceptionFormats.ShortenPaths | ExceptionFormats.ShortenTypes | ExceptionFormats.ShortenMethods;
+            if (RuntimeFeature.IsDynamicCodeSupported)
+            {
+                const ExceptionFormats exceptionFormat = ExceptionFormats.ShortenPaths |
+                                                         ExceptionFormats.ShortenTypes |
+                                                         ExceptionFormats.ShortenMethods;
 
-            table.AddRow(new Text(string.Empty), exception.GetRenderable(exceptionFormat));
+                table.AddRow(new Text(string.Empty), exception.GetRenderable(exceptionFormat));
+            }
+            else
+            {
+                table.AddRow(new Text(string.Empty), new Text(exception.ToString()));
+            }
+
             table.AddRow(string.Empty);
         }
 

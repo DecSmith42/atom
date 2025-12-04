@@ -37,29 +37,95 @@ internal sealed class GithubWorkflowWriter(
                                 using (WriteSection($"{input.Name}:"))
                                 {
                                     WriteLine($"description: {input.Description}");
-                                    WriteLine($"required: {input.Required.ToString().ToLower()}");
+
+                                    var inputParamName = buildDefinition.ParamDefinitions
+                                        .FirstOrDefault(x => x.Value.ArgName == input.Name)
+                                        .Key;
+
+                                    if (inputParamName is null)
+                                        throw new InvalidOperationException(
+                                            $"Workflow {workflow.Name} has a manual trigger input named {input.Name} that does not correspond to any parameter in the build definition");
 
                                     switch (input)
                                     {
                                         case ManualBoolInput boolInput:
 
+                                            bool? defaultBoolValue = null;
+
+                                            if (boolInput.DefaultValue.HasValue)
+                                            {
+                                                defaultBoolValue = boolInput.DefaultValue.Value;
+                                            }
+                                            else
+                                            {
+                                                var accessedParam = buildDefinition.AccessParam(inputParamName);
+
+                                                switch (accessedParam)
+                                                {
+                                                    case bool boolParam:
+                                                        defaultBoolValue = boolParam;
+
+                                                        break;
+
+                                                    case string stringParam:
+                                                    {
+                                                        if (bool.TryParse(stringParam, out var parsedBool))
+                                                            defaultBoolValue = parsedBool;
+
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            var isBoolRequired = input.Required ?? defaultBoolValue is null
+                                                ? "true"
+                                                : "false";
+
+                                            WriteLine($"required: {isBoolRequired}");
+
                                             WriteLine("type: boolean");
 
-                                            if (boolInput.DefaultValue is not null)
-                                                WriteLine($"default: {boolInput.DefaultValue.ToString()?.ToLower()}");
+                                            if (defaultBoolValue.HasValue)
+                                                WriteLine($"default: {(defaultBoolValue.Value ? "true" : "false")}");
 
                                             break;
 
                                         case ManualStringInput stringInput:
 
+                                            var defaultStringValue = stringInput.DefaultValue is { Length: > 0 }
+                                                ? stringInput.DefaultValue
+                                                : buildDefinition
+                                                    .AccessParam(inputParamName)
+                                                    ?.ToString();
+
+                                            var isStringRequired =
+                                                input.Required ?? defaultStringValue is not { Length: > 0 }
+                                                    ? "true"
+                                                    : "false";
+
+                                            WriteLine($"required: {isStringRequired}");
+
                                             WriteLine("type: string");
 
-                                            if (stringInput.DefaultValue is not null)
-                                                WriteLine($"default: {stringInput.DefaultValue}");
+                                            if (defaultStringValue is not null)
+                                                WriteLine($"default: {defaultStringValue}");
 
                                             break;
 
                                         case ManualChoiceInput choiceInput:
+
+                                            var defaultChoiceValue = choiceInput.DefaultValue is { Length: > 0 }
+                                                ? choiceInput.DefaultValue
+                                                : buildDefinition
+                                                    .AccessParam(inputParamName)
+                                                    ?.ToString();
+
+                                            var isChoiceRequired =
+                                                input.Required ?? defaultChoiceValue is not { Length: > 0 }
+                                                    ? "true"
+                                                    : "false";
+
+                                            WriteLine($"required: {isChoiceRequired}");
 
                                             WriteLine("type: choice");
 
@@ -69,8 +135,8 @@ internal sealed class GithubWorkflowWriter(
                                                     WriteLine($"- {choice}");
                                             }
 
-                                            if (choiceInput.DefaultValue is not null)
-                                                WriteLine($"default: {choiceInput.DefaultValue}");
+                                            if (defaultChoiceValue is not null)
+                                                WriteLine($"default: {defaultChoiceValue}");
 
                                             break;
                                     }
@@ -195,7 +261,10 @@ internal sealed class GithubWorkflowWriter(
     {
         using (WriteSection($"{job.Name}:"))
         {
-            var jobRequirementNames = job.JobDependencies;
+            var jobRequirementNames = job
+                .JobDependencies
+                .Distinct()
+                .ToList();
 
             if (jobRequirementNames.Count > 0)
                 WriteLine($"needs: [ {string.Join(", ", jobRequirementNames)} ]");
@@ -205,7 +274,8 @@ internal sealed class GithubWorkflowWriter(
                 using (WriteSection("matrix:"))
                 {
                     foreach (var dimension in job.MatrixDimensions)
-                        WriteLine($"{buildDefinition.ParamDefinitions[dimension.Name].ArgName}: [ {string.Join(", ", dimension.Values)} ]");
+                        WriteLine(
+                            $"{buildDefinition.ParamDefinitions[dimension.Name].ArgName}: [ {string.Join(", ", dimension.Values)} ]");
                 }
 
             var githubPlatformOption = job
@@ -227,6 +297,21 @@ internal sealed class GithubWorkflowWriter(
                 }
             else
                 WriteLine($"runs-on: {labelsDisplay}");
+
+            var snapshotImageOption = job
+                .Options
+                .Concat(workflow.Options)
+                .OfType<GithubSnapshotImageOption>()
+                .FirstOrDefault();
+
+            if (snapshotImageOption?.Value is not null)
+                using (WriteSection("snapshot:"))
+                {
+                    WriteLine($"image-name: {snapshotImageOption.Value.ImageName}");
+
+                    if (!string.IsNullOrWhiteSpace(snapshotImageOption.Value.Version))
+                        WriteLine($"version: {snapshotImageOption.Value.Version}");
+                }
 
             var environmentOptions = job
                 .Options
@@ -273,13 +358,37 @@ internal sealed class GithubWorkflowWriter(
 
     private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)
     {
-        using (WriteSection("- name: Checkout"))
-        {
-            WriteLine("uses: actions/checkout@v4");
+        if (workflow
+                .Options
+                .Concat(step.Options)
+                .OfType<GithubCheckoutOption>()
+                .FirstOrDefault() is { Value: not null } checkoutOption)
+            using (WriteSection("- name: Checkout"))
+            {
+                WriteLine($"uses: actions/checkout@{checkoutOption.Value.Version}");
 
-            using (WriteSection("with:"))
-                WriteLine("fetch-depth: 0");
-        }
+                using (WriteSection("with:"))
+                {
+                    WriteLine("fetch-depth: 0");
+
+                    if (checkoutOption.Value.Lfs)
+                        WriteLine("lfs: true");
+
+                    if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Submodules))
+                        WriteLine($"submodules: {checkoutOption.Value.Submodules}");
+
+                    if (!string.IsNullOrWhiteSpace(checkoutOption.Value.Token))
+                        WriteLine($"token: {checkoutOption.Value.Token}");
+                }
+            }
+        else
+            using (WriteSection("- name: Checkout"))
+            {
+                WriteLine("uses: actions/checkout@v4");
+
+                using (WriteSection("with:"))
+                    WriteLine("fetch-depth: 0");
+            }
 
         var commandStepTarget = buildModel.GetTarget(step.Name);
 
@@ -310,7 +419,22 @@ internal sealed class GithubWorkflowWriter(
                         continue;
 
                     using (WriteSection("with:"))
-                        WriteLine($"dotnet-version: '{setupDotnetStep.DotnetVersion}'");
+                    {
+                        // TODO: Use this to correctly handle quotes throughout the rest of the writer
+                        var versionQuote = setupDotnetStep.DotnetVersion.Contains('\'')
+                            ? '"'
+                            : '\'';
+
+                        WriteLine($"dotnet-version: {versionQuote}{setupDotnetStep.DotnetVersion}{versionQuote}");
+
+                        var qualityQuote = setupDotnetStep.Quality.ToString()!.Contains('\'')
+                            ? '"'
+                            : '\'';
+
+                        if (setupDotnetStep.Quality is not null)
+                            WriteLine(
+                                $"dotnet-quality: {qualityQuote}{setupDotnetStep.Quality.ToString()!.ToLower()}{qualityQuote}");
+                    }
                 }
 
         var setupNugetSteps = workflow
@@ -477,7 +601,8 @@ internal sealed class GithubWorkflowWriter(
             if (includeId)
                 WriteLine($"id: {workflowStep.Name}");
 
-            WriteLine($"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
+            WriteLine(
+                $"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
 
             var env = new Dictionary<string, string>();
 
@@ -509,7 +634,8 @@ internal sealed class GithubWorkflowWriter(
                 {
                     if (injectedSecret.Value is null)
                     {
-                        logger.LogWarning("Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
+                        logger.LogWarning(
+                            "Workflow {WorkflowName} command {CommandName} has a secret injection with a null value",
                             workflow.Name,
                             workflowStep.Name);
 
@@ -519,7 +645,8 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedSecret.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.ArgName] = $"${{{{ secrets.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] =
+                            $"${{{{ secrets.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
 
                 foreach (var injectedEvVar in workflow.Options.OfType<WorkflowSecretsEnvironmentInjection>())
@@ -537,7 +664,8 @@ internal sealed class GithubWorkflowWriter(
                     var paramDefinition = buildDefinition.ParamDefinitions.GetValueOrDefault(injectedEvVar.Value);
 
                     if (paramDefinition is not null)
-                        env[paramDefinition.ArgName] = $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                        env[paramDefinition.ArgName] =
+                            $"${{{{ vars.{paramDefinition.ArgName.ToUpper().Replace('-', '_')} }}}}";
                 }
             }
 
@@ -550,7 +678,8 @@ internal sealed class GithubWorkflowWriter(
                     .FirstOrDefault(x => x.Value == requiredSecret.Param.Name);
 
                 if (injectedSecret is not null)
-                    env[requiredSecret.Param.ArgName] = $"${{{{ secrets.{requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')} }}}}";
+                    env[requiredSecret.Param.ArgName] =
+                        $"${{{{ secrets.{requiredSecret.Param.ArgName.ToUpper().Replace('-', '_')} }}}}";
             }
 
             var environmentInjections = workflow.Options.OfType<WorkflowEnvironmentInjection>();

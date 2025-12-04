@@ -6,7 +6,8 @@
 /// <param name="Name">The name of the workflow target.</param>
 /// <remarks>
 ///     <para>
-///         A <c>WorkflowTargetDefinition</c> represents an individual unit of work within a larger <see cref="WorkflowDefinition" />.
+///         A <c>WorkflowTargetDefinition</c> represents an individual unit of work within a larger
+///         <see cref="WorkflowDefinition" />.
 ///         It holds configuration specific to this target, such as matrix execution strategies, custom options,
 ///         and artifact publishing behavior.
 ///     </para>
@@ -47,7 +48,7 @@ public sealed record WorkflowTargetDefinition(string Name)
                 .ToList(),
         };
 
-    public WorkflowTargetDefinition WithOptions(params IWorkflowOption[] options) =>
+    public WorkflowTargetDefinition WithOptions(params IEnumerable<IWorkflowOption> options) =>
         this with
         {
             Options = Options

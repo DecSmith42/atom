@@ -30,7 +30,10 @@
 ///     </para>
 ///     <list type="bullet">
 ///         <item>
-///             <description><see cref="ToggleWorkflowOption{TSelf}" /> - Boolean toggle options with predefined Enabled/Disabled states</description>
+///             <description>
+///                 <see cref="ToggleWorkflowOption{TSelf}" /> - Boolean toggle options with predefined
+///                 Enabled/Disabled states
+///             </description>
 ///         </item>
 ///         <item>
 ///             <description><see cref="WorkflowEnvironmentInjection" /> - String-based environment variable injections</description>
@@ -93,13 +96,19 @@ public abstract record WorkflowOption<TData, TSelf> : IWorkflowOption
     ///     </para>
     ///     <list type="bullet">
     ///         <item>
-    ///             <description><c>string</c> - For text-based configurations like environment variable values, file paths, or connection strings</description>
+    ///             <description>
+    ///                 <c>string</c> - For text-based configurations like environment variable values, file paths, or
+    ///                 connection strings
+    ///             </description>
     ///         </item>
     ///         <item>
     ///             <description><c>bool</c> - For toggle options and feature flags</description>
     ///         </item>
     ///         <item>
-    ///             <description><c>int</c>, <c>double</c> - For numeric configurations like timeouts, retry counts, or thresholds</description>
+    ///             <description>
+    ///                 <c>int</c>, <c>double</c> - For numeric configurations like timeouts, retry counts, or
+    ///                 thresholds
+    ///             </description>
     ///         </item>
     ///         <item>
     ///             <description>Custom objects - For complex structured configuration data</description>

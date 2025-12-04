@@ -1,61 +1,62 @@
 namespace Atom.Targets;
 
-internal interface IBuildTargets : IDotnetPackHelper
+internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
 {
-    public const string AtomProjectName = "DecSm.Atom";
-    public const string GitVersionModuleProjectName = "DecSm.Atom.Module.GitVersion";
-    public const string AtomGithubWorkflowsModuleProjectName = "DecSm.Atom.Module.GithubWorkflows";
-    public const string DotnetModuleProjectName = "DecSm.Atom.Module.Dotnet";
-    public const string AtomDevopsWorkflowsModuleProjectName = "DecSm.Atom.Module.DevopsWorkflows";
-    public const string AzureStorageModuleProjectName = "DecSm.Atom.Module.AzureStorage";
-    public const string AzureKeyVaultModuleProjectName = "DecSm.Atom.Module.AzureKeyVault";
-    public const string AtomToolProjectName = "DecSm.Atom.Tool";
+    static readonly string[] ProjectsToPack =
+    [
+        Projects.DecSm_Atom.Name,
+        Projects.DecSm_Atom_Module_AzureKeyVault.Name,
+        Projects.DecSm_Atom_Module_AzureStorage.Name,
+        Projects.DecSm_Atom_Module_DevopsWorkflows.Name,
+        Projects.DecSm_Atom_Module_Dotnet.Name,
+        Projects.DecSm_Atom_Module_GitVersion.Name,
+        Projects.DecSm_Atom_Module_GithubWorkflows.Name,
+    ];
 
-    Target PackAtom =>
+    Target PackProjects =>
         t => t
-            .DescribedAs("Builds the Atom project into a nuget package")
-            .ProducesArtifact(AtomProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomProjectName), cancellationToken));
+            .DescribedAs("Packs the Atom projects (excluding the tool) into nuget packages")
+            .ProducesArtifacts(ProjectsToPack)
+            .Executes(async cancellationToken =>
+            {
+                foreach (var project in ProjectsToPack)
+                    await DotnetPackAndStage(project, cancellationToken: cancellationToken);
+            });
 
-    Target PackGitVersionModule =>
+    Target PackTool =>
         t => t
-            .DescribedAs("Builds the GitVersion extension project into a nuget package")
-            .ProducesArtifact(GitVersionModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(GitVersionModuleProjectName), cancellationToken));
+            .DescribedAs("Packs the Atom tool into a nuget package")
+            .ProducesArtifact(Projects.DecSm_Atom_Tool.Name)
+            .Executes(async cancellationToken =>
+            {
+                var runtimeIdentifier = RuntimeInformation.RuntimeIdentifier;
 
-    Target PackGithubWorkflowsModule =>
-        t => t
-            .DescribedAs("Builds the GithubWorkflows extension project into a nuget package")
-            .ProducesArtifact(AtomGithubWorkflowsModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomGithubWorkflowsModuleProjectName), cancellationToken));
+                Logger.LogInformation("Packing AOT Atom tool for runtime {RuntimeIdentifier}", runtimeIdentifier);
 
-    Target PackDotnetModule =>
-        t => t
-            .DescribedAs("Builds the Dotnet extension project into a nuget package")
-            .ProducesArtifact(DotnetModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(DotnetModuleProjectName), cancellationToken));
+                await DotnetPackAndStage(FileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
+                    new()
+                    {
+                        PackOptions = new()
+                        {
+                            Runtime = runtimeIdentifier,
+                            Property = new Dictionary<string, string>
+                            {
+                                { "PublishAot", "true" },
+                            },
+                        },
+                    },
+                    cancellationToken);
 
-    Target PackDevopsWorkflowsModule =>
-        t => t
-            .DescribedAs("Builds the DevopsWorkflows extension project into a nuget package")
-            .ProducesArtifact(AtomDevopsWorkflowsModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomDevopsWorkflowsModuleProjectName), cancellationToken));
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Logger.LogInformation("Packing Atom tool for non-native AOT");
 
-    Target PackAzureStorageModule =>
-        t => t
-            .DescribedAs("Builds the AzureStorage extension project into a nuget package")
-            .ProducesArtifact(AzureStorageModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AzureStorageModuleProjectName), cancellationToken));
-
-    Target PackAzureKeyVaultModule =>
-        t => t
-            .DescribedAs("Builds the AzureKeyVault extension project into a nuget package")
-            .ProducesArtifact(AzureKeyVaultModuleProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AzureKeyVaultModuleProjectName), cancellationToken));
-
-    Target PackAtomTool =>
-        t => t
-            .DescribedAs("Builds the DecSm.Atom.Tool project into a nuget package")
-            .ProducesArtifact(AtomToolProjectName)
-            .Executes(cancellationToken => DotnetPackProject(new(AtomToolProjectName), cancellationToken));
+                    await DotnetPackAndStage(FileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
+                        new()
+                        {
+                            ClearPublishDirectory = false,
+                        },
+                        cancellationToken);
+                }
+            });
 }

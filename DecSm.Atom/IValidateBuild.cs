@@ -8,19 +8,15 @@
 ///         The primary purpose of <c>IValidateBuild</c> is to enhance the reliability and maintainability
 ///         of Atom build scripts by catching common configuration mistakes early in the process.
 ///     </para>
-///     <para>
-///         Implementations of this interface are typically discovered and integrated into the Atom build
-///         lifecycle automatically due to the <see cref="TargetDefinitionAttribute" />.
-///     </para>
 /// </remarks>
-[TargetDefinition]
-public partial interface IValidateBuild : IReportsHelper
+public interface IValidateBuild : IReportsHelper
 {
     /// <summary>
     ///     Gets the build target that performs validation checks on the Atom build.
     /// </summary>
     /// <example>
-    ///     This target is included in <see cref="DefaultBuildDefinition" /> and is automatically available if the build inherits from that type.
+    ///     This target is included in <see cref="DefaultBuildDefinition" /> and is automatically available if the build
+    ///     inherits from that type.
     ///     Otherwise, it can be manually included:
     ///     <code lang="csharp">
     /// public class Build : BuildDefinition

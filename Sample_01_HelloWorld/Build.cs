@@ -3,13 +3,11 @@
 // dotnet run -- HelloWorld
 
 using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Hosting;
 
 namespace Atom;
 
-[BuildDefinition]
-[GenerateEntryPoint]
-internal partial class Build : BuildDefinition
+[DefaultBuildDefinition]
+internal partial class Build : DefaultBuildDefinition
 {
     private Target HelloWorld =>
         t => t
@@ -18,8 +16,5 @@ internal partial class Build : BuildDefinition
             {
                 // Standard Logger is automatically injected into the build
                 Logger.LogInformation("Hello, World!");
-
-                // All targets executions are tasks
-                return Task.CompletedTask;
             });
 }

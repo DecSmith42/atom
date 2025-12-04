@@ -1,9 +1,3 @@
-using System.Collections.Immutable;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
 
 namespace DecSm.Atom.SourceGenerators;
@@ -11,12 +5,18 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 {
+    private const string GenerateEntryPointAttributeFull = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Filter classes annotated with the BuildDefinition attribute. Only filtered Syntax Nodes can trigger code generation.
         var provider = context
             .SyntaxProvider
-            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclarationForSourceGen(ctx))
+            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax,
+                (ctx, _) => GetClassDeclarationForSourceGen(ctx))
             .Where(t => t.attributeFound)
             .Select((t, _) => t.Item1);
 
@@ -25,7 +25,8 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             (ctx, t) => GenerateCode(ctx, t.Left, t.Right));
     }
 
-    private static (ClassDeclarationSyntax, bool attributeFound) GetClassDeclarationForSourceGen(GeneratorSyntaxContext context)
+    private static (ClassDeclarationSyntax, bool attributeFound) GetClassDeclarationForSourceGen(
+        GeneratorSyntaxContext context)
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
@@ -40,7 +41,7 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
             // Check the full name of the BuildDefinition attribute.
-            if (attributeName == "DecSm.Atom.Hosting.GenerateEntryPointAttribute")
+            if (attributeName is GenerateEntryPointAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -68,7 +69,10 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
         }
     }
 
-    private static void GeneratePartialBuild(SourceProductionContext context, INamedTypeSymbol classSymbol, string className)
+    private static void GeneratePartialBuild(
+        SourceProductionContext context,
+        INamedTypeSymbol classSymbol,
+        string className)
     {
         var containingNamespace = classSymbol.ContainingNamespace.ToDisplayString();
 

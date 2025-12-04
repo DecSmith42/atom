@@ -52,9 +52,9 @@ public interface IBuildAccessor
     ///     returns the current instance (this) cast to type T, rather than resolving from the service provider.
     ///     This enables build definitions to access their own interface methods through dependency injection patterns.
     /// </remarks>
-    protected T GetService<T>()
+    protected T GetService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
         where T : notnull =>
-        typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+        typeof(IBuildDefinition).IsAssignableFrom(typeof(T))
             ? (T)this
             : Services.GetRequiredService<T>();
 
@@ -68,9 +68,10 @@ public interface IBuildAccessor
     ///     returns a collection containing only the current instance (this) cast to type T,
     ///     rather than resolving from the service provider.
     /// </remarks>
-    protected IEnumerable<T> GetServices<T>()
+    protected IEnumerable<T> GetServices<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>()
         where T : notnull =>
-        typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+        typeof(IBuildDefinition).IsAssignableFrom(typeof(T))
             ? [(T)this]
             : Services.GetServices<T>();
 
@@ -90,7 +91,10 @@ public interface IBuildAccessor
     ///     typically checking command line arguments, environment variables, configuration files, and secrets.
     /// </remarks>
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    protected T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+    protected T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        Expression<Func<T?>> parameterExpression,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null) =>
         Services
             .GetRequiredService<IParamService>()
             .GetParam(parameterExpression, defaultValue, converter);

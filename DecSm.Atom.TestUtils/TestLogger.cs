@@ -18,5 +18,5 @@ public sealed class TestLogger : ILogger
 
     public IDisposable BeginScope<TState>(TState state)
         where TState : notnull =>
-        new DisposableAction();
+        new ActionScope();
 }

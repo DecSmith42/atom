@@ -1,6 +1,4 @@
-﻿using DecSm.Atom.BuildInfo;
-
-namespace DecSm.Atom.Module.GitVersion;
+﻿namespace DecSm.Atom.Module.GitVersion;
 
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
@@ -8,8 +6,8 @@ internal sealed class GitVersionBuildIdProvider(
     IBuildDefinition buildDefinition
 ) : IBuildIdProvider
 {
-    private string? _buildId;
-
+    [field: AllowNull]
+    [field: MaybeNull]
     public string BuildId
     {
         get
@@ -17,8 +15,8 @@ internal sealed class GitVersionBuildIdProvider(
             if (!UseGitVersionForBuildId.IsEnabled(IWorkflowOption.GetOptionsForCurrentTarget(buildDefinition)))
                 throw new InvalidOperationException("GitVersion is not enabled");
 
-            if (_buildId is { Length: > 0 })
-                return _buildId;
+            if (field is { Length: > 0 })
+                return field;
 
             dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
@@ -27,21 +25,19 @@ internal sealed class GitVersionBuildIdProvider(
                 InvocationLogLevel = LogLevel.Debug,
             });
 
-            var jsonOutput = JsonSerializer.Deserialize<JsonElement>(gitVersionResult.Output);
+            var jsonOutput =
+                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
 
             var buildId = jsonOutput
                 .GetProperty("FullSemVer")
                 .GetString();
 
-            return _buildId = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
+            return field = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
         }
     }
 
-    public string GetBuildIdGroup(string buildId)
-    {
-        if (!SemVer.TryParse(buildId, out var version))
-            throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer");
-
-        return $"{version.Major}.{version.Minor}.{version.Patch}";
-    }
+    public string GetBuildIdGroup(string buildId) =>
+        !SemVer.TryParse(buildId, out var version)
+            ? throw new InvalidOperationException($"Failed to parse build ID '{buildId}' as SemVer")
+            : $"{version.Major}.{version.Minor}.{version.Patch}";
 }

@@ -52,7 +52,8 @@
 public sealed record ProcessRunOptions(string Name, string Args)
 {
     /// <summary>
-    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and argument array.
+    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and argument
+    ///     array.
     /// </summary>
     /// <param name="Name">The name or path of the executable to run.</param>
     /// <param name="Args">An array of command-line arguments that will be joined with spaces.</param>
@@ -67,7 +68,8 @@ public sealed record ProcessRunOptions(string Name, string Args)
     /// // Equivalent to: new ProcessRunOptions("docker", "run -it --rm ubuntu:latest /bin/bash")
     /// </code>
     /// </example>
-    public ProcessRunOptions(string Name, string[] Args) : this(Name, string.Join(" ", Args)) { }
+    public ProcessRunOptions(string Name, string[] Args) : this(Name,
+        string.Join(" ", Args.Where(a => !string.IsNullOrWhiteSpace(a)))) { }
 
     /// <summary>
     ///     Gets or sets the working directory for the process execution.
@@ -205,12 +207,67 @@ public sealed record ProcessRunOptions(string Name, string Args)
     ///     Gets or sets the environment variables to be used by the process during execution.
     /// </summary>
     /// <value>
-    ///     A dictionary where keys represent the names of the environment variables and values represent their corresponding values.
+    ///     A dictionary where keys represent the names of the environment variables and values represent their corresponding
+    ///     values.
     ///     A value of <c>null</c> for any variable indicates that it should be removed from the environment.
     /// </value>
     /// <remarks>
-    ///     These environment variables are passed to the process when it is executed, potentially overriding inherited variables
+    ///     These environment variables are passed to the process when it is executed, potentially overriding inherited
+    ///     variables
     ///     from the current environment. If not set, the process will inherit the current environment's variables by default.
     /// </remarks>
     public Dictionary<string, string?> EnvironmentVariables { get; init; } = [];
+
+    /// <summary>
+    ///     An optional per-line transformation applied to the standard output (stdout) of the executed process.
+    /// </summary>
+    /// <value>
+    ///     A delegate that receives the raw line of text read from stdout (without a trailing newline) and
+    ///     returns the transformed text to be logged and captured. Returning <c>null</c> suppresses the line
+    ///     completely (it will neither be logged nor stored in <see cref="ProcessRunResult.Output" />).
+    ///     If not set, the original text is used as-is.
+    /// </value>
+    /// <remarks>
+    ///     The transformation is invoked once for each line of stdout as it is produced by the process.
+    ///     Use this to filter noisy lines, redact sensitive data (like tokens), or normalize output
+    ///     (e.g., remove ANSI color codes). Keep the transformation fast and side-effect free; it may be
+    ///     called frequently for verbose tools.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// var options = new ProcessRunOptions("dotnet", "restore")
+    /// {
+    ///     // Hide lines that start with "info :"
+    ///     TransformOutput = line => line.StartsWith("info :", StringComparison.OrdinalIgnoreCase) ? null : line
+    /// };
+    /// </code>
+    /// </example>
+    /// <seealso cref="TransformError" />
+    public Func<string, string?>? TransformOutput { get; init; }
+
+    /// <summary>
+    ///     An optional per-line transformation applied to the standard error (stderr) of the executed process.
+    /// </summary>
+    /// <value>
+    ///     A delegate that receives the raw line of text read from stderr (without a trailing newline) and
+    ///     returns the transformed text to be logged and captured. Returning <c>null</c> suppresses the line
+    ///     completely (it will neither be logged nor stored in <see cref="ProcessRunResult.Error" />).
+    ///     If not set, the original text is used as-is.
+    /// </value>
+    /// <remarks>
+    ///     Some tools write progress or informational messages to stderr. Use this transformation to downsample,
+    ///     redact, or normalize such messages. As with <see cref="TransformOutput" />, keep the delegate efficient
+    ///     to avoid affecting process throughput.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// var options = new ProcessRunOptions("wget", "https://example.com/file.zip")
+    /// {
+    ///     // Strip ANSI escape sequences from stderr
+    ///     TransformError = line => System.Text.RegularExpressions.Regex.Replace(line, "\u001B\\[[0-9;]*[A-Za-z]", string.Empty)
+    /// };
+    /// </code>
+    /// </example>
+    /// <seealso cref="TransformOutput" />
+    public Func<string, string?>? TransformError { get; init; }
 }

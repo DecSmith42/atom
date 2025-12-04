@@ -1,15 +1,11 @@
 ﻿using JetBrains.Annotations;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Testing;
 
 namespace DecSm.Atom.Analyzers.Tests;
 
 [PublicAPI]
-public sealed class
-    ExtendedAnalyzerVerifier<TAnalyzer> : ExtendedAnalyzerVerifier<TAnalyzer, CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>,
-    DefaultVerifier>
+public sealed class ExtendedAnalyzerVerifier<TAnalyzer> : ExtendedAnalyzerVerifier<TAnalyzer,
+    CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>, DefaultVerifier>
     where TAnalyzer : DiagnosticAnalyzer, new();
 
 public class ExtendedAnalyzerVerifier<TAnalyzer, TTest, TVerifier>
@@ -52,7 +48,10 @@ public class ExtendedAnalyzerVerifier<TAnalyzer, TTest, TVerifier>
     public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor) =>
         new(descriptor);
 
-    public static Task VerifyAnalyzerAsync(string source, Action<TTest>? configure = null, params DiagnosticResult[] expected)
+    public static Task VerifyAnalyzerAsync(
+        string source,
+        Action<TTest>? configure = null,
+        params DiagnosticResult[] expected)
     {
         var test = new TTest
         {

@@ -1,0 +1,7 @@
+<Project>
+    <ItemGroup>
+        <Using Include="DecSm.Atom.Module.DevopsWorkflows" Global="true"/>
+        <Using Include="DecSm.Atom.Module.DevopsWorkflows.Generation" Global="true"/>
+        <Using Include="DecSm.Atom.Module.DevopsWorkflows.Generation.Options" Global="true"/>
+    </ItemGroup>
+</Project>

@@ -129,7 +129,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<ManualInputBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<ManualInputBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -152,7 +154,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<SetupDotnetBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<SetupDotnetBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -175,7 +179,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<ReleaseTriggerBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<ReleaseTriggerBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -198,7 +204,9 @@ public class WorkflowTests
     {
         // Arrange
         var fileSystem = FileSystemUtils.DefaultMockFileSystem;
-        var build = CreateTestHost<EnvironmentBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        var build = CreateTestHost<EnvironmentBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
 
         // Act
         await build.RunAsync();
@@ -234,6 +242,81 @@ public class WorkflowTests
             .ShouldBeTrue();
 
         var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}githubif-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task CheckoutOptionsBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build = CreateTestHost<CheckoutOptionBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}checkoutoption-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task SnapshotImageBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build = CreateTestHost<SnapshotImageBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}snapshotimageoption-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task DuplicateDependencyBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build = CreateTestHost<DuplicateDependencyBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}duplicatedependency-workflow.yml");
 
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);

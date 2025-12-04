@@ -1,19 +1,30 @@
-﻿namespace Atom;
+namespace Atom;
 
-[BuildDefinition]
-[GenerateEntryPoint]
+[DefaultBuildDefinition]
 internal partial class Build : DefaultBuildDefinition,
     IAzureKeyVault,
-    IAzureArtifactStorage,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,
-    IDeployTargets,
-    ITestTargets
+    IBuildTargets,
+    ITestTargets,
+    IDeployTargets
 {
+    public static readonly string[] PlatformNames =
+    [
+        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+    ];
+
+    public static readonly string[] FrameworkNames = ["net8.0", "net9.0", "net10.0"];
+
+    private static readonly MatrixDimension TestFrameworkMatrix = new(nameof(ITestTargets.TestFramework))
+    {
+        Values = FrameworkNames,
+    };
+
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions =>
     [
-        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new DevopsVariableGroup("Atom"), new SetupDotnetStep("9.0.x"),
+        UseAzureKeyVault.Enabled, UseGitVersionForBuildId.Enabled, new SetupDotnetStep("10.0.x"),
     ];
 
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -25,37 +36,37 @@ internal partial class Build : DefaultBuildDefinition,
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom.WithSuppressedArtifactPublishing,
-                Targets.PackAtomTool.WithSuppressedArtifactPublishing,
-                Targets.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
-                Targets.PackAzureStorageModule.WithSuppressedArtifactPublishing,
-                Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
-                Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.PackProjects.WithSuppressedArtifactPublishing,
+                Targets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
+                Targets
+                    .TestProjects
+                    .WithGithubRunnerMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Github.WorkflowType],
         },
         new("Build")
         {
-            Triggers = [ManualTrigger.Empty, GitPushTrigger.ToMain, GithubReleaseTrigger.OnReleased],
+            Triggers =
+            [
+                ManualTrigger.Empty,
+                new GitPushTrigger
+                {
+                    IncludedBranches = ["main", "feature/**", "patch/**"],
+                },
+                GithubReleaseTrigger.OnReleased,
+            ],
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom,
-                Targets.PackAtomTool,
-                Targets.PackAzureKeyVaultModule,
-                Targets.PackAzureStorageModule,
-                Targets.PackDevopsWorkflowsModule,
-                Targets.PackDotnetModule,
-                Targets.PackGithubWorkflowsModule,
-                Targets.PackGitVersionModule,
-                Targets.TestAtom.WithGithubRunnerMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.PackProjects,
+                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
+                Targets
+                    .TestProjects
+                    .WithGithubRunnerMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
                 Targets
                     .PushToRelease
@@ -69,49 +80,23 @@ internal partial class Build : DefaultBuildDefinition,
         },
 
         // Test workflows
-        new("Test_Devops_Validate")
-        {
-            Targets =
-            [
-                Targets.SetupBuildInfo,
-                Targets.PackAtom.WithSuppressedArtifactPublishing,
-                Targets.PackAtomTool.WithSuppressedArtifactPublishing,
-                Targets.PackAzureKeyVaultModule.WithSuppressedArtifactPublishing,
-                Targets.PackAzureStorageModule.WithSuppressedArtifactPublishing,
-                Targets.PackDevopsWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackDotnetModule.WithSuppressedArtifactPublishing,
-                Targets.PackGithubWorkflowsModule.WithSuppressedArtifactPublishing,
-                Targets.PackGitVersionModule.WithSuppressedArtifactPublishing,
-                Targets
-                    .TestAtom
-                    .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
-                    {
-                        Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag],
-                    })
-                    .WithOptions(DevopsPool.SetByMatrix, GithubRunsOn.SetByMatrix),
-            ],
-            WorkflowTypes = [Devops.WorkflowType],
-        },
         new("Test_Devops_Build")
         {
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
                 Targets.SetupBuildInfo,
-                Targets.PackAtom,
-                Targets.PackAtomTool,
-                Targets.PackAzureKeyVaultModule,
-                Targets.PackAzureStorageModule,
-                Targets.PackDevopsWorkflowsModule,
-                Targets.PackDotnetModule,
-                Targets.PackGithubWorkflowsModule,
-                Targets.PackGitVersionModule,
-                Targets.TestAtom.WithDevopsPoolMatrix([
-                    IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
-                ]),
+                Targets.PackProjects,
+                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
+                Targets
+                    .TestProjects
+                    .WithDevopsPoolMatrix(PlatformNames)
+                    .WithMatrixDimensions(TestFrameworkMatrix)
+                    .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 Targets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],
-            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true")],
+            Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],
         },
         Github.DependabotDefaultWorkflow(),
     ];

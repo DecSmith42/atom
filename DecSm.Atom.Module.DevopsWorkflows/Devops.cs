@@ -109,7 +109,8 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemDebug { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemDebug) ?? string.Empty;
+        public static string SystemDebug { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemDebug) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_BUILDDIRECTORY
@@ -132,35 +133,40 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentId { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentId) ?? string.Empty;
+        public static string AgentId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentId) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_JOBNAME
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentJobName { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentJobName) ?? string.Empty;
+        public static string AgentJobName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentJobName) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_MACHINENAME
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentMachineName { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentMachineName) ?? string.Empty;
+        public static string AgentMachineName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentMachineName) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_NAME
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentName { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentName) ?? string.Empty;
+        public static string AgentName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentName) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_OS
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentOs { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentOs) ?? string.Empty;
+        public static string AgentOs { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentOs) ?? string.Empty;
 
         /// <summary>
         ///     AGENT_OSARCHITECTURE
@@ -191,7 +197,8 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string AgentWorkFolder { get; } = Environment.GetEnvironmentVariable(VariableNames.AgentWorkFolder) ?? string.Empty;
+        public static string AgentWorkFolder { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.AgentWorkFolder) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_ARTIFACTSTAGINGDIRECTORY
@@ -206,21 +213,24 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildBuildId { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildBuildId) ?? string.Empty;
+        public static string BuildBuildId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildBuildId) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_BUILDNUMBER
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildBuildNumber { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildBuildNumber) ?? string.Empty;
+        public static string BuildBuildNumber { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildBuildNumber) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_BUILDURI
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildBuildUri { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildBuildUri) ?? string.Empty;
+        public static string BuildBuildUri { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildBuildUri) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_BINARIESDIRECTORY
@@ -235,7 +245,8 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildContainerId { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildContainerId) ?? string.Empty;
+        public static string BuildContainerId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildContainerId) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_CRONSCHEDULE_DISPLAYNAME
@@ -258,21 +269,24 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildQueuedBy { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildQueuedBy) ?? string.Empty;
+        public static string BuildQueuedBy { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildQueuedBy) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_QUEUEDBYID
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildQueuedById { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildQueuedById) ?? string.Empty;
+        public static string BuildQueuedById { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildQueuedById) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_REASON
         /// </summary>
         /// <example>
         /// </example>
-        public static string BuildReason { get; } = Environment.GetEnvironmentVariable(VariableNames.BuildReason) ?? string.Empty;
+        public static string BuildReason { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.BuildReason) ?? string.Empty;
 
         /// <summary>
         ///     BUILD_REPOSITORY_CLEAN
@@ -471,14 +485,16 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string EnvironmentName { get; } = Environment.GetEnvironmentVariable(VariableNames.EnvironmentName) ?? string.Empty;
+        public static string EnvironmentName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.EnvironmentName) ?? string.Empty;
 
         /// <summary>
         ///     ENVIRONMENT_ID
         /// </summary>
         /// <example>
         /// </example>
-        public static string EnvironmentId { get; } = Environment.GetEnvironmentVariable(VariableNames.EnvironmentId) ?? string.Empty;
+        public static string EnvironmentId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.EnvironmentId) ?? string.Empty;
 
         /// <summary>
         ///     ENVIRONMENT_RESOURCENAME
@@ -501,7 +517,8 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string StrategyName { get; } = Environment.GetEnvironmentVariable(VariableNames.StrategyName) ?? string.Empty;
+        public static string StrategyName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.StrategyName) ?? string.Empty;
 
         /// <summary>
         ///     STRATEGY_CYCLENAME
@@ -556,14 +573,16 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemHostType { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemHostType) ?? string.Empty;
+        public static string SystemHostType { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemHostType) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_JOBATTEMPT
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemJobAttempt { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemJobAttempt) ?? string.Empty;
+        public static string SystemJobAttempt { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemJobAttempt) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_JOBDISPLAYNAME
@@ -578,14 +597,16 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemJobId { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemJobId) ?? string.Empty;
+        public static string SystemJobId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemJobId) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_JOBNAME
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemJobName { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemJobName) ?? string.Empty;
+        public static string SystemJobName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemJobName) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_OIDCREQUESTURI
@@ -616,14 +637,16 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemPhaseName { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemPhaseName) ?? string.Empty;
+        public static string SystemPhaseName { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemPhaseName) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_PLANID
         /// </summary>
         /// <example>
         /// </example>
-        public static string SystemPlanId { get; } = Environment.GetEnvironmentVariable(VariableNames.SystemPlanId) ?? string.Empty;
+        public static string SystemPlanId { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.SystemPlanId) ?? string.Empty;
 
         /// <summary>
         ///     SYSTEM_PULLREQUEST_ISFORK
@@ -750,7 +773,8 @@ public static class Devops
         /// </summary>
         /// <example>
         /// </example>
-        public static string TfBuild { get; } = Environment.GetEnvironmentVariable(VariableNames.TfBuild) ?? string.Empty;
+        public static string TfBuild { get; } =
+            Environment.GetEnvironmentVariable(VariableNames.TfBuild) ?? string.Empty;
 
         /// <summary>
         ///     CHECKS_STAGEATTEMPT

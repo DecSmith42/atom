@@ -14,7 +14,8 @@ public class UserSecretsVaultTests
         try
         {
             // Arrange
-            var host = CreateTestHost<UserSecretsBuild>(commandLineArgs: new(true, [new CommandArg("UserSecretsTarget")]));
+            var host = CreateTestHost<UserSecretsBuild>(commandLineArgs: new(true,
+                [new CommandArg("UserSecretsTarget")]));
 
             var userSecretsBuild = (UserSecretsBuild)host.Services.GetRequiredService<IBuildDefinition>();
 

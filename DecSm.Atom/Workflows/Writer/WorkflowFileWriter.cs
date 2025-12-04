@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Workflows.Writer;
 
 /// <summary>
-///     Abstract base class for generating workflow files of different types (GitHub Actions, Azure DevOps, Dependabot, etc.).
+///     Abstract base class for generating workflow files of different types (GitHub Actions, Azure DevOps, Dependabot,
+///     etc.).
 ///     Provides a standardized approach to writing structured workflow files with proper indentation and change detection.
 /// </summary>
 /// <typeparam name="T">
@@ -41,7 +42,8 @@
 /// </code>
 /// </example>
 [PublicAPI]
-public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger) : IWorkflowWriter<T>
+public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<WorkflowFileWriter<T>> logger)
+    : IWorkflowWriter<T>
     where T : IWorkflowType
 {
     private readonly StringBuilder _stringBuilder = new();
@@ -93,11 +95,15 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     ///         6. Logs whether a new file was created or an existing file was updated
     ///     </para>
     ///     <para>
-    ///         The generated file will be named "{workflow.Name}.{FileExtension}" in the <see cref="FileLocation" /> directory.
+    ///         The generated file will be named "{workflow.Name}.{FileExtension}" in the <see cref="FileLocation" />
+    ///         directory.
     ///     </para>
     /// </remarks>
     /// <exception cref="DirectoryNotFoundException">Thrown if the file location cannot be created.</exception>
-    /// <exception cref="UnauthorizedAccessException">Thrown if there are insufficient permissions to write to the target location.</exception>
+    /// <exception cref="UnauthorizedAccessException">
+    ///     Thrown if there are insufficient permissions to write to the target
+    ///     location.
+    /// </exception>
     public async Task Generate(WorkflowModel workflow, CancellationToken cancellationToken = default)
     {
         var filePath = FileLocation / $"{workflow.Name}.{FileExtension}";
@@ -176,7 +182,8 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
             .Equals(newText.ReplaceLineEndings(), StringComparison.CurrentCulture))
             return false;
 
-        logger.LogInformation("Workflow file is dirty and needs to be regenerated: {FilePath}\nExisting:\n{Existing}\nNew:\n{New}",
+        logger.LogInformation(
+            "Workflow file is dirty and needs to be regenerated: {FilePath}\nExisting:\n{Existing}\nNew:\n{New}",
             filePath,
             existingText,
             newText);
@@ -250,7 +257,7 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
         WriteLine(header);
         IndentLevel += TabSize;
 
-        return new DisposableAction(() => IndentLevel -= TabSize);
+        return new ActionScope(() => IndentLevel -= TabSize);
     }
 
     /// <summary>
@@ -259,7 +266,8 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     /// <param name="workflow">The workflow model containing the configuration to write.</param>
     /// <remarks>
     ///     <para>
-    ///         This method should use the provided helper methods like <see cref="WriteLine" /> and <see cref="WriteSection" />
+    ///         This method should use the provided helper methods like <see cref="WriteLine" /> and
+    ///         <see cref="WriteSection" />
     ///         to build the workflow file content. The base class handles all file I/O operations.
     ///     </para>
     ///     <para>

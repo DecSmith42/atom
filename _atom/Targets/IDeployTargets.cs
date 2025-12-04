@@ -1,8 +1,8 @@
 ﻿namespace Atom.Targets;
 
-internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseHelper, ISetupBuildInfo
+internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBuildInfo
 {
-    [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.", "https://api.nuget.org/v3/index.json")]
+    [ParamDefinition("nuget-push-feed", "The Nuget feed to push to.")]
     string NugetFeed => GetParam(() => NugetFeed, "https://api.nuget.org/v3/index.json");
 
     [SecretDefinition("nuget-push-api-key", "The API key to use to push to Nuget.")]
@@ -10,61 +10,44 @@ internal interface IDeployTargets : INugetHelper, IBuildTargets, IGithubReleaseH
 
     Target PushToNuget =>
         t => t
-            .DescribedAs("Pushes the Atom projects to Nuget")
+            .DescribedAs("Pushes the packages to Nuget")
             .RequiresParam(nameof(NugetFeed))
             .RequiresParam(nameof(NugetApiKey))
-            .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
-            .ConsumesArtifact(nameof(PackAtomTool), AtomToolProjectName)
-            .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
-            .ConsumesArtifact(nameof(PackAzureStorageModule), AzureStorageModuleProjectName)
-            .ConsumesArtifact(nameof(PackDevopsWorkflowsModule), AtomDevopsWorkflowsModuleProjectName)
-            .ConsumesArtifact(nameof(PackDotnetModule), DotnetModuleProjectName)
-            .ConsumesArtifact(nameof(PackGithubWorkflowsModule), AtomGithubWorkflowsModuleProjectName)
-            .ConsumesArtifact(nameof(PackGitVersionModule), GitVersionModuleProjectName)
-            .DependsOn(nameof(ITestTargets.TestAtom))
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), IBuildTargets.ProjectsToPack)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
+            .DependsOn(nameof(ITestTargets.TestProjects))
             .Executes(async cancellationToken =>
             {
-                await PushProject(AtomProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomToolProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AzureKeyVaultModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AzureStorageModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomDevopsWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(DotnetModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(AtomGithubWorkflowsModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
-                await PushProject(GitVersionModuleProjectName, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+                // Push project packages
+                foreach (var project in IBuildTargets.ProjectsToPack)
+                    await PushProject(project, NugetFeed, NugetApiKey, cancellationToken: cancellationToken);
+
+                // Push Atom tool package - platform-specific + multi-targeted
+                foreach (var atomToolPackagePath in FileSystem.Directory.GetFiles(
+                             FileSystem.AtomArtifactsDirectory / Projects.DecSm_Atom_Tool.Name,
+                             "*.nupkg",
+                             SearchOption.AllDirectories))
+                    await PushPackageToNuget(
+                        FileSystem.AtomArtifactsDirectory / Projects.DecSm_Atom_Tool.Name / atomToolPackagePath,
+                        NugetFeed,
+                        NugetApiKey,
+                        cancellationToken: cancellationToken);
             });
 
     Target PushToRelease =>
         d => d
-            .DescribedAs("Pushes the package to the release feed.")
+            .DescribedAs("Pushes the packages to the release feed.")
             .RequiresParam(nameof(GithubToken))
             .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildVersion))
-            .ConsumesArtifact(nameof(PackAtom), AtomProjectName)
-            .ConsumesArtifact(nameof(PackAtomTool), AtomToolProjectName)
-            .ConsumesArtifact(nameof(PackAzureKeyVaultModule), AzureKeyVaultModuleProjectName)
-            .ConsumesArtifact(nameof(PackAzureStorageModule), AzureStorageModuleProjectName)
-            .ConsumesArtifact(nameof(PackDevopsWorkflowsModule), AtomDevopsWorkflowsModuleProjectName)
-            .ConsumesArtifact(nameof(PackDotnetModule), DotnetModuleProjectName)
-            .ConsumesArtifact(nameof(PackGithubWorkflowsModule), AtomGithubWorkflowsModuleProjectName)
-            .ConsumesArtifact(nameof(PackGitVersionModule), GitVersionModuleProjectName)
-            .DependsOn(nameof(ITestTargets.TestAtom))
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), IBuildTargets.ProjectsToPack)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, PlatformNames)
+            .ConsumesArtifacts(nameof(ITestTargets.TestProjects),
+                ITestTargets.ProjectsToTest,
+                PlatformNames.SelectMany(platform => FrameworkNames.Select(framework => $"{platform}-{framework}")))
             .Executes(async () =>
             {
-                if (BuildVersion.IsPreRelease)
-                {
-                    Logger.LogInformation("Skipping release push for pre-release version");
-
-                    return;
-                }
-
-                var releaseTag = $"v{BuildVersion}";
-                await UploadArtifactToRelease(AtomProjectName, releaseTag);
-                await UploadArtifactToRelease(AtomToolProjectName, releaseTag);
-                await UploadArtifactToRelease(AzureKeyVaultModuleProjectName, releaseTag);
-                await UploadArtifactToRelease(AzureStorageModuleProjectName, releaseTag);
-                await UploadArtifactToRelease(AtomDevopsWorkflowsModuleProjectName, releaseTag);
-                await UploadArtifactToRelease(DotnetModuleProjectName, releaseTag);
-                await UploadArtifactToRelease(AtomGithubWorkflowsModuleProjectName, releaseTag);
-                await UploadArtifactToRelease(GitVersionModuleProjectName, releaseTag);
+                foreach (var artifact in IBuildTargets.ProjectsToPack.Concat(ITestTargets.ProjectsToTest))
+                    await UploadArtifactToRelease(artifact, $"v{BuildVersion}");
             });
 }

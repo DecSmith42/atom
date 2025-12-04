@@ -1,19 +1,11 @@
-﻿using System.Collections.Immutable;
-using System.Composition;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-
-namespace DecSm.Atom.Analyzers;
+﻿namespace DecSm.Atom.Analyzers;
 
 // ReSharper disable once InconsistentNaming
 /// <summary>
 ///     Provides a code fix for direct parameter references in RequiresParam by replacing them with nameof expressions.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp,
+    Name = nameof(AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider))]
 [Shared]
 public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamCodeFixProvider : CodeFixProvider
 {

@@ -4,7 +4,8 @@
 ///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
 /// </summary>
 /// <remarks>
-///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent configuration
+///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent
+///     configuration
 ///     of required services, logging providers, dependency injections, and system defaults for Atom-based hosts.
 /// </remarks>
 /// <example>
@@ -35,7 +36,10 @@ public static class HostExtensions
     /// <returns>
     ///     The configured host application builder instance.
     /// </returns>
-    public static TBuilder AddAtom<TBuilder, TBuild>(this TBuilder builder, string[] args)
+    public static TBuilder AddAtom<TBuilder,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TBuild>(
+        this TBuilder builder,
+        string[] args)
         where TBuilder : IHostApplicationBuilder
         where TBuild : BuildDefinition
     {
@@ -49,7 +53,19 @@ public static class HostExtensions
 
         builder.Services.AddSingletonWithStaticAccessor<IParamService, ParamService>();
         builder.Services.AddSingletonWithStaticAccessor<ReportService>();
-        builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) => AnsiConsole.Console);
+
+        builder.Services.AddSingletonWithStaticAccessor<IAnsiConsole>((_, _) =>
+        {
+            // Wrap Spectre's console output so all rendered text is masked for secrets before being written
+            var innerOutput = AnsiConsole.Console.Profile.Out;
+
+            var settings = new AnsiConsoleSettings
+            {
+                Out = new MaskingAnsiConsoleOutput(innerOutput),
+            };
+
+            return AnsiConsole.Create(settings);
+        });
 
         builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<IBuildIdProvider, DefaultBuildIdProvider>();
@@ -59,19 +75,20 @@ public static class HostExtensions
         builder
             .Services
             .AddKeyedSingleton<IFileSystem>("RootFileSystem", new FileSystem())
-            .AddSingletonWithStaticAccessor<IAtomFileSystem>((x, _) => new AtomFileSystem(x.GetRequiredService<ILogger<AtomFileSystem>>())
-            {
-                FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
-                PathLocators = x
-                    .GetServices<IPathProvider>()
-                    .OrderByDescending(l => l.Priority)
-                    .ToList(),
-                ProjectName = x.GetRequiredService<CommandLineArgs>()
-                    .ProjectName is { Length: > 0 } p
-                    ? p
-                    : Assembly.GetEntryAssembly()!.GetName()
-                        .Name!,
-            })
+            .AddSingletonWithStaticAccessor<IAtomFileSystem>((x, _) =>
+                new AtomFileSystem(x.GetRequiredService<ILogger<AtomFileSystem>>())
+                {
+                    FileSystem = x.GetRequiredKeyedService<IFileSystem>("RootFileSystem"),
+                    PathLocators = x
+                        .GetServices<IPathProvider>()
+                        .OrderByDescending(l => l.Priority)
+                        .ToList(),
+                    ProjectName = x.GetRequiredService<CommandLineArgs>()
+                        .ProjectName is { Length: > 0 } p
+                        ? p
+                        : Assembly.GetEntryAssembly()!.GetName()
+                            .Name!,
+                })
             .AddSingletonWithStaticAccessor<IFileSystem>((x, _) => x.GetRequiredService<IAtomFileSystem>());
 
         builder.Services.AddSingleton<BuildExecutor>();

@@ -8,7 +8,8 @@
 ///     build information throughout the build lifecycle.
 ///     <br /><br />
 ///     NOTE: Some parameters that change over time (e.g. <see cref="BuildTimestamp" />) should only be calculated
-///     once and then cached. This can be done by declaring IBuildInfo parameters as consumed in targets that use the param,
+///     once and then cached. This can be done by declaring IBuildInfo parameters as consumed in targets that use the
+///     param,
 ///     so the workflow host can pass the values as workflow variables (see <see cref="ISetupBuildInfo" /> for more).
 /// </remarks>
 /// <example>
@@ -41,11 +42,14 @@ public interface IBuildInfo : IBuildAccessor
     ///     Can be configured via the <c>--build-name</c> command-line parameter.
     ///     If not explicitly provided, automatically determined by:
     ///     <list type="number">
-    ///         <item>First checking for .sln files in the root directory and using the solution name (without extension)</item>
+    ///         <item>
+    ///             First checking for .slnx or .sln files in the root directory and using the solution name (without
+    ///             extension)
+    ///         </item>
     ///         <item>Falling back to the root directory name if no solution file is found</item>
     ///     </list>
     /// </remarks>
-    [ParamDefinition("build-name", "Name of the build", "{Solution name if provided, otherwise the root directory name}")]
+    [ParamDefinition("build-name", "Name of the build (Solution name if provided, otherwise the root directory name)")]
     string BuildName => GetParam(() => BuildName, DefaultBuildName);
 
     /// <summary>
@@ -58,7 +62,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     Can be configured via the <c>--build-id</c> command-line parameter.
     ///     If not explicitly provided, defaults to the value from the registered <see cref="IBuildIdProvider" />.
     /// </remarks>
-    [ParamDefinition("build-id", "Build/run ID", "{From IBuildIdProvider}")]
+    [ParamDefinition("build-id", "Build/run ID")]
     string BuildId => GetParam(() => BuildId, DefaultBuildId);
 
     /// <summary>
@@ -72,7 +76,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     If not explicitly provided, defaults to the version from the registered <see cref="IBuildVersionProvider" />.
     ///     The value is automatically converted from string to <see cref="SemVer" /> using the built-in converter.
     /// </remarks>
-    [ParamDefinition("build-version", "Build version", "{From IBuildVersionProvider}")]
+    [ParamDefinition("build-version", "Build version")]
     SemVer BuildVersion => GetParam(() => BuildVersion, DefaultBuildVersion, BuildVersionConverter);
 
     /// <summary>
@@ -81,7 +85,8 @@ public interface IBuildInfo : IBuildAccessor
     ///     <br />
     ///     <b>***WARNING***</b><br />
     ///     This value is not consistent across different builds / targets / process instances.<br />
-    ///     It is instead recommended to consume the <c>BuildTimestamp</c> parameter from <see cref="ISetupBuildInfo.SetupBuildInfo" />
+    ///     It is instead recommended to consume the <c>BuildTimestamp</c> parameter from
+    ///     <see cref="ISetupBuildInfo.SetupBuildInfo" />
     ///     so a consistent value can be used across all targets.
     ///     <code>
     ///     interface IMyTarget : IBuildInfo
@@ -101,7 +106,7 @@ public interface IBuildInfo : IBuildAccessor
     ///     If not explicitly provided, defaults to the timestamp from the registered <see cref="IBuildTimestampProvider" />.
     ///     Represents the moment when the build was initiated or a significant build milestone occurred.
     /// </remarks>
-    [ParamDefinition("build-timestamp", "Build timestamp (seconds since unix epoch)", "{From IBuildTimestampProvider}")]
+    [ParamDefinition("build-timestamp", "Build timestamp (seconds since unix epoch)")]
     long BuildTimestamp => GetParam(() => BuildTimestamp, DefaultBuildTimestamp);
 
     /// <summary>
@@ -116,7 +121,8 @@ public interface IBuildInfo : IBuildAccessor
     ///     are executed in parallel (e.g., different target frameworks, operating systems, or configurations).
     ///     Has no default value and remains <c>null</c> unless explicitly provided.
     /// </remarks>
-    [ParamDefinition("build-slice", "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs")]
+    [ParamDefinition("build-slice",
+        "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs")]
     string? BuildSlice => GetParam(() => BuildSlice);
 
     string DefaultBuildName
@@ -124,15 +130,23 @@ public interface IBuildInfo : IBuildAccessor
         get
         {
             var solutionFile = FileSystem
-                .Directory
-                .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
-                .FirstOrDefault();
+                                   .Directory
+                                   .GetFiles(FileSystem.AtomRootDirectory, "*.slnx", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault() ??
+                               FileSystem
+                                   .Directory
+                                   .GetFiles(FileSystem.AtomRootDirectory, "*.sln", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault();
 
             Logger.LogDebug("Determined solution file: {SolutionFile}", solutionFile);
 
             return solutionFile is not null
-                ? new RootedPath(FileSystem, solutionFile).FileName![..^4]
-                : FileSystem.AtomRootDirectory.DirectoryName!;
+                ? new RootedPath(FileSystem, solutionFile).FileNameWithoutExtension
+                : FileSystem
+                      .AtomRootDirectory
+                      .DirectoryName
+                      ?.Split(FileSystem.Path.DirectorySeparatorChar, FileSystem.Path.AltDirectorySeparatorChar)[^1] ??
+                  "Unknown";
         }
     }
 

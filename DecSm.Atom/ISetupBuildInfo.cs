@@ -5,88 +5,59 @@
 public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReportsHelper
 {
     /// <summary>
-    ///     Gets the provider responsible for supplying the build identifier.
-    /// </summary>
-    /// <value>
-    ///     An instance of <see cref="IBuildIdProvider" /> obtained from the service container,
-    ///     used to retrieve a unique identifier for the current build.
-    /// </value>
-    /// <remarks>
-    ///     This property relies on service location (via <c>GetService&lt;IBuildIdProvider&gt;()</c>)
-    ///     to resolve the appropriate provider. A default implementation of <see cref="IBuildIdProvider" />
-    ///     is registered in the Atom framework's dependency injection container.
-    /// </remarks>
-    /// <seealso cref="IBuildIdProvider" />
-    IBuildIdProvider BuildIdProvider => GetService<IBuildIdProvider>();
-
-    /// <summary>
-    ///     Gets the provider responsible for supplying the build version.
-    /// </summary>
-    /// <value>
-    ///     An instance of <see cref="IBuildVersionProvider" /> obtained from the service container,
-    ///     used to determine the semantic or informational version of the build.
-    /// </value>
-    /// <remarks>
-    ///     This property relies on service location (via <c>GetService&lt;IBuildVersionProvider&gt;()</c>)
-    ///     to resolve the appropriate provider. A default implementation of <see cref="IBuildVersionProvider" />
-    ///     is registered in the Atom framework's dependency injection container.
-    /// </remarks>
-    /// <seealso cref="IBuildVersionProvider" />
-    IBuildVersionProvider BuildVersionProvider => GetService<IBuildVersionProvider>();
-
-    /// <summary>
-    ///     Gets the provider responsible for supplying the build timestamp.
-    /// </summary>
-    /// <value>
-    ///     An instance of <see cref="IBuildTimestampProvider" /> obtained from the service container,
-    ///     used to ascertain the date and time at which the build is occurring or was initiated.
-    /// </value>
-    /// <remarks>
-    ///     This property relies on service location (via <c>GetService&lt;IBuildTimestampProvider&gt;()</c>)
-    ///     to resolve the appropriate provider. A default implementation of <see cref="IBuildTimestampProvider" />
-    ///     is registered in the Atom framework's dependency injection container.
-    /// </remarks>
-    /// <seealso cref="IBuildTimestampProvider" />
-    IBuildTimestampProvider BuildTimestampProvider => GetService<IBuildTimestampProvider>();
-
-    /// <summary>
     ///     Gets the build target responsible for setting up the build ID, version, and timestamp.
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         The <c>SetupBuildInfo</c> target is a foundational step in the Atom build pipeline. It performs several key actions:
+    ///         The <c>SetupBuildInfo</c> target is a foundational step in the Atom build pipeline. It performs several key
+    ///         actions:
     ///         <list type="bullet">
     ///             <item>
     ///                 <description>
-    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildName" />) and writes it as a build variable named
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildName" />) and writes it as a build
+    ///                     variable named
     ///                     "BuildName".
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Uses <see cref="BuildIdProvider" /> to get the build ID and writes it as a build variable named "BuildId".</description>
+    ///                 <description>
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildId" />) and writes it as a build variable
+    ///                     named "BuildId".
+    ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Uses <see cref="BuildVersionProvider" /> to get the build version and writes it as a build variable named
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildVersion" />) and writes it as a build
+    ///                     variable
+    ///                     named
     ///                     "BuildVersion".
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Uses <see cref="BuildTimestampProvider" /> to get the build timestamp, converts it to a string, and writes it
+    ///                     Retrieves the build name (from <see cref="IBuildInfo.BuildTimestamp" />), converts it to a string,
+    ///                     and
+    ///                     writes it
     ///                     as a build variable named "BuildTimestamp".
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Adds a "Run Information" section to the build report, displaying the build name, version, ID, and timestamp.</description>
+    ///                 <description>
+    ///                     Adds a "Run Information" section to the build report, displaying the build name, version,
+    ///                     ID, and timestamp.
+    ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Logs the build ID, version, and timestamp using the configured logger for <c>ISetupBuildInfo</c>.</description>
+    ///                 <description>
+    ///                     Logs the build ID, version, and timestamp using the configured logger for
+    ///                     <c>ISetupBuildInfo</c>.
+    ///                 </description>
     ///             </item>
     ///         </list>
     ///     </para>
     ///     <para>
-    ///         This target is marked as hidden (<c>IsHidden()</c>), meaning it's not typically intended for direct invocation by users but is
+    ///         This target is marked as hidden (<c>IsHidden()</c>), meaning it's not typically intended for direct invocation
+    ///         by users but is
     ///         expected to run as a dependency for other targets or as part of an initial setup sequence.
     ///     </para>
     ///     <para>
@@ -120,7 +91,8 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     ///     </para>
     ///     <para>
     ///         Successful execution relies on the correct registration and functioning of <see cref="IBuildIdProvider" />,
-    ///         <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" /> services within the Atom framework.
+    ///         <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" /> services within the Atom
+    ///         framework.
     ///     </para>
     /// </remarks>
     /// <example>
@@ -160,9 +132,6 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
     /// <returns>
     ///     A <see cref="Target" /> configured to initialize build information variables and report data.
     /// </returns>
-    /// <seealso cref="BuildIdProvider" />
-    /// <seealso cref="BuildVersionProvider" />
-    /// <seealso cref="BuildTimestampProvider" />
     /// <seealso cref="IBuildInfo.BuildName" />
     /// <seealso cref="IVariablesHelper.WriteVariable(string, string, CancellationToken)" />
     /// <seealso cref="IReportsHelper.AddReportData(IReportData)" />
@@ -176,16 +145,16 @@ public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReport
             .ProducesVariable(nameof(BuildTimestamp))
             .Executes(async cancellationToken =>
             {
-                var atomBuildName = BuildName; // BuildName is from IBuildInfo
+                var atomBuildName = BuildName;
                 await WriteVariable(nameof(BuildName), atomBuildName, cancellationToken);
 
-                var buildId = BuildIdProvider.BuildId;
+                var buildId = BuildId;
                 await WriteVariable(nameof(BuildId), buildId, cancellationToken);
 
-                var buildVersion = BuildVersionProvider.Version;
+                var buildVersion = BuildVersion;
                 await WriteVariable(nameof(BuildVersion), buildVersion, cancellationToken);
 
-                var buildTimestamp = BuildTimestampProvider.Timestamp;
+                var buildTimestamp = BuildTimestamp;
                 await WriteVariable(nameof(BuildTimestamp), buildTimestamp.ToString(), cancellationToken);
 
                 var reportedBuildId = buildId == buildVersion

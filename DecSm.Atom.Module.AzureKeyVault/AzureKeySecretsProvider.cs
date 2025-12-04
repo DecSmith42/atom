@@ -56,11 +56,13 @@ public sealed class AzureKeySecretsProvider(
             switch (injections.Address)
             {
                 case AzureKeyVaultValueInjectionType.EnvironmentVariable:
-                    valueInjections.Add(WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
+                    valueInjections.Add(
+                        WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.Secret:
-                    valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
+                    valueInjections.Add(
+                        WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAddress)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.None:
@@ -74,11 +76,13 @@ public sealed class AzureKeySecretsProvider(
             switch (injections.TenantId)
             {
                 case AzureKeyVaultValueInjectionType.EnvironmentVariable:
-                    valueInjections.Add(WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
+                    valueInjections.Add(
+                        WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.Secret:
-                    valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
+                    valueInjections.Add(
+                        WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultTenantId)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.None:
@@ -92,7 +96,8 @@ public sealed class AzureKeySecretsProvider(
             switch (injections.AppId)
             {
                 case AzureKeyVaultValueInjectionType.EnvironmentVariable:
-                    valueInjections.Add(WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)));
+                    valueInjections.Add(
+                        WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppId)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.Secret:
@@ -110,11 +115,13 @@ public sealed class AzureKeySecretsProvider(
             switch (injections.AppSecret)
             {
                 case AzureKeyVaultValueInjectionType.EnvironmentVariable:
-                    valueInjections.Add(WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
+                    valueInjections.Add(
+                        WorkflowSecretsEnvironmentInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.Secret:
-                    valueInjections.Add(WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
+                    valueInjections.Add(
+                        WorkflowSecretsSecretInjection.Create(nameof(IAzureKeyVault.AzureVaultAppSecret)));
 
                     break;
                 case AzureKeyVaultValueInjectionType.None:
@@ -131,8 +138,13 @@ public sealed class AzureKeySecretsProvider(
 
     private TokenCredential GetCredential(IAzureKeyVault definition)
     {
-        if (definition is { AzureVaultTenantId.Length: > 0, AzureVaultAppId.Length: > 0, AzureVaultAppSecret.Length: > 0 })
-            return new ClientSecretCredential(definition.AzureVaultTenantId, definition.AzureVaultAppId, definition.AzureVaultAppSecret);
+        if (definition is
+            {
+                AzureVaultTenantId.Length: > 0, AzureVaultAppId.Length: > 0, AzureVaultAppSecret.Length: > 0,
+            })
+            return new ClientSecretCredential(definition.AzureVaultTenantId,
+                definition.AzureVaultAppId,
+                definition.AzureVaultAppSecret);
 
         if (args.HasHeadless)
             throw new(

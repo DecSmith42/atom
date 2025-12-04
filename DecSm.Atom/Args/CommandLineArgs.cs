@@ -3,7 +3,8 @@
 /// <summary>
 ///     Contains the parsed command-line arguments for an Atom build execution.
 ///     This record is central to the Atom framework, providing a structured representation of user input
-///     and enabling various components like <see cref="DecSm.Atom.AtomService" /> to determine the build's course of action.
+///     and enabling various components like <see cref="DecSm.Atom.AtomService" /> to determine the build's course of
+///     action.
 /// </summary>
 /// <remarks>
 ///     An instance of <c>CommandLineArgs</c> is typically created by the <see cref="CommandLineArgsParser" />
@@ -13,7 +14,8 @@
 /// </remarks>
 /// <param name="Valid">
 ///     A boolean indicating whether the command-line arguments were parsed successfully and are valid.
-///     If <c>false</c>, the Atom application will typically terminate or display help, as the build cannot proceed reliably.
+///     If <c>false</c>, the Atom application will typically terminate or display help, as the build cannot proceed
+///     reliably.
 /// </param>
 /// <param name="Args">
 ///     A read-only list of <see cref="IArg" /> objects representing the individual arguments parsed from the command line.
@@ -146,7 +148,8 @@ public sealed record CommandLineArgs(bool Valid, IReadOnlyList<IArg> Args)
     /// </summary>
     /// <value>A list of <see cref="CommandArg" /> objects.</value>
     /// <example>
-    ///     For `atom Clean Build Test`, <c>Commands</c> would contain three <see cref="CommandArg" /> objects: "Clean", "Build", and "Test".
+    ///     For `atom Clean Build Test`, <c>Commands</c> would contain three <see cref="CommandArg" /> objects: "Clean",
+    ///     "Build", and "Test".
     /// </example>
     /// <seealso cref="CommandArg" />
     public IReadOnlyList<CommandArg> Commands =>

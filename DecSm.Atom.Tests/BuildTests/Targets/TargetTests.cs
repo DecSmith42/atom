@@ -208,7 +208,8 @@ public class TargetTests
         host.UseAtom();
 
         // Assert
-        var target = (ITargetWithInheritAndConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>();
+        var target =
+            (ITargetWithInheritAndConfigureBuilderAndConfigureHost)host.Services.GetRequiredService<IBuildDefinition>();
 
         target.IsSetupExecuted2.ShouldBeTrue();
         target.IsSetupExecuted3.ShouldBeTrue();

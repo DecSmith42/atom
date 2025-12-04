@@ -397,6 +397,10 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea
+
+# VS Code
+.vscode/
 
 # Atom
 !DecSm.Atom/Artifacts

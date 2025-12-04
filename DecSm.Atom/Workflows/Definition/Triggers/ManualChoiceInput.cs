@@ -12,7 +12,7 @@ namespace DecSm.Atom.Workflows.Definition.Triggers;
 public sealed record ManualChoiceInput(
     string Name,
     string Description,
-    bool Required,
+    bool? Required,
     IReadOnlyList<string> Choices,
     string? DefaultValue = null
 ) : ManualInput(Name, Description, Required)
@@ -24,13 +24,13 @@ public sealed record ManualChoiceInput(
     /// <param name="choices">The list of choices for this input.</param>
     /// <param name="required">
     ///     An optional boolean to override the required status.
-    ///     If not provided, the input is considered required if <see cref="ParamDefinition.DefaultValue" /> is null or empty.
     /// </param>
+    /// <param name="defaultValue">The default value for this input.</param>
     /// <returns>A new instance of <see cref="ManualChoiceInput" />.</returns>
-    public static ManualChoiceInput ForParam(ParamDefinition paramDefinition, IReadOnlyList<string> choices, bool? required = null) =>
-        new(paramDefinition.ArgName,
-            paramDefinition.Description,
-            required ?? paramDefinition.DefaultValue is not { Length: > 0 },
-            choices,
-            paramDefinition.DefaultValue);
+    public static ManualChoiceInput ForParam(
+        ParamDefinition paramDefinition,
+        IReadOnlyList<string> choices,
+        bool? required = null,
+        string? defaultValue = null) =>
+        new(paramDefinition.ArgName, paramDefinition.Description, required, choices, defaultValue);
 }

@@ -15,14 +15,12 @@
 // dotnet run -- Hello -i
 
 using DecSm.Atom.Build.Definition;
-using DecSm.Atom.Hosting;
 using DecSm.Atom.Params;
 
 namespace Atom;
 
-[BuildDefinition]
-[GenerateEntryPoint]
-internal partial class Build : BuildDefinition
+[DefaultBuildDefinition]
+internal partial class Build : DefaultBuildDefinition
 {
     // This property defines a parameter that can be set when executing the build.
     [ParamDefinition("my-name", "Name to greet")]
@@ -33,7 +31,7 @@ internal partial class Build : BuildDefinition
     private string? ConfigItem1 => GetParam(() => ConfigItem1);
 
     // This property has a default value, which will be used if the parameter is not provided.
-    [ParamDefinition("config-item-2", "Configuration item 2", "Default Value")]
+    [ParamDefinition("config-item-2", "Configuration item 2")]
     private string ConfigItem2 => GetParam(() => ConfigItem2, "Default Value");
 
     // The build will fail immediately if any of the required parameters are not provided.

@@ -8,7 +8,8 @@
 ///         Outlines the fundamental components that constitute a build, including its targets,
 ///         parameters, associated project file, workflow configurations, and global options.
 ///         Implementations of this interface, typically through the <see cref="BuildDefinition" /> or
-///         <see cref="DefaultBuildDefinition" /> base classes and decorated with the <see cref="BuildDefinitionAttribute" />,
+///         <see cref="DefaultBuildDefinition" /> base classes and decorated with the
+///         <see cref="BuildDefinitionAttribute" />,
 ///         serve as the central point for Atom to understand and execute a build.
 ///     </para>
 ///     <para>
@@ -78,7 +79,8 @@ public interface IBuildDefinition
     /// <remarks>
     ///     Parameters allow for external input to customize the build process.
     ///     This collection is typically populated by the <c>DecSm.Atom.SourceGenerators.BuildDefinitionSourceGenerator</c>
-    ///     based on properties within interfaces marked with <see cref="ParamDefinitionAttribute" /> or <see cref="SecretDefinitionAttribute" />
+    ///     based on properties within interfaces marked with <see cref="ParamDefinitionAttribute" /> or
+    ///     <see cref="SecretDefinitionAttribute" />
     ///     that are part of the build definition class.
     /// </remarks>
     /// <example>
@@ -114,4 +116,44 @@ public interface IBuildDefinition
     /// </code>
     /// </example>
     IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions { get; }
+
+    bool SuppressParamResolution { get; protected internal set; }
+
+    /// <summary>
+    ///     Retrieves the value of a build parameter by its name.
+    /// </summary>
+    /// <param name="paramName">
+    ///     The name of the parameter to access. This should match the key defined in <see cref="ParamDefinitions" />.
+    /// </param>
+    /// <returns>
+    ///     The value of the specified parameter, or <c>null</c> if the parameter is not defined or has no value.
+    /// </returns>
+    /// <remarks>
+    ///     This method provides dynamic access to build parameters, allowing retrieval by name at runtime.
+    ///     It is useful for scenarios where parameter names are looked up dynamically
+    /// </remarks>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown if <paramref name="paramName" /> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="KeyNotFoundException">
+    ///     Thrown if the specified parameter name does not exist in <see cref="ParamDefinitions" />.
+    /// </exception>
+    object? AccessParam(string paramName);
+
+    IDisposable CreateParamResolutionSuppressionScope() =>
+        new ParamResolutionSuppressionScope(this);
+
+    private readonly record struct ParamResolutionSuppressionScope : IDisposable
+    {
+        private readonly IBuildDefinition _buildDefinition;
+
+        public ParamResolutionSuppressionScope(IBuildDefinition buildDefinition)
+        {
+            _buildDefinition = buildDefinition;
+            buildDefinition.SuppressParamResolution = true;
+        }
+
+        public void Dispose() =>
+            _buildDefinition.SuppressParamResolution = false;
+    }
 }

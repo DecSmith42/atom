@@ -1,8 +1,3 @@
-using System.Collections.Immutable;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
@@ -13,6 +8,10 @@ namespace DecSm.Atom.SourceGenerators;
 public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
     private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+
     private const string Target = "Target";
     private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
     private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
@@ -52,7 +51,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName == BuildDefinitionAttributeFull)
+            if (attributeName is BuildDefinitionAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -61,7 +60,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private static void GenerateCode(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
+        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
+            compilationWithClassDeclarations)
     {
         foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
             if (compilationWithClassDeclarations
@@ -141,7 +141,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             ? string.Empty
             : $"global using static {classFull};";
 
-        var interfacesWithProperties = classSymbol
+        var typesWithProperties = classSymbol
             .AllInterfaces
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
@@ -153,25 +153,30 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .ToArray();
 
-        var interfacesWithTargets = DeduplicateTargets(interfacesWithProperties.Where(static p => p.Property.Type.Name is Target));
+        var typesWithTargets =
+            DeduplicateTargets(typesWithProperties.Where(static p => p.Property.Type.Name is Target));
 
-        var interfacesWithParams = interfacesWithProperties
+        var typesWithParams = typesWithProperties
             .Where(static p => p
                 .Property
                 .GetAttributes()
-                .Any(static attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
-            .Select(static interfaceWithProperty => new PropertyWithAttribute(interfaceWithProperty.Property,
+                .Any(static attribute =>
+                    attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
+            .Select(static interfaceWithProperty => new TypeWithPropertyAndAttribute(interfaceWithProperty.Interface,
+                interfaceWithProperty.Property,
                 interfaceWithProperty
                     .Property
                     .GetAttributes()
-                    .First(attribute => attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
+                    .First(attribute =>
+                        attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
             .ToList();
 
         var interfacesWithConfigureBuilder = classSymbol
             .AllInterfaces
             .Where(static @interface => @interface
                 .GetAttributes()
-                .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
+                .Any(static attribute =>
+                    attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
             .ToArray();
 
         var interfacesWithConfigureHost = classSymbol
@@ -181,7 +186,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull))
             .ToArray();
 
-        var targetDefinitionsPropertyBodyLines = interfacesWithTargets
+        var targetDefinitionsPropertyBodyLines = typesWithTargets
             .Select(static p =>
                 $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""")
             .ToArray();
@@ -199,7 +204,7 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{TargetFull}}>();""";
 
-        var paramDefinitionsPropertyBodyLines = interfacesWithParams
+        var paramDefinitionsPropertyBodyLines = typesWithParams
             .Select(static x => new
             {
                 x.Property.Name,
@@ -210,24 +215,29 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                     .Skip(1)
                     .First()
                     .Value!,
-                DefaultValue = x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(2)
-                    .First()
-                    .Value is string s
-                    ? $"\"{s}\""
-                    : "null",
                 Sources = $"({x
                     .Attribute
                     .ConstructorArguments
-                    .Skip(3)
+                    .Skip(2)
                     .First().Type!.ToDisplayString()}){x
                     .Attribute
                     .ConstructorArguments
-                    .Skip(3)
+                    .Skip(2)
                     .First().Value}",
                 IsSecret = x.Attribute.AttributeClass?.Name is SecretDefinitionAttribute,
+                ChainedParams = x
+                    .Attribute
+                    .ConstructorArguments
+                    .Skip(3)
+                    .FirstOrDefault()
+                    .Kind is TypedConstantKind.Array
+                    ? x
+                        .Attribute
+                        .ConstructorArguments
+                        .Skip(3)
+                        .First()
+                        .Values
+                    : [],
             })
             .Select(static p => $$"""
                                           {
@@ -235,9 +245,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                                               {
                                                   ArgName = "{{p.ArgName}}",
                                                   Description = "{{p.Description}}",
-                                                  DefaultValue = {{p.DefaultValue}},
                                                   Sources = {{p.Sources}},
                                                   IsSecret = {{p.IsSecret.ToString().ToLower()}},
+                                                  ChainedParams = {{(p.ChainedParams.IsDefaultOrEmpty ? "[]" : $"[ {string.Join(", ", p.ChainedParams.Select(v => $"\"{v.Value?.ToString() ?? string.Empty}\""))} ]")}},
                                               }
                                           },
                                   """)
@@ -252,7 +262,30 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 """
             : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
 
-        var targetsPropertiesLines = interfacesWithTargets
+        var accessParamMethodLines = typesWithParams
+            .Where(typeWithPropertyAndAttribute => typeWithPropertyAndAttribute.Type.ToDisplayString() == classFull ||
+                                                   typeWithPropertyAndAttribute.Property.DeclaredAccessibility is
+                                                       Accessibility.Public
+                                                       or Accessibility.Protected
+                                                       or Accessibility.ProtectedOrInternal)
+            .Select(p => p.Property)
+            .Select(p => $"""
+                                      "{SimpleName(p.Name)}" => (({p.ContainingType})this).{SimpleName(p.Name)},
+                          """)
+            .ToArray();
+
+        var accessParamMethod = accessParamMethodLines.Any()
+            ? $$"""
+                    public override object? AccessParam(string paramName) =>
+                        paramName switch
+                        {
+                {{string.Join("\n", accessParamMethodLines)}}
+                        _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName)),
+                        };
+                """
+            : """    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));""";
+
+        var targetsPropertiesLines = typesWithTargets
             .Select(static p =>
                 $"""        public static {WorkflowTargetDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""")
             .ToArray();
@@ -267,14 +300,15 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
                     private static {{WorkflowTargetDefinitionFull}} Target(string name) => name switch
                     {
-                {{string.Join("\n", interfacesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
+                {{string.Join("\n", typesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
                         _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name)),
                     };
                 """
             : "    // Build has no defined targets";
 
-        var paramsPropertiesLines = interfacesWithParams
-            .Select(static p => $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
+        var paramsPropertiesLines = typesWithParams
+            .Select(static p =>
+                $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
             .ToArray();
 
         var paramsClass = paramsPropertiesLines.Any()
@@ -311,27 +345,30 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
             .Select(static @interface => $"        {@interface}.ConfigureHost(builder);")
             .ToArray();
 
-        var configureBuildHostBuilderMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? $$"""
-                    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
-                    {
-                {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
-                    }
-                """
-            : "    // Build has no defined HostBuilder configuration";
+        var configureBuildHostBuilderMethod =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? $$"""
+                        public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
+                        {
+                    {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
+                        }
+                    """
+                : "    // Build has no defined HostBuilder configuration";
 
-        var configureBuildHostMethod = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? $$"""
-                    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
-                    {
-                {{string.Join("\n", configureBuildHostMethodBodyLines)}}
-                    }
-                """
-            : "    // Build has no defined Host configuration";
+        var configureBuildHostMethod =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? $$"""
+                        public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
+                        {
+                    {{string.Join("\n", configureBuildHostMethodBodyLines)}}
+                        }
+                    """
+                : "    // Build has no defined Host configuration";
 
-        var configureHostInherit = configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-            ? ", DecSm.Atom.Hosting.IConfigureHost"
-            : string.Empty;
+        var configureHostInherit =
+            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
+                ? ", DecSm.Atom.Hosting.IConfigureHost"
+                : string.Empty;
 
         var code = $$"""
                      // <auto-generated/>
@@ -363,20 +400,20 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
                          private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
 
-                         private T GetService<T>()
+                         private T GetService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
                              where T : notnull =>
                              typeof(T).GetInterface(nameof(IBuildDefinition)) != null
                                  ? (T)(IBuildDefinition)this
                                  : Services.GetRequiredService<T>();
 
-                        private IEnumerable<T> GetServices<T>()
+                        private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
                              where T : notnull =>
                              typeof(T).GetInterface(nameof(IBuildDefinition)) != null
                                  ? [(T)(IBuildDefinition)this]
                                  : Services.GetServices<T>();
 
                          [return: NotNullIfNotNull(nameof(defaultValue))]
-                         private T? GetParam<T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
+                         private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
                              Services
                                  .GetRequiredService<IParamService>()
                                  .GetParam(parameterExpression, defaultValue, converter);
@@ -385,6 +422,8 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
                      {{targetDefinitionsProperty}}
 
                      {{paramDefinitionsProperty}}
+
+                     {{accessParamMethod}}
 
                      {{targetsClass}}
 
@@ -402,5 +441,9 @@ public class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private record struct TypeWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
 
-    private record struct PropertyWithAttribute(IPropertySymbol Property, AttributeData Attribute);
+    private record struct TypeWithPropertyAndAttribute(
+        INamedTypeSymbol Type,
+        IPropertySymbol Property,
+        AttributeData Attribute
+    );
 }

@@ -24,8 +24,7 @@ internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSy
             var directoryBuildProps = fileSystem.AtomRootDirectory / "Directory.Build.props";
 
             if (!directoryBuildProps.FileExists)
-                throw new InvalidOperationException(
-                    $"File required for {nameof(DefaultBuildVersionProvider)} but not found: {directoryBuildProps}");
+                return SemVer.One;
 
             var contents = fileSystem.File.ReadAllText(directoryBuildProps);
 
@@ -80,7 +79,7 @@ internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSy
                             ? combinedSemVer
                             : SemVer.TryParse(versionPrefix, out var prefixSemVer)
                                 ? prefixSemVer
-                                : throw new InvalidOperationException($"Unable to determine version from {directoryBuildProps}");
+                                : SemVer.One;
         }
     }
 

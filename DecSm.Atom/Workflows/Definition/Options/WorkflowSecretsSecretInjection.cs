@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Options;
 
 /// <summary>
-///     Similar to <see cref="WorkflowSecretInjection" />, but prevents <see cref="ISecretsProvider" /> instances from looking up the secret
+///     Similar to <see cref="WorkflowSecretInjection" />, but prevents <see cref="ISecretsProvider" /> instances from
+///     looking up the secret
 ///     value.
 ///     Typically used for secrets required by <see cref="ISecretsProvider" /> implementations themselves.
 /// </summary>

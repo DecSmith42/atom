@@ -1,9 +1,3 @@
-using DecSm.Atom.Build.Definition;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Testing;
-using Microsoft.CodeAnalysis.Testing;
-using Xunit;
 using Verifier = DecSm.Atom.Analyzers.Tests.ExtendedAnalyzerVerifier<
     DecSm.Atom.Analyzers.AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer>;
 
@@ -13,7 +7,8 @@ namespace DecSm.Atom.Analyzers.Tests;
 public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzerTests
 {
     private void Configure(
-        CSharpAnalyzerTest<AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer, DefaultVerifier> configuration)
+        CSharpAnalyzerTest<AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzer, DefaultVerifier>
+            configuration)
     {
         configuration.SolutionTransforms.Add((solution, projectId) =>
         {
@@ -25,18 +20,20 @@ public class AT0001_TargetRequiringParamShouldNotDirectlyReferenceParamAnalyzerT
             // Get the existing parse options and update the language version
             var parseOptions = (CSharpParseOptions)project.ParseOptions!;
 
-            var updatedParseOptions =
-                parseOptions.WithLanguageVersion(LanguageVersion.CSharp13); // Or LanguageVersion.Latest, CSharp9, etc.
+            var updatedParseOptions = parseOptions.WithLanguageVersion(LanguageVersion.CSharp14);
 
             // Return the solution with the updated parse options for the project
             return solution.WithProjectParseOptions(projectId, updatedParseOptions);
         });
 
-        configuration.ReferenceAssemblies = ReferenceAssemblies.Net.Net90;
+        // TODO: Use standard .NET 10.0 reference assemblies when available
+        // configuration.ReferenceAssemblies = ReferenceAssemblies.Net.Net100;
+        configuration.ReferenceAssemblies = new("net10.0",
+            new("Microsoft.NETCore.App.Ref", "10.0.0-rc.1.25451.107"),
+            Path.Combine("ref", "net10.0"));
 
-        configuration.TestState.AdditionalReferences.AddRange([
-            MetadataReference.CreateFromFile(typeof(BuildDefinition).Assembly.Location),
-        ]);
+        var assemblyReference = MetadataReference.CreateFromFile(typeof(BuildDefinition).Assembly.Location);
+        configuration.TestState.AdditionalReferences.AddRange([assemblyReference]);
     }
 
     [Fact]

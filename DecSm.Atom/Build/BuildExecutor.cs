@@ -41,7 +41,11 @@ internal sealed class BuildExecutor(
             }
 
         if (buildModel.TargetStates.Values.Any(state => state.Status is TargetRunState.Failed or TargetRunState.NotRun))
+        {
+            Environment.ExitCode = 1;
+
             throw new StepFailedException("Build failed");
+        }
     }
 
     private void ValidateTargetParameters(TargetModel target)
@@ -167,7 +171,10 @@ internal sealed class BuildExecutor(
             }
             catch (StepFailedException failedCheckException)
             {
-                logger.LogInformation(failedCheckException, "A check failed for target {TargetDefinitionName}", target.Name);
+                logger.LogInformation(failedCheckException,
+                    "A check failed for target {TargetDefinitionName}",
+                    target.Name);
+
                 buildModel.TargetStates[target].Status = TargetRunState.Failed;
 
                 reportService.AddReportData(new TextReportData(failedCheckException.Message)

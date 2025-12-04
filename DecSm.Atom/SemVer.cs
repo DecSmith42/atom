@@ -23,7 +23,8 @@
 /// </code>
 /// </example>
 [PublicAPI]
-public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
+public sealed partial class SemVer()
+    : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
     /// <summary>
     ///     Initializes a new instance of the <see cref="SemVer" /> class with the specified version components.
@@ -115,6 +116,17 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     /// </remarks>
     [JsonIgnore]
     public int BuildNumberFromMetadata => ExtractBuildNumber(Metadata);
+
+    /// <summary>
+    ///     Gets a semantic version representing version 1.0.0.
+    /// </summary>
+    /// <value>A <see cref="SemVer" /> instance with Major set to 1, Minor set to 0, and Patch set to 0.</value>
+    public static SemVer One { get; } = new()
+    {
+        Major = 1,
+        Minor = 0,
+        Patch = 0,
+    };
 
     /// <summary>
     ///     Compares the current instance with another <see cref="SemVer" /> and returns an integer that indicates
@@ -234,7 +246,10 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
         };
     }
 
-    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out SemVer result)
+    public static bool TryParse(
+        [NotNullWhen(true)] string? s,
+        IFormatProvider? provider,
+        [MaybeNullWhen(false)] out SemVer result)
     {
         if (s is null)
         {
@@ -281,7 +296,10 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     public static SemVer Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
         Parse(s.ToString(), provider);
 
-    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out SemVer result) =>
+    public static bool TryParse(
+        ReadOnlySpan<char> s,
+        IFormatProvider? provider,
+        [MaybeNullWhen(false)] out SemVer result) =>
         TryParse(s.ToString(), provider, out result);
 
     /// <summary>
@@ -291,7 +309,8 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     /// <param name="secondBound">The second boundary version.</param>
     /// <returns>true if this version is between the two bounds; otherwise, false.</returns>
     /// <remarks>
-    ///     The method handles bounds in any order. If both bounds are equal, returns true only if this version equals the bounds.
+    ///     The method handles bounds in any order. If both bounds are equal, returns true only if this version equals the
+    ///     bounds.
     /// </remarks>
     public bool IsBetween(SemVer firstBound, SemVer secondBound) =>
         firstBound == secondBound
@@ -316,7 +335,8 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     /// </remarks>
     public Version ToSystemVersion(bool throwIfContainsPreRelease = false, bool throwIfContainsMetadata = false) =>
         throwIfContainsPreRelease && PreRelease is not null
-            ? throw new ArgumentException("The SemVer contains a pre-release tag, which is not supported by System.Version.")
+            ? throw new ArgumentException(
+                "The SemVer contains a pre-release tag, which is not supported by System.Version.")
             : throwIfContainsMetadata && Metadata is not null
                 ? throw new ArgumentException("The SemVer contains metadata, which is not supported by System.Version.")
                 : new(Major, Minor, Patch);
@@ -394,7 +414,8 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <param name="result">
-    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in <paramref name="s" />,
+    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in
+    ///     <paramref name="s" />,
     ///     if the conversion succeeded, or null if the conversion failed.
     /// </param>
     /// <returns>true if <paramref name="s" /> was converted successfully; otherwise, false.</returns>
@@ -406,7 +427,8 @@ public sealed partial class SemVer() : ISpanParsable<SemVer>, IComparable<SemVer
     /// </summary>
     /// <param name="s">The span of characters to parse.</param>
     /// <param name="result">
-    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in <paramref name="s" />,
+    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in
+    ///     <paramref name="s" />,
     ///     if the conversion succeeded, or null if the conversion failed.
     /// </param>
     /// <returns>true if <paramref name="s" /> was converted successfully; otherwise, false.</returns>

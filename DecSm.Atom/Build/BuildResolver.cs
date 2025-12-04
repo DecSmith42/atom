@@ -4,17 +4,24 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
 {
     public BuildModel Resolve()
     {
+        var defaultScope = buildDefinition.CreateParamResolutionSuppressionScope();
+
         var paramModels = buildDefinition
             .ParamDefinitions
             .Select(x => new ParamModel(x.Key)
             {
                 ArgName = x.Value.ArgName,
                 Description = x.Value.Description,
-                DefaultValue = x.Value.DefaultValue,
+                DefaultValue = buildDefinition
+                    .AccessParam(x.Value.Name)
+                    ?.ToString(),
                 Sources = x.Value.Sources,
                 IsSecret = x.Value.IsSecret,
+                ChainedParams = x.Value.ChainedParams,
             })
             .ToDictionary(x => x.Name);
+
+        defaultScope.Dispose();
 
         var specifiedTargets = commandLineArgs
             .Commands
@@ -58,10 +65,17 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 var dependencies = new List<TargetModel>();
                 targetModelDependencyMap.Add(x.Name, dependencies);
 
+                // We want to get not only the used/required params, but also recursively the params that are used by those params ('chained params')
+                // The logic is basic for now - a chained param is required if the root is required
+                var usedParams = new List<UsedParam>();
+
+                foreach (var param in x.Params)
+                    AddParamAndChildren(param.Param, param.Required, usedParams, paramModels);
+
                 return new TargetModel(x.Name, x.Description, x.Hidden)
                 {
                     Tasks = x.Tasks,
-                    Params = x.Params.ConvertAll(p => new UsedParam(paramModels[p.Param], p.Required)),
+                    Params = usedParams,
                     ConsumedArtifacts = x.ConsumedArtifacts,
                     ProducedArtifacts = x.ProducedArtifacts,
                     ConsumedVariables = x.ConsumedVariables,
@@ -88,7 +102,8 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 var dependencyTargetDefinition = targetDefinitions.FirstOrDefault(x => x.Name == dependencyName);
 
                 if (dependencyTargetDefinition is null)
-                    throw new($"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
+                    throw new(
+                        $"Target '{targetModel.Name}' depends on target '{dependencyName}' which does not exist.");
 
                 targetModelDependencyMap[targetModel.Name]
                     .Add(targetModels.First(x => x.Name == dependencyName));
@@ -168,7 +183,8 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
                 return;
 
             if (marks.Temporary)
-                throw new($"Circular dependency detected: {string.Join(" -> ", depthFirstTargets.Select(x => x.Name))}.");
+                throw new(
+                    $"Circular dependency detected: {string.Join(" -> ", depthFirstTargets.Select(x => x.Name))}.");
 
             targetMarks[target] = (true, marks.Permenant);
 
@@ -178,5 +194,18 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
             targetMarks[target] = (false, true);
             depthFirstTargets.Insert(0, target);
         }
+    }
+
+    private static void AddParamAndChildren(
+        string param,
+        bool required,
+        List<UsedParam> usedParams,
+        Dictionary<string, ParamModel> paramModels)
+    {
+        var model = paramModels[param];
+        usedParams.Add(new(model, required));
+
+        foreach (var chainedParam in model.ChainedParams)
+            AddParamAndChildren(chainedParam, required, usedParams, paramModels);
     }
 }

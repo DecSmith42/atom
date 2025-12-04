@@ -1,8 +1,12 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
-internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger<GithubVariableProvider> logger) : IWorkflowVariableProvider
+internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger<GithubVariableProvider> logger)
+    : IWorkflowVariableProvider
 {
-    public async Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
+    public async Task<bool> WriteVariable(
+        string variableName,
+        string variableValue,
+        CancellationToken cancellationToken = default)
     {
         if (!Github.IsGithubActions)
             return false;
@@ -25,6 +29,9 @@ internal sealed class GithubVariableProvider(IAtomFileSystem fileSystem, ILogger
         return true;
     }
 
-    public Task<bool> ReadVariable(string jobName, string variableName, CancellationToken cancellationToken = default) =>
+    public Task<bool> ReadVariable(
+        string jobName,
+        string variableName,
+        CancellationToken cancellationToken = default) =>
         Task.FromResult(Github.IsGithubActions);
 }

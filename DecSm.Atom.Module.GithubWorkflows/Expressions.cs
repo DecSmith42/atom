@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Module.GithubWorkflows;
+namespace DecSm.Atom.Module.GithubWorkflows;
 
 [PublicAPI]
 public abstract record IGithubExpression
@@ -24,7 +24,7 @@ public abstract record IGithubExpression
         new IndexedExpression(this);
 
     public IGithubExpression Property(params IGithubExpression[] sections) =>
-        new PropertyExpression([this, ..sections]);
+        new PropertyExpression([this, .. sections]);
 
     public IGithubExpression Not() =>
         new NotExpression(this);
@@ -280,7 +280,8 @@ public sealed record ContainsExpression(IGithubExpression Search, IGithubExpress
 }
 
 [PublicAPI]
-public sealed record StartsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue) : IGithubExpression
+public sealed record StartsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue)
+    : IGithubExpression
 {
     protected override string Write() =>
         $"startsWith({SearchString}, {SearchValue})";
@@ -290,7 +291,8 @@ public sealed record StartsWithExpression(IGithubExpression SearchString, IGithu
 }
 
 [PublicAPI]
-public sealed record EndsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue) : IGithubExpression
+public sealed record EndsWithExpression(IGithubExpression SearchString, IGithubExpression SearchValue)
+    : IGithubExpression
 {
     protected override string Write() =>
         $"endsWith({SearchString}, {SearchValue})";
@@ -300,14 +302,16 @@ public sealed record EndsWithExpression(IGithubExpression SearchString, IGithubE
 }
 
 [PublicAPI]
-public sealed record FormatExpression(IGithubExpression String, params IGithubExpression[] ReplaceValues) : IGithubExpression
+public sealed record FormatExpression(IGithubExpression String, params IGithubExpression[] ReplaceValues)
+    : IGithubExpression
 {
     protected override string Write() =>
         ReplaceValues.Length switch
         {
             0 => throw new ArgumentException("FormatExpression must have at least one replace value."),
             1 => $"format({String}, {ReplaceValues[0]})",
-            _ => $"format({String}, {string.Join(", ", ReplaceValues.Select(replaceValue => replaceValue.ToString()))})",
+            _ =>
+                $"format({String}, {string.Join(", ", ReplaceValues.Select(replaceValue => replaceValue.ToString()))})",
         };
 
     public override string ToString() =>
@@ -315,7 +319,8 @@ public sealed record FormatExpression(IGithubExpression String, params IGithubEx
 }
 
 [PublicAPI]
-public sealed record JoinExpression(IGithubExpression Array, IGithubExpression? OptionalSeparator = null) : IGithubExpression
+public sealed record JoinExpression(IGithubExpression Array, IGithubExpression? OptionalSeparator = null)
+    : IGithubExpression
 {
     protected override string Write() =>
         OptionalSeparator is null
@@ -405,7 +410,8 @@ public sealed record FailureExpression : IGithubExpression
 
 // Consumed Expressions
 [PublicAPI]
-public sealed record ConsumedVariableExpression(IGithubExpression JobName, IGithubExpression VariableName) : IGithubExpression
+public sealed record ConsumedVariableExpression(IGithubExpression JobName, IGithubExpression VariableName)
+    : IGithubExpression
 {
     protected override string Write() =>
         new PropertyExpression("needs", JobName, "outputs", VariableName);

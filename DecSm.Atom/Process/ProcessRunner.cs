@@ -244,8 +244,15 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             if (e.Data is null)
                 return;
 
-            errorBuilder.AppendLine(e.Data);
-            logger.Log(options.ErrorLogLevel, "{Error}", e.Data);
+            var text = options.TransformError is not null
+                ? options.TransformError(e.Data)
+                : e.Data;
+
+            if (text is null)
+                return;
+
+            errorBuilder.AppendLine(text);
+            logger.Log(options.ErrorLogLevel, "{Error}", text);
         }
 
         void OnProcessOnOutputDataReceived(object _, DataReceivedEventArgs e)
@@ -253,8 +260,15 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             if (e.Data is null)
                 return;
 
-            outputBuilder.AppendLine(e.Data);
-            logger.Log(options.OutputLogLevel, "{Output}", e.Data);
+            var text = options.TransformOutput is not null
+                ? options.TransformOutput(e.Data)
+                : e.Data;
+
+            if (text is null)
+                return;
+
+            outputBuilder.AppendLine(text);
+            logger.Log(options.OutputLogLevel, "{Output}", text);
         }
     }
 
@@ -303,7 +317,9 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
     /// }
     /// </code>
     /// </example>
-    public async Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default)
+    public async Task<ProcessRunResult> RunAsync(
+        ProcessRunOptions options,
+        CancellationToken cancellationToken = default)
     {
         switch (options)
         {
@@ -399,8 +415,15 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             if (e.Data is null)
                 return;
 
-            errorBuilder.AppendLine(e.Data);
-            logger.Log(options.ErrorLogLevel, "{Error}", e.Data);
+            var text = options.TransformError is not null
+                ? options.TransformError(e.Data)
+                : e.Data;
+
+            if (text is null)
+                return;
+
+            errorBuilder.AppendLine(text);
+            logger.Log(options.ErrorLogLevel, "{Error}", text);
         }
 
         void OnProcessOnOutputDataReceived(object _, DataReceivedEventArgs e)
@@ -408,8 +431,15 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
             if (e.Data is null)
                 return;
 
-            outputBuilder.AppendLine(e.Data);
-            logger.Log(options.OutputLogLevel, "{Output}", e.Data);
+            var text = options.TransformOutput is not null
+                ? options.TransformOutput(e.Data)
+                : e.Data;
+
+            if (text is null)
+                return;
+
+            outputBuilder.AppendLine(text);
+            logger.Log(options.OutputLogLevel, "{Output}", text);
         }
     }
 }

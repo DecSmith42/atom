@@ -2,7 +2,10 @@
 
 internal sealed class DevopsVariableProvider(ILogger<DevopsVariableProvider> logger) : IWorkflowVariableProvider
 {
-    public Task<bool> WriteVariable(string variableName, string variableValue, CancellationToken cancellationToken = default)
+    public Task<bool> WriteVariable(
+        string variableName,
+        string variableValue,
+        CancellationToken cancellationToken = default)
     {
         if (!Devops.IsDevopsPipelines)
             return Task.FromResult(false);

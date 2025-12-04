@@ -55,7 +55,7 @@ public interface IWorkflowOption
     ///         </list>
     ///     </para>
     /// </remarks>
-    public bool AllowMultiple => false;
+    bool AllowMultiple => false;
 
     /// <summary>
     ///     Retrieves and merges all workflow options applicable to the currently running workflows
@@ -84,7 +84,7 @@ public interface IWorkflowOption
     ///     </para>
     /// </remarks>
     /// <seealso cref="Merge{T}" />
-    public static IEnumerable<IWorkflowOption> GetOptionsForCurrentTarget(IBuildDefinition buildDefinition) =>
+    static IEnumerable<IWorkflowOption> GetOptionsForCurrentTarget(IBuildDefinition buildDefinition) =>
         Merge(buildDefinition.GlobalWorkflowOptions.Concat(buildDefinition
             .Workflows
             .Where(workflow => workflow.WorkflowTypes.Any(workflowType => workflowType.IsRunning))
@@ -125,7 +125,7 @@ public interface IWorkflowOption
     /// </remarks>
     /// <seealso cref="AllowMultiple" />
     /// <seealso cref="MergeWith{T}" />
-    public static IEnumerable<T> Merge<T>(IEnumerable<T> entries)
+    static IEnumerable<T> Merge<T>(IEnumerable<T> entries)
         where T : IWorkflowOption =>
         entries
             .GroupBy(x => x.GetType())
@@ -149,11 +149,15 @@ public interface IWorkflowOption
     ///     </para>
     ///     <list type="bullet">
     ///         <item>
-    ///             <description>When <see cref="AllowMultiple" /> is <c>true</c>: Returns the current instance followed by all provided entries</description>
+    ///             <description>
+    ///                 When <see cref="AllowMultiple" /> is <c>true</c>: Returns the current instance followed by all
+    ///                 provided entries
+    ///             </description>
     ///         </item>
     ///         <item>
     ///             <description>
-    ///                 When <see cref="AllowMultiple" /> is <c>false</c>: Returns only the last entry, or the current instance if no
+    ///                 When <see cref="AllowMultiple" /> is <c>false</c>: Returns only the last entry, or the current instance
+    ///                 if no
     ///                 entries are provided
     ///             </description>
     ///         </item>

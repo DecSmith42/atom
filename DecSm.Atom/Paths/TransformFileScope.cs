@@ -5,7 +5,8 @@
 ///     Restores the file's original content upon disposal (unless restoration has been explicitly canceled).
 /// </summary>
 /// <remarks>
-///     Atom build uses this to set additional build properties in a project file during a build without permanently modifying the file.
+///     Atom build uses this to set additional build properties in a project file during a build without permanently
+///     modifying the file.
 /// </remarks>
 /// <example>
 ///     <code lang="csharp">
@@ -97,7 +98,9 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
 
         try
         {
-            await file.FileSystem.File.WriteAllTextAsync(file, transform(initialContent ?? string.Empty), cancellationToken);
+            await file.FileSystem.File.WriteAllTextAsync(file,
+                transform(initialContent ?? string.Empty),
+                cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -110,7 +113,8 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Applies a transformation function to the current content of the file managed by the <see cref="TransformFileScope" /> and updates its
+    ///     Applies a transformation function to the current content of the file managed by the
+    ///     <see cref="TransformFileScope" /> and updates its
     ///     content asynchronously.
     /// </summary>
     /// <param name="transform">
@@ -119,9 +123,12 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     /// </param>
     /// <param name="cancellationToken"></param>
     /// <returns>
-    ///     A task that represents the asynchronous operation and contains the current <see cref="TransformFileScope" /> instance.
+    ///     A task that represents the asynchronous operation and contains the current <see cref="TransformFileScope" />
+    ///     instance.
     /// </returns>
-    public async Task<TransformFileScope> AddAsync(Func<string, string> transform, CancellationToken cancellationToken = default)
+    public async Task<TransformFileScope> AddAsync(
+        Func<string, string> transform,
+        CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 

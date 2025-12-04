@@ -177,25 +177,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 
@@ -231,25 +231,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 
@@ -275,25 +275,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 
@@ -385,25 +385,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 
@@ -456,25 +456,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 
@@ -527,25 +527,25 @@ public class CommandLineArgParserTests
                 {
                     ArgName = "param1",
                     Description = "Param 1",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param2"] = new("Param2")
                 {
                     ArgName = "param2",
                     Description = "Param 2",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
                 ["Param3"] = new("Param3")
                 {
                     ArgName = "param3",
                     Description = "Param 3",
-                    DefaultValue = null,
                     Sources = ParamSource.All,
                     IsSecret = false,
+                    ChainedParams = [],
                 },
             });
 

@@ -11,7 +11,12 @@ public interface IHelpService
     void ShowHelp();
 }
 
-internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, BuildModel buildModel, IConfiguration config) : IHelpService
+internal sealed class HelpService(
+    IAnsiConsole console,
+    CommandLineArgs args,
+    BuildModel buildModel,
+    IConfiguration config
+) : IHelpService
 {
     public void ShowHelp()
     {
@@ -25,11 +30,20 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         console.Write(new Markup("[bold]Options[/]\n"));
         console.WriteLine();
 
-        console.Write(new Markup("  [dim]-h,  --help[/]        [dim]Show help for entire tool or a single command[/]\n"));
-        console.Write(new Markup("  [dim]-i,  --interactive[/] [dim]Run in interactive mode (prompt for required params)[/]\n"));
+        console.Write(
+            new Markup("  [dim]-h,  --help[/]        [dim]Show help for entire tool or a single command[/]\n"));
+
+        console.Write(
+            new Markup("  [dim]-i,  --interactive[/] [dim]Run in interactive mode (prompt for required params)[/]\n"));
+
         console.Write(new Markup("  [dim]-g,  --gen[/]         [dim]Generate build scripts[/]\n"));
-        console.Write(new Markup("  [dim]-s,  --skip[/]        [dim]Skip dependency execution (run only specified commands)[/]\n"));
-        console.Write(new Markup("  [dim]-hl, --headless[/]    [dim]Run in headless mode (no prompts or logins, used in CI)[/]\n"));
+
+        console.Write(new Markup(
+            "  [dim]-s,  --skip[/]        [dim]Skip dependency execution (run only specified commands)[/]\n"));
+
+        console.Write(new Markup(
+            "  [dim]-hl, --headless[/]    [dim]Run in headless mode (no prompts or logins, used in CI)[/]\n"));
+
         console.Write(new Markup("  [dim]-v,  --verbose[/]     [dim]Show verbose output (extra logging)[/]\n"));
         console.WriteLine();
 
@@ -134,6 +148,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(requiredParams.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var param in requiredParams)
             {
                 var defaultValue = param.Param.DefaultValue ?? string.Empty;
@@ -147,9 +162,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
                         $"[dim] | [/][dim green][[✔ Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: > 0 }, { Length: > 0 }) =>
-                        $"[dim] | [/][dim green][[Default: {defaultValue.EscapeMarkup()}]][/][dim] [[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                        $"[dim] | [/][dim][[Default: {defaultValue.EscapeMarkup()}]] [dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/][/]",
+                    ({ Length: > 0 }, { Length: 0 }) =>
+                        $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) =>
+                        $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
                     _ => "[dim] | [/][dim yellow][[⚠ None]][/]",
                 };
 
@@ -180,6 +197,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(optionalParams.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var param in optionalParams)
             {
                 var defaultValue = param.Param.DefaultValue ?? string.Empty;
@@ -194,8 +212,10 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                         $"[dim] | [/][dim green][[✔ Default/Configured: {defaultValue.EscapeMarkup()}]][/]",
                     ({ Length: > 0 }, { Length: > 0 }) =>
                         $"[dim] | [/][dim green][[Default: {defaultValue.EscapeMarkup()}]][/][dim] [[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
-                    ({ Length: > 0 }, { Length: 0 }) => $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
-                    ({ Length: 0 }, { Length: > 0 }) => $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
+                    ({ Length: > 0 }, { Length: 0 }) =>
+                        $"[dim] | [/][dim green][[✔ Default: {defaultValue.EscapeMarkup()}]][/]",
+                    ({ Length: 0 }, { Length: > 0 }) =>
+                        $"[dim] | [/][dim green][[✔ Configured: {configuredValue.EscapeMarkup()}]][/]",
                     _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 
@@ -226,6 +246,7 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
         {
             var nodes = new List<(string Name, string Value, bool IsSupplied)>(secrets.Count);
 
+            // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
             foreach (var secret in secrets)
             {
                 var defaultValue = secret.Param.DefaultValue ?? string.Empty;
@@ -242,10 +263,11 @@ internal sealed class HelpService(IAnsiConsole console, CommandLineArgs args, Bu
                 {
                     ({ Length: > 0 }, { Length: > 0 }) when defaultValue == configuredValue =>
                         "[dim] | [/][dim green][[✔ Default/Configured: ****]][/]",
-                    ({ Length: > 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[Default: ****]][/][dim][[✔ Configured: ****]][/]",
+                    ({ Length: > 0 }, { Length: > 0 }) =>
+                        "[dim] | [/][dim green][[Default: ****]][/][dim][[✔ Configured: ****]][/]",
                     ({ Length: > 0 }, { Length: 0 }) => "[dim] | [/][dim green][[✔ Default: ****]][/]",
                     ({ Length: 0 }, { Length: > 0 }) => "[dim] | [/][dim green][[✔ Configured: ****]][/]",
-                    _ when secret.Required => "[dim] | [/][dim yellow][[⚠ None]][/]",
+                    _ when secret.Required => "[dim] | [/][dim blue][[? None]][/]",
                     _ => "[dim] | [/][dim][[✔ None]][/]",
                 };
 

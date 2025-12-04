@@ -16,7 +16,8 @@
 ///             </item>
 ///             <item>
 ///                 <description>
-///                     Generating CI/CD workflow files (e.g., GitHub Actions) using <see cref="WorkflowGenerator" /> if specified or
+///                     Generating CI/CD workflow files (e.g., GitHub Actions) using <see cref="WorkflowGenerator" /> if
+///                     specified or
 ///                     if not running in headless mode.
 ///                 </description>
 ///             </item>
@@ -32,11 +33,14 @@
 ///         </list>
 ///     </para>
 ///     <para>
-///         This service is registered and managed by the .NET Generic Host (<see cref="Microsoft.Extensions.Hosting.IHost" />)
-///         and is typically configured via the <c>AddAtom</c> extension method in the <c>DecSm.Atom.Hosting.HostExtensions</c> class.
+///         This service is registered and managed by the .NET Generic Host (
+///         <see cref="Microsoft.Extensions.Hosting.IHost" />)
+///         and is typically configured via the <c>AddAtom</c> extension method in the
+///         <c>DecSm.Atom.Hosting.HostExtensions</c> class.
 ///     </para>
 ///     <example>
-///         While <c>AtomService</c> is internal, its operation is primarily influenced by command-line arguments passed to the Atom
+///         While <c>AtomService</c> is internal, its operation is primarily influenced by command-line arguments passed to
+///         the Atom
 ///         application.
 ///         Here are some conceptual examples of how command-line usage translates to <c>AtomService</c> behavior:
 ///         Running with no arguments (or only project argument):
@@ -55,7 +59,8 @@
 ///         <code>
 /// atom --gen
 /// </code>
-///         This instructs <c>AtomService</c> to regenerate workflow files via <see cref="WorkflowGenerator.GenerateWorkflows" />.
+///         This instructs <c>AtomService</c> to regenerate workflow files via
+///         <see cref="WorkflowGenerator.GenerateWorkflows" />.
 ///         Executing a specific build target:
 ///         <code>
 /// atom Build
@@ -73,11 +78,10 @@
 internal sealed class AtomService(
     CommandLineArgs args,
     BuildExecutor executor,
-    BuildModel buildModel,
-    IHostApplicationLifetime lifetime,
-    ILogger<AtomService> logger,
     IHelpService helpService,
-    WorkflowGenerator workflowGenerator
+    WorkflowGenerator workflowGenerator,
+    IHostApplicationLifetime lifetime,
+    ILogger<AtomService> logger
 ) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -85,11 +89,7 @@ internal sealed class AtomService(
         try
         {
             if (!args.IsValid)
-            {
-                Environment.ExitCode = 1;
-
-                return;
-            }
+                throw new ArgumentException("Invalid command-line arguments");
 
             if (args is { HasHelp: false, HasHeadless: false, HasGen: false, Commands.Count: 0, Params.Count: 0 })
             {
@@ -109,12 +109,10 @@ internal sealed class AtomService(
             if (args.HasGen || !args.HasHeadless)
                 await workflowGenerator.GenerateWorkflows(stoppingToken);
             else if (await workflowGenerator.WorkflowsDirty(stoppingToken))
-                throw new InvalidOperationException("One or more workflows are dirty. Run 'atom -g' to regenerate them");
+                throw new InvalidOperationException(
+                    "One or more workflows are dirty. Run 'atom -g' to regenerate them");
 
             await executor.Execute(stoppingToken);
-
-            if (buildModel.Targets.Any(x => buildModel.TargetStates[x].Status is TargetRunState.Failed))
-                Environment.ExitCode = 1;
         }
         catch (Exception ex)
         {

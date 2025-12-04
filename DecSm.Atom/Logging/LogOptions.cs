@@ -17,7 +17,8 @@
 public static class LogOptions
 {
     /// <summary>
-    ///     Gets or sets a value indicating whether logging verbosity is enabled, typically producing more detailed diagnostic information.
+    ///     Gets or sets a value indicating whether logging verbosity is enabled, typically producing more detailed diagnostic
+    ///     information.
     /// </summary>
     /// <value>
     ///     <c>true</c> if verbose logging is enabled; otherwise, <c>false</c>.

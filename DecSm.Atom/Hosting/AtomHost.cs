@@ -27,7 +27,8 @@ public static class AtomHost
     /// <returns>
     ///     A configured <see cref="HostApplicationBuilder" /> ready to build and run the application.
     /// </returns>
-    public static HostApplicationBuilder CreateAtomBuilder<T>(string[] args)
+    public static HostApplicationBuilder CreateAtomBuilder<
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(string[] args)
         where T : BuildDefinition
     {
         var builder = Host.CreateEmptyApplicationBuilder(new()
@@ -67,7 +68,8 @@ public static class AtomHost
     /// AtomHost.Run&lt;MyBuildDefinition&gt;(args);
     /// </code>
     /// </example>
-    public static void Run<T>(string[] args)
+    public static void Run<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(
+        string[] args)
         where T : BuildDefinition =>
         CreateAtomBuilder<T>(args)
             .Build()

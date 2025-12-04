@@ -1,17 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>Atom</RootNamespace>
     <UserSecretsId>661f5aa6-694c-4890-85c0-9b72f0bea988</UserSecretsId>
+    <SolutionPath>$(MSBuildThisFileDirectory)../DecSm.Atom.slnx</SolutionPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="4.14.0">
+    <CompilerVisibleProperty Include="SolutionPath" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Roslynator.Analyzers" Version="4.14.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.0">
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="4.14.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -23,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DecSm.Atom.Module.AzureKeyVault\DecSm.Atom.Module.AzureKeyVault.csproj" />
-    <ProjectReference Include="..\DecSm.Atom.Module.AzureStorage\DecSm.Atom.Module.AzureStorage.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.DevopsWorkflows\DecSm.Atom.Module.DevopsWorkflows.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.Dotnet\DecSm.Atom.Module.Dotnet.csproj" />
     <ProjectReference Include="..\DecSm.Atom.Module.GitVersion\DecSm.Atom.Module.GitVersion.csproj" />

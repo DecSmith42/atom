@@ -1,7 +1,4 @@
-﻿using DecSm.Atom.BuildInfo;
-using DecSm.Atom.Hosting;
-
-namespace DecSm.Atom.Module.GitVersion;
+﻿namespace DecSm.Atom.Module.GitVersion;
 
 [ConfigureHostBuilder]
 public partial interface IGitVersion

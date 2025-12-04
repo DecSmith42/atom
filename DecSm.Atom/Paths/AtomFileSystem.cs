@@ -1,4 +1,4 @@
-﻿namespace DecSm.Atom.Paths;
+namespace DecSm.Atom.Paths;
 
 /// <summary>
 ///     Represents the abstraction layer over the file system specifically tailored for Atom,
@@ -18,11 +18,11 @@ public interface IAtomFileSystem : IFileSystem
     ///     Gets the underlying <see cref="IFileSystem" /> instance providing
     ///     general file system functionality used internally.
     /// </summary>
-    public IFileSystem FileSystem { get; }
+    IFileSystem FileSystem { get; }
 
     /// <summary>
     ///     Gets the root directory of the Atom project.
-    ///     Defined by locating a directory containing project markers (e.g., *.git, *.sln).
+    ///     Defined by locating a directory containing project markers (e.g., *.git, *.slnx, *.sln).
     /// </summary>
     RootedPath AtomRootDirectory => GetPath(AtomPaths.Root);
 
@@ -71,6 +71,10 @@ public interface IAtomFileSystem : IFileSystem
     /// <returns>A <see cref="RootedPath" /> instance corresponding to the key.</returns>
     RootedPath GetPath(string key);
 
+    RootedPath GetPath<T>()
+        where T : IFileMarker =>
+        T.Path(this);
+
     /// <summary>
     ///     Creates a new <see cref="RootedPath" /> based on the specified path string.
     /// </summary>
@@ -100,13 +104,9 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
             return path;
         }
 
-        var locate = (string locatorKey) =>
-        {
-            if (locatorKey == key)
-                throw new InvalidOperationException($"Locator for key '{key}' is circular");
-
-            return GetPath(locatorKey);
-        };
+        var locate = (string locatorKey) => locatorKey == key
+            ? throw new InvalidOperationException($"Locator for key '{key}' is circular")
+            : GetPath(locatorKey);
 
         path = PathLocators
             .Select(x => x.Locate(key, locate))

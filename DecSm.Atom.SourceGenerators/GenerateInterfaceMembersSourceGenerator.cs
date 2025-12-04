@@ -1,16 +1,15 @@
-﻿using System.Collections.Immutable;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
-using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
+﻿using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
 
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
 public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateInterfaceMembersAttributeFull = "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
+    private const string GenerateInterfaceMembersAttributeFull =
+        "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
+
+    private const string DefaultBuildDefinitionAttributeFull =
+        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context) =>
         context.RegisterSourceOutput(context.CompilationProvider.Combine(context
@@ -27,6 +26,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     {
         var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
 
+        // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - Perf
         foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
         foreach (var attributeSyntax in attributeListSyntax.Attributes)
         {
@@ -37,16 +37,19 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName == GenerateInterfaceMembersAttributeFull)
+            if (attributeName is GenerateInterfaceMembersAttributeFull or DefaultBuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
+
+        // ReSharper restore ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
         return (classDeclarationSyntax, false);
     }
 
     private static void GenerateCode(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations) compilationWithClassDeclarations)
+        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
+            compilationWithClassDeclarations)
     {
         foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
             if (compilationWithClassDeclarations
@@ -76,14 +79,11 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
         var interfacesWithProperties = classSymbol
             .AllInterfaces
+            .Where(x => x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IPropertySymbol>()
                 .Select(propertySymbol => new TypeWithProperty(interfaceSymbol, propertySymbol)))
-            .Concat(classSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
             .Where(x => x.Property.DeclaredAccessibility is not Accessibility.Private &&
                         x.Property is
                         {
@@ -101,14 +101,12 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 
         var interfacesWithMethods = classSymbol
             .AllInterfaces
+            .Where(x => x.Name != classFull &&
+                        x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
             .SelectMany(static interfaceSymbol => interfaceSymbol
                 .GetMembers()
                 .OfType<IMethodSymbol>()
                 .Select(methodSymbol => new TypeWithMethod(interfaceSymbol, methodSymbol)))
-            .Concat(classSymbol
-                .GetMembers()
-                .OfType<IMethodSymbol>()
-                .Select(methodSymbol => new TypeWithMethod(classSymbol, methodSymbol)))
             .Where(x => x.Method.DeclaredAccessibility is not Accessibility.Private &&
                         !x.Method.IsStatic &&
                         !x.Method.Name.StartsWith("get_") &&
@@ -135,6 +133,9 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         // private string GetName() => ((IInterface)this).GetName();
 
         var propertyLines = interfacesWithProperties
+            .Where(t => t.Property.DeclaredAccessibility is Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal)
             .Select(typeWithProperty =>
             {
                 var interfaceName = typeWithProperty.Interface.ToDisplayString();
@@ -146,6 +147,9 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             .ToArray();
 
         var methodLines = interfacesWithMethods
+            .Where(t => t.Method.DeclaredAccessibility is Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal)
             .Select(typeWithMethod =>
             {
                 var interfaceName = typeWithMethod.Interface.ToDisplayString();

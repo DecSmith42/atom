@@ -9,7 +9,7 @@ public partial interface IConsoleTarget
     [ParamDefinition("required-param", "Required param")]
     string RequiredParam => GetParam(() => RequiredParam)!;
 
-    [ParamDefinition("default-param", "Default param", "default-value")]
+    [ParamDefinition("default-param", "Default param")]
     string DefaultParam => GetParam(() => DefaultParam, "default-value");
 
     [SecretDefinition("secret-param", "Secret param")]
