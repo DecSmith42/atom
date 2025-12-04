@@ -138,7 +138,8 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
         GenerateCoverageReport(projectName,
             testOptions.Configuration,
             testOptions.Framework,
-            coverageResultsPublishDirectory / "Summary.json");
+            coverageResultsPublishDirectory / "Summary.json",
+            false);
 
         Logger.LogInformation("Ran unit tests for Atom project {AtomProjectName}", projectName);
 
@@ -148,7 +149,12 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
     [UnconditionalSuppressMessage("Trimming",
         "IL2026:RequiresUnreferencedCode",
         Justification = "Deserialized type `TestRun` is manually preserved via DynamicallyAccessedMembers.")]
-    void GenerateTestReport(string projectName, string? configuration, string? framework, string trxFile)
+    void GenerateTestReport(
+        string projectName,
+        string? configuration,
+        string? framework,
+        string trxFile,
+        bool includeTitle = true)
     {
         var serializer = new XmlSerializer(typeof(TestRun));
 
@@ -163,8 +169,9 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
             ["⏩ Skipped tests", testRun.ResultSummary.Counters.NotExecuted.ToString()],
         ])
         {
-            Title =
-                $"Test run summary | {projectName} | {configuration ?? "Release"} | {framework ?? RuntimeInformation.FrameworkDescription}",
+            Title = includeTitle
+                ? $"Test run summary | {projectName} | {configuration ?? "Release"} | {framework ?? RuntimeInformation.FrameworkDescription}"
+                : null,
             ColumnAlignments = [ColumnAlignment.Left, ColumnAlignment.Right],
         });
 
@@ -193,7 +200,12 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
             });
     }
 
-    void GenerateCoverageReport(string projectName, string? configuration, string? framework, string coverageJsonFile)
+    void GenerateCoverageReport(
+        string projectName,
+        string? configuration,
+        string? framework,
+        string coverageJsonFile,
+        bool includeTitle = true)
     {
         var coverageJson = FileSystem.File.ReadAllText(coverageJsonFile);
 
@@ -208,8 +220,9 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
             ["Branch coverage", (summary.BranchCoverage / 100).ToString("P")],
         ])
         {
-            Title =
-                $"Test run summary | {projectName} | {configuration ?? "Release"} | {framework ?? RuntimeInformation.FrameworkDescription}",
+            Title = includeTitle
+                ? $"Test run summary | {projectName} | {configuration ?? "Release"} | {framework ?? RuntimeInformation.FrameworkDescription}"
+                : null,
             ColumnAlignments = [ColumnAlignment.Left, ColumnAlignment.Right],
         });
     }
