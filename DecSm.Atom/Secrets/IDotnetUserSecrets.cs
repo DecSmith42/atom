@@ -3,7 +3,7 @@
 /// <summary>
 ///     Enables sourcing of secrets from the .NET user secrets store in build definitions.
 ///     <br /><br />
-///     Automatically added to <see cref="DefaultBuildDefinition" />.
+///     Automatically added to <see cref="BuildDefinition" />.
 /// </summary>
 /// <remarks>
 ///     <para>

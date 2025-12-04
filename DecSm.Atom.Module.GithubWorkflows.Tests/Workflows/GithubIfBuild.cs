@@ -2,8 +2,8 @@
 
 namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class GithubIfBuild : BuildDefinition, IGithubWorkflows
+[MinimalBuildDefinition]
+public partial class GithubIfBuild : MinimalBuildDefinition, IGithubWorkflows
 {
     private Target GithubIfTarget => t => t;
 

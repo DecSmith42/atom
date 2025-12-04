@@ -10,7 +10,7 @@ internal sealed class WorkflowGenerator(
 
     public async Task GenerateWorkflows(CancellationToken cancellationToken = default)
     {
-        var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
+        var workflowDefinitions = ((MinimalBuildDefinition)buildDefinition).Workflows;
 
         var generationTasks = new List<Task>();
 
@@ -35,7 +35,7 @@ internal sealed class WorkflowGenerator(
 
     public async Task<bool> WorkflowsDirty(CancellationToken cancellationToken = default)
     {
-        var workflowDefinitions = ((BuildDefinition)buildDefinition).Workflows;
+        var workflowDefinitions = ((MinimalBuildDefinition)buildDefinition).Workflows;
 
         var checkTasks = new List<Task<bool>>();
 

@@ -15,7 +15,7 @@ using DecSm.Atom.Process;
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial class ChainedParamBuild : DecSm.Atom.Build.Definition.IBuildDefinition
+partial class ChainedParamBuild : DecSm.Atom.Build.Definition.BuildDefinition
 {
     private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
 

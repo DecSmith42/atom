@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Helpers;
 
+[PublicAPI]
 public interface IDotnetPublishHelper : IDotnetCliHelper, IBuildInfo
 {
     Task DotnetPublishAndStage(

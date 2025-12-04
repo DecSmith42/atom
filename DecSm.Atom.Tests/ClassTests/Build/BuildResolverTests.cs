@@ -13,7 +13,7 @@ public class BuildResolverTests
     public void TearDown() =>
         _services.Dispose();
 
-    private class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services)
+    private class TestBuildDefinition(IServiceProvider services) : MinimalBuildDefinition(services)
     {
         public IReadOnlyDictionary<string, Target> ManualTargetDefinitions { get; init; } =
             new Dictionary<string, Target>();

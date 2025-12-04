@@ -7,8 +7,7 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 {
     private const string GenerateEntryPointAttributeFull = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
 
-    private const string DefaultBuildDefinitionAttributeFull =
-        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -41,7 +40,7 @@ public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
             // Check the full name of the BuildDefinition attribute.
-            if (attributeName is GenerateEntryPointAttributeFull or DefaultBuildDefinitionAttributeFull)
+            if (attributeName is GenerateEntryPointAttributeFull or BuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 

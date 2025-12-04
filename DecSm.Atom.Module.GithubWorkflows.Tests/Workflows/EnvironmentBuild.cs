@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class EnvironmentBuild : BuildDefinition, IGithubWorkflows, IEnvironmentTarget
+[MinimalBuildDefinition]
+public partial class EnvironmentBuild : MinimalBuildDefinition, IGithubWorkflows, IEnvironmentTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [

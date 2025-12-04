@@ -4,7 +4,7 @@
 public class HostExtensionsTests
 {
     [UsedImplicitly]
-    private class TestBuildDefinition(IServiceProvider services) : BuildDefinition(services), IBuildDefinition
+    private class TestBuildDefinition(IServiceProvider services) : MinimalBuildDefinition(services), IBuildDefinition
     {
         public override IReadOnlyDictionary<string, Target> TargetDefinitions => new Dictionary<string, Target>();
 

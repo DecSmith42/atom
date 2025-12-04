@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Params;
 
-[BuildDefinition]
-public partial class ParamBuild : BuildDefinition, IParamTarget1, IParamTarget2
+[MinimalBuildDefinition]
+public partial class ParamBuild : IParamTarget1, IParamTarget2
 {
     public string? ExecuteValue { get; set; }
 }

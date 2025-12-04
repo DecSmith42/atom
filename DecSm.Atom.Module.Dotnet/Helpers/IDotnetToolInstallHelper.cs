@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Helpers;
 
+[PublicAPI]
 public interface IDotnetToolInstallHelper : IBuildAccessor
 {
     void InstallTool(string toolName, string? version = null, bool global = true, bool forceReinstall = false)

@@ -15,7 +15,7 @@ public interface IValidateBuild : IReportsHelper
     ///     Gets the build target that performs validation checks on the Atom build.
     /// </summary>
     /// <example>
-    ///     This target is included in <see cref="DefaultBuildDefinition" /> and is automatically available if the build
+    ///     This target is included in <see cref="BuildDefinition" /> and is automatically available if the build
     ///     inherits from that type.
     ///     Otherwise, it can be manually included:
     ///     <code lang="csharp">

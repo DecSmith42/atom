@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Tests.Workflows;
 
-[BuildDefinition]
-public partial class ArtifactBuild : BuildDefinition,
+[MinimalBuildDefinition]
+public partial class ArtifactBuild : MinimalBuildDefinition,
     IDevopsWorkflows,
     IArtifactTarget1,
     IArtifactTarget2,
@@ -34,8 +34,8 @@ public partial class ArtifactBuild : BuildDefinition,
     ];
 }
 
-[BuildDefinition]
-public partial class CustomArtifactBuild : BuildDefinition,
+[MinimalBuildDefinition]
+public partial class CustomArtifactBuild : MinimalBuildDefinition,
     IDevopsWorkflows,
     IStoreArtifact,
     IRetrieveArtifact,

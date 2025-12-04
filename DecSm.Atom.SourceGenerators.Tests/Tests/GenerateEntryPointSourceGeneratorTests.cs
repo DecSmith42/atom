@@ -19,7 +19,8 @@ public class GenerateEntryPointSourceGeneratorTests
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<GenerateEntryPointSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<GenerateEntryPointSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);

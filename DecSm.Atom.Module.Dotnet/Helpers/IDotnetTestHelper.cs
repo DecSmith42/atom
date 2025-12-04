@@ -1,5 +1,6 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Helpers;
 
+[PublicAPI]
 public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotnetToolInstallHelper, IReportsHelper
 {
     Task<int> DotnetTestAndStage(

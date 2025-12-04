@@ -1,8 +1,7 @@
 namespace Atom;
 
-[DefaultBuildDefinition]
-internal partial class Build : DefaultBuildDefinition,
-    IAzureKeyVault,
+[BuildDefinition]
+internal partial class Build : IAzureKeyVault,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,

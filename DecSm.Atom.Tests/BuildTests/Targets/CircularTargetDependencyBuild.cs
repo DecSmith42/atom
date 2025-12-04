@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
-[BuildDefinition]
-public partial class CircularTargetDependencyBuild : BuildDefinition, ICircularTarget1, ICircularTarget2
+[MinimalBuildDefinition]
+public partial class CircularTargetDependencyBuild : ICircularTarget1, ICircularTarget2
 {
     public bool CircularTarget1Executed { get; set; }
 
@@ -40,8 +40,8 @@ public partial interface ICircularTarget2
             });
 }
 
-[BuildDefinition]
-public partial class CircularTargetDependencyBuild2 : BuildDefinition,
+[MinimalBuildDefinition]
+public partial class CircularTargetDependencyBuild2 : MinimalBuildDefinition,
     ITestCircularTarget3,
     ITestCircularTarget4,
     ITestCircularTarget5

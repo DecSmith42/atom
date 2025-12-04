@@ -8,12 +8,10 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
     private const string GenerateSolutionModelAttributeFull =
         "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
 
-    private const string DefaultBuildDefinitionAttributeFull =
-        "DecSm.Atom.Build.Definition.DefaultBuildDefinitionAttribute";
+    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // 1. Create the provider for the Solution Path (from MSBuild)
         var solutionPathProvider = context.AnalyzerConfigOptionsProvider.Select((options, _) =>
             options.GlobalOptions.TryGetValue("build_property.SolutionPath", out var path) &&
             !string.IsNullOrWhiteSpace(path) &&
@@ -21,7 +19,6 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                 ? Path.GetFullPath(path)
                 : null);
 
-        // 2. Your existing provider for Classes with the specific Attribute
         var classesProvider = context
             .SyntaxProvider
             .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclaration(ctx))
@@ -30,7 +27,6 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
             .Select((t, _) => t.Item1)
             .Collect();
 
-        // 3. Combine everything: ((Compilation, Classes), SolutionPath)
         var sourcePipeline = context
             .CompilationProvider
             .Combine(classesProvider)
@@ -57,7 +53,7 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 
             var attributeName = attributeSymbol.ContainingType.ToDisplayString();
 
-            if (attributeName is GenerateSolutionModelAttributeFull or DefaultBuildDefinitionAttributeFull)
+            if (attributeName is GenerateSolutionModelAttributeFull or BuildDefinitionAttributeFull)
                 return (classDeclarationSyntax, true);
         }
 
@@ -72,10 +68,6 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
     {
         // Safety check: if MSBuild didn't pass the path, we can't generate the specific solution model.
         if (string.IsNullOrEmpty(solutionPath))
-
-            // Optional: Report a diagnostic here warning that $(SolutionPath) is missing.
-            // This happens if building a .csproj directly without a solution context
-            // or if the .targets file is missing.
             return;
 
         foreach (var classDeclarationSyntax in classDeclarations)

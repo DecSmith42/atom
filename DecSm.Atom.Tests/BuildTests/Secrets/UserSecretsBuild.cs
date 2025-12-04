@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Secrets;
 
-[BuildDefinition]
-public partial class UserSecretsBuild : BuildDefinition, IUserSecretsTarget, IDotnetUserSecrets
+[MinimalBuildDefinition]
+public partial class UserSecretsBuild : IUserSecretsTarget, IDotnetUserSecrets
 {
     public string? ExecutionValue { get; set; }
 }

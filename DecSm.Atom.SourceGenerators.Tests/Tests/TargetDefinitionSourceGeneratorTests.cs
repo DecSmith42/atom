@@ -18,7 +18,8 @@ public class TargetDefinitionSourceGeneratorTests
 
         // Act
         var generatedText =
-            TestUtils.GetGeneratedSource<TargetDefinitionSourceGenerator>(source, typeof(BuildDefinition).Assembly);
+            TestUtils.GetGeneratedSource<TargetDefinitionSourceGenerator>(source,
+                typeof(MinimalBuildDefinition).Assembly);
 
         // Assert
         await Verify(generatedText);

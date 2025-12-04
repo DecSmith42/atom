@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Console;
 
-[BuildDefinition]
-public partial class ConsoleBuild : DefaultBuildDefinition, IConsoleTarget;
+[MinimalBuildDefinition]
+public partial class ConsoleBuild : BuildDefinition, IConsoleTarget;
 
 [TargetDefinition]
 public partial interface IConsoleTarget
