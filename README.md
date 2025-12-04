@@ -1,385 +1,378 @@
 # Atom
 
+[![Validate](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml)
 [![Build](https://github.com/DecSmith42/atom/actions/workflows/Build.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Build.yml)
+[![Dependabot Updates](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates)
 
-Atom is a build automation framework for .NET, inspired by tools like NUKE.
-It allows developers to define build tasks using strongly-typed C# interfaces and classes, offering a flexible environment for automating development workflows.
+Atom is an opinionated, type-safe build automation framework for .NET. It enables you to define your build logic in C#, debug it like standard code, and automatically generate CI/CD configuration files for GitHub Actions and Azure DevOps.
 
-A key feature of Atom is its ability to automatically generate CI/CD pipeline configurations for platforms such as GitHub Actions and Azure DevOps based on your C# definitions.
+## Why Atom?
 
-## Features
+* **Zero Context Switching**: Write build logic in C# alongside your application code.
+* **Intellisense & Debugging**: Step through your build process using your IDE.
+* **CI/CD Agnostic**: Define logic once; Atom generates the YAML for GitHub and Azure DevOps.
+* **Modular**: Pull in capabilities via NuGet packages (GitVersion, Azure KeyVault, etc.).
+* **Source Generators**: Reduces boilerplate by automatically discovering targets and parameters.
 
-- **Type-Safe Build Definitions**: Define build targets using C# classes and interfaces.
-- **CI/CD Generation**: Automatically generate GitHub Actions and Azure DevOps pipelines.
-- **Artifact Management**: Integrated support for storing and retrieving artifacts via CI/CD hosts or custom providers (e.g., Azure Blob Storage).
-- **Secret Management**: Secure handling of secrets using .NET user secrets or external providers like Azure Key Vault.
-- **Modular Architecture**: Extensible design supporting various platforms and tools through modules.
-- **Parameter Management**: System for defining, validating, and injecting build parameters.
-- **Reporting**: Detailed build reporting integrated with CI/CD platform summaries.
-- **.NET Tooling**: Built-in helpers for standard .NET operations (build, test, pack, publish).
-- **Source Generation**: Automatic code generation for target and parameter discovery.
+## Getting Started
 
-## Quick Start
+### 1. Prerequisites
 
-### 1. Create a New Build Project
+* .NET SDK 8.0 or later.
 
-Create a new console application and add the Atom package.
+### 2. Setup the Build Project
+
+It is recommended to place your build project in a folder named `_atom` at the root of your repository.
+
+> [!NOTE]
+> The folder name is arbitrary and there can be multiple build projects in a repository.
 
 ```bash
-dotnet new worker -n MyBuild
+# Create a generic worker (console) application
+dotnet new worker -n _atom
 
-cd MyBuild
-
+# Add the Atom core package
 dotnet add package DecSm.Atom
-````
+```
 
-### 2\. Define Your Build
+### 3. Define Your Build
 
-Create a `Build.cs` file. The `[GenerateEntryPoint]` attribute automatically creates the `Main` method.
+Replace the contents of `Program.cs` (or create `Build.cs`) with a basic definition. The `[GenerateEntryPoint]` attribute handles the `Main` method for you.
 
 ```csharp
-namespace Build;
+namespace Atom;
 
-[DefaultBuildDefinition]
-internal partial class Build : BuildDefinition
+[BuildDefinition]
+internal partial class Build
 {
-    private Target HelloWorld =>
-        t => t
-            .DescribedAs("Prints a hello world message")
-            .Executes(() => Logger.LogInformation("Hello, World!"));
+    private Target HelloWorld => t => t
+        .DescribedAs("The hello world target")
+        .Executes(() => Logger.LogInformation("Hello, Atom!"));
 }
 ```
 
-Targets can also be asynchronous:
+### 4. Run the Build
 
-```csharp
-private Target HelloWorldAsync =>
-    t => t
-        .DescribedAs("Prints a hello world message asynchronously")
-        .Executes(async () =>
-        {
-            await Task.Delay(1000);
-            Logger.LogInformation("Hello, World!");
-        });
-
-private Target HelloWorldAsyncWithCancel =>
-    t => t
-        .DescribedAs("Prints a hello world message asynchronously")
-        .Executes(async cancellationToken =>
-        {
-            await Task.Delay(1000, cancellationToken);
-            Logger.LogInformation("Hello, World!");
-        });
-```
-
-### 3\. Run Your Build
-
-Execute the build project passing the target name as an argument.
+You can run the build directly using the `dotnet run` command.
 
 ```bash
-dotnet run -- HelloWorld
+# Run the HelloWorld target
+dotnet run --project _atom -- HelloWorld
+
+# List all available targets
+dotnet run --project _atom -- --help
 ```
 
-## Documentation
+### 5. Use the Atom tool
 
-### Build Definitions
+The tool can be installed locally or globally to simplify running the build from the command line.
 
-Build definitions inherit from `BuildDefinition` (or `DefaultBuildDefinition`) and define targets as properties. `DefaultBuildDefinition` includes standard targets for setup and validation.
+```bash
+# Install
+dotnet tool install --global DecSm.Atom.Tool
+
+# Run
+atom HelloWorld
+
+# List all available targets
+atom --help
+```
+
+Using .NET 10+ SDK, you can also run the tool without installing.
+
+```bash
+dnx decsm.atom.tool
+```
+
+## Core Concepts
+
+### Targets & Dependencies
+
+Targets are properties that return a `Target` delegate. You can chain dependencies to ensure execution order.
+
+```csharp
+Target Clean => t => t.Executes(() => FileSystem.Directory.Delete("bin", recursive: true));
+
+Target Restore => t => t
+    .DependsOn(Clean)
+    .Executes(() => ProcessRunner.Run(new("dotnet", "restore")));
+
+Target Compile => t => t
+    .DependsOn(Restore)
+    .Executes(() => ProcessRunner.Run(new("dotnet", "build --no-restore")));
+```
+
+### Parameters & Secrets
+
+Define parameters using attributes. Atom automatically parses command-line arguments (e.g., `--configuration Release`) and environment variables.
+
+```csharp
+[ParamDefinition("configuration", "Build configuration")]
+string Configuration => GetParam(() => Configuration, "Release");
+
+[SecretDefinition("api-key", "API Key for publishing")]
+string ApiKey => GetParam(() => ApiKey);
+```
+
+## Conventions & Best Practices
+
+To maintain consistency and leverage Atom's source generators effectively, follow these standard conventions:
+
+* **Directory Structure**: Place your build project in a dedicated `_atom` folder at the root of your repository.
+* **Class Inheritance**: Your main build class should marked with the `[BuildDefinition]` attribute.
+* **Partial Classes**: Declare your build class as `partial`. Atom's source generators use this to inject boilerplate code for parameter and target discovery.
+* **Target Definition**: Define targets as properties returning a `Target` delegate.
+* **Modular Interfaces**: Use interfaces that inherit `IBuildAccessor` to access common build functionality (e.g., `Logger`, `FileSystem`).
+* **Parameter Naming**: Use kebab-case for the parameter name in the attribute (e.g., `[ParamDefinition("my-param", ...)]`) and PascalCase for the C# property.
+* **Helpers**: Interfaces that provide params and methods that aren't targets themselves should be suffixed with `Helper` to make the intent clear.
+
+## Modules & Integrations
+
+Atom functionality is distributed across several NuGet packages. Mix and match what you need.
+
+### 1. .NET Tooling (DecSm.Atom.Module.Dotnet)
+
+Provides helpers for `dotnet` CLI commands (Restore, Build, Test, Pack, Publish).
+
+**Setup:**
+
+```bash
+dotnet add package DecSm.Atom.Module.Dotnet
+```
+
+**Usage:**
+Implement `IDotnetCliHelper` or specific helpers like `IDotnetTestHelper`.
 
 ```csharp
 [BuildDefinition]
-internal partial class Build : BuildDefinition
-{
-    private Target Compile => t => t
-        .DescribedAs("Compiles the project")
-        .Executes(() =>
-        {
-            // Build logic
-        });
-}
-```
-
-### Parameters
-
-Parameters allow external configuration of the build. They can be sourced from command-line arguments, environment variables, or configuration files.
-
-```csharp
-[ParamDefinition("my-name", "Name to greet")]
-private string? MyName => GetParam(() => MyName);
-
-private Target Hello => t => t
-    .RequiresParam(nameof(MyName))
-    .Executes(() =>
-    {
-        Logger.LogInformation("Hello, {Name}!", MyName);
-    });
-```
-
-### Target Dependencies
-
-Use `.DependsOn()` to define execution order requirements.
-
-```csharp
-private Target Test => t => t
-    .DependsOn(Compile)
-    .Executes(() =>
-    {
-        // Run tests after compilation
-    });
-```
-
-### Target Interfaces
-
-Targets can be organized into interfaces. The `[TargetDefinition]` attribute is required on the interface.
-
-```csharp
-using DecSm.Atom.Build.Definition;
-
-[BuildDefinition]
-internal partial class Build : BuildDefinition, ICompile, ITest;
-
-[TargetDefinition]
-public partial interface ICompile
+partial class Build : IDotnetBuildHelper
 {
     Target Compile => t => t
-        .DescribedAs("Compiles the project")
-        .Executes(() => { /* ... */ });
-}
-
-[TargetDefinition]
-public partial interface ITest
-{
-    Target Test => t => t
-        .DependsOn(nameof(ICompile.Compile)) // Reference dependency by name
-        .Executes(() => { /* ... */ });
-}
-```
-
-### Access Build Services
-
-Implement `IBuildAccessor` to access services such as `Logger`, `FileSystem`, and `ProcessRunner`.
-
-```csharp
-[TargetDefinition]
-public partial interface ICompile : IBuildAccessor
-{
-    Target Compile => t => t
-        .DescribedAs("Compiles the project")
-        .Executes(() =>
+        .Executes(async cancellationToken => 
         {
-            Logger.LogInformation("Compiling project...");
-            FileSystem.File.Create("output.txt");
+            // Use the auto-generated typed CLI wrapper
+            // The `Projects` class contains source-generated strongly typed references to all projects in the solution
+            await DotnetCli.Build(Projects.MyCompany_Project, new BuildOptions 
+            { 
+                Configuration = "Release" 
+            }, cancellationToken: cancellationToken);
         });
 }
 ```
 
-### CI/CD Integration
+### 2. Versioning (DecSm.Atom.Module.GitVersion)
 
-Atom automatically generates CI/CD pipeline configurations based on your build definition. Configure workflows by overriding the `Workflows` property.
+Automatically calculates Semantic Versioning using Git history.
 
-#### GitHub Actions
-
-Add the GitHub Workflows module:
+**Setup:**
 
 ```bash
-dotnet add package DecSm.Atom.Module.GithubWorkflows
+dotnet add package DecSm.Atom.Module.GitVersion
 ```
 
-Define the workflow:
+**Usage:**
+Implement `IGitVersion` and enable the global option `UseGitVersionForBuildId`.
 
 ```csharp
 [BuildDefinition]
-public partial class Build : BuildDefinition, IGithubWorkflows
+partial class Build : BuildDefinition, IGitVersion
 {
-    public override IReadOnlyList<WorkflowDefinition> Workflows =>
-    [
-        new("ci")
-        {
-            Triggers = [new GitPullRequestTrigger { IncludedBranches = ["main"] }],
-            Targets = [Targets.Test],
-            WorkflowTypes = [Github.WorkflowType]
-        }
+    // Enable GitVersion globally
+    public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => 
+    [ 
+        UseGitVersionForBuildId.Enabled 
     ];
+
+    Target PrintVersion => t => t
+        .Executes(() => Logger.LogInformation("Version: {Version}", BuildVersion));
 }
 ```
 
-#### Azure DevOps
+### 3. Azure Key Vault (DecSm.Atom.Module.AzureKeyVault)
 
-Add the Azure DevOps Workflows module:
+Securely fetch secrets from Key Vault during local runs or CI pipelines.
 
-```bash
-dotnet add package DecSm.Atom.Module.DevopsWorkflows
-```
-
-Define the workflow:
-
-```csharp
-[BuildDefinition]
-public partial class Build : BuildDefinition, IDevopsWorkflows
-{
-    public override IReadOnlyList<WorkflowDefinition> Workflows =>
-    [
-        new("ci")
-        {
-            Triggers = [new GitPullRequestTrigger { IncludedBranches = ["main"] }],
-            Targets = [Targets.Test],
-            WorkflowTypes = [Devops.WorkflowType]
-        }
-    ];
-}
-```
-
-### Artifact Management
-
-Atom supports automatic upload and download of artifacts in CI/CD pipelines.
-
-```csharp
-private Target Package => t => t
-    .ProducesArtifact("MyPackage") // Workflows automatically upload this artifact
-    .Executes(() => {
-        // Create your package
-        return Task.CompletedTask;
-    });
-
-private Target Deploy => t => t
-    .ConsumesArtifact(nameof(Package), "MyPackage") // Workflows automatically download this artifact
-    .Executes(() =>
-    {
-        // Deploy the package
-    });
-```
-
-### Variable Management
-
-Variables allow data sharing between build steps and are persisted in the workflow context.
-
-```csharp
-[ParamDefinition("my-name", "Name to greet")]
-private string? MyName => GetParam(() => MyName);
-
-private Target Info => t => t
-    .ProducesVariable("MyPackage")
-    .Executes(async () =>
-    {
-        // Variable writing is done manually via the helper service
-        await Services.GetRequiredService<IVariablesHelper>().WriteVariable(nameof(MyName), "Declan");
-    });
-
-private Target Print => t => t
-    .ConsumesVariable(nameof(Info), "MyPackage") // Workflows automatically inject this variable
-    .Executes(() =>
-    {
-        Logger.LogInformation("Hello, {Name}!", MyName);
-    });
-```
-
-## Modules
-
-Atom provides several modules for extended functionality:
-
-- **DecSm.Atom**: Core framework.
-- **DecSm.Atom.Module.Dotnet**: Helpers for the .NET CLI.
-- **DecSm.Atom.Module.GitVersion**: Integration with GitVersion for semantic versioning.
-- **DecSm.Atom.Module.GithubWorkflows**: Support for GitHub Actions generation.
-- **DecSm.Atom.Module.DevopsWorkflows**: Support for Azure DevOps Pipelines generation.
-- **DecSm.Atom.Module.AzureKeyVault**: Azure Key Vault integration for secrets.
-- **DecSm.Atom.Module.AzureStorage**: Azure Blob Storage provider for artifacts.
-
-To use a module, reference the package and implement the corresponding interface in your build definition (e.g., `IDotnetPackHelper`, `IAzureKeyVault`).
-
-## Advanced Features
-
-### Matrix Builds
-
-Run targets across multiple configurations using matrix strategies.
-
-```csharp
-public override IReadOnlyList<WorkflowDefinition> Workflows =>
-[
-    new("build")
-    {
-        Targets =
-        [
-            Targets.Test.WithMatrixDimensions(
-                new MatrixDimension("os", ["ubuntu-latest", "windows-latest", "macos-latest"])),
-        ],
-        // ...
-    }
-];
-```
-
-### Custom Artifact Providers
-
-Configure custom artifact storage backends (e.g., Azure Blob Storage) by enabling the `UseCustomArtifactProvider` option in your workflow.
-
-```csharp
-public override IReadOnlyList<WorkflowDefinition> Workflows =>
-[
-    new("build")
-    {
-        Options = [UseCustomArtifactProvider.Enabled],
-        // ... other configuration
-    }
-];
-```
-
-### Secret Management
-
-Integrate with Azure Key Vault for secure parameter resolution.
-
-Install the module:
+**Setup:**
 
 ```bash
 dotnet add package DecSm.Atom.Module.AzureKeyVault
 ```
 
-Implement the interface and define secrets:
+**Usage:**
+Implement `IAzureKeyVault`. Secrets defined with `[SecretDefinition]` will attempt to resolve from the vault if not found locally.
 
+Build.cs:
 ```csharp
 [BuildDefinition]
-public partial class Build : BuildDefinition, IAzureKeyVault
+partial class Build : BuildDefinition, IAzureKeyVault
 {
-    [SecretDefinition("my-secret", "Description of the secret")]
-    private string MySecret => GetParam(() => MySecret);
+    public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => 
+    [ 
+        UseAzureKeyVault.Enabled 
+    ];
+    
+    [SecretDefinition("my-secret", "A secret stored in Azure Key Vault")]
+    string MySecret => GetParam(() => MySecret);
+    
+    Target PrintSecret => t => t
+        .RequiresParam(nameof(MySecret))
+        .Executes(() => 
+        {
+            // For safety, all params marked with `[SecretDefinition]` are automatically redacted from logs and console output
+            // However, it is still recommended to avoid logging secrets
+            Logger.LogInformation("MySecret: {SecretValue}", MySecret);
+        });
 }
 ```
 
-## Examples
-
-Sample projects are available in the repository:
-
-- **Sample\_01\_HelloWorld**: Basic hello world example.
-- **Sample\_02\_Params**: Parameter usage and configuration.
-
-## Development
-
-### Requirements
-
-- .NET 8.0 or later.
-
-### Building from Source
-
-To build the Atom framework itself:
-
-```bash
-git clone [https://github.com/DecSmith42/atom.git](https://github.com/DecSmith42/atom.git)
-cd atom
-dotnet run --project _atom -- PackProjects
+AppSettings.json:
+```json
+{
+  "AzureKeyVault": {
+    "VaultUri": "https://my-vault.vault.azure.net/"
+  }
+}
 ```
 
-This executes the `PackProjects` target defined in `_atom/Targets/IBuildTargets.cs`.
+### 4. Artifacts (DecSm.Atom.Module.AzureStorage)
 
-### Running Tests
+Store artifacts in Azure Blob Storage, abstracting away the underlying CI provider's artifact mechanism.
 
-To run the unit tests:
+**Usage:**
+Enable `UseCustomArtifactProvider` in your workflow options.
+
+## CI/CD Generation
+
+Atom generates workflow YAML files by introspecting your C# code.
+
+### Example: Build, Test, & Publish (GitHub & Azure DevOps)
+
+This example demonstrates a complete lifecycle build that runs on both platforms.
+
+**Required Packages:**
+
+* `DecSm.Atom.Module.GithubWorkflows`
+* `DecSm.Atom.Module.DevopsWorkflows`
+
+**Build.cs:**
+
+```csharp
+using DecSm.Atom.Build.Definition;
+using DecSm.Atom.Module.DevopsWorkflows;
+using DecSm.Atom.Module.GithubWorkflows;
+using DecSm.Atom.Workflows.Definition;
+using DecSm.Atom.Workflows.Definition.Triggers;
+
+namespace Atom;
+
+[GenerateEntryPoint]
+[BuildDefinition]
+internal partial class Build : BuildDefinition, 
+    IGithubWorkflows, // Adds GitHub Actions support
+    IDevopsWorkflows  // Adds Azure DevOps support
+{
+    // Define the targets
+    
+    Target Compile => t => t
+        .DescribedAs("Compiles the solution")
+        .DependsOn(SetupBuildInfo)
+        .Executes(() => ProcessRunner.Run(new("dotnet", "build -c Release")));
+
+    Target Test => t => t
+        .DependsOn(Compile)
+        .Executes(() => ProcessRunner.Run(new("dotnet", "test -c Release --no-build")));
+
+    Target Pack => t => t
+        .DependsOn(Test)
+        .Executes(() => ProcessRunner.Run(new("dotnet", "pack -c Release --no-build")));
+
+    // Define the Workflows
+    
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
+        new("ContinuousIntegration")
+        {
+            // Trigger on Push to Main or Pull Requests
+            Triggers = 
+            [
+                GitPushTrigger.ToMain,
+                GitPullRequestTrigger.IntoMain 
+            ],
+            
+            // The sequence of targets to run
+            Targets = 
+            [
+                Targets.Compile,
+                Targets.Test,
+                Targets.Pack
+            ],
+            
+            // Generate YAML for BOTH platforms
+            WorkflowTypes = 
+            [
+                Github.WorkflowType, 
+                Devops.WorkflowType 
+            ]
+        }
+    ];
+}
+```
+
+### Generating the Workflows
+
+Run the generation command:
 
 ```bash
-dotnet run --project _atom -- TestProjects
+# Dotnet cli
+dotnet run --project _atom -- -g
+
+# Or atom tool
+atom -g
+```
+
+Atom will create:
+
+1.  `.github/workflows/ContinuousIntegration.yml`
+2.  `.devops/workflows/ContinuousIntegration.yml`
+
+These files are "dirty-checked". If you change your C# logic, Atom will warn you (or fail in CI) if the YAML files are out of date.
+
+## Advanced Examples
+
+### Build Matrix
+
+Run tests across multiple Operating Systems.
+
+```csharp
+public override IReadOnlyList<WorkflowDefinition> Workflows =>
+[
+    new("MatrixTest")
+    {
+        Triggers = [GitPushTrigger.ToMain],
+        Targets = 
+        [
+            // Creates a matrix strategy for this target
+            Targets.Test.WithGithubRunnerMatrix([IJobRunsOn.WindowsLatest, IJobRunsOn.UbuntuLatest])
+        ],
+        WorkflowTypes = [Github.WorkflowType]
+    }
+];
+```
+
+### Secret Injection
+
+Inject secrets into the workflow environment securely.
+
+```csharp
+new("Deploy")
+{
+    Targets = [Targets.Publish],
+    // Inject the 'nuget-key' secret from the provider into the environment
+    Options = [WorkflowSecretInjection.Create("nuget-key")], 
+    WorkflowTypes = [Github.WorkflowType]
+}
 ```
 
 ## License
 
-Atom is released under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE.txt) file for details.
-
-```
-```
+Atom is released under the [MIT License](https://www.google.com/search?q=LICENSE.txt).
