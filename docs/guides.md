@@ -62,3 +62,7 @@ to understand what each component is, what it does, and when and how to use it e
 
 * [**Common Targets**](./common-targets.md): Leverage pre-built targets for common build, test, and deployment
   scenarios.
+
+## Development
+
+* [**Development Guide**](./development.md): A guide for contributors and those interested in the internal architecture of DecSm.Atom.
