@@ -10,8 +10,8 @@ namespace DecSm.Atom.Analyzers.Sample;
 /// </summary>
 /// <remarks>
 ///     Analyzer AT0001 flags targets that directly reference a parameter property within the
-///     <see cref="TargetDefinition.RequiresParam(string[])" /> method. Instead, the analyzer
-///     expects the parameter name to be passed as a string literal or via <see cref="nameof" />.
+///     <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" /> method. Instead, the analyzer
+///     expects the parameter name to be passed as a string literal or via nameof().
 ///     This sample demonstrates both correct and incorrect usages for the analyzer to detect.
 /// </remarks>
 [PublicAPI]
@@ -22,7 +22,7 @@ public interface IMyTarget : IBuildAccessor
     /// </summary>
     /// <remarks>
     ///     This parameter is intended to be referenced by its name (e.g., <c>nameof(MyParam1)</c>)
-    ///     in <see cref="TargetDefinition.RequiresParam(string[])" />.
+    ///     in <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />.
     /// </remarks>
     [ParamDefinition("my-param-1", "My Param 1")]
     string MyParam1 => GetParam(() => MyParam1)!;
@@ -40,7 +40,7 @@ public interface IMyTarget : IBuildAccessor
     ///     A property that is NOT a parameter.
     /// </summary>
     /// <remarks>
-    ///     This property is included to demonstrate that <see cref="TargetDefinition.RequiresParam(string[])" />
+    ///     This property is included to demonstrate that <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />
     ///     can correctly reference non-parameter properties by their name without triggering AT0001.
     /// </remarks>
     string NotParam1 { get; }
@@ -54,7 +54,7 @@ public interface IMyTarget : IBuildAccessor
     string NotParam2 { get; }
 
     /// <summary>
-    ///     Demonstrates incorrect and correct usages of <see cref="TargetDefinition.RequiresParam(string[])" />.
+    ///     Demonstrates incorrect and correct usages of <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />.
     /// </summary>
     /// <remarks>
     ///     The reference to <c>MyParam1</c> directly will be flagged by AT0001.
@@ -68,7 +68,7 @@ public interface IMyTarget : IBuildAccessor
             .RequiresParam(nameof(MyParam2));
 
     /// <summary>
-    ///     Another demonstration of incorrect and correct usages of <see cref="TargetDefinition.RequiresParam(string[])" />.
+    ///     Another demonstration of incorrect and correct usages of <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />.
     /// </summary>
     /// <remarks>
     ///     This target further illustrates the analyzer's behavior with mixed parameter and non-parameter references.

@@ -47,26 +47,26 @@ public interface INugetHelper : IBuildInfo
     }
 
     /// <summary>
-    /// Pushes a NuGet package for a specific project to a NuGet feed.
+    ///     Pushes a NuGet package for a specific project to a NuGet feed.
     /// </summary>
     /// <param name="projectName">The name of the project whose package is to be pushed.</param>
     /// <param name="feed">The NuGet feed URL to push the package to.</param>
     /// <param name="apiKey">The API key for authenticating with the NuGet feed.</param>
     /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     /// <remarks>
-    /// <para>
-    /// This method expects the project to have been built and its NuGet package (`.nupkg`)
-    /// to be available in the Atom artifacts directory, named according to the project name
-    /// and the <see cref="IBuildInfo.BuildVersion"/>.
-    /// </para>
-    /// <para>
-    /// It requires the `dotnet` CLI to be installed and available in the system's PATH.
-    /// </para>
-    /// <para>
-    /// If <see cref="NugetDryRun"/> is <c>true</c>, the push operation will be simulated.
-    /// </para>
+    ///     <para>
+    ///         This method expects the project to have been built and its NuGet package (`.nupkg`)
+    ///         to be available in the Atom artifacts directory, named according to the project name
+    ///         and the <see cref="IBuildInfo.BuildVersion" />.
+    ///     </para>
+    ///     <para>
+    ///         It requires the `dotnet` CLI to be installed and available in the system's PATH.
+    ///     </para>
+    ///     <para>
+    ///         If <see cref="NugetDryRun" /> is <c>true</c>, the push operation will be simulated.
+    ///     </para>
     /// </remarks>
     [PublicAPI]
     async Task PushProject(
@@ -240,13 +240,9 @@ public interface INugetHelper : IBuildInfo
     ///     Disposing this scope will restore the original NuGet.Config file.
     /// </returns>
     /// <remarks>
-    ///     This method generates a `NuGet.Config` XML structure including `
-    ///     <packageSources>
-    ///         ` and `
-    ///         <packageSourceCredentials>
-    ///             `
-    ///             based on the provided feed information. Passwords are included as clear text if specified via
-    ///             <see cref="NugetFeed.PlainTextPassword" />.
+    ///     This method generates a `NuGet.Config` XML structure including `&lt;packageSources&gt;` and `&lt;
+    ///     packageSourceCredentials&gt;` based on the provided feed information. Passwords are included as clear text if
+    ///     specified via <see cref="NugetFeed.PlainTextPassword" />.
     /// </remarks>
     [PublicAPI]
     async Task CreateNugetConfigOverwriteScope(

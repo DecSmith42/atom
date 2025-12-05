@@ -61,7 +61,7 @@ public interface IDotnetPublishHelper : IDotnetCliHelper, IBuildInfo
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Executes the `dotnet publish` command using <see cref="IDotnetCli.Publish" />.</description>
+    ///                 <description>Executes the `dotnet publish` command using <see cref="IDotnetCli.Publish(RootedPath, PublishOptions?, ProcessRunOptions?, CancellationToken)" />.</description>
     ///             </item>
     ///             <item>
     ///                 <description>Moves the published output to the Atom publish directory for the project.</description>
@@ -159,7 +159,7 @@ public interface IDotnetPublishHelper : IDotnetCliHelper, IBuildInfo
 }
 
 /// <summary>
-///     Represents options for the <see cref="IDotnetPublishHelper.DotnetPublishAndStage" /> operation.
+///     Represents options for the <see cref="IDotnetPublishHelper.DotnetPublishAndStage(RootedPath, DotnetPublishAndStageOptions?, CancellationToken)" /> operation.
 /// </summary>
 [PublicAPI]
 public sealed record DotnetPublishAndStageOptions

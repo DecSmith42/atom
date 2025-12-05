@@ -357,7 +357,7 @@ public sealed record NotExpression(IGithubExpression Contents) : IGithubExpressi
 }
 
 /// <summary>
-///     Represents a less than (`<`) comparison expression.
+///     Represents a less than (`&lt;`) comparison expression.
 /// </summary>
 /// <param name="Left">The left-hand side of the comparison.</param>
 /// <param name="Right">The right-hand side of the comparison.</param>
@@ -374,7 +374,7 @@ public sealed record LessThanExpression(IGithubExpression Left, IGithubExpressio
 }
 
 /// <summary>
-///     Represents a less than or equal to (`<=`) comparison expression.
+///     Represents a less than or equal to (`&lt;=`) comparison expression.
 /// </summary>
 /// <param name="Left">The left-hand side of the comparison.</param>
 /// <param name="Right">The right-hand side of the comparison.</param>
@@ -459,7 +459,7 @@ public sealed record NotEqualExpression(IGithubExpression Left, IGithubExpressio
 }
 
 /// <summary>
-///     Represents a logical AND (`&&`) expression.
+///     Represents a logical AND (`&amp;&amp;`) expression.
 /// </summary>
 /// <param name="Left">The left-hand side of the AND operation.</param>
 /// <param name="Right">The right-hand side of the AND operation.</param>

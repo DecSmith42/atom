@@ -62,7 +62,7 @@ public interface IDotnetPackHelper : IDotnetCliHelper, IBuildInfo
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Executes the `dotnet pack` command using <see cref="IDotnetCli.Pack" />.</description>
+    ///                 <description>Executes the `dotnet pack` command using <see cref="IDotnetCli.Pack(RootedPath, PackOptions?, ProcessRunOptions?, CancellationToken)" />.</description>
     ///             </item>
     ///             <item>
     ///                 <description>Locates the generated `.nupkg` file.</description>
@@ -168,7 +168,7 @@ public interface IDotnetPackHelper : IDotnetCliHelper, IBuildInfo
 }
 
 /// <summary>
-///     Represents options for the <see cref="IDotnetPackHelper.DotnetPackAndStage" /> operation.
+///     Represents options for the <see cref="IDotnetPackHelper.DotnetPackAndStage(RootedPath, DotnetPackAndStageOptions?, CancellationToken)" /> operation.
 /// </summary>
 [PublicAPI]
 public sealed record DotnetPackAndStageOptions

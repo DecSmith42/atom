@@ -66,7 +66,7 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
     ///                 </description>
     ///             </item>
     ///             <item>
-    ///                 <description>Executes the `dotnet test` command using <see cref="IDotnetCli.Test" />.</description>
+    ///                 <description>Executes the `dotnet test` command using <see cref="IDotnetCli.Test(RootedPath, TestOptions?, ProcessRunOptions?, CancellationToken)" />.</description>
     ///             </item>
     ///             <item>
     ///                 <description>Copies the generated HTML test report to the Atom publish directory.</description>
@@ -341,7 +341,7 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
 }
 
 /// <summary>
-///     Represents options for the <see cref="IDotnetTestHelper.DotnetTestAndStage" /> operation.
+///     Represents options for the <see cref="IDotnetTestHelper.DotnetTestAndStage(RootedPath, DotnetTestAndStageOptions?, CancellationToken)" /> operation.
 /// </summary>
 [PublicAPI]
 public sealed record DotnetTestAndStageOptions

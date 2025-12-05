@@ -84,7 +84,7 @@ internal partial class Build
     /// <remarks>
     ///     This target requires <see cref="MyName" />, <see cref="ConfigItem1" />, and <see cref="ConfigItem2" />
     ///     to be provided. It then logs their values to the console.
-    ///     The <see cref="TargetDefinition.RequiresParam(string[])" /> method ensures that the specified
+    ///     The <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" /> method ensures that the specified
     ///     parameters are available before the target's execution.
     /// </remarks>
     private Target Hello =>
