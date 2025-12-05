@@ -1,153 +1,45 @@
 ﻿namespace DecSm.Atom.Process;
 
+/// <summary>
+///     Defines a service for executing external processes with comprehensive logging and error handling.
+/// </summary>
 public interface IProcessRunner
 {
     /// <summary>
-    ///     Executes an external process synchronously with the specified options.
+    ///     Executes an external process synchronously.
     /// </summary>
-    /// <param name="options">
-    ///     The configuration options for process execution, including the executable name,
-    ///     arguments, working directory, and logging levels.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="ProcessRunResult" /> containing the process exit code, captured output, and error streams.
-    /// </returns>
+    /// <param name="options">The configuration options for the process execution.</param>
+    /// <returns>A <see cref="ProcessRunResult" /> containing the exit code and captured output.</returns>
     /// <exception cref="StepFailedException">
-    ///     Thrown when the process fails (non-zero exit code) and <see cref="ProcessRunOptions.AllowFailedResult" />
-    ///     is <c>false</c>.
+    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is <c>false</c>.
     /// </exception>
-    /// <remarks>
-    ///     This method blocks the calling thread until the process completes. For non-blocking execution,
-    ///     use <see cref="ProcessRunner.RunAsync" />.
-    ///     The method captures both stdout and stderr streams in real-time, logging each line according to
-    ///     the configured log levels in the options. If the process fails and failure is not allowed,
-    ///     the captured output and error streams are logged at Information and Warning levels respectively
-    ///     before throwing a <see cref="StepFailedException" />.
-    /// </remarks>
     ProcessRunResult Run(ProcessRunOptions options);
 
     /// <summary>
-    ///     Executes an external process asynchronously with the specified options and optional cancellation support.
+    ///     Executes an external process asynchronously.
     /// </summary>
-    /// <param name="options">
-    ///     The configuration options for process execution, including the executable name,
-    ///     arguments, working directory, and logging levels.
-    /// </param>
-    /// <param name="cancellationToken">
-    ///     A cancellation token that can be used to cancel the operation.
-    ///     Defaults to <see cref="CancellationToken.None" />.
-    /// </param>
-    /// <returns>
-    ///     A task that represents the asynchronous operation. The task result contains a <see cref="ProcessRunResult" />
-    ///     with the process exit code, captured output, and error streams.
-    /// </returns>
+    /// <param name="options">The configuration options for the process execution.</param>
+    /// <param name="cancellationToken">A token to cancel the process.</param>
+    /// <returns>A task that resolves to a <see cref="ProcessRunResult" /> containing the exit code and captured output.</returns>
     /// <exception cref="StepFailedException">
-    ///     Thrown when the process fails (non-zero exit code) and <see cref="ProcessRunOptions.AllowFailedResult" />
-    ///     is <c>false</c>.
+    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is <c>false</c>.
     /// </exception>
-    /// <exception cref="OperationCanceledException">
-    ///     Thrown when the operation is cancelled via the <paramref name="cancellationToken" />.
-    /// </exception>
-    /// <remarks>
-    ///     This method allows non-blocking execution of external processes, making it suitable for use in
-    ///     async build targets and workflows. The method captures both stdout and stderr streams in real-time,
-    ///     logging each line according to the configured log levels in the options.
-    ///     If the process fails and failure is not allowed, the captured output and error streams are logged
-    ///     at Information and Warning levels respectively before throwing a <see cref="StepFailedException" />.
-    ///     The cancellation token allows for graceful termination of long-running processes when needed.
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    /// var options = new ProcessRunOptions("git", ["clone", "https://github.com/user/repo.git"])
-    /// {
-    ///     WorkingDirectory = "./temp",
-    ///     AllowFailedResult = true
-    /// };
-    /// using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-    /// var result = await processRunner.RunAsync(options, cts.Token);
-    /// if (result.ExitCode != 0)
-    /// {
-    ///     logger.LogWarning("Git clone failed: {Error}", result.Error);
-    /// }
-    /// </code>
-    /// </example>
+    /// <exception cref="OperationCanceledException">Thrown if the operation is canceled.</exception>
     Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-///     Provides a standardized service for executing external processes with comprehensive logging,
-///     error handling, and result capture within the Atom build system.
+///     Provides a standardized service for executing external processes with comprehensive logging, error handling, and result capture.
 /// </summary>
 /// <remarks>
-///     This class serves as a wrapper around <see cref="System.Diagnostics.Process" /> with enhanced
-///     functionality specifically designed for build automation scenarios. It provides:
-///     <list type="bullet">
-///         <item>
-///             <description>Configurable logging at multiple levels (invocation, output, error)</description>
-///         </item>
-///         <item>
-///             <description>Real-time stream capture and logging</description>
-///         </item>
-///         <item>
-///             <description>Flexible error handling with optional failure tolerance</description>
-///         </item>
-///         <item>
-///             <description>Both synchronous and asynchronous execution methods</description>
-///         </item>
-///         <item>
-///             <description>Working directory configuration</description>
-///         </item>
-///         <item>
-///             <description>Cancellation support for long-running processes</description>
-///         </item>
-///     </list>
-///     The service is typically injected into build targets and helper services to execute
-///     external tools such as the .NET CLI, Git, package managers, and other command-line utilities.
+///     This class wraps <see cref="System.Diagnostics.Process" /> to provide a more robust and configurable execution model
+///     for build automation, including real-time stream capture, flexible error handling, and cancellation support.
 /// </remarks>
-/// <param name="logger">The logger instance for capturing process execution information.</param>
-/// <example>
-///     <code>
-/// var options = new ProcessRunOptions("dotnet", "build")
-/// {
-///     WorkingDirectory = "./src",
-///     InvocationLogLevel = LogLevel.Information,
-///     OutputLogLevel = LogLevel.Debug,
-///     ErrorLogLevel = LogLevel.Warning,
-///     AllowFailedResult = false
-/// };
-/// var result = await processRunner.RunAsync(options);
-/// if (result.ExitCode == 0)
-/// {
-///     // Process succeeded
-///     Console.WriteLine(result.Output);
-/// }
-/// </code>
-/// </example>
+/// <param name="logger">The logger for capturing process execution information.</param>
 [PublicAPI]
 public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunner
 {
-    /// <summary>
-    ///     Executes an external process synchronously with the specified options.
-    /// </summary>
-    /// <param name="options">
-    ///     The configuration options for process execution, including the executable name,
-    ///     arguments, working directory, and logging levels.
-    /// </param>
-    /// <returns>
-    ///     A <see cref="ProcessRunResult" /> containing the process exit code, captured output, and error streams.
-    /// </returns>
-    /// <exception cref="StepFailedException">
-    ///     Thrown when the process fails (non-zero exit code) and <see cref="ProcessRunOptions.AllowFailedResult" />
-    ///     is <c>false</c>.
-    /// </exception>
-    /// <remarks>
-    ///     This method blocks the calling thread until the process completes. For non-blocking execution,
-    ///     use <see cref="RunAsync(ProcessRunOptions, CancellationToken)" />.
-    ///     The method captures both stdout and stderr streams in real-time, logging each line according to
-    ///     the configured log levels in the options. If the process fails and failure is not allowed,
-    ///     the captured output and error streams are logged at Information and Warning levels respectively
-    ///     before throwing a <see cref="StepFailedException" />.
-    /// </remarks>
+    /// <inheritdoc />
     public ProcessRunResult Run(ProcessRunOptions options)
     {
         switch (options)
@@ -272,51 +164,7 @@ public sealed class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunne
         }
     }
 
-    /// <summary>
-    ///     Executes an external process asynchronously with the specified options and optional cancellation support.
-    /// </summary>
-    /// <param name="options">
-    ///     The configuration options for process execution, including the executable name,
-    ///     arguments, working directory, and logging levels.
-    /// </param>
-    /// <param name="cancellationToken">
-    ///     A cancellation token that can be used to cancel the operation.
-    ///     Defaults to <see cref="CancellationToken.None" />.
-    /// </param>
-    /// <returns>
-    ///     A task that represents the asynchronous operation. The task result contains a <see cref="ProcessRunResult" />
-    ///     with the process exit code, captured output, and error streams.
-    /// </returns>
-    /// <exception cref="StepFailedException">
-    ///     Thrown when the process fails (non-zero exit code) and <see cref="ProcessRunOptions.AllowFailedResult" />
-    ///     is <c>false</c>.
-    /// </exception>
-    /// <exception cref="OperationCanceledException">
-    ///     Thrown when the operation is cancelled via the <paramref name="cancellationToken" />.
-    /// </exception>
-    /// <remarks>
-    ///     This method allows non-blocking execution of external processes, making it suitable for use in
-    ///     async build targets and workflows. The method captures both stdout and stderr streams in real-time,
-    ///     logging each line according to the configured log levels in the options.
-    ///     If the process fails and failure is not allowed, the captured output and error streams are logged
-    ///     at Information and Warning levels respectively before throwing a <see cref="StepFailedException" />.
-    ///     The cancellation token allows for graceful termination of long-running processes when needed.
-    /// </remarks>
-    /// <example>
-    ///     <code>
-    /// var options = new ProcessRunOptions("git", ["clone", "https://github.com/user/repo.git"])
-    /// {
-    ///     WorkingDirectory = "./temp",
-    ///     AllowFailedResult = true
-    /// };
-    /// using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-    /// var result = await processRunner.RunAsync(options, cts.Token);
-    /// if (result.ExitCode != 0)
-    /// {
-    ///     logger.LogWarning("Git clone failed: {Error}", result.Error);
-    /// }
-    /// </code>
-    /// </example>
+    /// <inheritdoc />
     public async Task<ProcessRunResult> RunAsync(
         ProcessRunOptions options,
         CancellationToken cancellationToken = default)
