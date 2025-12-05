@@ -1,19 +1,23 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     Marks an interface as a target definition.
+///     Marks an interface as a container for target definitions, triggering source generation.
 /// </summary>
 /// <remarks>
-///     Ensure the annotated interface is partial.
+///     When this attribute is applied to a partial interface, the source generator discovers all properties
+///     of type <see cref="Target" /> within it and makes them available to the build system.
 /// </remarks>
 /// <example>
 ///     <code>
 /// [TargetDefinition]
-/// public partial interface IMyTarget
+/// public partial interface IMyTargets
 /// {
-///     Target MyTarget => { ... }
+///     Target MyFirstTarget => t => t.DescribedAs("An example target.");
 /// }
-/// </code>
+///
+/// [BuildDefinition]
+/// public partial class MyBuild : BuildDefinition, IMyTargets;
+///     </code>
 /// </example>
 [PublicAPI]
 [AttributeUsage(AttributeTargets.Interface)]

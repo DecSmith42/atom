@@ -1,11 +1,14 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
+/// <summary>
+///     Provides extension methods for <see cref="TargetDefinition" /> to simplify adding multiple dependencies.
+/// </summary>
 public static class TargetDefinitionExtensions
 {
     extension(TargetDefinition targetDefinition)
     {
         /// <summary>
-        ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
+        ///     Adds dependencies on multiple targets.
         /// </summary>
         [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
@@ -31,7 +34,7 @@ public static class TargetDefinitionExtensions
         }
 
         /// <summary>
-        ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
+        ///     Adds dependencies on multiple targets.
         /// </summary>
         [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
@@ -65,7 +68,7 @@ public static class TargetDefinitionExtensions
         }
 
         /// <summary>
-        ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
+        ///     Adds dependencies on multiple targets.
         /// </summary>
         [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]
@@ -107,7 +110,7 @@ public static class TargetDefinitionExtensions
         }
 
         /// <summary>
-        ///     <seealso cref="TargetDefinition.DependsOn(Target, string)" />
+        ///     Adds dependencies on multiple targets.
         /// </summary>
         [PublicAPI]
         [SuppressMessage("ReSharper", "LocalizableElement")]

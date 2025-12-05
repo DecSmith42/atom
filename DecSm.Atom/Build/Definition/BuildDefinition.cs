@@ -1,62 +1,31 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     A comprehensive abstract base class for creating build definitions in the Atom framework.
-///     It inherits from <see cref="MinimalBuildDefinition" /> and pre-configures a rich set of common build targets and
-///     global
-///     options.
+///     A comprehensive base class for creating build definitions, pre-configuring a rich set of common build targets and options.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         <c>DefaultBuildDefinition</c> is the recommended starting point for most Atom build projects.
-///         It implements several standard interfaces, providing targets for common operations such as:
-///         <list type="bullet">
-///             <item><see cref="ISetupBuildInfo" />: Sets up essential build information (ID, name, version).</item>
-///             <item><see cref="IValidateBuild" />: A target for validating the build setup or outputs.</item>
-///             <item><see cref="IDotnetUserSecrets" />: Manages .NET user secrets for secure configuration.</item>
-///         </list>
+///         This class is the recommended starting point for most Atom build projects. It implements several standard interfaces,
+///         providing targets for common operations such as setting up build info (<see cref="ISetupBuildInfo" />),
+///         validating the build (<see cref="IValidateBuild" />), and managing .NET user secrets (<see cref="IDotnetUserSecrets" />).
 ///     </para>
 ///     <para>
-///         The main build definition class in an Atom project (typically <c>_atom/Build.cs</c>) would inherit from
-///         <c>DefaultBuildDefinition</c>
-///         and be decorated with <see cref="MinimalBuildDefinitionAttribute" />.
+///         A project's main build definition class typically inherits from this class.
 ///     </para>
 /// </remarks>
 /// <example>
-///     A typical build definition class in <c>_atom/Build.cs</c>:
+///     A typical build definition class:
 ///     <code>
-/// using DecSm.Atom.Build.Definition;
-/// using DecSm.Atom.Workflows.Definition;
-/// using DecSm.Atom.Workflows.Definition.Triggers;
 /// [BuildDefinition]
-/// [GenerateEntryPoint] // Generates Program.cs
-/// internal partial class Build : DefaultBuildDefinition
+/// [GenerateEntryPoint]
+/// internal partial class Build : BuildDefinition, IMyTargets
 /// {
-///     public override IReadOnlyList&lt;WorkflowDefinition&gt; Workflows =>
-///     [
-///         new("BuildAndTest")
-///         {
-///             Triggers = [GitPushTrigger.ToBranch("main"), GitPullRequestTrigger.ToBranch("main")],
-///             Targets =
-///             [
-///                 Targets.SetupBuildInfo,
-///                 Targets.DotnetRestore,
-///                 Targets.DotnetBuild,
-///                 Targets.DotnetTest,
-///                 Targets.DotnetPack
-///             ],
-///             WorkflowTypes = [ Github.WorkflowType ]
-///         }
-///     ];
+///     // ...
 /// }
-/// </code>
+///     </code>
 /// </example>
 /// <seealso cref="MinimalBuildDefinition" />
 /// <seealso cref="IBuildDefinition" />
-/// <seealso cref="MinimalBuildDefinitionAttribute" />
-/// <seealso cref="ISetupBuildInfo" />
-/// <seealso cref="IStoreArtifact" />
-/// <seealso cref="IRetrieveArtifact" />
 [PublicAPI]
 public abstract class BuildDefinition(IServiceProvider services)
     : MinimalBuildDefinition(services), ISetupBuildInfo, IValidateBuild, IDotnetUserSecrets;

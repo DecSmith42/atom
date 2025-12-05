@@ -1,96 +1,70 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     Defines a target that can be modeled as <see cref="TargetModel" /> and executed.
+///     Defines a target that can be modeled and executed, including its tasks, dependencies, and parameters.
 /// </summary>
 [PublicAPI]
 public sealed class TargetDefinition
 {
     /// <summary>
-    ///     The name of the target. Target names must be unique.
-    ///     Automatically set when using the <see cref="Target" /> delegate.
+    ///     Gets the name of the target. Target names must be unique.
     /// </summary>
     public required string Name { get; init; }
 
     /// <summary>
-    ///     The description of the target.
-    ///     Not required but highly recommended to provide a description for each target.
+    ///     Gets the description of the target, used for help text.
     /// </summary>
     public string? Description { get; private set; }
 
     /// <summary>
-    ///     If true, the target will not appear in the help output unless -[-v]erbose is used.
+    ///     Gets a value indicating whether the target should be hidden from help output unless verbose mode is enabled.
     /// </summary>
     public bool Hidden { get; private set; }
 
     /// <summary>
-    ///     The code that will be executed when the target is invoked.
+    ///     Gets the list of asynchronous tasks that will be executed when the target runs.
     /// </summary>
-    /// <remarks>
-    ///     Tasks will be executed in the order of the list.
-    /// </remarks>
     public List<Func<CancellationToken, Task>> Tasks { get; private set; } = [];
 
     /// <summary>
-    ///     Names of targets that must be executed before this target.
+    ///     Gets the list of target names that must be executed before this target.
     /// </summary>
     public List<string> Dependencies { get; private set; } = [];
 
     /// <summary>
-    ///     Names of parameters that may/must be provided when invoking the target.
+    ///     Gets the list of parameters that are used or required by this target.
     /// </summary>
     public List<DefinedParam> Params { get; private set; } = [];
 
     /// <summary>
-    ///     Artifacts that must be produced by other targets before this target can be executed.
+    ///     Gets the list of artifacts that must be produced by other targets before this target can run.
     /// </summary>
-    /// <remarks>
-    ///     By default, Atom will automatically acquire the artifacts from the workflow host or a custom artifact provider.
-    /// </remarks>
     public List<ConsumedArtifact> ConsumedArtifacts { get; private set; } = [];
 
     /// <summary>
-    ///     Artifacts that will be produced by this target. Can be used as <see cref="ConsumedArtifacts" /> in other targets.
+    ///     Gets the list of artifacts that will be produced by this target.
     /// </summary>
-    /// <remarks>
-    ///     By default, Atom will automatically publish the artifacts to the workflow host or a custom artifact provider.
-    /// </remarks>
     public List<ProducedArtifact> ProducedArtifacts { get; private set; } = [];
 
     /// <summary>
-    ///     Variables that must be produced by other targets (see <see cref="ProducedVariables" />) before this target can be
-    ///     executed.
+    ///     Gets the list of variables that must be produced by other targets before this target can run.
     /// </summary>
-    /// <remarks>
-    ///     By default, Atom will automatically acquire the variables from the workflow host or a custom variable provider.
-    /// </remarks>
     public List<ConsumedVariable> ConsumedVariables { get; private set; } = [];
 
     /// <summary>
-    ///     Variables that will be produced by this target. Can be used as <see cref="ConsumedVariables" /> in other targets.
+    ///     Gets the list of variables that will be produced by this target.
     /// </summary>
-    /// <remarks>
-    ///     By default, Atom will automatically publish the variables to the workflow host or a custom variable provider.
-    /// </remarks>
     public List<string> ProducedVariables { get; private set; } = [];
 
     private List<(Func<IBuildDefinition, Target> GetExtension, bool RunExtensionAfter)> Extensions { get; } = [];
 
     /// <summary>
-    ///     Marks this target as an extension of another (the 'base'), allowing it to inherit the tasks, dependencies, and
-    ///     other properties of the
-    ///     base.
+    ///     Marks this target as an extension of another, inheriting its tasks, dependencies, and other properties.
     /// </summary>
     /// <param name="targetToExtend">The base target to extend.</param>
-    /// <param name="runExtensionAfter">
-    ///     If true, the tasks of this target will be executed after the inherited tasks of the
-    ///     base target.
-    /// </param>
-    /// <typeparam name="T">The type of the base target.</typeparam>
-    /// <returns>This target definition.</returns>
-    /// <remarks>
-    ///     This affects the properties and the execution of this target, not the target being extended.
-    /// </remarks>
+    /// <param name="runExtensionAfter">If true, the tasks of this target will run after the base target's tasks.</param>
+    /// <typeparam name="T">The type of the build definition containing the base target.</typeparam>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition Extends<T>(Func<T, Target> targetToExtend, bool runExtensionAfter = false)
     {
         Extensions.Insert(0, (d => targetToExtend((T)d), runExtensionAfter));
@@ -98,6 +72,11 @@ public sealed class TargetDefinition
         return this;
     }
 
+    /// <summary>
+    ///     Applies all extensions to this target definition, merging properties from the base targets.
+    /// </summary>
+    /// <param name="buildDefinition">The build definition to resolve extensions against.</param>
+    /// <returns>The updated <see cref="TargetDefinition" />.</returns>
     internal TargetDefinition ApplyExtensions(IBuildDefinition buildDefinition)
     {
         foreach (var extension in Extensions)
@@ -162,10 +141,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Attaches a descriptive text to the target, describing its purpose for clarity.
+    ///     Sets the description for the target.
     /// </summary>
-    /// <param name="description">Human-readable text describing the target.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="description">A human-readable description of the target's purpose.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition DescribedAs(string description)
     {
         Description = description;
@@ -174,9 +153,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Marks the target as hidden, making it unlisted from main documentation or help utilities.
+    ///     Sets whether the target should be hidden from help output.
     /// </summary>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="hidden">If true, the target will be hidden.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition IsHidden(bool hidden = true)
     {
         Hidden = hidden;
@@ -185,10 +165,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an asynchronous task to execute when the build target runs.
+    ///     Adds an asynchronous task to be executed when the target runs.
     /// </summary>
-    /// <param name="task">The async task to execute.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="task">The asynchronous task to execute.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition Executes(Func<CancellationToken, Task> task)
     {
         Tasks.Add(task);
@@ -197,10 +177,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an asynchronous task to execute when the build target runs.
+    ///     Adds an asynchronous task to be executed when the target runs.
     /// </summary>
-    /// <param name="task">The async task to execute.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="task">The asynchronous task to execute.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition Executes(Func<Task> task)
     {
         Tasks.Add(_ => task());
@@ -209,10 +189,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an asynchronous task to execute when the build target runs.
+    ///     Adds a synchronous action to be executed when the target runs.
     /// </summary>
     /// <param name="action">The synchronous action to execute.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition Executes(Action action)
     {
         Tasks.Add(_ =>
@@ -226,10 +206,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds a dependency to another target by name, indicating prerequisite tasks to complete first.
+    ///     Adds a dependency on another target by its name.
     /// </summary>
-    /// <param name="targetName">The name of the target upon which this target depends.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="targetName">The name of the target to depend on.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition DependsOn(string targetName)
     {
         Dependencies.Add(targetName);
@@ -238,14 +218,11 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds a dependency to another target by name, indicating prerequisite tasks to complete first.
+    ///     Adds a dependency on another target.
     /// </summary>
-    /// <param name="target">The target upon which this target depends.</param>
-    /// <param name="targetName">
-    ///     The name of the target upon which this target depends (automatically inferred from the
-    ///     target).
-    /// </param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="target">The target to depend on.</param>
+    /// <param name="targetName">The name of the target, inferred from the argument expression.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     [SuppressMessage("ReSharper", "LocalizableElement")]
     public TargetDefinition DependsOn(Target target, [CallerArgumentExpression("target")] string? targetName = null)
     {
@@ -260,10 +237,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds a dependency on another defined command target.
+    ///     Adds a dependency on another target.
     /// </summary>
-    /// <param name="workflowTarget">The target or command instance defining the dependency.</param>
-    /// <returns>The updated <see cref="TargetDefinition" /> instance for fluent API chaining.</returns>
+    /// <param name="workflowTarget">The workflow target definition to depend on.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition DependsOn(WorkflowTargetDefinition workflowTarget)
     {
         Dependencies.Add(workflowTarget.Name);
@@ -272,10 +249,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Specifies that this target may use the provided parameters for execution.
+    ///     Specifies that this target may use the provided parameters.
     /// </summary>
-    /// <param name="paramNames">An array of parameter names that may be used by the target.</param>
-    /// <returns>This target definition.</returns>
+    /// <param name="paramNames">An array of parameter names that may be used.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition UsesParam(params IEnumerable<string> paramNames)
     {
         Params.AddRange(paramNames.Select(x => new DefinedParam(x, false)));
@@ -284,10 +261,10 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Specifies that this target requires the provided parameters to be defined for execution.
+    ///     Specifies that this target requires the provided parameters.
     /// </summary>
-    /// <param name="paramNames">An array of parameter names that are required by the target.</param>
-    /// <returns>This target definition.</returns>
+    /// <param name="paramNames">An array of parameter names that are required.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition RequiresParam(params IEnumerable<string> paramNames)
     {
         Params.AddRange(paramNames.Select(x => new DefinedParam(x, true)));
@@ -296,14 +273,11 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an artifact to the list of artifacts produced by the target.
-    ///     This build system will automatically publish the produced artifacts to the workflow host or a custom artifact
-    ///     provider,
-    ///     allowing other targets to consume them as dependencies.
+    ///     Declares an artifact that this target produces.
     /// </summary>
-    /// <param name="artifactName">The name of the artifact being produced.</param>
-    /// <param name="buildSlice">An optional build slice associated with the produced artifact.</param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="artifactName">The name of the artifact.</param>
+    /// <param name="buildSlice">An optional build slice associated with the artifact.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ProducesArtifact(string artifactName, string? buildSlice = null)
     {
         ProducedArtifacts.Add(new(artifactName, buildSlice));
@@ -312,14 +286,11 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an artifact to the list of artifacts produced by the target.
-    ///     This build system will automatically publish the produced artifacts to the workflow host or a custom artifact
-    ///     provider,
-    ///     allowing other targets to consume them as dependencies.
+    ///     Declares multiple artifacts that this target produces.
     /// </summary>
-    /// <param name="artifactName">The name of the artifact being produced.</param>
-    /// <param name="buildSlice">An optional build slice associated with the produced artifact.</param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="artifactName">The names of the artifacts.</param>
+    /// <param name="buildSlice">An optional build slice associated with the artifacts.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ProducesArtifacts(IEnumerable<string> artifactName, string? buildSlice = null)
     {
         ProducedArtifacts.AddRange(artifactName.Select(x => new ProducedArtifact(x, buildSlice)));
@@ -328,15 +299,12 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds an artifact to the list of artifacts that this target consumes, indicating a dependency on its production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
-    ///     provider,
-    ///     ensuring that the target has access to the necessary artifacts before execution.
+    ///     Declares an artifact that this target consumes.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
-    /// <param name="artifactName">The name of the artifact being consumed.</param>
-    /// <param name="buildSlice">An optional build slice associated with the consumed artifact.</param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="artifactName">The name of the artifact to consume.</param>
+    /// <param name="buildSlice">An optional build slice associated with the artifact.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ConsumesArtifact(string targetName, string artifactName, string? buildSlice = null)
     {
         ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
@@ -345,15 +313,12 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Specifies that this target consumes multiple artifacts produced by another target.
+    ///     Declares multiple artifacts from a single target that this target consumes.
     /// </summary>
-    /// <param name="targetName">The name of the target that produces the artifacts to be consumed.</param>
-    /// <param name="artifactNames">The collection of artifact names to be consumed.</param>
-    /// <param name="buildSlice">
-    ///     Optional. Defines the build slice context in which the artifacts will be consumed.
-    ///     If null, the artifacts are consumed from the default build slice.
-    /// </param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="targetName">The name of the target that produces the artifacts.</param>
+    /// <param name="artifactNames">The names of the artifacts to consume.</param>
+    /// <param name="buildSlice">An optional build slice associated with the artifacts.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ConsumesArtifacts(
         string targetName,
         IEnumerable<string> artifactNames,
@@ -366,16 +331,12 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
-    ///     production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
-    ///     provider,
-    ///     ensuring that the target has access to the necessary artifacts before execution.
+    ///     Declares an artifact from multiple build slices that this target consumes.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
-    /// <param name="artifactName">The name of the artifact being consumed.</param>
-    /// <param name="buildSlices">The build slices associated with the consumed artifacts.</param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="artifactName">The name of the artifact to consume.</param>
+    /// <param name="buildSlices">The build slices to consume the artifact from.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ConsumesArtifact(string targetName, string artifactName, IEnumerable<string> buildSlices)
     {
         foreach (var buildSlice in buildSlices)
@@ -385,16 +346,12 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
-    ///     production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
-    ///     provider,
-    ///     ensuring that the target has access to the necessary artifacts before execution.
+    ///     Declares multiple artifacts from multiple build slices that this target consumes.
     /// </summary>
-    /// <param name="targetName">The name of the target that produces the artifact.</param>
-    /// <param name="artifactNames">The names of the artifacts being consumed.</param>
-    /// <param name="buildSlices">An optional build slice associated with the consumed artifact.</param>
-    /// <returns>The current target definition.</returns>
+    /// <param name="targetName">The name of the target that produces the artifacts.</param>
+    /// <param name="artifactNames">The names of the artifacts to consume.</param>
+    /// <param name="buildSlices">The build slices to consume the artifacts from.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ConsumesArtifacts(
         string targetName,
         IEnumerable<string> artifactNames,
@@ -410,39 +367,12 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Adds multiple artifacts to the list of artifacts that this target consumes, indicating a dependency on their
-    ///     production.
-    ///     This build system will automatically acquire the consumed artifacts from the workflow host or a custom artifact
-    ///     provider,
-    ///     ensuring that the target has access to the necessary artifacts before execution.
+    ///     Declares a variable that this target produces.
     /// </summary>
-    /// <param name="targetName">The name of the target that produces the artifact.</param>
-    /// <param name="artifactNames">The names of the artifacts being consumed.</param>
-    /// <param name="buildSlices">The build slices associated with the consumed artifacts.</param>
-    /// <returns>The current target definition.</returns>
-    public TargetDefinition ConsumesArtifact(
-        string targetName,
-        IEnumerable<string> artifactNames,
-        IEnumerable<string> buildSlices)
-    {
-        var buildSlicesArray = buildSlices.ToArray();
-
-        foreach (var artifactName in artifactNames)
-        foreach (var buildSlice in buildSlicesArray)
-            ConsumedArtifacts.Add(new(targetName, artifactName, buildSlice));
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Adds the specified variable name to the list of variables that this target produces.
-    /// </summary>
-    /// <param name="variableName">The name of the variable that this target produces.</param>
-    /// <returns>This target definition with the updated list of produced variables.</returns>
+    /// <param name="variableName">The name of the variable.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     /// <remarks>
-    ///     This does not automatically write to the variable; it simply indicates that this target will produce a variable
-    ///     with the given
-    ///     name. The variable will need to be written using <see cref="WorkflowVariableService.WriteVariable" />.
+    ///     This only declares the variable; it must be written using <see cref="IWorkflowVariableService.WriteVariable" />.
     /// </remarks>
     public TargetDefinition ProducesVariable(string variableName)
     {
@@ -452,20 +382,11 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Specifies a variable that this target consumes during execution, identified by its associated target name and
-    ///     variable name.
+    ///     Declares a variable that this target consumes.
     /// </summary>
-    /// <param name="targetName">
-    ///     The name of the target or command associated with the consumed variable.
-    ///     The current target will be flagged as a dependant of the target named here.
-    /// </param>
-    /// <param name="outputName">The name of the variable being consumed by this target.</param>
-    /// <returns>This target definition, allowing for method chaining.</returns>
-    /// <remarks>
-    ///     The build system will automatically acquire the consumed variables from the workflow host or a custom variable
-    ///     provider
-    ///     and inject them into matching params that are required or used by this target.
-    /// </remarks>
+    /// <param name="targetName">The name of the target that produces the variable.</param>
+    /// <param name="outputName">The name of the variable to consume.</param>
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ConsumesVariable(string targetName, string outputName)
     {
         ConsumedVariables.Add(new(targetName, outputName));

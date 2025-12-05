@@ -1,5 +1,16 @@
 ﻿namespace DecSm.Atom.Build;
 
+/// <summary>
+///     Responsible for executing build targets based on command-line arguments and the build model.
+/// </summary>
+/// <param name="args">The parsed command-line arguments.</param>
+/// <param name="buildModel">The model representing the build structure and state.</param>
+/// <param name="paramService">The service for resolving parameters.</param>
+/// <param name="variableService">The service for managing workflow variables.</param>
+/// <param name="outcomeReporters">The collection of report writers to invoke after execution.</param>
+/// <param name="console">The console for writing output.</param>
+/// <param name="reportService">The service for collecting report data.</param>
+/// <param name="logger">The logger for diagnostics.</param>
 internal sealed class BuildExecutor(
     CommandLineArgs args,
     BuildModel buildModel,
@@ -11,6 +22,11 @@ internal sealed class BuildExecutor(
     ILogger<BuildExecutor> logger
 )
 {
+    /// <summary>
+    ///     Executes the build by running the specified targets, and then generates outcome reports.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token to observe.</param>
+    /// <exception cref="StepFailedException">Thrown if the build fails.</exception>
     public async Task Execute(CancellationToken cancellationToken)
     {
         var commands = args.Commands;
@@ -48,6 +64,10 @@ internal sealed class BuildExecutor(
         }
     }
 
+    /// <summary>
+    ///     Validates that all required parameters for a given target have been provided.
+    /// </summary>
+    /// <param name="target">The target to validate.</param>
     private void ValidateTargetParameters(TargetModel target)
     {
         foreach (var requiredParam in target.Params.Where(x => x.Required))
@@ -81,6 +101,11 @@ internal sealed class BuildExecutor(
         }
     }
 
+    /// <summary>
+    ///     Recursively executes a target and its dependencies.
+    /// </summary>
+    /// <param name="target">The target to execute.</param>
+    /// <param name="cancellationToken">A cancellation token to observe.</param>
     private async Task ExecuteTarget(TargetModel target, CancellationToken cancellationToken)
     {
         if (buildModel.TargetStates[target].Status is TargetRunState.NotRun
