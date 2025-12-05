@@ -58,7 +58,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildName", new("BuildName")
             {
                 ArgName = "build-name",
-                Description = "Name of the build (Solution name if provided, otherwise the root directory name)",
+                Description = "The name of the build.",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
                 ChainedParams = [],
@@ -68,7 +68,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildId", new("BuildId")
             {
                 ArgName = "build-id",
-                Description = "Build/run ID",
+                Description = "The unique identifier for the build run.",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
                 ChainedParams = [],
@@ -78,7 +78,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildVersion", new("BuildVersion")
             {
                 ArgName = "build-version",
-                Description = "Build version",
+                Description = "The semantic version of the build.",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
                 ChainedParams = [],
@@ -88,7 +88,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildTimestamp", new("BuildTimestamp")
             {
                 ArgName = "build-timestamp",
-                Description = "Build timestamp (seconds since unix epoch)",
+                Description = "The build timestamp in Unix epoch seconds.",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
                 ChainedParams = [],
@@ -98,7 +98,7 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
             "BuildSlice", new("BuildSlice")
             {
                 ArgName = "build-slice",
-                Description = "Unique identifier for a variation of the build, commonly used for CI/CD matrix jobs",
+                Description = "An identifier for a build variation, used in matrix jobs.",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
                 ChainedParams = [],
