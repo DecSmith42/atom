@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Paths;
 
 /// <summary>
-///     Similar to <see cref="TransformFileScope" />, but for multiple files.
+///     Represents a disposable scope for performing temporary transformations on multiple files.
+///     Upon disposal, the original content of all files is restored unless restoration is explicitly canceled.
 /// </summary>
 [PublicAPI]
 public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
@@ -11,12 +12,20 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     private bool _cancelled;
     private bool _disposed;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TransformMultiFileScope" /> class.
+    /// </summary>
+    /// <param name="files">The collection of files to be managed.</param>
+    /// <param name="initialContents">The original contents of the files before transformation.</param>
     private TransformMultiFileScope(IEnumerable<RootedPath> files, string?[] initialContents)
     {
         _files = files;
         _initialContents = initialContents;
     }
 
+    /// <summary>
+    ///     Asynchronously disposes the scope and restores all managed files to their original content, unless canceled.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (_disposed)
@@ -36,6 +45,9 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
         }));
     }
 
+    /// <summary>
+    ///     Disposes the scope and restores all managed files to their original content, unless canceled.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
@@ -55,8 +67,12 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.CreateAsync(RootedPath, Func{string, string}, CancellationToken)" />
+    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies an asynchronous transformation to each.
     /// </summary>
+    /// <param name="files">The files to transform.</param>
+    /// <param name="transform">A function to apply to each file's content.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A new <see cref="TransformMultiFileScope" /> instance managing the transformed files.</returns>
     public static async Task<TransformMultiFileScope> CreateAsync(
         IEnumerable<RootedPath> files,
         Func<string, string> transform,
@@ -96,8 +112,11 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.AddAsync(Func{string, string},CancellationToken)" />
+    ///     Applies an additional asynchronous transformation to each file within the current scope.
     /// </summary>
+    /// <param name="transform">A function to apply to each file's current content.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The current <see cref="TransformMultiFileScope" /> instance.</returns>
     public async Task<TransformMultiFileScope> AddAsync(
         Func<string, string> transform,
         CancellationToken cancellationToken = default)
@@ -126,8 +145,11 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Creates a new <see cref="TransformMultiFileScope" /> for the given files.
+    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies a synchronous transformation to each.
     /// </summary>
+    /// <param name="files">The files to transform.</param>
+    /// <param name="transform">A function to apply to each file's content.</param>
+    /// <returns>A new <see cref="TransformMultiFileScope" /> instance managing the transformed files.</returns>
     public static TransformMultiFileScope Create(IEnumerable<RootedPath> files, Func<string, string> transform)
     {
         var filesArray = files.ToArray();
@@ -157,8 +179,10 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     See <see cref="TransformFileScope.Add(Func{string, string})" />
+    ///     Applies an additional synchronous transformation to each file within the current scope.
     /// </summary>
+    /// <param name="transform">A function to apply to each file's current content.</param>
+    /// <returns>The current <see cref="TransformMultiFileScope" /> instance.</returns>
     public TransformMultiFileScope Add(Func<string, string> transform)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -176,7 +200,7 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Cancels the restore operation.
+    ///     Prevents the files from being restored to their original content upon disposal.
     /// </summary>
     public void CancelRestore() =>
         _cancelled = true;

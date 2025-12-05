@@ -1,37 +1,41 @@
 ﻿namespace DecSm.Atom.Paths;
 
 /// <summary>
-///     Provides constants representing key paths used within the Atom system.
+///     Provides constants for key directory paths and an extension method for path provider registration.
 /// </summary>
 [PublicAPI]
 public static class AtomPaths
 {
     /// <summary>
-    ///     See <see cref="IAtomFileSystem.AtomRootDirectory" />.
+    ///     Represents the key for the root directory of the Atom project.
     /// </summary>
+    /// <seealso cref="IAtomFileSystem.AtomRootDirectory" />
     public const string Root = "Root";
 
     /// <summary>
-    ///     See <see cref="IAtomFileSystem.AtomArtifactsDirectory" />.
+    ///     Represents the key for the directory where build artifacts are stored.
     /// </summary>
+    /// <seealso cref="IAtomFileSystem.AtomArtifactsDirectory" />
     public const string Artifacts = "Artifacts";
 
     /// <summary>
-    ///     See <see cref="IAtomFileSystem.AtomPublishDirectory" />.
+    ///     Represents the key for the directory where build outputs are published.
     /// </summary>
+    /// <seealso cref="IAtomFileSystem.AtomPublishDirectory" />
     public const string Publish = "Publish";
 
     /// <summary>
-    ///     See <see cref="IAtomFileSystem.AtomTempDirectory" />.
+    ///     Represents the key for the temporary directory used during builds.
     /// </summary>
+    /// <seealso cref="IAtomFileSystem.AtomTempDirectory" />
     public const string Temp = "Temp";
 
     /// <summary>
-    ///     Registers a default path provider with the specified service collection.
+    ///     Registers a custom path provider with the dependency injection container.
     /// </summary>
-    /// <param name="services">The service collection used for dependency injection.</param>
-    /// <param name="locate">A function that resolves a <see cref="RootedPath" /> based on a key and a locator function.</param>
-    /// <param name="priority">The priority of the path provider, defaulting to 1. Higher priority takes precedence.</param>
+    /// <param name="services">The service collection to add the provider to.</param>
+    /// <param name="locate">A function that resolves a <see cref="RootedPath" /> based on a key.</param>
+    /// <param name="priority">The priority of the provider. Higher values take precedence.</param>
     public static void ProvidePath(
         this IServiceCollection services,
         Func<string, Func<string, RootedPath>, RootedPath?> locate,
