@@ -1,32 +1,21 @@
 ﻿namespace DecSm.Atom.Hosting;
 
 /// <summary>
-///     Provides methods for creating and running Atom-based host applications.
+///     Provides static methods for creating and running an Atom host application.
 /// </summary>
 /// <remarks>
-///     This class simplifies the setup of an Atom host environment, configuring
-///     essential application settings and initialization based on provided build definitions.
+///     This class simplifies the setup and execution of an Atom host by configuring the necessary services
+///     and application settings based on a specified build definition.
 /// </remarks>
-/// <example>
-///     Example usage:
-///     <code>
-/// AtomHost.Run&lt;MyBuildDefinition&gt;(args);
-/// </code>
-/// </example>
 [PublicAPI]
 public static class AtomHost
 {
     /// <summary>
-    ///     Creates and configures an instance of <see cref="HostApplicationBuilder" />
-    ///     tailored for Atom applications with the specified build definition.
+    ///     Creates and configures a <see cref="HostApplicationBuilder" /> for an Atom application.
     /// </summary>
-    /// <typeparam name="T">
-    ///     The type of <see cref="MinimalBuildDefinition" /> used to configure the Atom host.
-    /// </typeparam>
-    /// <param name="args">Command-line arguments passed to the application.</param>
-    /// <returns>
-    ///     A configured <see cref="HostApplicationBuilder" /> ready to build and run the application.
-    /// </returns>
+    /// <typeparam name="T">The <see cref="MinimalBuildDefinition" /> type to configure the host with.</typeparam>
+    /// <param name="args">The command-line arguments for the application.</param>
+    /// <returns>A configured <see cref="HostApplicationBuilder" /> ready for further customization or building.</returns>
     public static HostApplicationBuilder CreateAtomBuilder<
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(string[] args)
         where T : MinimalBuildDefinition
@@ -53,21 +42,13 @@ public static class AtomHost
     }
 
     /// <summary>
-    ///     Builds and runs an Atom-based application using the specified build definition.
+    ///     Builds and runs an Atom application using the specified build definition.
     /// </summary>
-    /// <typeparam name="T">
-    ///     The type of <see cref="MinimalBuildDefinition" /> used to configure and run the Atom application.
-    /// </typeparam>
-    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <typeparam name="T">The <see cref="MinimalBuildDefinition" /> type to configure and run the application with.</typeparam>
+    /// <param name="args">The command-line arguments for the application.</param>
     /// <remarks>
-    ///     This method configures, builds, and immediately runs the host application.
+    ///     This method handles the complete setup, build, and execution lifecycle of the host.
     /// </remarks>
-    /// <example>
-    ///     Example usage:
-    ///     <code>
-    /// AtomHost.Run&lt;MyBuildDefinition&gt;(args);
-    /// </code>
-    /// </example>
     public static void Run<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(
         string[] args)
         where T : MinimalBuildDefinition =>
