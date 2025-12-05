@@ -8,8 +8,9 @@ a powerful, type-safe, and extensible framework for defining your build, test, a
 Before you begin, ensure you have the following installed:
 
 * **.NET SDK 10.0 (recommended, 8.0 or later supported)**: Atom projects are built with .NET.
-* **Git**: For version control and triggering workflows.
-* **An IDE with C# support**: Visual Studio, Rider, or VS Code are recommended.
+* **(Optional) Git**: For version control and triggering workflows. However, atom can also be used without Git.
+* **(Optional) An IDE with C# support**: Visual Studio, Rider, or VS Code are recommended, though any text editor with
+  the .NET SDK and CLI will work.
 
 ## 0. (Optional) Install the Atom Tool
 
@@ -20,6 +21,7 @@ dotnet tool install -g DecSm.Atom.Tool
 ```
 
 ## 1. Set up the Build Definition
+**Note:** The following `dotnet` commands should be executed in your terminal.
 
 1. **Create a new C# project for your build definition**:
     ```bash
@@ -39,6 +41,10 @@ dotnet tool install -g DecSm.Atom.Tool
     ```csharp
     // _atom/Build.cs
     
+    // The DecSm.Atom NuGet package provides global usings for most Atom types.
+    // Only explicitly required usings are shown here.
+    using Microsoft.Extensions.Logging;
+
     // Mark this class as the build definition and generate an entry point
     [BuildDefinition]
     public partial class Build
@@ -66,7 +72,9 @@ dotnet tool install -g DecSm.Atom.Tool
                 // Defines the targets that should be executed when the workflow runs
                 Targets =
                 [
-                    // Targets.* are source generated from all targets included in the build for convenience
+                    // Targets.* is a source-generated static class.
+                    // Atom automatically creates properties for each defined Target in your Build class,
+                    // allowing for convenient access and strong typing.
                     Targets.MyCustomTarget,
                 ],
                 
@@ -78,6 +86,7 @@ dotnet tool install -g DecSm.Atom.Tool
     ```
 
 ## 2. Run Your Build
+**Note:** The following commands should be executed in your terminal from your build project directory (e.g., `_atom`).
 
 Now you can run your Atom build from the command line.
 
@@ -100,6 +109,7 @@ Hello from MyCustomTarget!
 ```
 
 ## 3. Generate CI/CD Workflows
+**Note:** The following commands should be executed in your terminal from your build project directory (e.g., `_atom`).
 
 Atom can automatically generate CI/CD workflow files (e.g., GitHub Actions YAML) based on your `WorkflowDefinition`s.
 
