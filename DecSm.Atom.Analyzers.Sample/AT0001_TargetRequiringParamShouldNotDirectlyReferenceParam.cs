@@ -68,7 +68,8 @@ public interface IMyTarget : IBuildAccessor
             .RequiresParam(nameof(MyParam2));
 
     /// <summary>
-    ///     Another demonstration of incorrect and correct usages of <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />.
+    ///     Another demonstration of incorrect and correct usages of
+    ///     <see cref="TargetDefinition.RequiresParam(IEnumerable{string})" />.
     /// </summary>
     /// <remarks>
     ///     This target further illustrates the analyzer's behavior with mixed parameter and non-parameter references.

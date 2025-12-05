@@ -23,12 +23,19 @@ public interface IArtifactProvider
     ///     Uploads one or more build artifacts to the configured storage.
     /// </summary>
     /// <param name="artifactNames">A list of artifact names to upload. Each name typically corresponds to a file or directory.</param>
-    /// <param name="buildId">The unique identifier for the current build. If null, the provider may use a default or environment-provided ID.</param>
-    /// <param name="buildSlice">An optional identifier for a specific build variation (e.g., in a matrix build) to associate the artifacts with.</param>
+    /// <param name="buildId">
+    ///     The unique identifier for the current build. If null, the provider may use a default or
+    ///     environment-provided ID.
+    /// </param>
+    /// <param name="buildSlice">
+    ///     An optional identifier for a specific build variation (e.g., in a matrix build) to associate
+    ///     the artifacts with.
+    /// </param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A <see cref="Task" /> representing the asynchronous upload operation.</returns>
     /// <remarks>
-    ///     Artifacts are typically sourced from the directory specified by <see cref="IAtomFileSystem.AtomPublishDirectory" />.
+    ///     Artifacts are typically sourced from the directory specified by <see cref="IAtomFileSystem.AtomPublishDirectory" />
+    ///     .
     ///     This method is called by targets like <see cref="IStoreArtifact.StoreArtifact" />.
     /// </remarks>
     Task StoreArtifacts(
@@ -41,12 +48,16 @@ public interface IArtifactProvider
     ///     Downloads one or more build artifacts from the configured storage.
     /// </summary>
     /// <param name="artifactNames">A list of artifact names to download.</param>
-    /// <param name="buildId">The unique identifier of the build from which to retrieve artifacts. If null, the provider may assume the current run or retrieve the latest version.</param>
+    /// <param name="buildId">
+    ///     The unique identifier of the build from which to retrieve artifacts. If null, the provider may
+    ///     assume the current run or retrieve the latest version.
+    /// </param>
     /// <param name="buildSlice">An optional identifier for a specific build variation to retrieve artifacts from.</param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
     /// <returns>A <see cref="Task" /> representing the asynchronous download operation.</returns>
     /// <remarks>
-    ///     Downloaded artifacts are placed in the directory specified by <see cref="IAtomFileSystem.AtomArtifactsDirectory" />.
+    ///     Downloaded artifacts are placed in the directory specified by <see cref="IAtomFileSystem.AtomArtifactsDirectory" />
+    ///     .
     ///     This method is called by targets like <see cref="IRetrieveArtifact.RetrieveArtifact" />.
     /// </remarks>
     Task RetrieveArtifacts(

@@ -22,13 +22,13 @@
 /// {
 ///     public string? GetSecret(string key) => MySecureStore.Get(key);
 /// }
-///
+/// 
 /// // 2. Register the provider in your build definition
 /// protected override void ConfigureServices(IServiceCollection services)
 /// {
 ///     services.AddSingleton&lt;ISecretsProvider, MySecretsProvider&gt;();
 /// }
-///
+/// 
 /// // 3. Use a secret parameter in a target
 /// [SecretDefinition("my-api-key", "An API key.")]
 /// string MyApiKey => GetParam(() => MyApiKey);

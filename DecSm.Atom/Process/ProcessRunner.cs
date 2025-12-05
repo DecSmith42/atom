@@ -11,7 +11,8 @@ public interface IProcessRunner
     /// <param name="options">The configuration options for the process execution.</param>
     /// <returns>A <see cref="ProcessRunResult" /> containing the exit code and captured output.</returns>
     /// <exception cref="StepFailedException">
-    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is <c>false</c>.
+    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is
+    ///     <c>false</c>.
     /// </exception>
     ProcessRunResult Run(ProcessRunOptions options);
 
@@ -22,17 +23,20 @@ public interface IProcessRunner
     /// <param name="cancellationToken">A token to cancel the process.</param>
     /// <returns>A task that resolves to a <see cref="ProcessRunResult" /> containing the exit code and captured output.</returns>
     /// <exception cref="StepFailedException">
-    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is <c>false</c>.
+    ///     Thrown if the process returns a non-zero exit code and <see cref="ProcessRunOptions.AllowFailedResult" /> is
+    ///     <c>false</c>.
     /// </exception>
     /// <exception cref="OperationCanceledException">Thrown if the operation is canceled.</exception>
     Task<ProcessRunResult> RunAsync(ProcessRunOptions options, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-///     Provides a standardized service for executing external processes with comprehensive logging, error handling, and result capture.
+///     Provides a standardized service for executing external processes with comprehensive logging, error handling, and
+///     result capture.
 /// </summary>
 /// <remarks>
-///     This class wraps <see cref="System.Diagnostics.Process" /> to provide a more robust and configurable execution model
+///     This class wraps <see cref="System.Diagnostics.Process" /> to provide a more robust and configurable execution
+///     model
 ///     for build automation, including real-time stream capture, flexible error handling, and cancellation support.
 /// </remarks>
 /// <param name="logger">The logger for capturing process execution information.</param>

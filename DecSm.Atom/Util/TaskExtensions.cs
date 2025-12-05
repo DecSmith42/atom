@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Util;
 
 /// <summary>
-///     Provides extension methods that add robust retry behavior to <see cref="Task" /> and <see cref="Task{TResult}" /> operations.
+///     Provides extension methods that add robust retry behavior to <see cref="Task" /> and <see cref="Task{TResult}" />
+///     operations.
 /// </summary>
 [PublicAPI]
 public static class TaskExtensions
@@ -12,7 +13,10 @@ public static class TaskExtensions
     /// <param name="task">The task to await.</param>
     /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
     /// <param name="retryDelay">The delay between retry attempts.</param>
-    /// <returns>A task that completes when the underlying task succeeds, or throws an <see cref="AggregateException" /> after all retries fail.</returns>
+    /// <returns>
+    ///     A task that completes when the underlying task succeeds, or throws an <see cref="AggregateException" /> after
+    ///     all retries fail.
+    /// </returns>
     /// <remarks>
     ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
@@ -69,7 +73,10 @@ public static class TaskExtensions
     /// <param name="task">The task to await.</param>
     /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
     /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
-    /// <returns>A task that completes with the result if successful, or throws an <see cref="AggregateException" /> after all retries fail.</returns>
+    /// <returns>
+    ///     A task that completes with the result if successful, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
     ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
@@ -135,7 +142,10 @@ public static class TaskExtensions
     /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
     /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
     /// <param name="cancellationToken">A token to observe before each attempt and during delays.</param>
-    /// <returns>A task that completes when an attempt succeeds, or throws an <see cref="AggregateException" /> after all retries fail.</returns>
+    /// <returns>
+    ///     A task that completes when an attempt succeeds, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
     ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
@@ -208,7 +218,10 @@ public static class TaskExtensions
     /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
     /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
     /// <param name="cancellationToken">A token to observe before each attempt and during delays.</param>
-    /// <returns>A task that completes with a result if successful, or throws an <see cref="AggregateException" /> after all retries fail.</returns>
+    /// <returns>
+    ///     A task that completes with a result if successful, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
     ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>

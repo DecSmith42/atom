@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     A minimal abstract base class for creating build definitions, providing default implementations for <see cref="IBuildDefinition" />.
+///     A minimal abstract base class for creating build definitions, providing default implementations for
+///     <see cref="IBuildDefinition" />.
 /// </summary>
 /// <remarks>
 ///     <para>

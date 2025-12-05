@@ -1,13 +1,16 @@
 ﻿namespace DecSm.Atom.Build.Definition;
 
 /// <summary>
-///     A comprehensive base class for creating build definitions, pre-configuring a rich set of common build targets and options.
+///     A comprehensive base class for creating build definitions, pre-configuring a rich set of common build targets and
+///     options.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         This class is the recommended starting point for most Atom build projects. It implements several standard interfaces,
+///         This class is the recommended starting point for most Atom build projects. It implements several standard
+///         interfaces,
 ///         providing targets for common operations such as setting up build info (<see cref="ISetupBuildInfo" />),
-///         validating the build (<see cref="IValidateBuild" />), and managing .NET user secrets (<see cref="IDotnetUserSecrets" />).
+///         validating the build (<see cref="IValidateBuild" />), and managing .NET user secrets (
+///         <see cref="IDotnetUserSecrets" />).
 ///     </para>
 ///     <para>
 ///         A project's main build definition class typically inherits from this class.

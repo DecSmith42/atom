@@ -7,7 +7,8 @@
 /// <remarks>
 ///     This class implements the service locator pattern, allowing access to services without explicit
 ///     constructor injection. It should be used sparingly, as it can make code harder to test.
-///     The <see cref="Service" /> property is populated by the extension methods in <see cref="ServiceAccessorExtensions" />.
+///     The <see cref="Service" /> property is populated by the extension methods in
+///     <see cref="ServiceAccessorExtensions" />.
 ///     <para>
 ///         <b>Warning:</b> The service is only available after it has been resolved from the DI container.
 ///     </para>
@@ -16,7 +17,7 @@
 ///     <code>
 /// // 1. Register the service
 /// services.AddSingletonWithStaticAccessor&lt;IMyService, MyService&gt;();
-///
+/// 
 /// // 2. Access the service statically from anywhere
 /// ServiceStaticAccessor&lt;IMyService&gt;.Service?.DoSomething();
 ///     </code>

@@ -13,7 +13,7 @@
 ///     <code>
 /// // Inject a dry-run parameter
 /// var dryRunInjection = new WorkflowParamInjection("NugetDryRun", "true");
-///
+/// 
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(dryRunInjection);
 ///     </code>

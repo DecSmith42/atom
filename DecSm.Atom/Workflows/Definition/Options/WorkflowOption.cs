@@ -6,14 +6,15 @@
 /// <typeparam name="TData">The type of data this option carries.</typeparam>
 /// <typeparam name="TSelf">The concrete type implementing this option, used for fluent APIs.</typeparam>
 /// <remarks>
-///     This class serves as the foundation for all data-carrying workflow options, implementing <see cref="IWorkflowOption" />
+///     This class serves as the foundation for all data-carrying workflow options, implementing
+///     <see cref="IWorkflowOption" />
 ///     while providing type-safe data handling. The self-referencing generic pattern ensures that methods on derived types
 ///     return the correct concrete type.
 /// </remarks>
 /// <example>
 ///     <code>
 /// public sealed record BuildConfiguration : WorkflowOption&lt;string, BuildConfiguration&gt;;
-///
+/// 
 /// // Usage:
 /// var config = BuildConfiguration.Create("Release");
 ///     </code>

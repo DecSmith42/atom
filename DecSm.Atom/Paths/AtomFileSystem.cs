@@ -1,7 +1,8 @@
 namespace DecSm.Atom.Paths;
 
 /// <summary>
-///     Defines a specialized file system abstraction for Atom, providing access to key build-related directories and paths.
+///     Defines a specialized file system abstraction for Atom, providing access to key build-related directories and
+///     paths.
 /// </summary>
 [PublicAPI]
 public interface IAtomFileSystem : IFileSystem

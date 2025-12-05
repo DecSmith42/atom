@@ -8,13 +8,27 @@
 ///         The service resolves parameters from the following sources in order of precedence:
 ///     </para>
 ///     <list type="number">
-///         <item><description>Cache (if enabled)</description></item>
-///         <item><description>Command-line arguments</description></item>
-///         <item><description>Environment variables</description></item>
-///         <item><description>Configuration files (e.g., <c>appsettings.json</c>)</description></item>
-///         <item><description>Secret providers</description></item>
-///         <item><description>Interactive console prompts</description></item>
-///         <item><description>Default value</description></item>
+///         <item>
+///             <description>Cache (if enabled)</description>
+///         </item>
+///         <item>
+///             <description>Command-line arguments</description>
+///         </item>
+///         <item>
+///             <description>Environment variables</description>
+///         </item>
+///         <item>
+///             <description>Configuration files (e.g., <c>appsettings.json</c>)</description>
+///         </item>
+///         <item>
+///             <description>Secret providers</description>
+///         </item>
+///         <item>
+///             <description>Interactive console prompts</description>
+///         </item>
+///         <item>
+///             <description>Default value</description>
+///         </item>
 ///     </list>
 ///     <para>
 ///         This service is central to the framework's parameter handling, providing features for type conversion,

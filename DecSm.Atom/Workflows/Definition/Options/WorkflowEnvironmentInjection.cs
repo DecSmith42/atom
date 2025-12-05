@@ -11,7 +11,7 @@
 ///     <code>
 /// // Inject a build configuration environment variable
 /// var buildConfig = WorkflowEnvironmentInjection.Create("BUILD_CONFIGURATION", "Release");
-///
+/// 
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(buildConfig);
 ///     </code>

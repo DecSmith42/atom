@@ -5,7 +5,8 @@
 /// </summary>
 /// <remarks>
 ///     <para>
-///         This attribute should be applied to a class that inherits from <see cref="MinimalBuildDefinition" /> or <see cref="BuildDefinition" />.
+///         This attribute should be applied to a class that inherits from <see cref="MinimalBuildDefinition" /> or
+///         <see cref="BuildDefinition" />.
 ///         The source generator uses this attribute to identify the main build class and generate the necessary code to
 ///         discover and register targets and parameters.
 ///     </para>

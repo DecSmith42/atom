@@ -4,7 +4,8 @@
 ///     Defines a centralized service for managing workflow variables, coordinating operations across multiple providers.
 /// </summary>
 /// <remarks>
-///     This service abstracts the complexity of multiple variable providers, offering a unified API for reading and writing
+///     This service abstracts the complexity of multiple variable providers, offering a unified API for reading and
+///     writing
 ///     variables. It delegates operations to registered <see cref="IWorkflowVariableProvider" /> implementations,
 ///     trying custom providers first before falling back to the base Atom provider.
 /// </remarks>

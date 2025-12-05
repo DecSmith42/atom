@@ -4,7 +4,8 @@
 ///     A disposable scope that asynchronously executes a provided function upon disposal.
 /// </summary>
 /// <remarks>
-///     This is useful for ensuring cleanup logic runs at the end of a `using` block, especially for asynchronous operations.
+///     This is useful for ensuring cleanup logic runs at the end of a `using` block, especially for asynchronous
+///     operations.
 /// </remarks>
 /// <param name="OnDispose">The asynchronous function to execute upon disposal.</param>
 [PublicAPI]

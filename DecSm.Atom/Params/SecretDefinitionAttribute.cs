@@ -4,7 +4,8 @@ namespace DecSm.Atom.Params;
 ///     Defines a secret parameter for a build target, which will be masked in logs and can be resolved from secret stores.
 /// </summary>
 /// <remarks>
-///     This attribute inherits from <see cref="ParamDefinitionAttribute" /> and sets the <see cref="ParamDefinitionAttribute.IsSecret" />
+///     This attribute inherits from <see cref="ParamDefinitionAttribute" /> and sets the
+///     <see cref="ParamDefinitionAttribute.IsSecret" />
 ///     property to <c>true</c>. Use this for sensitive values like API keys or passwords.
 /// </remarks>
 /// <example>

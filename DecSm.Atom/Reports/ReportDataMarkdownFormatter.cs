@@ -6,7 +6,8 @@
 /// </summary>
 /// <remarks>
 ///     This formatter organizes report data into a structured Markdown document, handling logs, artifacts, tables,
-///     lists, and free-form text. It uses GitHub-specific features like callouts and collapsible sections for a rich presentation.
+///     lists, and free-form text. It uses GitHub-specific features like callouts and collapsible sections for a rich
+///     presentation.
 /// </remarks>
 [PublicAPI]
 public static class ReportDataMarkdownFormatter

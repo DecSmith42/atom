@@ -317,7 +317,7 @@ public static class Github
     public static class Variables
     {
         /// <summary>
-        /// Gets the value of the <c>GITHUB_ACTIONS</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_ACTIONS</c> environment variable.
         /// </summary>
         /// <example>
         ///     true
@@ -326,7 +326,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Actions) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_ACTOR_ID</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_ACTOR_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     1234567
@@ -335,7 +335,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.ActorId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_ACTOR</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_ACTOR</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -343,7 +343,7 @@ public static class Github
         public static string Actor { get; } = Environment.GetEnvironmentVariable(VariableNames.Actor) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_API_URL</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_API_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://api.github.com
@@ -351,7 +351,7 @@ public static class Github
         public static string ApiUrl { get; } = Environment.GetEnvironmentVariable(VariableNames.ApiUrl) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_BASE_REF</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_BASE_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     main
@@ -360,7 +360,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.BaseRef) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_ENV</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_ENV</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/set_env_[GUID]
@@ -368,7 +368,7 @@ public static class Github
         public static string Env { get; } = Environment.GetEnvironmentVariable(VariableNames.Env) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_EVENT_NAME</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_EVENT_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     pull_request
@@ -377,7 +377,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.EventName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_EVENT_PATH</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_EVENT_PATH</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_github_workflow/event.json
@@ -386,7 +386,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.EventPath) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_GRAPHQL_URL</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_GRAPHQL_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://api.github.com/graphql
@@ -395,7 +395,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.GraphqlUrl) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_HEAD_REF</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_HEAD_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     my-branch
@@ -404,7 +404,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.HeadRef) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_JOB</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_JOB</c> environment variable.
         /// </summary>
         /// <example>
         ///     BuildApp
@@ -412,7 +412,7 @@ public static class Github
         public static string Job { get; } = Environment.GetEnvironmentVariable(VariableNames.Job) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_OUTPUT</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_OUTPUT</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/set_output_[GUID]
@@ -420,7 +420,7 @@ public static class Github
         public static string Output { get; } = Environment.GetEnvironmentVariable(VariableNames.Output) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_PATH</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_PATH</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/add_path_[GUID]
@@ -428,7 +428,7 @@ public static class Github
         public static string Path { get; } = Environment.GetEnvironmentVariable(VariableNames.Path) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REF_NAME</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REF_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     4/my-branch
@@ -437,7 +437,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REF_PROTECTED</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REF_PROTECTED</c> environment variable.
         /// </summary>
         /// <example>
         ///     false
@@ -446,7 +446,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefProtected) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REF_TYPE</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REF_TYPE</c> environment variable.
         /// </summary>
         /// <example>
         ///     branch
@@ -455,7 +455,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefType) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REF</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     refs/pull/4/merge
@@ -463,7 +463,7 @@ public static class Github
         public static string Ref { get; } = Environment.GetEnvironmentVariable(VariableNames.Ref) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REPOSITORY_ID</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     123456789
@@ -472,7 +472,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REPOSITORY_OWNER_ID</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_OWNER_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     1234567
@@ -481,7 +481,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryOwnerId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REPOSITORY_OWNER</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_OWNER</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -490,7 +490,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryOwner) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_REPOSITORY</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_REPOSITORY</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent/my-project
@@ -499,7 +499,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Repository) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_RETENTION_DAYS</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_RETENTION_DAYS</c> environment variable.
         /// </summary>
         /// <example>
         ///     90
@@ -508,7 +508,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RetentionDays) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_RUN_ATTEMPT</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_RUN_ATTEMPT</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -517,7 +517,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunAttempt) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_RUN_ID</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_RUN_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     9876543210
@@ -525,7 +525,7 @@ public static class Github
         public static string RunId { get; } = Environment.GetEnvironmentVariable(VariableNames.RunId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_RUN_NUMBER</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_RUN_NUMBER</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -534,7 +534,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunNumber) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_SERVER_URL</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_SERVER_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://github.com
@@ -543,7 +543,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.ServerUrl) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_SHA</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_SHA</c> environment variable.
         /// </summary>
         /// <example>
         ///     [SHA]
@@ -551,7 +551,7 @@ public static class Github
         public static string Sha { get; } = Environment.GetEnvironmentVariable(VariableNames.Sha) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_STATE</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_STATE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/save_state_[GUID]
@@ -559,7 +559,7 @@ public static class Github
         public static string State { get; } = Environment.GetEnvironmentVariable(VariableNames.State) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_STEP_SUMMARY</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_STEP_SUMMARY</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/step_summary_[GUID]
@@ -568,7 +568,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.StepSummary) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_TRIGGERING_ACTOR</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_TRIGGERING_ACTOR</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -577,7 +577,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.TriggeringActor) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_WORKFLOW_REF</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_WORKFLOW_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent/my-project/.github/workflows/BuildApp.yml@refs/pull/4/merge
@@ -586,7 +586,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.WorkflowRef) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_WORKFLOW_SHA</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_WORKFLOW_SHA</c> environment variable.
         /// </summary>
         /// <example>
         ///     [SHA]
@@ -595,7 +595,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.WorkflowSha) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_WORKFLOW</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_WORKFLOW</c> environment variable.
         /// </summary>
         /// <example>
         ///     build
@@ -604,7 +604,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Workflow) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>GITHUB_WORKSPACE</c> environment variable.
+        ///     Gets the value of the <c>GITHUB_WORKSPACE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/my-project/my-project
@@ -613,7 +613,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Workspace) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_ARCH</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_ARCH</c> environment variable.
         /// </summary>
         /// <example>
         ///     X64
@@ -622,7 +622,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerArch) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_DEBUG</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_DEBUG</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -631,7 +631,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerDebug) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_ENVIRONMENT</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_ENVIRONMENT</c> environment variable.
         /// </summary>
         /// <example>
         ///     github-hosted
@@ -640,7 +640,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerEnvironment) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_NAME</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     GitHubActions 6
@@ -649,7 +649,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_OS</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_OS</c> environment variable.
         /// </summary>
         /// <example>
         ///     Linux
@@ -658,7 +658,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerOs) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_PERFLOG</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_PERFLOG</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/perflog
@@ -667,7 +667,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerPerfLog) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_TEMP</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_TEMP</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp
@@ -676,7 +676,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerTemp) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_TOOL_CACHE</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_TOOL_CACHE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /opt/hostedtoolcache
@@ -685,7 +685,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerToolCache) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_TRACKING_ID</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_TRACKING_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     github_3cf77bfa-2ce5-4b4c-b736-d6a7b5c16537
@@ -694,7 +694,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerTrackingId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_USER</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_USER</c> environment variable.
         /// </summary>
         /// <example>
         ///     runner
@@ -703,7 +703,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerUser) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>RUNNER_WORKSPACE</c> environment variable.
+        ///     Gets the value of the <c>RUNNER_WORKSPACE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/my-project

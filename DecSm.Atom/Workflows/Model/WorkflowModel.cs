@@ -1,7 +1,8 @@
 ﻿namespace DecSm.Atom.Workflows.Model;
 
 /// <summary>
-///     Represents a workflow model, including its name, triggers, options, and jobs, used for generating CI/CD workflow files.
+///     Represents a workflow model, including its name, triggers, options, and jobs, used for generating CI/CD workflow
+///     files.
 /// </summary>
 /// <param name="Name">The name of the workflow.</param>
 [PublicAPI]

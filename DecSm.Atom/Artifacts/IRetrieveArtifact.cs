@@ -23,7 +23,8 @@ public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInf
     ///     Defines the target responsible for retrieving artifacts.
     /// </summary>
     /// <remarks>
-    ///     This target orchestrates the download of artifacts by invoking the <see cref="IArtifactProvider.RetrieveArtifacts" />
+    ///     This target orchestrates the download of artifacts by invoking the
+    ///     <see cref="IArtifactProvider.RetrieveArtifacts" />
     ///     method.
     ///     It consumes the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter to determine which artifacts to retrieve
     ///     and utilizes build metadata from <see cref="ISetupBuildInfo" />.

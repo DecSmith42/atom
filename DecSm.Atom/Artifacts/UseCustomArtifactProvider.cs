@@ -14,7 +14,8 @@
 ///         (e.g., <c>actions/upload-artifact</c> in GitHub Actions).
 ///     </para>
 ///     <para>
-///         Enabling this option ensures a consistent artifact management strategy across different CI/CD platforms and local
+///         Enabling this option ensures a consistent artifact management strategy across different CI/CD platforms and
+///         local
 ///         builds.
 ///     </para>
 /// </remarks>

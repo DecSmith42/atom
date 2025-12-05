@@ -45,7 +45,8 @@ public interface IWorkflowOption
                 .MergeWith(x.Skip(1)));
 
     /// <summary>
-    ///     Merges the current option with additional instances of the same type, respecting the <see cref="AllowMultiple" /> configuration.
+    ///     Merges the current option with additional instances of the same type, respecting the <see cref="AllowMultiple" />
+    ///     configuration.
     /// </summary>
     /// <typeparam name="T">The type of workflow option being merged.</typeparam>
     /// <param name="entries">Additional instances of the same option type to merge.</param>

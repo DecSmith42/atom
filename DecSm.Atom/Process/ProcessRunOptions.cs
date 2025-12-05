@@ -23,7 +23,8 @@
 public sealed record ProcessRunOptions(string Name, string Args)
 {
     /// <summary>
-    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and an array of arguments.
+    ///     Initializes a new instance of <see cref="ProcessRunOptions" /> with the specified executable name and an array of
+    ///     arguments.
     /// </summary>
     /// <param name="Name">The name or path of the executable to run.</param>
     /// <param name="Args">An array of command-line arguments, which will be joined into a single string with spaces.</param>

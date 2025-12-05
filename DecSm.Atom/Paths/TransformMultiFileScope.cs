@@ -67,7 +67,8 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies an asynchronous transformation to each.
+    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies an asynchronous
+    ///     transformation to each.
     /// </summary>
     /// <param name="files">The files to transform.</param>
     /// <param name="transform">A function to apply to each file's content.</param>
@@ -145,7 +146,8 @@ public sealed class TransformMultiFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies a synchronous transformation to each.
+    ///     Creates a new <see cref="TransformMultiFileScope" /> for a collection of files and applies a synchronous
+    ///     transformation to each.
     /// </summary>
     /// <param name="files">The files to transform.</param>
     /// <param name="transform">A function to apply to each file's content.</param>

@@ -11,7 +11,7 @@
 ///     <code>
 /// // Trigger on pull requests into the main branch
 /// var mainPrTrigger = GitPullRequestTrigger.IntoMain;
-///
+/// 
 /// // Trigger on pull requests that modify files in the 'src' directory
 /// var srcPrTrigger = new GitPullRequestTrigger
 /// {
@@ -28,7 +28,8 @@ public sealed record GitPullRequestTrigger : IWorkflowTrigger
     public IReadOnlyList<string> IncludedBranches { get; init; } = [];
 
     /// <summary>
-    ///     Gets the list of branch patterns that should NOT trigger the workflow. Takes precedence over <see cref="IncludedBranches" />.
+    ///     Gets the list of branch patterns that should NOT trigger the workflow. Takes precedence over
+    ///     <see cref="IncludedBranches" />.
     /// </summary>
     public IReadOnlyList<string> ExcludedBranches { get; init; } = [];
 
@@ -38,7 +39,8 @@ public sealed record GitPullRequestTrigger : IWorkflowTrigger
     public IReadOnlyList<string> IncludedPaths { get; init; } = [];
 
     /// <summary>
-    ///     Gets the list of file path patterns that should NOT activate the trigger. Takes precedence over <see cref="IncludedPaths" />.
+    ///     Gets the list of file path patterns that should NOT activate the trigger. Takes precedence over
+    ///     <see cref="IncludedPaths" />.
     /// </summary>
     public IReadOnlyList<string> ExcludedPaths { get; init; } = [];
 

@@ -11,7 +11,10 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     /// <summary>
     ///     Gets the parent directory of the current path.
     /// </summary>
-    /// <returns>A new <see cref="RootedPath" /> representing the parent directory, or <c>null</c> if the current path is a root.</returns>
+    /// <returns>
+    ///     A new <see cref="RootedPath" /> representing the parent directory, or <c>null</c> if the current path is a
+    ///     root.
+    /// </returns>
     public RootedPath? Parent
     {
         get

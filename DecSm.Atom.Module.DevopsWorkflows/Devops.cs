@@ -481,511 +481,511 @@ public static class Devops
     public static class Variables
     {
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_DEBUG</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_DEBUG</c> environment variable.
         /// </summary>
         public static string SystemDebug { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemDebug) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_BUILDDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>AGENT_BUILDDIRECTORY</c> environment variable.
         /// </summary>
         public static string AgentBuildDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentBuildDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_HOMEDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>AGENT_HOMEDIRECTORY</c> environment variable.
         /// </summary>
         public static string AgentHomeDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentHomeDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_ID</c> environment variable.
+        ///     Gets the value of the <c>AGENT_ID</c> environment variable.
         /// </summary>
         public static string AgentId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_JOBNAME</c> environment variable.
+        ///     Gets the value of the <c>AGENT_JOBNAME</c> environment variable.
         /// </summary>
         public static string AgentJobName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentJobName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_MACHINENAME</c> environment variable.
+        ///     Gets the value of the <c>AGENT_MACHINENAME</c> environment variable.
         /// </summary>
         public static string AgentMachineName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentMachineName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_NAME</c> environment variable.
+        ///     Gets the value of the <c>AGENT_NAME</c> environment variable.
         /// </summary>
         public static string AgentName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_OS</c> environment variable.
+        ///     Gets the value of the <c>AGENT_OS</c> environment variable.
         /// </summary>
         public static string AgentOs { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentOs) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_OSARCHITECTURE</c> environment variable.
+        ///     Gets the value of the <c>AGENT_OSARCHITECTURE</c> environment variable.
         /// </summary>
         public static string AgentOsArchitecture { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentOsArchitecture) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_TEMPDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>AGENT_TEMPDIRECTORY</c> environment variable.
         /// </summary>
         public static string AgentTempDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentTempDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_TOOLSDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>AGENT_TOOLSDIRECTORY</c> environment variable.
         /// </summary>
         public static string AgentToolsDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentToolsDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>AGENT_WORKFOLDER</c> environment variable.
+        ///     Gets the value of the <c>AGENT_WORKFOLDER</c> environment variable.
         /// </summary>
         public static string AgentWorkFolder { get; } =
             Environment.GetEnvironmentVariable(VariableNames.AgentWorkFolder) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_ARTIFACTSTAGINGDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>BUILD_ARTIFACTSTAGINGDIRECTORY</c> environment variable.
         /// </summary>
         public static string BuildArtifactStagingDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildArtifactStagingDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_BUILDID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_BUILDID</c> environment variable.
         /// </summary>
         public static string BuildBuildId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildBuildId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_BUILDNUMBER</c> environment variable.
+        ///     Gets the value of the <c>BUILD_BUILDNUMBER</c> environment variable.
         /// </summary>
         public static string BuildBuildNumber { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildBuildNumber) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_BUILDURI</c> environment variable.
+        ///     Gets the value of the <c>BUILD_BUILDURI</c> environment variable.
         /// </summary>
         public static string BuildBuildUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildBuildUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_BINARIESDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>BUILD_BINARIESDIRECTORY</c> environment variable.
         /// </summary>
         public static string BuildBinariesDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildBinariesDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_CONTAINERID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_CONTAINERID</c> environment variable.
         /// </summary>
         public static string BuildContainerId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildContainerId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_CRONSCHEDULE_DISPLAYNAME</c> environment variable.
+        ///     Gets the value of the <c>BUILD_CRONSCHEDULE_DISPLAYNAME</c> environment variable.
         /// </summary>
         public static string BuildCronScheduleDisplayName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildCronScheduleDisplayName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_DEFINITIONNAME</c> environment variable.
+        ///     Gets the value of the <c>BUILD_DEFINITIONNAME</c> environment variable.
         /// </summary>
         public static string BuildDefinitionName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildDefinitionName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_QUEUEDBY</c> environment variable.
+        ///     Gets the value of the <c>BUILD_QUEUEDBY</c> environment variable.
         /// </summary>
         public static string BuildQueuedBy { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildQueuedBy) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_QUEUEDBYID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_QUEUEDBYID</c> environment variable.
         /// </summary>
         public static string BuildQueuedById { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildQueuedById) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REASON</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REASON</c> environment variable.
         /// </summary>
         public static string BuildReason { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildReason) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_CLEAN</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_CLEAN</c> environment variable.
         /// </summary>
         public static string BuildRepositoryClean { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryClean) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_LOCALPATH</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_LOCALPATH</c> environment variable.
         /// </summary>
         public static string BuildRepositoryLocalPath { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryLocalPath) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_ID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_ID</c> environment variable.
         /// </summary>
         public static string BuildRepositoryId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_NAME</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_NAME</c> environment variable.
         /// </summary>
         public static string BuildRepositoryName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_PROVIDER</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_PROVIDER</c> environment variable.
         /// </summary>
         public static string BuildRepositoryProvider { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryProvider) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_TFVC_WORKSPACE</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_TFVC_WORKSPACE</c> environment variable.
         /// </summary>
         public static string BuildRepositoryTfvcWorkspace { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryTfvcWorkspace) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_URI</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_URI</c> environment variable.
         /// </summary>
         public static string BuildRepositoryUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REQUESTEDFOR</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REQUESTEDFOR</c> environment variable.
         /// </summary>
         public static string BuildRequestedFor { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRequestedFor) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REQUESTEDFOREMAIL</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REQUESTEDFOREMAIL</c> environment variable.
         /// </summary>
         public static string BuildRequestedForEmail { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRequestedForEmail) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REQUESTEDFORID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REQUESTEDFORID</c> environment variable.
         /// </summary>
         public static string BuildRequestedForId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRequestedForId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCEBRANCH</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCEBRANCH</c> environment variable.
         /// </summary>
         public static string BuildSourceBranch { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourceBranch) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCEBRANCHNAME</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCEBRANCHNAME</c> environment variable.
         /// </summary>
         public static string BuildSourceBranchName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourceBranchName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCESDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCESDIRECTORY</c> environment variable.
         /// </summary>
         public static string BuildSourcesDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourcesDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCEVERSION</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCEVERSION</c> environment variable.
         /// </summary>
         public static string BuildSourceVersion { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourceVersion) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCEVERSIONMESSAGE</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCEVERSIONMESSAGE</c> environment variable.
         /// </summary>
         public static string BuildSourceVersionMessage { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourceVersionMessage) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_STAGINGDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>BUILD_STAGINGDIRECTORY</c> environment variable.
         /// </summary>
         public static string BuildStagingDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildStagingDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_REPOSITORY_GIT_SUBMODULECHECKOUT</c> environment variable.
+        ///     Gets the value of the <c>BUILD_REPOSITORY_GIT_SUBMODULECHECKOUT</c> environment variable.
         /// </summary>
         public static string BuildRepositoryGitSubmoduleCheckout { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildRepositoryGitSubmoduleCheckout) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_SOURCETFVC_SHELVESET</c> environment variable.
+        ///     Gets the value of the <c>BUILD_SOURCETFVC_SHELVESET</c> environment variable.
         /// </summary>
         public static string BuildSourceTfvcShelveset { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildSourceTfvcShelveset) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_TRIGGEREDBY_BUILDID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_TRIGGEREDBY_BUILDID</c> environment variable.
         /// </summary>
         public static string BuildTriggeredByBuildId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildTriggeredByBuildId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_TRIGGEREDBY_DEFINITIONID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_TRIGGEREDBY_DEFINITIONID</c> environment variable.
         /// </summary>
         public static string BuildTriggeredByDefinitionId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildTriggeredByDefinitionId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_TRIGGEREDBY_DEFINITIONNAME</c> environment variable.
+        ///     Gets the value of the <c>BUILD_TRIGGEREDBY_DEFINITIONNAME</c> environment variable.
         /// </summary>
         public static string BuildTriggeredByDefinitionName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildTriggeredByDefinitionName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_TRIGGEREDBY_BUILDNUMBER</c> environment variable.
+        ///     Gets the value of the <c>BUILD_TRIGGEREDBY_BUILDNUMBER</c> environment variable.
         /// </summary>
         public static string BuildTriggeredByBuildNumber { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildTriggeredByBuildNumber) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>BUILD_TRIGGEREDBY_PROJECTID</c> environment variable.
+        ///     Gets the value of the <c>BUILD_TRIGGEREDBY_PROJECTID</c> environment variable.
         /// </summary>
         public static string BuildTriggeredByProjectId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.BuildTriggeredByProjectId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>COMMON_TESTRESULTSDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>COMMON_TESTRESULTSDIRECTORY</c> environment variable.
         /// </summary>
         public static string CommonTestResultsDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.CommonTestResultsDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>ENVIRONMENT_NAME</c> environment variable.
+        ///     Gets the value of the <c>ENVIRONMENT_NAME</c> environment variable.
         /// </summary>
         public static string EnvironmentName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.EnvironmentName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>ENVIRONMENT_ID</c> environment variable.
+        ///     Gets the value of the <c>ENVIRONMENT_ID</c> environment variable.
         /// </summary>
         public static string EnvironmentId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.EnvironmentId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>ENVIRONMENT_RESOURCENAME</c> environment variable.
+        ///     Gets the value of the <c>ENVIRONMENT_RESOURCENAME</c> environment variable.
         /// </summary>
         public static string EnvironmentResourceName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.EnvironmentResourceName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>ENVIRONMENT_RESOURCEID</c> environment variable.
+        ///     Gets the value of the <c>ENVIRONMENT_RESOURCEID</c> environment variable.
         /// </summary>
         public static string EnvironmentResourceId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.EnvironmentResourceId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>STRATEGY_NAME</c> environment variable.
+        ///     Gets the value of the <c>STRATEGY_NAME</c> environment variable.
         /// </summary>
         public static string StrategyName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.StrategyName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>STRATEGY_CYCLENAME</c> environment variable.
+        ///     Gets the value of the <c>STRATEGY_CYCLENAME</c> environment variable.
         /// </summary>
         public static string StrategyCycleName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.StrategyCycleName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_ACCESSTOKEN</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_ACCESSTOKEN</c> environment variable.
         /// </summary>
         public static string SystemAccessToken { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemAccessToken) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_COLLECTIONID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_COLLECTIONID</c> environment variable.
         /// </summary>
         public static string SystemCollectionId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemCollectionId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_COLLECTIONURI</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_COLLECTIONURI</c> environment variable.
         /// </summary>
         public static string SystemCollectionUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemCollectionUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_DEFAULTWORKINGDIRECTORY</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_DEFAULTWORKINGDIRECTORY</c> environment variable.
         /// </summary>
         public static string SystemDefaultWorkingDirectory { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemDefaultWorkingDirectory) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_DEFINITIONID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_DEFINITIONID</c> environment variable.
         /// </summary>
         public static string SystemDefinitionId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemDefinitionId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_HOSTTYPE</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_HOSTTYPE</c> environment variable.
         /// </summary>
         public static string SystemHostType { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemHostType) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_JOBATTEMPT</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_JOBATTEMPT</c> environment variable.
         /// </summary>
         public static string SystemJobAttempt { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemJobAttempt) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_JOBDISPLAYNAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_JOBDISPLAYNAME</c> environment variable.
         /// </summary>
         public static string SystemJobDisplayName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemJobDisplayName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_JOBID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_JOBID</c> environment variable.
         /// </summary>
         public static string SystemJobId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemJobId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_JOBNAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_JOBNAME</c> environment variable.
         /// </summary>
         public static string SystemJobName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemJobName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_OIDCREQUESTURI</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_OIDCREQUESTURI</c> environment variable.
         /// </summary>
         public static string SystemOidcRequestUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemOidcRequestUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PHASEATTEMPT</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PHASEATTEMPT</c> environment variable.
         /// </summary>
         public static string SystemPhaseAttempt { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPhaseAttempt) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PHASEDISPLAYNAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PHASEDISPLAYNAME</c> environment variable.
         /// </summary>
         public static string SystemPhaseDisplayName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPhaseDisplayName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PHASENAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PHASENAME</c> environment variable.
         /// </summary>
         public static string SystemPhaseName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPhaseName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PLANID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PLANID</c> environment variable.
         /// </summary>
         public static string SystemPlanId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPlanId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_ISFORK</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_ISFORK</c> environment variable.
         /// </summary>
         public static string SystemPullRequestIsFork { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestIsFork) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_PULLREQUESTID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_PULLREQUESTID</c> environment variable.
         /// </summary>
         public static string SystemPullRequestPullRequestId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestPullRequestId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_PULLREQUESTNUMBER</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_PULLREQUESTNUMBER</c> environment variable.
         /// </summary>
         public static string SystemPullRequestPullRequestNumber { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestPullRequestNumber) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_TARGETBRANCHNAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_TARGETBRANCHNAME</c> environment variable.
         /// </summary>
         public static string SystemPullRequestTargetBranchName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestTargetBranchName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCEBRANCH</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCEBRANCH</c> environment variable.
         /// </summary>
         public static string SystemPullRequestSourceBranch { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestSourceBranch) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCECOMMITID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCECOMMITID</c> environment variable.
         /// </summary>
         public static string SystemPullRequestSourceCommitId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestSourceCommitId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_SOURCEREPOSITORYURI</c> environment variable.
         /// </summary>
         public static string SystemPullRequestSourceRepositoryUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestSourceRepositoryUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_TARGETBRANCH</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_TARGETBRANCH</c> environment variable.
         /// </summary>
         public static string SystemPullRequestTargetBranch { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestTargetBranch) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_STAGEATTEMPT</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_STAGEATTEMPT</c> environment variable.
         /// </summary>
         public static string SystemPullRequestStageAttempt { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestStageAttempt) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_STAGEDISPLAYNAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_STAGEDISPLAYNAME</c> environment variable.
         /// </summary>
         public static string SystemPullRequestStageDisplayName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestStageDisplayName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_PULLREQUEST_STAGENAME</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_PULLREQUEST_STAGENAME</c> environment variable.
         /// </summary>
         public static string SystemPullRequestStageName { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemPullRequestStageName) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_TEAMFOUNDATIONCOLLECTIONURI</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_TEAMFOUNDATIONCOLLECTIONURI</c> environment variable.
         /// </summary>
         public static string SystemTeamFoundationCollectionUri { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemTeamFoundationCollectionUri) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_TEAMPROJECT</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_TEAMPROJECT</c> environment variable.
         /// </summary>
         public static string SystemTeamProject { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemTeamProject) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_TEAMPROJECTID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_TEAMPROJECTID</c> environment variable.
         /// </summary>
         public static string SystemTeamProjectId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemTeamProjectId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>SYSTEM_TIMELINEID</c> environment variable.
+        ///     Gets the value of the <c>SYSTEM_TIMELINEID</c> environment variable.
         /// </summary>
         public static string SystemTeamTimelineId { get; } =
             Environment.GetEnvironmentVariable(VariableNames.SystemTeamTimelineId) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>TF_BUILD</c> environment variable.
+        ///     Gets the value of the <c>TF_BUILD</c> environment variable.
         /// </summary>
         public static string TfBuild { get; } =
             Environment.GetEnvironmentVariable(VariableNames.TfBuild) ?? string.Empty;
 
         /// <summary>
-        /// Gets the value of the <c>CHECKS_STAGEATTEMPT</c> environment variable.
+        ///     Gets the value of the <c>CHECKS_STAGEATTEMPT</c> environment variable.
         /// </summary>
         public static string ChecksStageAttempt { get; } =
             Environment.GetEnvironmentVariable(VariableNames.ChecksStageAttempt) ?? string.Empty;

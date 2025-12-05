@@ -24,8 +24,14 @@ public static class HostExtensions
     ///     <list type="bullet">
     ///         <item>Registers the <see cref="AtomService" /> as a hosted service.</item>
     ///         <item>Registers the build definition (<typeparamref name="TBuild" />) and related interfaces.</item>
-    ///         <item>Adds core Atom services like <see cref="IParamService" />, <see cref="ReportService" />, and <see cref="IAnsiConsole" />.</item>
-    ///         <item>Registers default providers for build information: <see cref="IBuildIdProvider" />, <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" />.</item>
+    ///         <item>
+    ///             Adds core Atom services like <see cref="IParamService" />, <see cref="ReportService" />, and
+    ///             <see cref="IAnsiConsole" />.
+    ///         </item>
+    ///         <item>
+    ///             Registers default providers for build information: <see cref="IBuildIdProvider" />,
+    ///             <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" />.
+    ///         </item>
     ///         <item>Configures file system access via <see cref="IAtomFileSystem" />.</item>
     ///         <item>Registers build execution and workflow generation services.</item>
     ///         <item>Sets up logging with Spectre.Console and report providers, filtering out verbose Microsoft host logs.</item>
