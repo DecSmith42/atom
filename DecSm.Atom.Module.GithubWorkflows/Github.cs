@@ -1,16 +1,47 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
+/// <summary>
+///     Provides utility methods and properties for interacting with GitHub Actions workflows.
+/// </summary>
+/// <remarks>
+///     This static class offers convenient access to GitHub Actions environment variables,
+///     defines standard pipeline directories, and provides helper methods for generating
+///     Dependabot workflows.
+/// </remarks>
 [PublicAPI]
 public static class Github
 {
+    /// <summary>
+    ///     Gets a value indicating whether the current execution environment is GitHub Actions.
+    /// </summary>
     public static bool IsGithubActions => Variables.Actions.Equals("true", StringComparison.CurrentCultureIgnoreCase);
 
+    /// <summary>
+    ///     Gets the default pipeline publish directory path for GitHub Actions.
+    /// </summary>
+    /// <remarks>
+    ///     This path is typically used for storing artifacts that are intended to be uploaded
+    ///     to GitHub Actions artifact storage.
+    /// </remarks>
     public static string PipelinePublishDirectory => "${{ github.workspace }}/.github/publish";
 
+    /// <summary>
+    ///     Gets the default pipeline artifact directory path for GitHub Actions.
+    /// </summary>
+    /// <remarks>
+    ///     This path is typically used for downloading artifacts from GitHub Actions artifact storage.
+    /// </remarks>
     public static string PipelineArtifactDirectory => "${{ github.workspace }}/.github/artifacts";
 
+    /// <summary>
+    ///     Gets an instance of <see cref="GithubWorkflowType" /> for defining GitHub-specific workflow types.
+    /// </summary>
     public static GithubWorkflowType WorkflowType { get; } = new();
 
+    /// <summary>
+    ///     Creates a default Dependabot workflow definition with NuGet registry and update group.
+    /// </summary>
+    /// <returns>A <see cref="WorkflowDefinition" /> pre-configured for Dependabot with NuGet settings.</returns>
     public static WorkflowDefinition DependabotDefaultWorkflow() =>
         DependabotWorkflow(new()
         {
@@ -31,6 +62,11 @@ public static class Github
             ],
         });
 
+    /// <summary>
+    ///     Creates a Dependabot workflow definition with custom options.
+    /// </summary>
+    /// <param name="dependabotOptions">The custom Dependabot options to apply.</param>
+    /// <returns>A <see cref="WorkflowDefinition" /> configured with the provided Dependabot options.</returns>
     public static WorkflowDefinition DependabotWorkflow(DependabotOptions dependabotOptions) =>
         new("dependabot")
         {
@@ -38,61 +74,250 @@ public static class Github
             WorkflowTypes = [new DependabotWorkflowType()],
         };
 
+    /// <summary>
+    ///     Contains constant strings for all known GitHub Actions environment variable names.
+    /// </summary>
     [PublicAPI]
     public static class VariableNames
     {
+        /// <summary>
+        ///     The name of the environment variable indicating if the workflow is running on GitHub Actions.
+        /// </summary>
         public const string Actions = "GITHUB_ACTIONS";
+
+        /// <summary>
+        ///     The ID of the actor that triggered the workflow.
+        /// </summary>
         public const string ActorId = "GITHUB_ACTOR_ID";
+
+        /// <summary>
+        ///     The name of the actor that triggered the workflow.
+        /// </summary>
         public const string Actor = "GITHUB_ACTOR";
+
+        /// <summary>
+        ///     The URL of the GitHub API.
+        /// </summary>
         public const string ApiUrl = "GITHUB_API_URL";
+
+        /// <summary>
+        ///     The base ref or target branch of the pull request in a `pull_request` event.
+        /// </summary>
         public const string BaseRef = "GITHUB_BASE_REF";
+
+        /// <summary>
+        ///     The path to a file that contains environment variables to set.
+        /// </summary>
         public const string Env = "GITHUB_ENV";
+
+        /// <summary>
+        ///     The name of the event that triggered the workflow.
+        /// </summary>
         public const string EventName = "GITHUB_EVENT_NAME";
+
+        /// <summary>
+        ///     The path to the file that contains the complete event webhook payload.
+        /// </summary>
         public const string EventPath = "GITHUB_EVENT_PATH";
+
+        /// <summary>
+        ///     The URL of the GitHub GraphQL API.
+        /// </summary>
         public const string GraphqlUrl = "GITHUB_GRAPHQL_URL";
+
+        /// <summary>
+        ///     The head ref or source branch of the pull request in a `pull_request` event.
+        /// </summary>
         public const string HeadRef = "GITHUB_HEAD_REF";
+
+        /// <summary>
+        ///     The name of the current job.
+        /// </summary>
         public const string Job = "GITHUB_JOB";
+
+        /// <summary>
+        ///     The path to a file that contains workflow commands to set outputs.
+        /// </summary>
         public const string Output = "GITHUB_OUTPUT";
+
+        /// <summary>
+        ///     The path to a file that contains paths to add to the system PATH.
+        /// </summary>
         public const string Path = "GITHUB_PATH";
+
+        /// <summary>
+        ///     The short name of the Git ref that triggered the workflow.
+        /// </summary>
         public const string RefName = "GITHUB_REF_NAME";
+
+        /// <summary>
+        ///     A boolean indicating if the ref is protected.
+        /// </summary>
         public const string RefProtected = "GITHUB_REF_PROTECTED";
+
+        /// <summary>
+        ///     The type of the Git ref (e.g., `branch`, `tag`).
+        /// </summary>
         public const string RefType = "GITHUB_REF_TYPE";
+
+        /// <summary>
+        ///     The Git ref that triggered the workflow (e.g., `refs/heads/main`).
+        /// </summary>
         public const string Ref = "GITHUB_REF";
+
+        /// <summary>
+        ///     The ID of the repository.
+        /// </summary>
         public const string RepositoryId = "GITHUB_REPOSITORY_ID";
+
+        /// <summary>
+        ///     The ID of the repository owner.
+        /// </summary>
         public const string RepositoryOwnerId = "GITHUB_REPOSITORY_OWNER_ID";
+
+        /// <summary>
+        ///     The owner of the repository.
+        /// </summary>
         public const string RepositoryOwner = "GITHUB_REPOSITORY_OWNER";
+
+        /// <summary>
+        ///     The owner and repository name (e.g., `octocat/Hello-World`).
+        /// </summary>
         public const string Repository = "GITHUB_REPOSITORY";
+
+        /// <summary>
+        ///     The number of days to retain workflow runs and artifacts.
+        /// </summary>
         public const string RetentionDays = "GITHUB_RETENTION_DAYS";
+
+        /// <summary>
+        ///     The attempt number of the current workflow run.
+        /// </summary>
         public const string RunAttempt = "GITHUB_RUN_ATTEMPT";
+
+        /// <summary>
+        ///     The unique ID of the workflow run.
+        /// </summary>
         public const string RunId = "GITHUB_RUN_ID";
+
+        /// <summary>
+        ///     The unique number of the workflow run within the repository.
+        /// </summary>
         public const string RunNumber = "GITHUB_RUN_NUMBER";
+
+        /// <summary>
+        ///     The URL of the GitHub server (e.g., `https://github.com`).
+        /// </summary>
         public const string ServerUrl = "GITHUB_SERVER_URL";
+
+        /// <summary>
+        ///     The commit SHA that triggered the workflow.
+        /// </summary>
         public const string Sha = "GITHUB_SHA";
+
+        /// <summary>
+        ///     The path to a file that contains workflow commands to save state.
+        /// </summary>
         public const string State = "GITHUB_STATE";
+
+        /// <summary>
+        ///     The path to a file that contains content to append to the job summary.
+        /// </summary>
         public const string StepSummary = "GITHUB_STEP_SUMMARY";
+
+        /// <summary>
+        ///     The actor that triggered the workflow, even if it was a bot.
+        /// </summary>
         public const string TriggeringActor = "GITHUB_TRIGGERING_ACTOR";
+
+        /// <summary>
+        ///     The full ref of the workflow file (e.g., `octocat/Hello-World/.github/workflows/my-workflow.yml@refs/heads/main`).
+        /// </summary>
         public const string WorkflowRef = "GITHUB_WORKFLOW_REF";
+
+        /// <summary>
+        ///     The commit SHA of the workflow file.
+        /// </summary>
         public const string WorkflowSha = "GITHUB_WORKFLOW_SHA";
+
+        /// <summary>
+        ///     The name of the workflow.
+        /// </summary>
         public const string Workflow = "GITHUB_WORKFLOW";
+
+        /// <summary>
+        ///     The path to the GitHub workspace directory.
+        /// </summary>
         public const string Workspace = "GITHUB_WORKSPACE";
+
+        /// <summary>
+        ///     The architecture of the runner machine (e.g., `X64`).
+        /// </summary>
         public const string RunnerArch = "RUNNER_ARCH";
+
+        /// <summary>
+        ///     A boolean indicating if runner debugging is enabled.
+        /// </summary>
         public const string RunnerDebug = "RUNNER_DEBUG";
+
+        /// <summary>
+        ///     The environment of the runner machine (e.g., `github-hosted`).
+        /// </summary>
         public const string RunnerEnvironment = "RUNNER_ENVIRONMENT";
+
+        /// <summary>
+        ///     The name of the runner machine.
+        /// </summary>
         public const string RunnerName = "RUNNER_NAME";
+
+        /// <summary>
+        ///     The operating system of the runner machine (e.g., `Linux`, `Windows`).
+        /// </summary>
         public const string RunnerOs = "RUNNER_OS";
+
+        /// <summary>
+        ///     The path to the runner performance log.
+        /// </summary>
         public const string RunnerPerfLog = "RUNNER_PERFLOG";
+
+        /// <summary>
+        ///     The path to the runner's temporary directory.
+        /// </summary>
         public const string RunnerTemp = "RUNNER_TEMP";
+
+        /// <summary>
+        ///     The path to the runner's tool cache directory.
+        /// </summary>
         public const string RunnerToolCache = "RUNNER_TOOL_CACHE";
+
+        /// <summary>
+        ///     The tracking ID of the runner.
+        /// </summary>
         public const string RunnerTrackingId = "RUNNER_TRACKING_ID";
+
+        /// <summary>
+        ///     The user account that the runner is running as.
+        /// </summary>
         public const string RunnerUser = "RUNNER_USER";
+
+        /// <summary>
+        ///     The path to the runner's workspace directory.
+        /// </summary>
         public const string RunnerWorkspace = "RUNNER_WORKSPACE";
     }
 
+    /// <summary>
+    ///     Provides access to GitHub Actions environment variables as strongly-typed properties.
+    /// </summary>
+    /// <remarks>
+    ///     Each property corresponds to a GitHub Actions environment variable,
+    ///     returning its value or an empty string if the variable is not set.
+    /// </remarks>
     [PublicAPI]
     public static class Variables
     {
         /// <summary>
-        ///     GITHUB_ACTIONS
+        ///     Gets the value of the <c>GITHUB_ACTIONS</c> environment variable.
         /// </summary>
         /// <example>
         ///     true
@@ -101,7 +326,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Actions) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_ACTOR_ID
+        ///     Gets the value of the <c>GITHUB_ACTOR_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     1234567
@@ -110,7 +335,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.ActorId) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_ACTOR
+        ///     Gets the value of the <c>GITHUB_ACTOR</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -118,7 +343,7 @@ public static class Github
         public static string Actor { get; } = Environment.GetEnvironmentVariable(VariableNames.Actor) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_API_URL
+        ///     Gets the value of the <c>GITHUB_API_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://api.github.com
@@ -126,7 +351,7 @@ public static class Github
         public static string ApiUrl { get; } = Environment.GetEnvironmentVariable(VariableNames.ApiUrl) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_BASE_REF
+        ///     Gets the value of the <c>GITHUB_BASE_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     main
@@ -135,7 +360,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.BaseRef) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_ENV
+        ///     Gets the value of the <c>GITHUB_ENV</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/set_env_[GUID]
@@ -143,7 +368,7 @@ public static class Github
         public static string Env { get; } = Environment.GetEnvironmentVariable(VariableNames.Env) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_EVENT_NAME
+        ///     Gets the value of the <c>GITHUB_EVENT_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     pull_request
@@ -152,7 +377,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.EventName) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_EVENT_PATH
+        ///     Gets the value of the <c>GITHUB_EVENT_PATH</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_github_workflow/event.json
@@ -161,7 +386,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.EventPath) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_GRAPHQL_URL
+        ///     Gets the value of the <c>GITHUB_GRAPHQL_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://api.github.com/graphql
@@ -170,7 +395,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.GraphqlUrl) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_HEAD_REF
+        ///     Gets the value of the <c>GITHUB_HEAD_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     my-branch
@@ -179,7 +404,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.HeadRef) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_JOB
+        ///     Gets the value of the <c>GITHUB_JOB</c> environment variable.
         /// </summary>
         /// <example>
         ///     BuildApp
@@ -187,7 +412,7 @@ public static class Github
         public static string Job { get; } = Environment.GetEnvironmentVariable(VariableNames.Job) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_OUTPUT
+        ///     Gets the value of the <c>GITHUB_OUTPUT</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/set_output_[GUID]
@@ -195,7 +420,7 @@ public static class Github
         public static string Output { get; } = Environment.GetEnvironmentVariable(VariableNames.Output) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_PATH
+        ///     Gets the value of the <c>GITHUB_PATH</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/add_path_[GUID]
@@ -203,7 +428,7 @@ public static class Github
         public static string Path { get; } = Environment.GetEnvironmentVariable(VariableNames.Path) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REF_NAME
+        ///     Gets the value of the <c>GITHUB_REF_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     4/my-branch
@@ -212,7 +437,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefName) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REF_PROTECTED
+        ///     Gets the value of the <c>GITHUB_REF_PROTECTED</c> environment variable.
         /// </summary>
         /// <example>
         ///     false
@@ -221,7 +446,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefProtected) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REF_TYPE
+        ///     Gets the value of the <c>GITHUB_REF_TYPE</c> environment variable.
         /// </summary>
         /// <example>
         ///     branch
@@ -230,7 +455,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RefType) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REF
+        ///     Gets the value of the <c>GITHUB_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     refs/pull/4/merge
@@ -238,7 +463,7 @@ public static class Github
         public static string Ref { get; } = Environment.GetEnvironmentVariable(VariableNames.Ref) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REPOSITORY_ID
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     123456789
@@ -247,7 +472,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryId) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REPOSITORY_OWNER_ID
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_OWNER_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     1234567
@@ -256,7 +481,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryOwnerId) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REPOSITORY_OWNER
+        ///     Gets the value of the <c>GITHUB_REPOSITORY_OWNER</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -265,7 +490,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RepositoryOwner) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_REPOSITORY
+        ///     Gets the value of the <c>GITHUB_REPOSITORY</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent/my-project
@@ -274,7 +499,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Repository) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_RETENTION_DAYS
+        ///     Gets the value of the <c>GITHUB_RETENTION_DAYS</c> environment variable.
         /// </summary>
         /// <example>
         ///     90
@@ -283,7 +508,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RetentionDays) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_RUN_ATTEMPT
+        ///     Gets the value of the <c>GITHUB_RUN_ATTEMPT</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -292,7 +517,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunAttempt) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_RUN_ID
+        ///     Gets the value of the <c>GITHUB_RUN_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     9876543210
@@ -300,7 +525,7 @@ public static class Github
         public static string RunId { get; } = Environment.GetEnvironmentVariable(VariableNames.RunId) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_RUN_NUMBER
+        ///     Gets the value of the <c>GITHUB_RUN_NUMBER</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -309,7 +534,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunNumber) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_SERVER_URL
+        ///     Gets the value of the <c>GITHUB_SERVER_URL</c> environment variable.
         /// </summary>
         /// <example>
         ///     https://github.com
@@ -318,7 +543,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.ServerUrl) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_SHA
+        ///     Gets the value of the <c>GITHUB_SHA</c> environment variable.
         /// </summary>
         /// <example>
         ///     [SHA]
@@ -326,7 +551,7 @@ public static class Github
         public static string Sha { get; } = Environment.GetEnvironmentVariable(VariableNames.Sha) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_STATE
+        ///     Gets the value of the <c>GITHUB_STATE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/save_state_[GUID]
@@ -334,7 +559,7 @@ public static class Github
         public static string State { get; } = Environment.GetEnvironmentVariable(VariableNames.State) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_STEP_SUMMARY
+        ///     Gets the value of the <c>GITHUB_STEP_SUMMARY</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp/_runner_file_commands/step_summary_[GUID]
@@ -343,7 +568,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.StepSummary) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_TRIGGERING_ACTOR
+        ///     Gets the value of the <c>GITHUB_TRIGGERING_ACTOR</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent
@@ -352,7 +577,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.TriggeringActor) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_WORKFLOW_REF
+        ///     Gets the value of the <c>GITHUB_WORKFLOW_REF</c> environment variable.
         /// </summary>
         /// <example>
         ///     ArthurDent/my-project/.github/workflows/BuildApp.yml@refs/pull/4/merge
@@ -361,7 +586,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.WorkflowRef) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_WORKFLOW_SHA
+        ///     Gets the value of the <c>GITHUB_WORKFLOW_SHA</c> environment variable.
         /// </summary>
         /// <example>
         ///     [SHA]
@@ -370,7 +595,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.WorkflowSha) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_WORKFLOW
+        ///     Gets the value of the <c>GITHUB_WORKFLOW</c> environment variable.
         /// </summary>
         /// <example>
         ///     build
@@ -379,7 +604,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Workflow) ?? string.Empty;
 
         /// <summary>
-        ///     GITHUB_WORKSPACE
+        ///     Gets the value of the <c>GITHUB_WORKSPACE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/my-project/my-project
@@ -388,7 +613,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.Workspace) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_ARCH
+        ///     Gets the value of the <c>RUNNER_ARCH</c> environment variable.
         /// </summary>
         /// <example>
         ///     X64
@@ -397,7 +622,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerArch) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_DEBUG
+        ///     Gets the value of the <c>RUNNER_DEBUG</c> environment variable.
         /// </summary>
         /// <example>
         ///     1
@@ -406,7 +631,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerDebug) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_ENVIRONMENT
+        ///     Gets the value of the <c>RUNNER_ENVIRONMENT</c> environment variable.
         /// </summary>
         /// <example>
         ///     github-hosted
@@ -415,7 +640,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerEnvironment) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_NAME
+        ///     Gets the value of the <c>RUNNER_NAME</c> environment variable.
         /// </summary>
         /// <example>
         ///     GitHubActions 6
@@ -424,7 +649,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerName) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_OS
+        ///     Gets the value of the <c>RUNNER_OS</c> environment variable.
         /// </summary>
         /// <example>
         ///     Linux
@@ -433,7 +658,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerOs) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_PERFLOG
+        ///     Gets the value of the <c>RUNNER_PERFLOG</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/perflog
@@ -442,7 +667,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerPerfLog) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_TEMP
+        ///     Gets the value of the <c>RUNNER_TEMP</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/_temp
@@ -451,7 +676,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerTemp) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_TOOL_CACHE
+        ///     Gets the value of the <c>RUNNER_TOOL_CACHE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /opt/hostedtoolcache
@@ -460,7 +685,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerToolCache) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_TRACKING_ID
+        ///     Gets the value of the <c>RUNNER_TRACKING_ID</c> environment variable.
         /// </summary>
         /// <example>
         ///     github_3cf77bfa-2ce5-4b4c-b736-d6a7b5c16537
@@ -469,7 +694,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerTrackingId) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_USER
+        ///     Gets the value of the <c>RUNNER_USER</c> environment variable.
         /// </summary>
         /// <example>
         ///     runner
@@ -478,7 +703,7 @@ public static class Github
             Environment.GetEnvironmentVariable(VariableNames.RunnerUser) ?? string.Empty;
 
         /// <summary>
-        ///     RUNNER_WORKSPACE
+        ///     Gets the value of the <c>RUNNER_WORKSPACE</c> environment variable.
         /// </summary>
         /// <example>
         ///     /home/runner/work/my-project

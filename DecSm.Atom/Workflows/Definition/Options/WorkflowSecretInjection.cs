@@ -1,54 +1,26 @@
 ﻿namespace DecSm.Atom.Workflows.Definition.Options;
 
 /// <summary>
-///     Represents a workflow option that injects secret values into the workflow execution context.
-///     Secrets are handled securely by workflow platforms and are not exposed in logs or outputs.
+///     Represents a workflow option that injects a secret value into the workflow execution context.
 /// </summary>
 /// <remarks>
-///     <para>
-///         This sealed record provides a mechanism for injecting secret values into workflow executions
-///         across different workflow platforms (GitHub Actions, Azure DevOps, etc.). Unlike regular
-///         parameters or environment variables, secrets are treated with special security considerations.
-///     </para>
-///     <para>
-///         Secret injections are commonly used for:
-///     </para>
-///     <list type="bullet">
-///         <item>
-///             <description>API tokens and authentication keys</description>
-///         </item>
-///         <item>
-///             <description>Database connection strings with credentials</description>
-///         </item>
-///         <item>
-///             <description>Signing certificates and private keys</description>
-///         </item>
-///         <item>
-///             <description>Third-party service credentials</description>
-///         </item>
-///     </list>
-///     <para>
-///         The workflow generators automatically process these injections and configure the appropriate
-///         secret mechanisms for their respective platforms, ensuring values are masked in logs and
-///         handled according to security best practices.
-///     </para>
+///     This provides a secure mechanism for injecting sensitive data like API keys or passwords into workflows.
+///     Workflow platforms handle these secrets securely, masking them in logs and outputs.
 /// </remarks>
 /// <example>
 ///     <code>
-/// // Create secret injection using factory method
+/// // Inject a GitHub token secret
 /// var githubTokenSecret = WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken));
+///
 /// // Add to workflow configuration
-/// var workflowDefinition = new WorkflowDefinition()
-///     .WithAddedOptions(githubTokenSecret);
-/// // The secret will be available securely in workflow steps
-/// </code>
+/// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(githubTokenSecret);
+///     </code>
 /// </example>
-/// <seealso cref="WorkflowOption{TData, TSelf}" />
-/// <seealso cref="WorkflowSecretsSecretInjection" />
-/// <seealso cref="WorkflowParamInjection" />
-/// <seealso cref="SecretDefinitionAttribute" />
 [PublicAPI]
 public sealed record WorkflowSecretInjection : WorkflowOption<string, WorkflowSecretInjection>
 {
+    /// <summary>
+    ///     Gets a value indicating that multiple instances of this option are allowed.
+    /// </summary>
     public override bool AllowMultiple => true;
 }

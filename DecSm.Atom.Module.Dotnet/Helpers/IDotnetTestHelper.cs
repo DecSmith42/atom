@@ -1,8 +1,30 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Helpers;
 
+/// <summary>
+///     Provides helper methods for running .NET tests and staging their results and code coverage reports.
+/// </summary>
+/// <remarks>
+///     This interface extends <see cref="IDotnetCliHelper" /> for executing `dotnet test` commands,
+///     <see cref="IBuildInfo" /> for build version information, <see cref="IDotnetToolInstallHelper" />
+///     for installing necessary tools, and <see cref="IReportsHelper" /> for generating build reports.
+/// </remarks>
 [PublicAPI]
 public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotnetToolInstallHelper, IReportsHelper
 {
+    /// <summary>
+    ///     Runs tests for a .NET project by its name, then stages the test results and optionally code coverage reports.
+    /// </summary>
+    /// <param name="projectName">The name of the project to test (e.g., "MyProject.Tests").</param>
+    /// <param name="options">Optional. Configuration options for the testing and staging process.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task{TResult}" /> that returns the exit code of the `dotnet test` command.</returns>
+    /// <exception cref="StepFailedException">Thrown if the project file cannot be located.</exception>
+    /// <remarks>
+    ///     This method first locates the project file based on its name, then calls
+    ///     <see cref="DotnetTestAndStage(RootedPath, DotnetTestAndStageOptions?, CancellationToken)" />
+    ///     with the resolved path.
+    /// </remarks>
+    [PublicAPI]
     Task<int> DotnetTestAndStage(
         string projectName,
         DotnetTestAndStageOptions? options = null,
@@ -16,6 +38,61 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
         return DotnetTestAndStage(projectPath, options, cancellationToken);
     }
 
+    /// <summary>
+    ///     Runs tests for a .NET project specified by its path, then stages the test results and optionally code coverage
+    ///     reports.
+    /// </summary>
+    /// <param name="projectPath">The full path to the project file (e.g., "tests/MyProject.Tests/MyProject.Tests.csproj").</param>
+    /// <param name="options">Optional. Configuration options for the testing and staging process.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task{TResult}" /> that returns the exit code of the `dotnet test` command.</returns>
+    /// <remarks>
+    ///     <para>
+    ///         This method performs the following steps:
+    ///         <list type="number">
+    ///             <item>
+    ///                 <description>
+    ///                     Configures `dotnet test` options, including TRX and HTML loggers, and optionally code
+    ///                     coverage.
+    ///                 </description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>Cleans up existing test result directories.</description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>
+    ///                     Applies version transformations to project files if
+    ///                     <see cref="DotnetTestAndStageOptions.SetVersionsFromProviders" /> is <c>true</c>.
+    ///                 </description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>
+    ///                     Executes the `dotnet test` command using
+    ///                     <see cref="IDotnetCli.Test(RootedPath, TestOptions?, ProcessRunOptions?, CancellationToken)" />.
+    ///                 </description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>Copies the generated HTML test report to the Atom publish directory.</description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>Generates a detailed test report using <see cref="GenerateTestReport" />.</description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>
+    ///                     If <see cref="DotnetTestAndStageOptions.IncludeCoverage" /> is <c>true</c>, installs
+    ///                     `dotnet-reportgenerator-globaltool` and generates code coverage reports.
+    ///                 </description>
+    ///             </item>
+    ///             <item>
+    ///                 <description>Generates a code coverage report using <see cref="GenerateCoverageReport" />.</description>
+    ///             </item>
+    ///         </list>
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="IBuildInfo.BuildVersion" /> is used for version transformation.
+    ///     </para>
+    /// </remarks>
+    [PublicAPI]
     async Task<int> DotnetTestAndStage(
         RootedPath projectPath,
         DotnetTestAndStageOptions? options = null,
@@ -147,9 +224,18 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
         return result.ExitCode;
     }
 
+    /// <summary>
+    ///     Generates a test report from a TRX file and adds it to the build report.
+    /// </summary>
+    /// <param name="projectName">The name of the project that was tested.</param>
+    /// <param name="configuration">The build configuration (e.g., "Release", "Debug").</param>
+    /// <param name="framework">The target framework (e.g., "net8.0").</param>
+    /// <param name="trxFile">The path to the TRX test results file.</param>
+    /// <param name="includeTitle">Whether to include a title in the generated report data.</param>
     [UnconditionalSuppressMessage("Trimming",
         "IL2026:RequiresUnreferencedCode",
         Justification = "Deserialized type `TestRun` is manually preserved via DynamicallyAccessedMembers.")]
+    [PublicAPI]
     void GenerateTestReport(
         string projectName,
         string? configuration,
@@ -201,6 +287,15 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
             });
     }
 
+    /// <summary>
+    ///     Generates a code coverage report from a JSON summary file and adds it to the build report.
+    /// </summary>
+    /// <param name="projectName">The name of the project for which coverage was generated.</param>
+    /// <param name="configuration">The build configuration (e.g., "Release", "Debug").</param>
+    /// <param name="framework">The target framework (e.g., "net8.0").</param>
+    /// <param name="coverageJsonFile">The path to the JSON code coverage summary file.</param>
+    /// <param name="includeTitle">Whether to include a title in the generated report data.</param>
+    [PublicAPI]
     void GenerateCoverageReport(
         string projectName,
         string? configuration,
@@ -228,6 +323,11 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
         });
     }
 
+    /// <summary>
+    ///     Formats a <see cref="TimeSpan" /> into a human-readable string.
+    /// </summary>
+    /// <param name="duration">The duration to format.</param>
+    /// <returns>A string representation of the duration (e.g., "1.23s", "5m 30s", "1h 15m 0s").</returns>
     private static string PrintDuration(TimeSpan duration) =>
         duration.TotalSeconds switch
         {
@@ -236,18 +336,53 @@ public partial interface IDotnetTestHelper : IDotnetCliHelper, IBuildInfo, IDotn
             _ => $"{duration.Hours}h {duration.Minutes}m {duration.Seconds}s",
         };
 
+    /// <summary>
+    ///     Provides a <see cref="JsonSerializerContext" /> for source generation of <see cref="CoverageModel" />.
+    /// </summary>
     [JsonSerializable(typeof(CoverageModel))]
     internal partial class CoverageModelContext : JsonSerializerContext;
 }
 
+/// <summary>
+///     Represents options for the
+///     <see cref="IDotnetTestHelper.DotnetTestAndStage(RootedPath, DotnetTestAndStageOptions?, CancellationToken)" />
+///     operation.
+/// </summary>
 [PublicAPI]
 public sealed record DotnetTestAndStageOptions
 {
+    /// <summary>
+    ///     Gets or sets the specific options to pass to the `dotnet test` command.
+    /// </summary>
     public TestOptions? TestOptions { get; init; }
 
+    /// <summary>
+    ///     Gets or sets a value indicating whether to automatically set project versions
+    ///     from the build version providers (<see cref="IBuildInfo.BuildVersion" />).
+    /// </summary>
+    /// <remarks>
+    ///     If <c>true</c>, the module will attempt to inject the build version into project files
+    ///     before running tests. Defaults to <c>true</c>.
+    /// </remarks>
     public bool SetVersionsFromProviders { get; init; } = true;
 
+    /// <summary>
+    ///     Gets or sets a custom transformation function to apply to project property files
+    ///     before running tests.
+    /// </summary>
+    /// <remarks>
+    ///     This function can be used to modify the content of `.csproj` or `.props` files
+    ///     (e.g., to inject custom properties or modify existing ones) during the testing process.
+    /// </remarks>
     public Func<string, string>? CustomPropertiesTransform { get; init; }
 
+    /// <summary>
+    ///     Gets or sets a value indicating whether to include code coverage generation and reporting.
+    /// </summary>
+    /// <remarks>
+    ///     If <c>true</c>, the `dotnet test` command will be configured to collect code coverage,
+    ///     and a code coverage report will be generated and added to the build report.
+    ///     Defaults to <c>true</c>.
+    /// </remarks>
     public bool IncludeCoverage { get; init; } = true;
 }

@@ -1,7 +1,17 @@
 ﻿namespace DecSm.Atom.Build;
 
+/// <summary>
+///     Resolves the complete <see cref="BuildModel" /> by processing target definitions, dependencies, and parameters.
+/// </summary>
+/// <param name="buildDefinition">The core build definition.</param>
+/// <param name="commandLineArgs">The parsed command-line arguments.</param>
 internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLineArgs commandLineArgs)
 {
+    /// <summary>
+    ///     Resolves and constructs the <see cref="BuildModel" /> for the current build.
+    /// </summary>
+    /// <returns>A fully resolved <see cref="BuildModel" /> instance.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if duplicate or circular target dependencies are detected.</exception>
     public BuildModel Resolve()
     {
         var defaultScope = buildDefinition.CreateParamResolutionSuppressionScope();
@@ -196,6 +206,13 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
         }
     }
 
+    /// <summary>
+    ///     Recursively adds a parameter and its chained dependencies to the list of used parameters for a target.
+    /// </summary>
+    /// <param name="param">The name of the parameter to add.</param>
+    /// <param name="required">A value indicating whether the parameter is required.</param>
+    /// <param name="usedParams">The list of used parameters to add to.</param>
+    /// <param name="paramModels">A dictionary of all available parameter models.</param>
     private static void AddParamAndChildren(
         string param,
         bool required,

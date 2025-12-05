@@ -1,21 +1,20 @@
 ﻿namespace DecSm.Atom.Paths;
 
 /// <summary>
-///     A rooted path in the file system.
-///     Implicitly convertible to a string.
+///     Represents a file system path that is rooted within a specific <see cref="IAtomFileSystem" /> instance.
 /// </summary>
+/// <param name="FileSystem">The file system instance this path belongs to.</param>
+/// <param name="Path">The absolute path string.</param>
 [PublicAPI]
 public record RootedPath(IAtomFileSystem FileSystem, string Path)
 {
     /// <summary>
-    ///     Gets the parent directory of the current path if it exists.
+    ///     Gets the parent directory of the current path.
     /// </summary>
-    /// <remarks>
-    ///     The <c>Parent</c> property calculates the parent directory of the current path by trimming the last segment of the
-    ///     path.
-    ///     This property handles both forward slashes ("/") and backslashes ("\") as path separators,
-    ///     retaining compatibility with various file system conventions.
-    /// </remarks>
+    /// <returns>
+    ///     A new <see cref="RootedPath" /> representing the parent directory, or <c>null</c> if the current path is a
+    ///     root.
+    /// </returns>
     public RootedPath? Parent
     {
         get
@@ -45,32 +44,24 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     }
 
     /// <summary>
-    ///     Indicates whether the current path exists in the file system as either a file or a directory.
+    ///     Indicates whether the path exists in the file system as either a file or a directory.
     /// </summary>
-    /// <remarks>
-    ///     The <c>PathExists</c> property returns <c>true</c> if either <c>FileExists</c> or <c>DirectoryExists</c> evaluates
-    ///     to <c>true</c>,
-    ///     ensuring that the path is valid and points to an existing entity in the file system.
-    /// </remarks>
     public bool PathExists => FileExists || DirectoryExists;
 
     /// <summary>
-    ///     Indicates whether the current path exists in the file system as a file.
+    ///     Indicates whether the path exists in the file system as a file.
     /// </summary>
     public bool FileExists => FileSystem.File.Exists(Path);
 
     /// <summary>
-    ///     Indicates whether the current path exists in the file system as a directory.
+    ///     Indicates whether the path exists in the file system as a directory.
     /// </summary>
     public bool DirectoryExists => FileSystem.Directory.Exists(Path);
 
     /// <summary>
-    ///     Gets the file name from the current path if the file exists.
+    ///     Gets the file name from the current path.
     /// </summary>
-    /// <remarks>
-    ///     The <c>FileName</c> property retrieves the name of the file from the specified path using the file system's path
-    ///     utilities.
-    /// </remarks>
+    /// <returns>The file name including its extension, or <c>null</c> if the path does not represent an existing file.</returns>
     public string? FileName =>
         FileExists
             ? FileSystem.Path.GetFileName(Path)
@@ -79,45 +70,39 @@ public record RootedPath(IAtomFileSystem FileSystem, string Path)
     /// <summary>
     ///     Gets the file name of the current path without its extension.
     /// </summary>
-    /// <remarks>
-    ///     The <c>FileNameWithoutExtension</c> property retrieves the file name from the current path while excluding its
-    ///     extension.
-    ///     This is useful for scenarios where only the base name of the file is needed, without any file type information.
-    ///     If the path does not refer to a valid file, this property returns an empty string or handles it appropriately
-    ///     depending on the implementation details.
-    /// </remarks>
+    /// <returns>The file name without its extension.</returns>
     public string FileNameWithoutExtension => FileSystem.Path.GetFileNameWithoutExtension(Path);
 
     /// <summary>
-    ///     Gets the directory name of the current path if it exists and represents a directory.
+    ///     Gets the directory name of the current path.
     /// </summary>
-    /// <remarks>
-    ///     The <c>DirectoryName</c> property retrieves the name of the directory that the current path points to
-    ///     if the path represents an existing directory.
-    /// </remarks>
+    /// <returns>The directory name, or <c>null</c> if the path does not represent an existing directory.</returns>
     public string? DirectoryName =>
         DirectoryExists
             ? FileSystem.Path.GetDirectoryName(Path)
             : null;
 
     /// <summary>
-    ///     Defines a custom operator for combining a <see cref="RootedPath" /> with a string.
+    ///     Combines the current <see cref="RootedPath" /> with a string segment.
     /// </summary>
-    /// <param name="left">The original <see cref="RootedPath" /> instance.</param>
-    /// <param name="right">The string to combine with the path of the <see cref="RootedPath" />.</param>
-    /// <remarks>
-    ///     This operator uses <see cref="Path.Combine(string, string)" /> to combine the original path with the provided
-    ///     string.
-    /// </remarks>
+    /// <param name="left">The base <see cref="RootedPath" />.</param>
+    /// <param name="right">The string segment to append.</param>
+    /// <returns>A new <see cref="RootedPath" /> representing the combined path.</returns>
     public static RootedPath operator /(RootedPath left, string right) =>
         left with
         {
             Path = left.FileSystem.Path.Combine(left.Path, right),
         };
 
+    /// <summary>
+    ///     Implicitly converts a <see cref="RootedPath" /> to its string representation.
+    /// </summary>
+    /// <param name="path">The <see cref="RootedPath" /> to convert.</param>
+    /// <returns>The string representation of the path.</returns>
     public static implicit operator string(RootedPath path) =>
         path.Path;
 
+    /// <inheritdoc />
     public override string ToString() =>
         Path;
 }

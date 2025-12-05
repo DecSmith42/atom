@@ -1,43 +1,37 @@
 ﻿namespace DecSm.Atom.Params;
 
 /// <summary>
-///     Definition for a parameter that is used at runtime.
+///     Represents the definition of a parameter used at runtime, including its name, source, and other metadata.
 /// </summary>
-/// <param name="Name">
-///     The name of the parameter.
-/// </param>
+/// <param name="Name">The programmatic (C#) name of the parameter.</param>
 [PublicAPI]
 public sealed record ParamDefinition(string Name)
 {
     /// <summary>
-    ///     The name of the argument that is used to pass the parameter.
-    ///     The name will typically be prefixed with '--' when used as a command line argument.
+    ///     Gets the name used to specify the parameter on the command line (e.g., "my-param").
     /// </summary>
     public required string ArgName { get; init; }
 
     /// <summary>
-    ///     The human-readable description of the parameter.
-    ///     This is used to generate help text.
-    ///     Not required but highly recommended.
+    ///     Gets the description of the parameter, used for generating help text.
     /// </summary>
     public required string Description { get; init; }
 
     /// <summary>
-    ///     The source/s that this parameter can be provided from.
-    ///     Defaults to <see cref="ParamSource.All" />.
+    ///     Gets the sources from which this parameter can be resolved. Defaults to <see cref="ParamSource.All" />.
     /// </summary>
     public required ParamSource Sources { get; init; }
 
     /// <summary>
-    ///     Whether the parameter is a secret.
-    ///     Secrets can be sourced from <see cref="ISecretsProvider" /> implementations,
-    ///     and are masked in logs and other output.
+    ///     Gets a value indicating whether the parameter is a secret.
     /// </summary>
+    /// <remarks>
+    ///     Secret values are masked in logs and can be resolved from <see cref="ISecretsProvider" /> implementations.
+    /// </remarks>
     public required bool IsSecret { get; init; }
 
     /// <summary>
-    ///     A collection of other parameters that are required and associated with this parameter.
-    ///     These additional parameters are defined as dependencies for the current parameter.
+    ///     Gets a list of other parameters that this parameter depends on for its resolution.
     /// </summary>
     public required IReadOnlyList<string> ChainedParams { get; init; }
 }

@@ -1,24 +1,16 @@
 ﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
-///     Provides the timestamp for the build.
+///     Defines a provider for determining the build timestamp.
 /// </summary>
 [PublicAPI]
 public interface IBuildTimestampProvider
 {
     /// <summary>
-    ///     Gets the build timestamp.
+    ///     Gets the build timestamp as the number of seconds since the Unix epoch (UTC).
     /// </summary>
     /// <remarks>
-    ///     Should represent the build timestamp consistently across the build lifecycle.
-    ///     Typically provided as Unix time in seconds since epoch (UTC).
+    ///     This value should remain consistent throughout the build lifecycle.
     /// </remarks>
-    /// <example>
-    ///     Example usage:
-    ///     <code>
-    /// var buildTimestamp = buildTimestampProvider.Timestamp;
-    /// // e.g., buildTimestamp = 1704067200 for 2024-01-01T00:00:00Z
-    /// </code>
-    /// </example>
     long Timestamp { get; }
 }

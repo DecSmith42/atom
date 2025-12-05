@@ -1,46 +1,33 @@
 ﻿namespace DecSm.Atom.Artifacts;
 
 /// <summary>
-///     Defines a target for retrieving artifacts within the Atom framework.
+///     Defines a target for retrieving build artifacts using an <see cref="IArtifactProvider" />.
 /// </summary>
 /// <remarks>
 ///     This interface, when implemented by a build definition, provides the <see cref="RetrieveArtifact" /> target.
-///     This target is responsible for downloading specified artifacts using the configured
-///     <see cref="IArtifactProvider" />.
-///     It typically consumes build information like <c>ISetupBuildInfo.BuildName</c> and <c>ISetupBuildInfo.BuildId</c> to
-///     identify the
-///     correct artifacts.
-///     The artifacts to be retrieved are specified via the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
-///     The target is hidden by default as it's primarily for internal use by the Atom framework or custom artifact
-///     provider workflows.
+///     It uses the configured <see cref="IArtifactProvider" /> to download artifacts.
+///     Artifacts to be retrieved are specified via the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
+///     Build information from <see cref="ISetupBuildInfo" /> (e.g., <c>BuildName</c>, <c>BuildId</c>) is used
+///     to identify the correct artifacts to download.
+///     This target is hidden by default, primarily for internal use or custom artifact workflows.
 /// </remarks>
-/// <example>
-///     A workflow might use this target to download previously stored packages:
-///     <code>
-/// // In a GitHub Workflow YML file (e.g., .github/workflows/Test_BuildWithCustomArtifacts.yml)
-/// // This step would invoke the RetrieveArtifact target.
-/// - name: RetrieveArtifact
-///   run: dotnet run --project _atom/_atom.csproj RetrieveArtifact --skip --headless
-///   env:
-///     # Environment variables for artifact provider configuration and artifact names
-///     azure-vault-app-secret: ${{ secrets.AZURE_VAULT_APP_SECRET }}
-///     azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
-///     azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
-///     azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
-///     atom-artifacts: DecSm.Atom,DecSm.Atom.Tool # Specifies which artifacts to retrieve
-/// </code>
-/// </example>
 [TargetDefinition]
 public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInfo
 {
+    /// <summary>
+    ///     Gets the configured <see cref="IArtifactProvider" /> instance.
+    /// </summary>
     private IArtifactProvider ArtifactProvider => GetService<IArtifactProvider>();
 
     /// <summary>
-    ///     Defines the target for retrieving artifacts.
+    ///     Defines the target responsible for retrieving artifacts.
     /// </summary>
     /// <remarks>
-    ///     This target uses the configured <see cref="IArtifactProvider" /> to download artifacts specified
-    ///     by the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter.
+    ///     This target orchestrates the download of artifacts by invoking the
+    ///     <see cref="IArtifactProvider.RetrieveArtifacts" />
+    ///     method.
+    ///     It consumes the <see cref="IAtomArtifactsParam.AtomArtifacts" /> parameter to determine which artifacts to retrieve
+    ///     and utilizes build metadata from <see cref="ISetupBuildInfo" />.
     /// </remarks>
     Target RetrieveArtifact =>
         t => t

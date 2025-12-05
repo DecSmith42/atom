@@ -1,5 +1,11 @@
 ﻿namespace DecSm.Atom.Workflows;
 
+/// <summary>
+///     Resolves a <see cref="WorkflowDefinition" /> into a fully structured <see cref="WorkflowModel" />.
+/// </summary>
+/// <param name="buildDefinition">The build definition containing global options and target information.</param>
+/// <param name="buildModel">The resolved build model.</param>
+/// <param name="workflowOptionProviders">A collection of workflow option providers.</param>
 internal sealed class WorkflowResolver(
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
@@ -8,6 +14,15 @@ internal sealed class WorkflowResolver(
 {
     private readonly IReadOnlyList<IWorkflowOptionProvider> _workflowOptionProviders = workflowOptionProviders.ToList();
 
+    /// <summary>
+    ///     Resolves a <see cref="WorkflowDefinition" /> into a <see cref="WorkflowModel" />,
+    ///     including job and step ordering, and dependency resolution.
+    /// </summary>
+    /// <param name="definition">The workflow definition to resolve.</param>
+    /// <returns>A fully resolved <see cref="WorkflowModel" />.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if a consumed variable is not produced by its declared target.
+    /// </exception>
     public WorkflowModel Resolve(WorkflowDefinition definition)
     {
         // Get all default options from BuildDefinition, WorkflowOptionProviders and WorkflowDefinition
@@ -128,6 +143,11 @@ internal sealed class WorkflowResolver(
         };
     }
 
+    /// <summary>
+    ///     Orders a list of workflow jobs based on their dependencies.
+    /// </summary>
+    /// <param name="jobs">The list of jobs to order.</param>
+    /// <returns>A new list of jobs, ordered by their dependencies.</returns>
     private static List<WorkflowJobModel> OrderJobs(List<WorkflowJobModel> jobs)
     {
         var orderedJobs = new List<WorkflowJobModel>();
@@ -139,7 +159,9 @@ internal sealed class WorkflowResolver(
 
         void AddJob(WorkflowJobModel target)
         {
-            foreach (var jobDep in target.JobDependencies)
+            foreach (var jobDep in jobs
+                         .Where(x => x.Name == target.Name)
+                         .SelectMany(x => x.JobDependencies))
                 AddJob(jobs.Single(x => x.Name == jobDep));
 
             if (orderedJobs.Contains(target))

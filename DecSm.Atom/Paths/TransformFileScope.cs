@@ -1,21 +1,19 @@
 ﻿namespace DecSm.Atom.Paths;
 
 /// <summary>
-///     Represents a disposable scope for performing transformations on a file's content.
-///     Restores the file's original content upon disposal (unless restoration has been explicitly canceled).
+///     Represents a disposable scope for performing temporary transformations on a file's content.
+///     Upon disposal, the file's original content is restored unless restoration is explicitly canceled.
 /// </summary>
 /// <remarks>
-///     Atom build uses this to set additional build properties in a project file during a build without permanently
-///     modifying the file.
+///     This is useful for temporarily modifying project files during a build without permanent changes.
 /// </remarks>
 /// <example>
-///     <code lang="csharp">
-/// using (var scope = await TransformFileScope.CreateAsync(file, content => content + "\n<NewProperty>Value</NewProperty>"))
+///     <code>
+/// using (var scope = await TransformFileScope.CreateAsync(myFile, content => content + "\n&lt;NewProperty&gt;Value&lt;/NewProperty&gt;"))
 /// {
-///     // Perform operations within the scope
-///     // The file's content is transformed, and the original content will be restored upon disposal
+///     // The file is now modified. It will be restored when the scope is disposed.
 /// }
-/// </code>
+///     </code>
 /// </example>
 [PublicAPI]
 public sealed class TransformFileScope : IAsyncDisposable, IDisposable
@@ -25,12 +23,20 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     private bool _cancelled;
     private bool _disposed;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="TransformFileScope" /> class.
+    /// </summary>
+    /// <param name="file">The file to be managed.</param>
+    /// <param name="initialContent">The original content of the file before transformation.</param>
     private TransformFileScope(RootedPath file, string? initialContent)
     {
         _file = file;
         _initialContent = initialContent;
     }
 
+    /// <summary>
+    ///     Asynchronously disposes the scope and restores the file to its original content, unless canceled.
+    /// </summary>
     public async ValueTask DisposeAsync()
     {
         if (_disposed)
@@ -48,6 +54,9 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
             await _file.FileSystem.File.WriteAllTextAsync(_file, _initialContent);
     }
 
+    /// <summary>
+    ///     Disposes the scope and restores the file to its original content, unless canceled.
+    /// </summary>
     public void Dispose()
     {
         if (_disposed)
@@ -65,19 +74,12 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Creates a new instance of <see cref="TransformFileScope" /> for the specified file,
-    ///     applying the provided transformation to its content.
+    ///     Creates a new <see cref="TransformFileScope" /> for a file and applies an asynchronous transformation.
     /// </summary>
-    /// <param name="file">The file to be managed by the scope.</param>
-    /// <param name="transform">
-    ///     A function that takes the initial content of the file as a string
-    ///     and returns the transformed content as a string.
-    /// </param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>
-    ///     A task that represents the asynchronous operation and contains a <see cref="TransformFileScope" /> instance
-    ///     managing the file.
-    /// </returns>
+    /// <param name="file">The file to transform.</param>
+    /// <param name="transform">A function to apply to the file's content.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>A new <see cref="TransformFileScope" /> instance managing the transformed file.</returns>
     public static async Task<TransformFileScope> CreateAsync(
         RootedPath file,
         Func<string, string> transform,
@@ -113,19 +115,11 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Applies a transformation function to the current content of the file managed by the
-    ///     <see cref="TransformFileScope" /> and updates its
-    ///     content asynchronously.
+    ///     Applies an additional asynchronous transformation to the file within the current scope.
     /// </summary>
-    /// <param name="transform">
-    ///     A function that takes the current content of the file as a string
-    ///     and returns the updated content as a string.
-    /// </param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>
-    ///     A task that represents the asynchronous operation and contains the current <see cref="TransformFileScope" />
-    ///     instance.
-    /// </returns>
+    /// <param name="transform">A function to apply to the file's current content.</param>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns>The current <see cref="TransformFileScope" /> instance.</returns>
     public async Task<TransformFileScope> AddAsync(
         Func<string, string> transform,
         CancellationToken cancellationToken = default)
@@ -151,15 +145,11 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Creates a new instance of <see cref="TransformFileScope" /> for the specified file,
-    ///     applying the provided transformation to its content.
+    ///     Creates a new <see cref="TransformFileScope" /> for a file and applies a synchronous transformation.
     /// </summary>
-    /// <param name="file">The file to be managed by the scope.</param>
-    /// <param name="transform">
-    ///     A function that takes the initial content of the file as a string
-    ///     and returns the transformed content as a string.
-    /// </param>
-    /// <returns>A <see cref="TransformFileScope" /> instance managing the file.</returns>
+    /// <param name="file">The file to transform.</param>
+    /// <param name="transform">A function to apply to the file's content.</param>
+    /// <returns>A new <see cref="TransformFileScope" /> instance managing the transformed file.</returns>
     public static TransformFileScope Create(RootedPath file, Func<string, string> transform)
     {
         string? initialContent = null;
@@ -181,19 +171,10 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Modifies the content of the file managed by the current <see cref="TransformFileScope" /> instance,
-    ///     applying the provided transformation function to its content.
+    ///     Applies an additional synchronous transformation to the file within the current scope.
     /// </summary>
-    /// <param name="transform">
-    ///     A function that takes the current content of the file as a string
-    ///     and returns the modified content as a string.
-    /// </param>
-    /// <returns>
-    ///     The current <see cref="TransformFileScope" /> instance with the updated file content.
-    /// </returns>
-    /// <exception cref="ObjectDisposedException">
-    ///     Thrown if the method is called after the <see cref="TransformFileScope" /> instance has been disposed.
-    /// </exception>
+    /// <param name="transform">A function to apply to the file's current content.</param>
+    /// <returns>The current <see cref="TransformFileScope" /> instance.</returns>
     public TransformFileScope Add(Func<string, string> transform)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
@@ -208,8 +189,7 @@ public sealed class TransformFileScope : IAsyncDisposable, IDisposable
     }
 
     /// <summary>
-    ///     Cancels the restoration of the original content of the file managed by this scope.
-    ///     When called, the scope will not restore the original file content upon disposal or asynchronous disposal.
+    ///     Prevents the file from being restored to its original content upon disposal.
     /// </summary>
     public void CancelRestore() =>
         _cancelled = true;

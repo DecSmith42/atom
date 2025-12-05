@@ -1,9 +1,13 @@
 ﻿namespace DecSm.Atom.Reports;
 
 /// <summary>
-///     Console-based implementation of <see cref="IOutcomeReportWriter" /> that provides formatted output for build
-///     outcomes and report data.
+///     An implementation of <see cref="IOutcomeReportWriter" /> that writes a formatted build report to the console.
 /// </summary>
+/// <param name="args">The parsed command-line arguments.</param>
+/// <param name="console">The console for writing output.</param>
+/// <param name="buildModel">The model representing the build structure and state.</param>
+/// <param name="reportService">The service containing the collected report data.</param>
+/// <param name="paramService">The service for masking secrets.</param>
 internal partial class ConsoleOutcomeReportWriter(
     CommandLineArgs args,
     IAnsiConsole console,
@@ -12,6 +16,10 @@ internal partial class ConsoleOutcomeReportWriter(
     IParamService paramService
 ) : IOutcomeReportWriter
 {
+    /// <summary>
+    ///     Generates and writes a build summary and detailed report data to the console.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token (not used in this implementation).</param>
     public Task ReportRunOutcome(CancellationToken cancellationToken)
     {
         var table = new Table()
@@ -59,6 +67,9 @@ internal partial class ConsoleOutcomeReportWriter(
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    ///     Formats a string for display by masking secrets and removing emojis.
+    /// </summary>
     [return: NotNullIfNotNull("input")]
     private string? FormatFreetext(string? input) =>
         input is not null
@@ -66,6 +77,9 @@ internal partial class ConsoleOutcomeReportWriter(
                 .Replace(input, string.Empty))
             : null;
 
+    /// <summary>
+    ///     Dispatches a list of report data items to the appropriate `Write` method based on their type.
+    /// </summary>
     private void Write(IReadOnlyList<IReportData> reportData)
     {
         var customPreReportData = reportData
@@ -97,6 +111,9 @@ internal partial class ConsoleOutcomeReportWriter(
             Write(data);
     }
 
+    /// <summary>
+    ///     Writes log data, grouped by severity level.
+    /// </summary>
     private void Write(List<LogReportData> reportData)
     {
         if (reportData.Count == 0)
@@ -129,6 +146,9 @@ internal partial class ConsoleOutcomeReportWriter(
             "darkorange");
     }
 
+    /// <summary>
+    ///     Writes a list of log data under a specific header and style.
+    /// </summary>
     private void Write(List<LogReportData> reportData, string header, string styleTag)
     {
         if (reportData.Count == 0)
@@ -171,6 +191,9 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
+    /// <summary>
+    ///     Writes artifact data as a table.
+    /// </summary>
     private void Write(List<ArtifactReportData> reportData)
     {
         if (reportData.Count == 0)
@@ -191,6 +214,9 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
+    /// <summary>
+    ///     Dispatches a custom report data item to the appropriate `Write` method.
+    /// </summary>
     private void Write(ICustomReportData reportData)
     {
         switch (reportData)
@@ -218,6 +244,9 @@ internal partial class ConsoleOutcomeReportWriter(
         }
     }
 
+    /// <summary>
+    ///     Writes table report data.
+    /// </summary>
     private void Write(TableReportData reportData)
     {
         var table = new Table()
@@ -286,6 +315,9 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
+    /// <summary>
+    ///     Writes list report data.
+    /// </summary>
     private void Write(ListReportData reportData)
     {
         var rows = reportData
@@ -307,6 +339,9 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
+    /// <summary>
+    ///     Writes free-form text report data.
+    /// </summary>
     private void Write(TextReportData reportData)
     {
         if (reportData.Title is not null)
@@ -323,6 +358,9 @@ internal partial class ConsoleOutcomeReportWriter(
         console.WriteLine();
     }
 
+    /// <summary>
+    ///     A regular expression to find and remove emojis from text.
+    /// </summary>
     [GeneratedRegex(
         @"([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])")]
     private static partial Regex EmojiRegex();

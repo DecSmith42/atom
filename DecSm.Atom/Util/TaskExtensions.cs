@@ -1,26 +1,25 @@
 ﻿namespace DecSm.Atom.Util;
 
 /// <summary>
-///     Extension methods that add robust retry behavior to Task and Task&lt;T&gt; operations.
+///     Provides extension methods that add robust retry behavior to <see cref="Task" /> and <see cref="Task{TResult}" />
+///     operations.
 /// </summary>
 [PublicAPI]
 public static class TaskExtensions
 {
     /// <summary>
-    ///     Retries awaiting the provided <see cref="Task" /> when it faults, up to the specified number of retries.
+    ///     Retries awaiting the provided <see cref="Task" /> when it faults, up to a specified number of attempts.
     /// </summary>
-    /// <param name="task">The task to await. If <c>null</c>, a completed task is returned.</param>
-    /// <param name="retryCount">The number of retries after the initial attempt. Must be zero or greater.</param>
-    /// <param name="retryDelay">The delay between attempts.</param>
-    /// <returns>A task that completes when the underlying task completes successfully, or throws after the final attempt.</returns>
+    /// <param name="task">The task to await.</param>
+    /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
+    /// <param name="retryDelay">The delay between retry attempts.</param>
+    /// <returns>
+    ///     A task that completes when the underlying task succeeds, or throws an <see cref="AggregateException" /> after
+    ///     all retries fail.
+    /// </returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
-    ///     attempt.
-    ///     Cancellation-related exceptions are rethrown immediately and are not retried.
+    ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
-    /// <exception cref="OperationCanceledException">Rethrown if the operation is canceled.</exception>
-    /// <exception cref="StackOverflowException">Rethrown without retry.</exception>
     public static Task WithRetry(this Task? task, int retryCount = 5, TimeSpan retryDelay = default)
     {
         if (task is null)
@@ -68,21 +67,19 @@ public static class TaskExtensions
     }
 
     /// <summary>
-    ///     Retries awaiting the provided <see cref="Task{TResult}" /> when it faults, up to the specified number of retries.
+    ///     Retries awaiting the provided <see cref="Task{TResult}" /> when it faults, up to a specified number of attempts.
     /// </summary>
     /// <typeparam name="T">The result type of the task.</typeparam>
-    /// <param name="task">The task to await. If <c>null</c>, a completed task with <c>default(T)</c> is returned.</param>
-    /// <param name="retryCount">The number of retries after the initial attempt. Must be zero or greater.</param>
-    /// <param name="retryDelay">The delay between attempts. If <see cref="TimeSpan.Zero" />, a default of 1 second is used.</param>
-    /// <returns>A task that completes with the task's result if a try succeeds, or throws after the final attempt.</returns>
+    /// <param name="task">The task to await.</param>
+    /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
+    /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
+    /// <returns>
+    ///     A task that completes with the result if successful, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
-    ///     attempt.
-    ///     Cancellation-related exceptions are rethrown immediately and are not retried.
+    ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
-    /// <exception cref="OperationCanceledException">Rethrown if the operation is canceled.</exception>
-    /// <exception cref="StackOverflowException">Rethrown without retry.</exception>
     public static Task<T> WithRetry<T>(this Task<T>? task, int retryCount = 5, TimeSpan retryDelay = default)
     {
         if (task is null)
@@ -139,23 +136,19 @@ public static class TaskExtensions
     }
 
     /// <summary>
-    ///     Retries an asynchronous operation produced by <paramref name="taskFactory" /> when it faults.
-    ///     A new task is created for each attempt by invoking the factory.
+    ///     Retries an asynchronous operation produced by a factory when it faults. A new task is created for each attempt.
     /// </summary>
-    /// <param name="taskFactory">A delegate that creates a new <see cref="Task" /> each attempt. Cannot be <c>null</c>.</param>
-    /// <param name="retryCount">The number of retries after the initial attempt. Must be zero or greater.</param>
-    /// <param name="retryDelay">The delay between attempts. If <see cref="TimeSpan.Zero" />, a default of 1 second is used.</param>
-    /// <param name="cancellationToken">A token observed before each attempt and during delay between retries.</param>
-    /// <returns>A task that completes when one attempt succeeds, or throws after the final attempt.</returns>
+    /// <param name="taskFactory">A delegate that creates a new <see cref="Task" /> for each attempt.</param>
+    /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
+    /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
+    /// <param name="cancellationToken">A token to observe before each attempt and during delays.</param>
+    /// <returns>
+    ///     A task that completes when an attempt succeeds, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
-    ///     attempt.
-    ///     Cancellation-related exceptions are rethrown immediately and are not retried.
+    ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="taskFactory" /> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
-    /// <exception cref="OperationCanceledException">Rethrown if the operation is canceled.</exception>
-    /// <exception cref="StackOverflowException">Rethrown without retry.</exception>
     public static Task WithRetry(
         this Func<Task> taskFactory,
         int retryCount = 5,
@@ -218,27 +211,20 @@ public static class TaskExtensions
     }
 
     /// <summary>
-    ///     Retries an asynchronous operation that produces a <typeparamref name="T" /> when it faults.
-    ///     A new task is created for each attempt by invoking the factory.
+    ///     Retries an asynchronous operation produced by a factory when it faults. A new task is created for each attempt.
     /// </summary>
-    /// <typeparam name="T">The result type produced by the task.</typeparam>
-    /// <param name="taskFactory">
-    ///     A delegate that creates a new <see cref="Task{TResult}" /> each attempt. Cannot be
-    ///     <c>null</c>.
-    /// </param>
-    /// <param name="retryCount">The number of retries after the initial attempt. Must be zero or greater.</param>
-    /// <param name="retryDelay">The delay between attempts. If <see cref="TimeSpan.Zero" />, a default of 1 second is used.</param>
-    /// <param name="cancellationToken">A token observed before each attempt and during delay between retries.</param>
-    /// <returns>A task that completes with a result when one attempt succeeds, or throws after the final attempt.</returns>
+    /// <typeparam name="T">The result type of the task.</typeparam>
+    /// <param name="taskFactory">A delegate that creates a new <see cref="Task{TResult}" /> for each attempt.</param>
+    /// <param name="retryCount">The number of retries to attempt after the initial failure.</param>
+    /// <param name="retryDelay">The delay between retry attempts. Defaults to 1 second if not specified.</param>
+    /// <param name="cancellationToken">A token to observe before each attempt and during delays.</param>
+    /// <returns>
+    ///     A task that completes with a result if successful, or throws an <see cref="AggregateException" /> after all
+    ///     retries fail.
+    /// </returns>
     /// <remarks>
-    ///     Exceptions from failed attempts are aggregated and thrown as an <see cref="AggregateException" /> after the final
-    ///     attempt.
-    ///     Cancellation-related exceptions are rethrown immediately and are not retried.
+    ///     Cancellation-related exceptions are immediately rethrown and do not trigger a retry.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="taskFactory" /> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="retryCount" /> is negative.</exception>
-    /// <exception cref="OperationCanceledException">Rethrown if the operation is canceled.</exception>
-    /// <exception cref="StackOverflowException">Rethrown without retry.</exception>
     public static Task<T> WithRetry<T>(
         this Func<Task<T>> taskFactory,
         int retryCount = 5,

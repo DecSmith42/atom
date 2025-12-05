@@ -1,41 +1,45 @@
 ﻿namespace DecSm.Atom.Hosting;
 
 /// <summary>
-///     Provides extension methods to configure Atom services and dependencies on <see cref="IHostApplicationBuilder" />.
+///     Provides extension methods for configuring and integrating Atom services into a .NET host.
 /// </summary>
 /// <remarks>
-///     This class simplifies the integration of Atom functionality into host applications, ensuring consistent
-///     configuration
-///     of required services, logging providers, dependency injections, and system defaults for Atom-based hosts.
+///     This class simplifies the setup of an Atom application by registering essential services,
+///     logging providers, and dependencies required for the Atom framework to function correctly.
 /// </remarks>
-/// <example>
-///     Example usage:
-///     <code>
-/// builder.AddAtom&lt;HostApplicationBuilder, MyBuildDefinition&gt;(args);
-/// </code>
-/// </example>
 [PublicAPI]
 public static class HostExtensions
 {
     /// <summary>
-    ///     Configures services, dependencies, logging, and default settings required by the Atom application framework.
+    ///     Configures the <see cref="IHostApplicationBuilder" /> with all necessary Atom services, dependencies,
+    ///     logging, and default settings.
     /// </summary>
-    /// <typeparam name="TBuilder">
-    ///     Type of the host application builder to configure.
-    /// </typeparam>
-    /// <typeparam name="TBuild">
-    ///     Type of the build definition, which must implement <see cref="IBuildDefinition" />.
-    ///     Provides custom registrations and overrides specific to the build.
-    /// </typeparam>
-    /// <param name="builder">
-    ///     The host application builder instance to configure.
-    /// </param>
-    /// <param name="args">
-    ///     Command-line arguments provided to the application.
-    /// </param>
-    /// <returns>
-    ///     The configured host application builder instance.
-    /// </returns>
+    /// <typeparam name="TBuilder">The type of the host application builder.</typeparam>
+    /// <typeparam name="TBuild">The type of the build definition, which must implement <see cref="MinimalBuildDefinition" />.</typeparam>
+    /// <param name="builder">The host application builder instance to configure.</param>
+    /// <param name="args">The command-line arguments provided to the application.</param>
+    /// <returns>The configured host application builder instance.</returns>
+    /// <remarks>
+    ///     This method performs the following key configurations:
+    ///     <list type="bullet">
+    ///         <item>Registers the <see cref="AtomService" /> as a hosted service.</item>
+    ///         <item>Registers the build definition (<typeparamref name="TBuild" />) and related interfaces.</item>
+    ///         <item>
+    ///             Adds core Atom services like <see cref="IParamService" />, <see cref="ReportService" />, and
+    ///             <see cref="IAnsiConsole" />.
+    ///         </item>
+    ///         <item>
+    ///             Registers default providers for build information: <see cref="IBuildIdProvider" />,
+    ///             <see cref="IBuildVersionProvider" />, and <see cref="IBuildTimestampProvider" />.
+    ///         </item>
+    ///         <item>Configures file system access via <see cref="IAtomFileSystem" />.</item>
+    ///         <item>Registers build execution and workflow generation services.</item>
+    ///         <item>Sets up logging with Spectre.Console and report providers, filtering out verbose Microsoft host logs.</item>
+    ///         <item>Parses command-line arguments and makes them available as <see cref="CommandLineArgs" />.</item>
+    ///         <item>Resolves and registers the <see cref="BuildModel" />.</item>
+    ///         <item>Invokes <see cref="IConfigureHost.ConfigureBuildHostBuilder" /> if implemented by the build definition.</item>
+    ///     </list>
+    /// </remarks>
     public static TBuilder AddAtom<TBuilder,
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TBuild>(
         this TBuilder builder,
@@ -147,6 +151,15 @@ public static class HostExtensions
         return builder;
     }
 
+    /// <summary>
+    ///     Configures the built <see cref="IHost" /> instance for Atom-specific behaviors.
+    /// </summary>
+    /// <param name="host">The <see cref="IHost" /> instance to configure.</param>
+    /// <returns>The configured <see cref="IHost" /> instance.</returns>
+    /// <remarks>
+    ///     This method invokes <see cref="IConfigureHost.ConfigureBuildHost" /> if implemented by the build definition,
+    ///     allowing for post-build host configuration.
+    /// </remarks>
     public static IHost UseAtom(this IHost host)
     {
         host

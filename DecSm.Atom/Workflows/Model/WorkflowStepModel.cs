@@ -1,35 +1,30 @@
 ﻿namespace DecSm.Atom.Workflows.Model;
 
 /// <summary>
-///     Represents a single step within a workflow.
-///     This model defines the configuration for a specific operation or task in the workflow process.
+///     Represents a single step within a workflow job, defining its configuration and behavior.
 /// </summary>
-/// <param name="Name">The unique name or identifier for this workflow step.</param>
+/// <param name="Name">The name of the workflow step.</param>
 [PublicAPI]
 public sealed record WorkflowStepModel(string Name)
 {
     /// <summary>
-    ///     Gets or initializes a value indicating whether artifact publishing should be suppressed for this step.
-    ///     If set to <c>true</c>, any artifacts produced by this step will not be published.
-    ///     Defaults to <c>false</c>.
+    ///     Gets a value indicating whether artifact publishing should be suppressed for this step.
     /// </summary>
+    /// <remarks>
+    ///     If <c>true</c>, any artifacts produced by this step will not be published. Defaults to <c>false</c>.
+    /// </remarks>
     public bool SuppressArtifactPublishing { get; init; }
 
     /// <summary>
-    ///     Gets or initializes the list of matrix dimensions for this step.
-    ///     A matrix allows a step to be executed multiple times with different configurations,
-    ///     where each dimension represents a variable in the configuration matrix.
-    ///     Defaults to an empty list if not specified.
+    ///     Gets the matrix dimensions for running this step in multiple configurations.
     /// </summary>
     /// <remarks>
-    ///     For example, a step might be run against different versions of a dependency or target platforms.
+    ///     A matrix allows a step to be executed multiple times with different configurations.
     /// </remarks>
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
 
     /// <summary>
-    ///     Gets or initializes the list of specific options or configurations for this workflow step.
-    ///     These options can control various aspects of the step's execution.
-    ///     Defaults to an empty list if not specified.
+    ///     Gets the options that configure this step's behavior.
     /// </summary>
     public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
 }

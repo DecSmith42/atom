@@ -1,16 +1,24 @@
 ﻿namespace DecSm.Atom.Help;
 
 /// <summary>
-///     Interface for providing help-related functionalities for the build system.
+///     Defines a service for displaying help information about the build system.
 /// </summary>
 public interface IHelpService
 {
     /// <summary>
-    ///     Display help information for the Atom build.
+    ///     Displays detailed help information for available commands, parameters, and options.
     /// </summary>
     void ShowHelp();
 }
 
+/// <summary>
+///     Provides a service for displaying detailed help information about the build system, including commands, parameters,
+///     and options.
+/// </summary>
+/// <param name="console">The console for writing output.</param>
+/// <param name="args">The parsed command-line arguments.</param>
+/// <param name="buildModel">The model representing the build structure.</param>
+/// <param name="config">The application configuration.</param>
 internal sealed class HelpService(
     IAnsiConsole console,
     CommandLineArgs args,
@@ -18,6 +26,9 @@ internal sealed class HelpService(
     IConfiguration config
 ) : IHelpService
 {
+    /// <summary>
+    ///     Displays detailed help information for available commands, parameters, and options.
+    /// </summary>
     public void ShowHelp()
     {
         console.WriteLine();
@@ -111,6 +122,10 @@ internal sealed class HelpService(
         }
     }
 
+    /// <summary>
+    ///     Writes a detailed, formatted representation of a single command (target) to the console.
+    /// </summary>
+    /// <param name="target">The target model to display.</param>
     private void WriteCommand(TargetModel target)
     {
         var title = target.Description is { Length: > 0 }

@@ -1,5 +1,11 @@
 ﻿namespace DecSm.Atom.Workflows;
 
+/// <summary>
+///     Generates workflow files based on the defined <see cref="WorkflowDefinition" />s.
+/// </summary>
+/// <param name="buildDefinition">The build definition containing workflow configurations.</param>
+/// <param name="writers">A collection of available workflow writers.</param>
+/// <param name="workflowResolver">The resolver for transforming workflow definitions into models.</param>
 internal sealed class WorkflowGenerator(
     IBuildDefinition buildDefinition,
     IEnumerable<IWorkflowWriter> writers,
@@ -8,6 +14,10 @@ internal sealed class WorkflowGenerator(
 {
     private readonly List<IWorkflowWriter> _writers = writers.ToList();
 
+    /// <summary>
+    ///     Generates all defined workflows using the appropriate workflow writers.
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
     public async Task GenerateWorkflows(CancellationToken cancellationToken = default)
     {
         var workflowDefinitions = ((MinimalBuildDefinition)buildDefinition).Workflows;
@@ -33,6 +43,11 @@ internal sealed class WorkflowGenerator(
         await Task.WhenAll(generationTasks);
     }
 
+    /// <summary>
+    ///     Checks if any of the defined workflow files are "dirty" (i.e., need to be regenerated).
+    /// </summary>
+    /// <param name="cancellationToken">A cancellation token.</param>
+    /// <returns><c>true</c> if any workflow file is dirty; otherwise, <c>false</c>.</returns>
     public async Task<bool> WorkflowsDirty(CancellationToken cancellationToken = default)
     {
         var workflowDefinitions = ((MinimalBuildDefinition)buildDefinition).Workflows;

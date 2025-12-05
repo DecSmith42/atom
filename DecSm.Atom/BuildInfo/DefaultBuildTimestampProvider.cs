@@ -1,30 +1,30 @@
 ﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
-///     Default implementation of <see cref="IBuildTimestampProvider" /> that provides Unix timestamps for build processes.
+///     The default provider for determining the build timestamp, used when no custom implementation is registered.
 /// </summary>
 /// <remarks>
-///     This provider generates a build timestamp based on the current UTC time when first accessed.
-///     The timestamp is cached after the first call to ensure consistency throughout the build process.
-///     Uses the injected <see cref="TimeProvider" /> to obtain the current time, making it testable and mockable.
+///     This provider generates a timestamp based on the current UTC time upon first access and caches it for consistency
+///     within a single process. It uses the injected <see cref="TimeProvider" /> to facilitate testing.
 /// </remarks>
 /// <param name="timeProvider">The time provider used to get the current UTC time.</param>
 internal sealed class DefaultBuildTimestampProvider(TimeProvider timeProvider) : IBuildTimestampProvider
 {
     /// <summary>
-    ///     Cached build timestamp value to ensure consistency across multiple accesses.
+    ///     Holds the cached build timestamp after the first access.
     /// </summary>
     private long? _buildTimestamp;
 
     /// <summary>
-    ///     Gets the build timestamp as Unix seconds (seconds since January 1, 1970 UTC).
+    ///     Gets the build timestamp as the number of seconds since the Unix epoch (UTC).
     /// </summary>
-    /// <value>
-    ///     A Unix timestamp representing when the build timestamp was first requested.
-    ///     The value is cached on first access to ensure consistency within the process.
-    ///     (Note: The value is not cached between processes e.g. in different workflow jobs.
-    ///     See <see cref="TargetDefinition.ConsumesVariable" /> for more)
-    /// </value>
+    /// <remarks>
+    ///     The timestamp is generated upon first access and then cached to ensure it remains consistent within the same
+    ///     process.
+    ///     Note that this value is not shared across different processes or workflow jobs. For a globally consistent
+    ///     timestamp,
+    ///     it is recommended to use <see cref="ISetupBuildInfo" />.
+    /// </remarks>
     public long Timestamp =>
         _buildTimestamp ??= timeProvider
             .GetUtcNow()

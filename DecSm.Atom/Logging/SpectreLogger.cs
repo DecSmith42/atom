@@ -1,15 +1,38 @@
 ﻿namespace DecSm.Atom.Logging;
 
+/// <summary>
+///     An internal logger implementation that writes formatted log messages to the console using Spectre.Console.
+/// </summary>
+/// <param name="categoryName">The category name for the logger.</param>
+/// <param name="scopeProvider">The external scope provider for accessing scope data.</param>
 internal sealed partial class SpectreLogger(string categoryName, IExternalScopeProvider? scopeProvider) : ILogger
 {
+    /// <summary>
+    ///     Checks if the given <paramref name="logLevel" /> is enabled.
+    /// </summary>
+    /// <param name="logLevel">The log level to check.</param>
+    /// <returns><c>true</c> if the log level is not <see cref="LogLevel.None" />; otherwise, <c>false</c>.</returns>
     public bool IsEnabled(LogLevel logLevel) =>
         logLevel != LogLevel.None;
 
+    /// <summary>
+    ///     Begins a logical operation scope.
+    /// </summary>
+    /// <param name="state">The identifier for the scope.</param>
+    /// <typeparam name="TState">The type of the state.</typeparam>
+    /// <returns>A disposable object that ends the logical operation scope on disposal.</returns>
     public IDisposable BeginScope<TState>(TState state)
         where TState : notnull =>
         scopeProvider?.Push(state) ?? NullScope.Instance;
 
-    // Secrets are not masked here because our custom Spectre output implementation does that.
+    /// <summary>
+    ///     Writes a log entry to the console using Spectre.Console formatting.
+    /// </summary>
+    /// <remarks>
+    ///     This method formats log messages based on their level, with colors and prefixes. It filters out Trace and Debug
+    ///     messages unless verbose logging is enabled. It also handles special formatting for process output and exceptions.
+    ///     Secrets are not masked here; the custom Spectre console output handles masking.
+    /// </remarks>
     public void Log<TState>(
         LogLevel logLevel,
         EventId eventId,
@@ -147,9 +170,18 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
         ServiceStaticAccessor<IAnsiConsole>.Service?.Write(table);
     }
 
+    /// <summary>
+    ///     A regular expression to detect common error-related keywords in log messages.
+    /// </summary>
     [GeneratedRegex("error|exception|fail", RegexOptions.IgnoreCase, "en-AU")]
     private static partial Regex ErrorTypeRegex();
 
+    /// <summary>
+    ///     Formats the logger category name, prepending the command name if available.
+    /// </summary>
+    /// <param name="name">The category name.</param>
+    /// <param name="command">The current command context, if any.</param>
+    /// <returns>The formatted category name.</returns>
     private static string FormatCategoryName(string name, string? command)
     {
         if (name == typeof(AtomService).FullName)

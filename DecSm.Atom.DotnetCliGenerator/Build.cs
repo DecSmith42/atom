@@ -1,20 +1,68 @@
 ﻿namespace Atom;
 
+/// <summary>
+///     This build definition is responsible for generating the C# code for the .NET CLI wrapper.
+/// </summary>
+/// <remarks>
+///     It uses the `dotnet --cli-schema` command to obtain the latest .NET CLI command structure,
+///     then parses this schema and generates strongly-typed C# interfaces, implementations, and
+///     option classes for each `dotnet` command. The generated files are placed in the
+///     `DecSm.Atom.Module.Dotnet/Cli/Generated` directory.
+/// </remarks>
 [MinimalBuildDefinition]
 [GenerateEntryPoint]
 internal sealed partial class Build : BuildDefinition
 {
+    /// <summary>
+    ///     The target that generates the .NET CLI wrapper code.
+    /// </summary>
+    /// <remarks>
+    ///     This target performs the following steps:
+    ///     <list type="number">
+    ///         <item>
+    ///             <description>Executes `dotnet --cli-schema` to retrieve the .NET CLI's command schema in JSON format.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Parses the JSON schema into a structured command model.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Flattens the command hierarchy, prefixing subcommand names with their parent commands.</description>
+    ///         </item>
+    ///         <item>
+    ///             <description>
+    ///                 Filters out specific commands (e.g., "completions script", "help") that should not have
+    ///                 generated wrappers.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <description>
+    ///                 For each valid command, it generates a C# interface, an implementation class, and an options
+    ///                 record.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <description>Writes these generated C# files to the `DecSm.Atom.Module.Dotnet/Cli/Generated` directory.</description>
+    ///         </item>
+    ///     </list>
+    ///     This process ensures that the `DecSm.Atom.Module.Dotnet` always provides an up-to-date and type-safe API for the
+    ///     .NET CLI.
+    /// </remarks>
     private Target GenerateDotnetCliCode =>
         t => t.Executes(async () =>
         {
+            Logger.LogInformation("Generating .NET CLI wrapper code...");
+
+            // Get the .NET CLI schema
             var result = await ProcessRunner.RunAsync(new("dotnet", "--cli-schema"));
             var cliSchema = JsonDocument.Parse(result.Output);
+
+            // Parse the schema
             var rootCommand = DotnetCliParser.GetCommand("dotnet", cliSchema.RootElement);
 
             if (rootCommand is null)
-                throw new("Failed to parse dotnet CLI schema");
+                throw new InvalidOperationException("Failed to parse dotnet CLI schema.");
 
-            // Flatten subcommands to root level, names will be prefixed with parent command name/s (space separated)
+            // Flatten subcommands
             var flattenedCommands = new List<Command>();
 
             foreach (var subCommand in rootCommand.SubCommands)
@@ -29,11 +77,14 @@ internal sealed partial class Build : BuildDefinition
                                                      "Cli" /
                                                      "Generated");
 
+            // Filter commands
+            // Also filter out internal/special commands
             flattenedCommands = flattenedCommands
                 .Where(x => x.Name.ToLowerInvariant() is not "completions script" and not "help" &&
                             !x.Name.StartsWith('-'))
                 .ToList();
 
+            // Generate and write code for each command
             foreach (var command in flattenedCommands)
             {
                 var writer = new CsharpWriter();
@@ -56,5 +107,8 @@ internal sealed partial class Build : BuildDefinition
                                                         $"{CsharpWriter.ToPascalCase(command.Name)}.cs",
                     writer.ToString());
             }
+
+            Logger.LogInformation("Successfully generated .NET CLI wrapper code for {CommandCount} commands.",
+                flattenedCommands.Count);
         });
 }

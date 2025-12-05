@@ -1,16 +1,17 @@
 namespace DecSm.Atom.Util.Scope;
 
 /// <summary>
-///     A disposable wrapper that executes an action when disposed.
-///     Useful for implementing RAII (Resource Acquisition Is Initialization) patterns
-///     and ensuring cleanup code runs in using statements or try-finally blocks.
+///     A disposable scope that executes a provided action upon disposal.
 /// </summary>
-/// <param name="OnDispose">The action to execute when the object is disposed. Can be null.</param>
+/// <remarks>
+///     This is useful for ensuring cleanup logic runs at the end of a `using` block.
+/// </remarks>
+/// <param name="OnDispose">The action to execute upon disposal.</param>
 [PublicAPI]
 public sealed record ActionScope(Action? OnDispose = null) : IDisposable
 {
     /// <summary>
-    ///     Executes the wrapped action if it is not null.
+    ///     Executes the disposal action if it is not null.
     /// </summary>
     public void Dispose() =>
         OnDispose?.Invoke();

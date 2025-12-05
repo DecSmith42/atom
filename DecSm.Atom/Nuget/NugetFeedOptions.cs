@@ -1,49 +1,38 @@
 ﻿namespace DecSm.Atom.Nuget;
 
 /// <summary>
-///     Represents configuration options for a NuGet feed that needs to be added to a build workflow.
-///     This class is used by the Atom build system to configure additional NuGet package sources
-///     during the build process, typically for private or custom NuGet feeds that require authentication.
+///     Represents the configuration for a NuGet feed to be added during a build workflow.
 /// </summary>
 /// <remarks>
-///     <para>
-///         This record is commonly used in workflow configurations where builds need access to
-///         private NuGet repositories. The feed will be configured with the specified URL and
-///         authenticated using credentials stored under the provided secret name.
-///         <br /><br />
-///         Example usage in build configuration:
-///     </para>
+///     This record defines a NuGet package source, including its name, URL, and the secret required for authentication.
+///     It is typically used to grant build workflows access to private or custom NuGet repositories.
+/// </remarks>
+/// <example>
 ///     <code>
 /// new NugetFeedOptions
 /// {
-///     FeedName = "DecSm",
-///     FeedUrl = "https://nuget.pkg.github.com/DecSmith42/index.json",
+///     FeedName = "MyPrivateFeed",
+///     FeedUrl = "https://nuget.pkg.github.com/MyOrg/index.json",
 ///     SecretName = "PRIVATE_NUGET_API_KEY"
 /// }
-/// </code>
-/// </remarks>
+///     </code>
+/// </example>
 [PublicAPI]
 public sealed record NugetFeedOptions
 {
     /// <summary>
-    ///     Gets the display name for the NuGet feed.
-    ///     This name is used to identify the feed in build logs and configuration.
+    ///     Gets the name used to identify the NuGet feed in configurations and logs.
     /// </summary>
-    /// <value>A human-readable name for the NuGet feed.</value>
     public required string FeedName { get; init; }
 
     /// <summary>
-    ///     Gets the URL of the NuGet feed.
-    ///     This should be the complete URL to the NuGet package source endpoint.
+    ///     Gets the URL of the NuGet package source endpoint.
     /// </summary>
-    /// <value>The complete URL to the NuGet feed endpoint.</value>
     public required string FeedUrl { get; init; }
 
     /// <summary>
-    ///     Gets the name of the secret that contains the authentication credentials for the NuGet feed.
-    ///     This secret name is used to retrieve the API key or authentication token from the
-    ///     workflow's secret store (e.g., GitHub Secrets, Azure DevOps Variables).
+    ///     Gets the name of the secret (e.g., in GitHub Secrets) that stores the API key or token
+    ///     for authenticating with the NuGet feed.
     /// </summary>
-    /// <value>The name of the secret containing the NuGet feed authentication credentials.</value>
     public required string SecretName { get; init; }
 }
