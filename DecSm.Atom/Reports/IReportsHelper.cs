@@ -1,12 +1,17 @@
 ﻿namespace DecSm.Atom.Reports;
 
+/// <summary>
+///     Provides a helper for adding data to the build report.
+/// </summary>
 public interface IReportsHelper : IBuildAccessor
 {
     /// <summary>
-    ///     Adds report data to the build process, which can be used for generating reports or logs.
-    ///     If running locally, the report will be output to the console.
-    ///     If running as part of a CI/CD pipeline, the report may be attached to the CI/CD run summary.
+    ///     Adds a data item to the build report.
     /// </summary>
+    /// <remarks>
+    ///     The collected data will be rendered by the appropriate report writer. For local builds, this is typically
+    ///     the console. In a CI/CD environment, it may be included in the run summary.
+    /// </remarks>
     /// <param name="reportData">The report data to add.</param>
     void AddReportData(IReportData reportData) =>
         GetService<ReportService>()
