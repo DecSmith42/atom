@@ -41,7 +41,7 @@ dotnet tool install -g DecSm.Atom.Tool
     
     // Mark this class as the build definition and generate an entry point
     [BuildDefinition]
-    public partial class Build : ITargets
+    public partial class Build
     {        
         // Define your targets
         Target MyCustomTarget => t => t

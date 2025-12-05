@@ -14,8 +14,10 @@ components of your build process:
 * **Workflows**: How your targets are orchestrated, often for CI/CD platforms.
 * **Global Options**: Settings that apply across all workflows.
 
-You won't typically implement `IBuildDefinition` directly. Instead, you'll inherit from one of the provided base
-classes: `MinimalBuildDefinition` or `BuildDefinition`.
+You won't typically implement `IBuildDefinition` directly. Instead, you'll define your build class and mark it with the
+`[BuildDefinition]` attribute. This attribute, along with Atom's source generators, will automatically provide the
+necessary base implementation, either `BuildDefinition` (by default) or `MinimalBuildDefinition` (if explicitly
+specified).
 
 ## `MinimalBuildDefinition`
 
@@ -29,14 +31,14 @@ often empty, implementations for its properties. This gives you maximum control 
 * For very simple builds where you only need a few custom targets.
 
 **How to use it:**
-Your main build class (often `Build.cs` in your `_atom` project, though any project name is supported) will inherit from
-`MinimalBuildDefinition` and be marked with the `[BuildDefinition]` attribute. You'll then implement the abstract
+Your main build class (often `Build.cs` in your `_atom` project, though any project name is supported) will be marked
+with the `[BuildDefinition]` attribute. You'll then implement the abstract
 properties and override virtual ones as needed.
 
 ```csharp
 // In _atom/Build.cs
 [BuildDefinition]
-public partial class MyMinimalBuild : MinimalBuildDefinition, IMyCustomTargets
+public partial class MyMinimalBuild : IMyCustomTargets
 {
     // Implement abstract properties and override virtual ones
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -75,14 +77,13 @@ options. It's the recommended starting point for most Atom projects as it includ
 * To quickly get started with a robust build setup.
 
 **How to use it:**
-Similar to `MinimalBuildDefinition`, your main build class will inherit from `BuildDefinition` and be marked with
-`[BuildDefinition]`. You'll then add your custom targets and parameters by implementing additional interfaces.
+Your main build class will be marked with `[BuildDefinition]`. You'll then add your custom targets and parameters by implementing
+additional interfaces.
 
 ```csharp
 // In _atom/Build.cs
 [BuildDefinition]
-[GenerateEntryPoint] // Often used to generate the Program.cs entry point
-public partial class MyBuild : BuildDefinition, IMyCustomTargets
+public partial class MyBuild : IMyCustomTargets
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
