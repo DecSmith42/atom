@@ -1,24 +1,26 @@
 ﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
-///     Default Build ID provider, used if no custom implementation is provided.
-///     The build ID is composed of the build version and the build timestamp.
+///     The default provider for generating a build ID, used when no custom implementation is registered.
 /// </summary>
+/// <param name="buildVersionProvider">The provider for retrieving the build version.</param>
+/// <param name="buildTimestampProvider">The provider for retrieving the build timestamp.</param>
 internal sealed class DefaultBuildIdProvider(
     IBuildVersionProvider buildVersionProvider,
     IBuildTimestampProvider buildTimestampProvider
 ) : IBuildIdProvider
 {
     /// <summary>
-    ///     Gets the build ID.
+    ///     Gets the build ID by combining the build version and timestamp.
     /// </summary>
-    /// <example>1.0.0-20220101T000000</example>
+    /// <example>A typical build ID might look like: "1.2.3-1672531200".</example>
     public string BuildId => $"{buildVersionProvider.Version}-{buildTimestampProvider.Timestamp}";
 
     /// <summary>
-    ///     Gets the build ID group. Unused in the default implementation.
+    ///     Returns null, as the default provider does not implement build ID grouping.
     /// </summary>
-    /// <returns>null</returns>
+    /// <param name="buildId">The build ID (ignored).</param>
+    /// <returns><c>null</c>.</returns>
     public string? GetBuildIdGroup(string buildId) =>
         null;
 }

@@ -1,22 +1,24 @@
 ﻿namespace DecSm.Atom.BuildInfo;
 
 /// <summary>
-///     Default implementation of <see cref="IBuildVersionProvider" /> that provides semantic versions for build processes.
+///     The default provider for determining the build version, used when no custom implementation is registered.
 /// </summary>
 /// <remarks>
-///     This provider generates a build version based on the current assembly version or a fallback default version.
-///     The version follows semantic versioning (SemVer) standards and is used to identify build outputs.
-///     This is the fallback provider used when no custom version provider is configured.
+///     This provider extracts the version from a <c>Directory.Build.props</c> file in the project root.
+///     It searches for common version-related MSBuild properties and falls back to "1.0.0" if no version is found.
 /// </remarks>
+/// <param name="fileSystem">The file system service for accessing project files.</param>
 internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSystem) : IBuildVersionProvider
 {
     /// <summary>
-    ///     Gets the build version as a semantic version.
+    ///     Gets the build version by parsing a <c>Directory.Build.props</c> file.
     /// </summary>
-    /// <value>
-    ///     A <see cref="SemVer" /> representing the current build version.
-    ///     The version is typically derived from assembly metadata or falls back to a default version (1.0.0).
-    /// </value>
+    /// <remarks>
+    ///     The version is resolved by searching for the following MSBuild properties in order of precedence:
+    ///     <c>InformationalVersion</c>, <c>PackageVersion</c>, <c>Version</c>, a combination of <c>VersionPrefix</c> and
+    ///     <c>VersionSuffix</c>, and finally <c>VersionPrefix</c> alone.
+    ///     If none of these are found or are invalid, it defaults to <c>1.0.0</c>.
+    /// </remarks>
     public SemVer Version
     {
         get
@@ -83,6 +85,9 @@ internal sealed partial class DefaultBuildVersionProvider(IAtomFileSystem fileSy
         }
     }
 
+    /// <summary>
+    ///     A regular expression to find and extract version-related tags from MSBuild property files.
+    /// </summary>
     [GeneratedRegex("<(Version|VersionPrefix|VersionSuffix|PackageVersion|InformationalVersion)>(?<value>.+)</\\1>")]
     private static partial Regex VersionTagRegex();
 }
