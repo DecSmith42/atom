@@ -1,48 +1,28 @@
 ﻿namespace DecSm.Atom.Secrets;
 
 /// <summary>
-///     Enables sourcing of secrets from the .NET user secrets store in build definitions.
-///     <br /><br />
-///     Automatically added to <see cref="BuildDefinition" />.
+///     An interface that, when implemented on a build definition, enables sourcing secrets from the .NET user secrets store.
 /// </summary>
 /// <remarks>
+///     This interface uses source generation to automatically register the <see cref="DotnetUserSecretsProvider" />
+///     with the dependency injection container. This allows the <see cref="IParamService" /> to resolve secrets
+///     marked with <see cref="SecretDefinitionAttribute" /> from the local user secrets store, which is ideal
+///     for development-time secrets that should not be committed to source control.
 ///     <para>
-///         Implement this interface in the Build definition to enable sourcing of secrets from the .NET user secrets
-///         store.
-///     </para>
-///     <para>
-///         The interface automatically configures the dependency injection container with a
-///         <see cref="DotnetUserSecretsProvider" />
-///         that can retrieve secrets from the standard user secrets location using the Microsoft.Extensions.Configuration
-///         framework.
-///     </para>
-///     <para>
-///         User secrets are stored per-user and per-project, making them ideal for development-time secrets that should
-///         not
-///         be committed to source control. The secrets are identified by a UserSecretsId that should be configured in the
-///         project file or through the UserSecretsIdAttribute.
+///         This interface is automatically included in the default <see cref="BuildDefinition" />.
 ///     </para>
 /// </remarks>
 /// <example>
-///     <para>Basic implementation in a build definition:</para>
 ///     <code>
-///     [BuildDefinition]
-///     partial class Build : BuildDefinition, IDotnetUserSecrets, ISomeTarget;
-///     </code>
-///     <para>The configured secrets provider can then be used to retrieve secrets:</para>
-///     <code>
-///     [TargetDefinition]
-///     partial interface ISomeTarget
-///     {
-///         [SecretDefinition("my-secret", "My secret description")]
-///         string MySecret => GetParam(() => MySecret);
-///         Target SomeTarget => t => t
-///             .Executes(() =>
-///             {
-///                 var secretValue = MySecret; // retrieves the secret value from user secrets
-///                 return Task.CompletedTask;
-///              });
-///     }
+/// // 1. Implement the interface in your build definition
+/// [BuildDefinition]
+/// partial class Build : IDotnetUserSecrets, IMyTarget;
+///
+/// // 2. Define a secret parameter
+/// [SecretDefinition("my-secret", "A secret from user secrets.")]
+/// string MySecret => GetParam(() => MySecret);
+///
+/// // The value for "my-secret" will now be resolved from the user secrets store.
 ///     </code>
 /// </example>
 /// <seealso cref="DotnetUserSecretsProvider" />
@@ -50,6 +30,9 @@
 [ConfigureHostBuilder]
 public partial interface IDotnetUserSecrets
 {
+    /// <summary>
+    ///     Configures the host builder to register the <see cref="DotnetUserSecretsProvider" />.
+    /// </summary>
     protected static partial void ConfigureBuilder(IHostApplicationBuilder builder) =>
         builder
             .Services
