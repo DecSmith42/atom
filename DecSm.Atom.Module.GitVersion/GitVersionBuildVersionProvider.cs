@@ -1,10 +1,25 @@
 ﻿namespace DecSm.Atom.Module.GitVersion;
 
+/// <summary>
+///     Provides the build version using GitVersion.
+/// </summary>
+/// <remarks>
+///     This provider executes the GitVersion tool to extract major, minor, patch, and pre-release
+///     tag information, which is then used to construct a semantic version.
+///     It requires the GitVersion.Tool to be installed.
+/// </remarks>
+[PublicAPI]
 internal sealed class GitVersionBuildVersionProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
     IProcessRunner processRunner
 ) : IBuildVersionProvider
 {
+    /// <summary>
+    ///     Gets the semantic version of the build, derived from GitVersion's output.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the version information cannot be determined from GitVersion's output.
+    /// </exception>
     [field: AllowNull]
     [field: MaybeNull]
     public SemVer Version

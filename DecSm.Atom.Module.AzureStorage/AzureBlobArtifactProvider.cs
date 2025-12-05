@@ -1,5 +1,13 @@
 ﻿namespace DecSm.Atom.Module.AzureStorage;
 
+/// <summary>
+///     Provides an implementation of <see cref="IArtifactProvider" /> for storing and retrieving
+///     build artifacts in Azure Blob Storage.
+/// </summary>
+/// <remarks>
+///     This provider uses the Azure Storage SDK to interact with blob containers,
+///     allowing for robust artifact management within DecSm.Atom build processes.
+/// </remarks>
 [PublicAPI]
 public sealed class AzureBlobArtifactProvider(
     IBuildInfo buildInfo,
@@ -10,12 +18,35 @@ public sealed class AzureBlobArtifactProvider(
     ILogger<AzureBlobArtifactProvider> logger
 ) : IArtifactProvider
 {
+    /// <summary>
+    ///     Gets a list of required parameters for this artifact provider to function correctly.
+    /// </summary>
     public IReadOnlyList<string> RequiredParams =>
     [
         nameof(IAzureArtifactStorage.AzureArtifactStorageContainer),
         nameof(IAzureArtifactStorage.AzureArtifactStorageConnectionString),
     ];
 
+    /// <summary>
+    ///     Stores build artifacts in Azure Blob Storage.
+    /// </summary>
+    /// <param name="artifactNames">
+    ///     A list of artifact names to store. Each name corresponds to a directory in the Atom publish
+    ///     directory.
+    /// </param>
+    /// <param name="buildId">
+    ///     Optional. The unique identifier for the build. If not provided, the current build ID from
+    ///     <see cref="IBuildIdProvider" /> will be used.
+    /// </param>
+    /// <param name="slice">
+    ///     Optional. A slice identifier to categorize artifacts within a build. If not provided, the build
+    ///     slice from <see cref="IBuildInfo" /> will be used.
+    /// </param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if a build ID is required but not available, or if no files are found in an artifact directory.
+    /// </exception>
     public async Task StoreArtifacts(
         IReadOnlyList<string> artifactNames,
         string? buildId = null,
@@ -25,7 +56,7 @@ public sealed class AzureBlobArtifactProvider(
         buildId ??= buildIdProvider.BuildId;
 
         if (buildId is null)
-            throw new InvalidOperationException("A run identifier is required to upload artifacts");
+            throw new InvalidOperationException("A run identifier is required to upload artifacts.");
 
         var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
@@ -69,10 +100,10 @@ public sealed class AzureBlobArtifactProvider(
             var files = fileSystem.Directory.GetFiles(publishDir, "*", SearchOption.AllDirectories);
 
             foreach (var file in files)
-                logger.LogDebug("Uploading file {File}", file);
+                logger.LogDebug("Found file {File} for upload", file);
 
             if (files.Length == 0)
-                throw new InvalidOperationException($"Could not find any files in the directory {publishDir}");
+                throw new InvalidOperationException($"Could not find any files in the directory {publishDir}.");
 
             logger.LogInformation("Uploading {FileCount} files to {BlobDir}",
                 files.Length,
@@ -99,6 +130,23 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
+    /// <summary>
+    ///     Retrieves build artifacts from Azure Blob Storage.
+    /// </summary>
+    /// <param name="artifactNames">A list of artifact names to retrieve.</param>
+    /// <param name="buildId">
+    ///     Optional. The unique identifier for the build from which to retrieve artifacts. If not provided,
+    ///     the current build ID will be used.
+    /// </param>
+    /// <param name="buildSlice">
+    ///     Optional. The slice identifier of the artifacts to retrieve. If not provided, the build slice
+    ///     from <see cref="IBuildInfo" /> will be used.
+    /// </param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if a build ID is required but not available, or if no blobs are found for the specified artifact.
+    /// </exception>
     public async Task RetrieveArtifacts(
         IReadOnlyList<string> artifactNames,
         string? buildId = null,
@@ -108,7 +156,7 @@ public sealed class AzureBlobArtifactProvider(
         buildId ??= buildIdProvider.BuildId;
 
         if (buildId is null)
-            throw new InvalidOperationException("Build ID is required to upload artifacts");
+            throw new InvalidOperationException("Build ID is required to retrieve artifacts.");
 
         var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
         var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
@@ -175,13 +223,13 @@ public sealed class AzureBlobArtifactProvider(
                     blobName = blobName[artifactBlobDir.Length..];
                 else
                     throw new InvalidOperationException(
-                        $"Blob name {blobName} does not start with {buildName}/{buildIdPath}");
+                        $"Blob name {blobName} does not start with {buildName}/{buildIdPath}.");
 
                 var blobPath = artifactDir / blobName;
                 var blobDir = fileSystem.Path.GetDirectoryName(blobPath);
 
                 if (blobDir is null)
-                    throw new InvalidOperationException($"Could not get directory name for blob path {blobPath}");
+                    throw new InvalidOperationException($"Could not get directory name for blob path {blobPath}.");
 
                 if (!fileSystem.Directory.Exists(blobDir))
                     fileSystem.Directory.CreateDirectory(blobDir);
@@ -193,10 +241,16 @@ public sealed class AzureBlobArtifactProvider(
 
             if (!hasAtLeastOneBlob)
                 throw new InvalidOperationException(
-                    $"Could not find any blobs in the container {container} with the prefix {buildName}/{buildIdPath}/{artifactName}");
+                    $"Could not find any blobs in the container {container.SanitizeForLogging()} with the prefix {buildName}/{buildIdPath}/{artifactName}.");
         }
     }
 
+    /// <summary>
+    ///     Cleans up artifacts associated with specified run identifiers from Azure Blob Storage.
+    /// </summary>
+    /// <param name="runIdentifiers">A list of build IDs for which to clean up artifacts.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     public async Task Cleanup(IReadOnlyList<string> runIdentifiers, CancellationToken cancellationToken = default)
     {
         var connectionString =
@@ -225,6 +279,16 @@ public sealed class AzureBlobArtifactProvider(
         }
     }
 
+    /// <summary>
+    ///     Gets a list of stored run identifiers (build IDs) that have artifacts in Azure Blob Storage.
+    /// </summary>
+    /// <param name="artifactName">Optional. Filters the run identifiers to those that contain a specific artifact name.</param>
+    /// <param name="buildSlice">
+    ///     Optional. Filters the run identifiers to those that contain artifacts for a specific build
+    ///     slice.
+    /// </param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A read-only list of unique build IDs.</returns>
     public async Task<IReadOnlyList<string>> GetStoredRunIdentifiers(
         string? artifactName = null,
         string? buildSlice = null,

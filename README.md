@@ -21,7 +21,7 @@ To get started with DecSm.Atom, follow the [Getting Started Guide](./docs/gettin
 
 ## Documentation
 
-For comprehensive guides and detailed information, please refer to the [guides](./docs/guides.md).
+For comprehensive guides and detailed information, including specific module documentation, please refer to the [guides](./docs/guides.md).
 
 ## License
 

@@ -1,11 +1,33 @@
 ﻿namespace DecSm.Atom.Module.Dotnet.Helpers;
 
+/// <summary>
+///     Provides helper methods for interacting with NuGet, such as pushing packages and managing NuGet configuration.
+/// </summary>
+/// <remarks>
+///     This interface extends <see cref="IBuildInfo" /> to leverage build version information
+///     and provides functionality for common NuGet operations within a DecSm.Atom build.
+/// </remarks>
 [PublicAPI]
 public interface INugetHelper : IBuildInfo
 {
+    /// <summary>
+    ///     Gets a value indicating whether NuGet write operations (like pushing packages) should be performed as a dry run.
+    /// </summary>
+    /// <remarks>
+    ///     When <c>true</c>, NuGet operations that modify remote feeds will be simulated and logged,
+    ///     but no actual changes will be made. This is useful for testing build configurations.
+    /// </remarks>
     [ParamDefinition("nuget-dry-run", "Whether to perform a dry run of nuget write operations.")]
     bool NugetDryRun => GetParam(() => NugetDryRun);
 
+    /// <summary>
+    ///     Gets the path to the default NuGet configuration file (`NuGet.Config`) for the current operating system.
+    /// </summary>
+    /// <remarks>
+    ///     This property determines the standard location where NuGet configuration files are expected.
+    ///     On Windows, it's typically `%APPDATA%\NuGet\NuGet.Config`.
+    ///     On Linux/macOS, it's typically `$HOME/.nuget/NuGet.Config`.
+    /// </remarks>
     RootedPath NugetConfigPath
     {
         get
@@ -25,21 +47,28 @@ public interface INugetHelper : IBuildInfo
     }
 
     /// <summary>
-    ///     Pushes a project to a NuGet feed.
+    /// Pushes a NuGet package for a specific project to a NuGet feed.
     /// </summary>
-    /// <param name="projectName">The name of the project to push.</param>
-    /// <param name="feed">The NuGet feed URL to push the project to.</param>
-    /// <param name="apiKey">The API key for the NuGet feed.</param>
+    /// <param name="projectName">The name of the project whose package is to be pushed.</param>
+    /// <param name="feed">The NuGet feed URL to push the package to.</param>
+    /// <param name="apiKey">The API key for authenticating with the NuGet feed.</param>
     /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     /// <remarks>
-    ///     Requires the <see cref="IBuildInfo.BuildVersion" /> param, which should be marked as consumed by the target that
-    ///     calls this method.
-    ///     <br /><br />
-    ///     Requires the project to have been built and the package to be available in the artifacts directory.
-    ///     <br /><br />
-    ///     Requires the `dotnet` CLI to be installed and available in the PATH.
+    /// <para>
+    /// This method expects the project to have been built and its NuGet package (`.nupkg`)
+    /// to be available in the Atom artifacts directory, named according to the project name
+    /// and the <see cref="IBuildInfo.BuildVersion"/>.
+    /// </para>
+    /// <para>
+    /// It requires the `dotnet` CLI to be installed and available in the system's PATH.
+    /// </para>
+    /// <para>
+    /// If <see cref="NugetDryRun"/> is <c>true</c>, the push operation will be simulated.
+    /// </para>
     /// </remarks>
+    [PublicAPI]
     async Task PushProject(
         string projectName,
         string feed,
@@ -62,6 +91,19 @@ public interface INugetHelper : IBuildInfo
         await PushPackageToNuget(packageBuildDir / matchingPackage, feed, apiKey, configFile, cancellationToken);
     }
 
+    /// <summary>
+    ///     Pushes a specific NuGet package file to a NuGet feed.
+    /// </summary>
+    /// <param name="packagePath">The full path to the `.nupkg` file to push.</param>
+    /// <param name="feed">The NuGet feed URL to push the package to.</param>
+    /// <param name="apiKey">The API key for authenticating with the NuGet feed.</param>
+    /// <param name="configFile">Optional path to a NuGet configuration file to use instead of the default one.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <remarks>
+    ///     If <see cref="NugetDryRun" /> is <c>true</c>, the push operation will be simulated.
+    /// </remarks>
+    [PublicAPI]
     async Task PushPackageToNuget(
         RootedPath packagePath,
         string feed,
@@ -69,11 +111,11 @@ public interface INugetHelper : IBuildInfo
         RootedPath? configFile = null,
         CancellationToken cancellationToken = default)
     {
-        Logger.LogInformation("Pushing package to Nuget: {PackagePath}", packagePath);
+        Logger.LogInformation("Attempting to push NuGet package '{PackagePath}' to feed '{Feed}'.", packagePath, feed);
 
         if (NugetDryRun)
         {
-            Logger.LogInformation("Dry run: skipping nuget push \"{PackagePath}\" --soure {Feed} --api-key ***",
+            Logger.LogInformation("Dry run enabled: Skipping actual NuGet push for '{PackagePath}' to '{Feed}'.",
                 packagePath,
                 feed);
 
@@ -94,6 +136,23 @@ public interface INugetHelper : IBuildInfo
         Logger.LogInformation("Package pushed");
     }
 
+    /// <summary>
+    ///     Checks if a specific version of a NuGet package is already published to a given feed.
+    /// </summary>
+    /// <param name="projectName">The name of the NuGet package (e.g., "MyProject.Core").</param>
+    /// <param name="version">The semantic version of the package (e.g., "1.0.0").</param>
+    /// <param name="feedUrl">The URL of the NuGet feed (e.g., "https://api.nuget.org/v3/index.json").</param>
+    /// <param name="feedKey">Optional API key for authenticated feeds.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that returns <c>true</c> if the package version is published, otherwise <c>false</c>
+    ///     .
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if the NuGet feed's registration base URL cannot be found or if the
+    ///     status check fails unexpectedly.
+    /// </exception>
+    [PublicAPI]
     async Task<bool> IsNugetPackageVersionPublished(
         string projectName,
         string version,
@@ -101,6 +160,12 @@ public interface INugetHelper : IBuildInfo
         string? feedKey = null,
         CancellationToken cancellationToken = default)
     {
+        Logger.LogInformation(
+            "Checking if NuGet package '{ProjectName}' version '{Version}' is published to feed '{FeedUrl}'.",
+            projectName,
+            version,
+            feedUrl);
+
         using var httpClient = new HttpClient();
 
         if (feedKey is { Length: > 0 })
@@ -108,21 +173,7 @@ public interface INugetHelper : IBuildInfo
 
         var index = await httpClient.GetStringAsync(feedUrl, cancellationToken);
 
-        // {
-        //   ...
-        //   "resources": [
-        //     ...
-        //     {
-        //       "@id": "https://api.nuget.org/...",
-        //       "@type": "RegistrationsBaseUrl/Versioned",
-        //       ...
-        //     },
-        //     ...
-        //   ],
-        //   ...
-        //   }
-        // }
-
+        // Parse the NuGet service index to find the RegistrationsBaseUrl
         var registrationsBaseUrl = JsonNode
             .Parse(index)?["resources"]
             ?.AsArray()
@@ -133,24 +184,71 @@ public interface INugetHelper : IBuildInfo
             ?.ToString();
 
         if (registrationsBaseUrl is null)
-            throw new InvalidOperationException("Could not find the registrations base URL in the Nuget feed.");
+            throw new InvalidOperationException(
+                $"Could not find the 'RegistrationsBaseUrl/Versioned' resource in the NuGet feed service index at '{feedUrl}'.");
 
+        // Construct the URL to check for the specific package version
         var packageUrl = $"{registrationsBaseUrl}{projectName.ToLowerInvariant()}/{version}.json";
 
         var response = await httpClient.GetAsync(packageUrl, cancellationToken);
 
         if (response.StatusCode is not (HttpStatusCode.OK or HttpStatusCode.NotFound))
             throw new InvalidOperationException(
-                $"Failed to check if version {version} of {projectName} is published: {response.StatusCode}");
+                $"Failed to check if version '{version}' of '{projectName}' is published to '{feedUrl}'. Unexpected status code: {response.StatusCode}.");
 
-        return response.StatusCode is HttpStatusCode.OK;
+        var isPublished = response.StatusCode is HttpStatusCode.OK;
+
+        Logger.LogInformation("NuGet package '{ProjectName}' version '{Version}' is {Status} on feed '{FeedUrl}'.",
+            projectName,
+            version,
+            isPublished
+                ? "published"
+                : "not published",
+            feedUrl);
+
+        return isPublished;
     }
 
+    /// <summary>
+    ///     Creates a <see cref="TransformFileScope" /> that temporarily overwrites the default NuGet.Config file
+    ///     with the provided content.
+    /// </summary>
+    /// <param name="contents">The new content for the NuGet.Config file.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that returns a <see cref="TransformFileScope" /> instance.
+    ///     Disposing this scope will restore the original NuGet.Config file.
+    /// </returns>
+    [PublicAPI]
     async Task<TransformFileScope> CreateNugetConfigOverwriteScope(
         string contents,
         CancellationToken cancellationToken = default) =>
         await TransformFileScope.CreateAsync(NugetConfigPath, _ => contents, cancellationToken);
 
+    /// <summary>
+    ///     Creates a <see cref="TransformFileScope" /> that temporarily overwrites the default NuGet.Config file
+    ///     with a configuration that includes the specified NuGet feeds and their credentials.
+    /// </summary>
+    /// <param name="feeds">An array of <see cref="NugetFeed" /> objects to include in the configuration.</param>
+    /// <param name="skipIfExists">
+    ///     If <c>true</c>, and all specified feeds are already present in the existing NuGet.Config,
+    ///     no overwrite will occur, and an empty scope will be returned.
+    /// </param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+    /// <returns>
+    ///     A <see cref="Task{TResult}" /> that returns a <see cref="TransformFileScope" /> instance.
+    ///     Disposing this scope will restore the original NuGet.Config file.
+    /// </returns>
+    /// <remarks>
+    ///     This method generates a `NuGet.Config` XML structure including `
+    ///     <packageSources>
+    ///         ` and `
+    ///         <packageSourceCredentials>
+    ///             `
+    ///             based on the provided feed information. Passwords are included as clear text if specified via
+    ///             <see cref="NugetFeed.PlainTextPassword" />.
+    /// </remarks>
+    [PublicAPI]
     async Task CreateNugetConfigOverwriteScope(
         NugetFeed[] feeds,
         bool skipIfExists = false,

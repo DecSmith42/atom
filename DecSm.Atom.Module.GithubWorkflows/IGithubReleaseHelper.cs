@@ -1,8 +1,33 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows;
 
+/// <summary>
+///     Provides helper methods for interacting with GitHub Releases within DecSm.Atom builds.
+/// </summary>
+/// <remarks>
+///     This interface extends <see cref="IGithubHelper" /> to provide functionality for
+///     uploading artifacts to a GitHub Release, leveraging the GitHub API.
+/// </remarks>
 [TargetDefinition]
 public partial interface IGithubReleaseHelper : IGithubHelper
 {
+    /// <summary>
+    ///     Uploads a build artifact to a specified GitHub Release.
+    /// </summary>
+    /// <param name="artifactName">
+    ///     The name of the artifact to upload. This name should correspond to a directory within the
+    ///     Atom artifacts directory.
+    /// </param>
+    /// <param name="releaseTag">The tag of the GitHub Release to which the artifact should be uploaded (e.g., "v1.0.0").</param>
+    /// <param name="dryRunWhenNotRunningInGithubActions">
+    ///     If <c>true</c> (default), the upload operation will be simulated (logged but not executed)
+    ///     when the build is not running in a GitHub Actions environment.
+    /// </param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <remarks>
+    ///     The artifact will be zipped before uploading if it's a directory.
+    ///     The method will attempt to find an existing release with the given tag.
+    /// </remarks>
+    [PublicAPI]
     async Task UploadArtifactToRelease(
         string artifactName,
         string releaseTag,
@@ -13,6 +38,23 @@ public partial interface IGithubReleaseHelper : IGithubHelper
         await UploadAssetToRelease(releaseTag, artifactPath, dryRunWhenNotRunningInGithubActions);
     }
 
+    /// <summary>
+    ///     Uploads a generic asset (file or directory) to a specified GitHub Release.
+    /// </summary>
+    /// <param name="releaseTag">The tag of the GitHub Release to which the asset should be uploaded (e.g., "v1.0.0").</param>
+    /// <param name="assetPath">The path to the asset (file or directory) to upload.</param>
+    /// <param name="dryRunWhenNotRunningInGithubActions">
+    ///     If <c>true</c> (default), the upload operation will be simulated (logged but not executed)
+    ///     when the build is not running in a GitHub Actions environment.
+    /// </param>
+    /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the GitHub repository ID cannot be parsed.</exception>
+    /// <remarks>
+    ///     If <paramref name="assetPath" /> points to a directory, it will be zipped into a `.zip` file
+    ///     with the same name before uploading. If it points to a file that is not a `.zip` file,
+    ///     it will also be zipped.
+    /// </remarks>
+    [PublicAPI]
     async Task UploadAssetToRelease(
         string releaseTag,
         RootedPath assetPath,

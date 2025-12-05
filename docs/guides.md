@@ -42,6 +42,15 @@ to understand what each component is, what it does, and when and how to use it e
 * [**Workflow Triggers**](./workflow-triggers.md): Define when your workflows run using `IWorkflowTrigger` and its
   implementations like `GitPushTrigger`, `GitPullRequestTrigger`, `ManualTrigger`, and `GithubScheduleTrigger`.
 
+## Modules
+
+* [**Azure Key Vault**](./modules/azure-key-vault.md): Integrate with Azure Key Vault for secure secret management.
+* [**Azure Storage**](./modules/azure-storage.md): Manage build artifacts using Azure Blob Storage.
+* [**GitVersion**](./modules/gitversion.md): Automate semantic versioning based on Git history.
+* [**GitHub Workflows**](./modules/github-workflows.md): Integrate with GitHub Actions for CI/CD pipelines.
+* [**Azure DevOps Workflows**](./modules/devops-workflows.md): Integrate with Azure DevOps Pipelines for CI/CD.
+* [**Dotnet**](./modules/dotnet.md): Interact with the .NET CLI for building, testing, publishing, and more.
+
 ## Utilities
 
 * [**Semantic Versioning (`SemVer`)**](./semantic-versioning.md): Work with version numbers in a consistent and standard
