@@ -1,30 +1,47 @@
 ﻿namespace DecSm.Atom.Workflows.Options;
 
 /// <summary>
-///     Represents a step in a workflow that sets up a specific .NET SDK version.
+///     Represents a workflow step that sets up a specific .NET SDK version.
 /// </summary>
 /// <param name="DotnetVersion">
-///     The .NET SDK version to install and use for later steps.
-///     If null or empty, the default .NET version configured for the environment will be used.
+///     The .NET SDK version to install (e.g., "6.0.x"). If null, the environment's default version is used.
 /// </param>
 /// <param name="Quality">
-///     The .NET SDK version quality to install.
-///     If null, the default quality will be used.
+///     The quality of the .NET SDK to install (e.g., Preview, GA). If null, the default quality is used.
 /// </param>
-/// <remarks>
-///     This record is typically used within a collection of workflow options to customize the .NET environment.
-/// </remarks>
 [PublicAPI]
 public sealed record SetupDotnetStep(string? DotnetVersion = null, SetupDotnetStep.DotnetQuality? Quality = null)
     : CustomStep
 {
+    /// <summary>
+    ///     Specifies the quality of the .NET SDK version to install.
+    /// </summary>
     [PublicAPI]
     public enum DotnetQuality
     {
+        /// <summary>
+        ///     The latest daily build.
+        /// </summary>
         Daily,
+
+        /// <summary>
+        ///     The latest signed build.
+        /// </summary>
         Signed,
+
+        /// <summary>
+        ///     The latest validated build.
+        /// </summary>
         Validated,
+
+        /// <summary>
+        ///     The latest preview build.
+        /// </summary>
         Preview,
+
+        /// <summary>
+        ///     The latest general availability (GA) build.
+        /// </summary>
         Ga,
     }
 }

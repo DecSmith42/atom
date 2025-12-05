@@ -1,37 +1,40 @@
 ﻿namespace DecSm.Atom.Workflows.Definition;
 
 /// <summary>
-///     Defines a single target or step within a workflow.
+///     Defines a single target or step within a workflow, including its configuration and behavior.
 /// </summary>
 /// <param name="Name">The name of the workflow target.</param>
-/// <remarks>
-///     <para>
-///         A <c>WorkflowTargetDefinition</c> represents an individual unit of work within a larger
-///         <see cref="WorkflowDefinition" />.
-///         It holds configuration specific to this target, such as matrix execution strategies, custom options,
-///         and artifact publishing behavior.
-///     </para>
-///     <para>
-///         Instances of <c>WorkflowTargetDefinition</c> are typically created and configured when defining the
-///         <see cref="WorkflowDefinition.Targets" />
-///         for a workflow.
-///     </para>
-/// </remarks>
 [PublicAPI]
 public sealed record WorkflowTargetDefinition(string Name)
 {
+    /// <summary>
+    ///     Gets the matrix dimensions for this workflow target, allowing it to run in multiple configurations.
+    /// </summary>
     public IReadOnlyList<MatrixDimension> MatrixDimensions { get; init; } = [];
 
+    /// <summary>
+    ///     Gets the options that configure this workflow target's behavior.
+    /// </summary>
     public IReadOnlyList<IWorkflowOption> Options { get; init; } = [];
 
+    /// <summary>
+    ///     Gets a value indicating whether artifact publishing should be suppressed for this target.
+    /// </summary>
     public bool SuppressArtifactPublishing { get; init; }
 
+    /// <summary>
+    ///     Gets a new <see cref="WorkflowTargetDefinition" /> with artifact publishing suppressed.
+    /// </summary>
     public WorkflowTargetDefinition WithSuppressedArtifactPublishing =>
         this with
         {
             SuppressArtifactPublishing = true,
         };
 
+    /// <summary>
+    ///     Creates a <see cref="WorkflowStepModel" /> from this target definition.
+    /// </summary>
+    /// <returns>A new <see cref="WorkflowStepModel" /> instance.</returns>
     public WorkflowStepModel CreateModel() =>
         new(Name)
         {
@@ -40,6 +43,11 @@ public sealed record WorkflowTargetDefinition(string Name)
             Options = Options,
         };
 
+    /// <summary>
+    ///     Returns a new <see cref="WorkflowTargetDefinition" /> with the specified matrix dimensions added.
+    /// </summary>
+    /// <param name="dimensions">The matrix dimensions to add.</param>
+    /// <returns>A new <see cref="WorkflowTargetDefinition" /> instance.</returns>
     public WorkflowTargetDefinition WithMatrixDimensions(params MatrixDimension[] dimensions) =>
         this with
         {
@@ -48,6 +56,11 @@ public sealed record WorkflowTargetDefinition(string Name)
                 .ToList(),
         };
 
+    /// <summary>
+    ///     Returns a new <see cref="WorkflowTargetDefinition" /> with the specified options added.
+    /// </summary>
+    /// <param name="options">The options to add.</param>
+    /// <returns>A new <see cref="WorkflowTargetDefinition" /> instance.</returns>
     public WorkflowTargetDefinition WithOptions(params IEnumerable<IWorkflowOption> options) =>
         this with
         {
