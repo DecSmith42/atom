@@ -15,14 +15,45 @@ debug it like standard code, and automatically generate CI/CD configuration file
 * **Modular**: Pull in capabilities via NuGet packages (GitVersion, Azure KeyVault, etc.).
 * **Source Generators**: Reduces boilerplate by automatically discovering targets and parameters.
 
+## Basic Example
+
+```csharp
+[BuildDefinition]
+partial class MyBuild
+{
+    Target MyTarget => t => t
+        .DescribedAs("Runs my target")
+        .Executes(() => Console.WriteLine("Hello World!"));
+}
+```
+
+```bash
+atom MyTarget
+
+# 25-11-11 +10:00  DecSm.Atom.Build.BuildExecutor:
+# 01:42:06.900 INF Executing build
+# 
+# Executing target MyTarget...
+# 
+# MyTarget
+# Runs my target
+# 
+# Hello World!
+#
+# Build Summary
+#                                    
+#   MyTarget │ Succeeded │ 0.00s  
+```
+
 ## Getting Started
 
 To get started with DecSm.Atom, follow the [Getting Started Guide](./docs/getting-started.md).
 
 ## Documentation
 
-For comprehensive guides and detailed information, including specific module documentation and a [Development Guide](./docs/development.md) for contributors, please refer to the [guides](./docs/guides.md).
+For comprehensive guides and detailed information, including specific module documentation and
+a [Development Guide](./docs/development.md) for contributors, please refer to the [guides](./docs/guides.md).
 
 ## License
 
-Atom is released under the [MIT License](https://www.google.com/search?q=LICENSE.txt).
+Atom is released under the [MIT License](LICENSE.txt).
