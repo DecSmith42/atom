@@ -14,7 +14,7 @@
 /// {
 ///     Target MyFirstTarget => t => t.DescribedAs("An example target.");
 /// }
-/// 
+///
 /// [BuildDefinition]
 /// public partial class MyBuild : BuildDefinition, IMyTargets;
 ///     </code>

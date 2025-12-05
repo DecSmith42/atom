@@ -14,7 +14,7 @@
 /// <example>
 ///     <code>
 /// public sealed record BuildConfiguration : WorkflowOption&lt;string, BuildConfiguration&gt;;
-/// 
+///
 /// // Usage:
 /// var config = BuildConfiguration.Create("Release");
 ///     </code>

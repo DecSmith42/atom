@@ -22,7 +22,7 @@
 ///         // Custom logic to write to an external system
 ///         return await WriteToExternalSystemAsync(variableName, variableValue);
 ///     }
-/// 
+///
 ///     public async Task&lt;bool&gt; ReadVariable(string jobName, string variableName, CancellationToken cancellationToken)
 ///     {
 ///         // Custom logic to read from an external system

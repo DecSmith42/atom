@@ -1,7 +1,23 @@
 ﻿namespace Atom;
 
+/// <summary>
+///     Provides functionality to generate C# code for .NET CLI commands based on a parsed schema.
+/// </summary>
+/// <remarks>
+///     This static class is used by the <see cref="Build" /> definition in <c>DecSm.Atom.DotnetCliGenerator</c>
+///     to create strongly-typed interfaces, implementations, and option classes for `dotnet` commands.
+/// </remarks>
 public static class DotnetCliGenerator
 {
+    /// <summary>
+    ///     Generates the C# interface code for a given .NET CLI command.
+    /// </summary>
+    /// <param name="writer">The <see cref="CsharpWriter" /> to write the code to.</param>
+    /// <param name="command">The <see cref="Command" /> object representing the .NET CLI command.</param>
+    /// <remarks>
+    ///     This method generates a method signature within the `IDotnetCli` interface for the command,
+    ///     including overloads for single arguments and path-like arguments where applicable.
+    /// </remarks>
     public static void GenerateInterfaceCode(CsharpWriter writer, Command command)
     {
         using (writer.Block("public partial interface IDotnetCli"))
@@ -51,6 +67,16 @@ public static class DotnetCliGenerator
         writer.WriteLine(string.Empty);
     }
 
+    /// <summary>
+    ///     Generates the C# implementation code for a given .NET CLI command.
+    /// </summary>
+    /// <param name="writer">The <see cref="CsharpWriter" /> to write the code to.</param>
+    /// <param name="command">The <see cref="Command" /> object representing the .NET CLI command.</param>
+    /// <remarks>
+    ///     This method generates the actual implementation of the command within the `DotnetCli` class,
+    ///     including overloads for single arguments and path-like arguments where applicable.
+    ///     It constructs the command-line arguments and invokes the `dotnet` process.
+    /// </remarks>
     public static void GenerateImplementationCode(CsharpWriter writer, Command command)
     {
         using (writer.Block("internal partial class DotnetCli"))
@@ -100,6 +126,16 @@ public static class DotnetCliGenerator
         writer.WriteLine(string.Empty);
     }
 
+    /// <summary>
+    ///     Generates the C# options record for a given .NET CLI command.
+    /// </summary>
+    /// <param name="writer">The <see cref="CsharpWriter" /> to write the code to.</param>
+    /// <param name="command">The <see cref="Command" /> object representing the .NET CLI command.</param>
+    /// <remarks>
+    ///     This method creates a `sealed record` named after the command (e.g., `BuildOptions`)
+    ///     that contains properties for each of the command's options. It also includes an
+    ///     overridden `ToString()` method to correctly format these options into command-line arguments.
+    /// </remarks>
     public static void GenerateOptionsCode(CsharpWriter writer, Command command)
     {
         if (command.Options.Count is 0)
@@ -153,6 +189,12 @@ public static class DotnetCliGenerator
         writer.WriteLine(string.Empty);
     }
 
+    /// <summary>
+    ///     Generates a C# method for a given .NET CLI command, either as an interface stub or an implementation.
+    /// </summary>
+    /// <param name="writer">The <see cref="CsharpWriter" /> to write the code to.</param>
+    /// <param name="command">The <see cref="Command" /> object representing the .NET CLI command.</param>
+    /// <param name="isStub">If <c>true</c>, generates an interface method signature; otherwise, generates an implementation.</param>
     private static void GenerateCommandMethod(CsharpWriter writer, Command command, bool isStub) =>
         writer.WriteMethod("public",
             "Task<ProcessRunResult>",
@@ -186,7 +228,7 @@ public static class DotnetCliGenerator
                     {
                         case { Arguments.Count: 0, Options.Count: 0 }:
                         {
-                            bodyWriter.WriteLine("processRunner.RunAsync((processRunOptions is null");
+                            bodyWriter.WriteLine("return processRunner.RunAsync((processRunOptions is null");
 
                             using (bodyWriter.Indent)
                             {
@@ -201,7 +243,7 @@ public static class DotnetCliGenerator
 
                         case { Arguments.Count: 0, Options.Count: > 0 }:
                         {
-                            bodyWriter.WriteLine("processRunner.RunAsync((processRunOptions is null");
+                            bodyWriter.WriteLine("return processRunner.RunAsync((processRunOptions is null");
 
                             using (bodyWriter.Indent)
                             {
@@ -255,6 +297,11 @@ public static class DotnetCliGenerator
                 ? command.Description
                 : null);
 
+    /// <summary>
+    ///     Formats a .NET type name for use in generated C# code, handling nullable types and specific replacements.
+    /// </summary>
+    /// <param name="type">The original type name from the CLI schema.</param>
+    /// <returns>The formatted C# type name.</returns>
     private static string FormatType(string type)
     {
         // ReSharper disable once InvertIf
@@ -274,6 +321,18 @@ public static class DotnetCliGenerator
             .Replace("NuGet.CommandLine.XPlat.Commands.Package.Update.Package", "string");
     }
 
+    /// <summary>
+    ///     Formats a command-line argument or option value for printing in the generated `ToString()` method of options
+    ///     records.
+    /// </summary>
+    /// <param name="type">The .NET type of the argument/option value.</param>
+    /// <param name="argName">The original command-line argument name (e.g., "--configuration").</param>
+    /// <param name="propertyName">The C# property name corresponding to the argument/option.</param>
+    /// <param name="includeArgName">
+    ///     If <c>true</c>, the argument name is included in the formatted string (e.g., "--arg
+    ///     value").
+    /// </param>
+    /// <returns>A string representing the formatted argument/option for command-line usage.</returns>
     private static string FormatToPrint(string type, string argName, string propertyName, bool includeArgName = true)
     {
         if (type.StartsWith("System.Nullable<", StringComparison.Ordinal))
@@ -310,8 +369,17 @@ public static class DotnetCliGenerator
             : propertyName;
     }
 
-    // Avoid reflection in AOT/trimmed contexts by classifying known type names via simple rules.
-    // This prevents IL2057 and improves compatibility with NativeAOT and trimming.
+    /// <summary>
+    ///     Determines if a given type name is considered "AOT-friendly" (i.e., can be used directly without causing
+    ///     AOT/trimming issues).
+    /// </summary>
+    /// <param name="typeName">The name of the type to check.</param>
+    /// <returns><c>true</c> if the type is considered AOT-friendly; otherwise, <c>false</c>.</returns>
+    /// <remarks>
+    ///     This method uses simple string checks to classify types. It explicitly allows
+    ///     `DecSm.Atom.Paths.RootedPath`, `Microsoft.DotNet.Cli.Utils.VerbosityOptions`,
+    ///     and any type starting with "System." (assuming BCL types are generally AOT-friendly).
+    /// </remarks>
     private static bool IsKnownAotFriendlyType(string? typeName)
     {
         if (string.IsNullOrWhiteSpace(typeName))
