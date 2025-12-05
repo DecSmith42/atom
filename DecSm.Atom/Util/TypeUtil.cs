@@ -1,163 +1,29 @@
 ﻿namespace DecSm.Atom.Util;
 
 /// <summary>
-///     Provides comprehensive type conversion utilities for the Atom framework.
-///     Enables flexible conversion of string values to various target types including
-///     arrays, generic collections, and custom types with optional custom converters.
+///     Provides flexible type conversion utilities, handling primitives, arrays, and generic collections.
 /// </summary>
 /// <remarks>
-///     <para>
-///         This utility class is designed to handle complex type conversions that go beyond
-///         standard .NET type conversion capabilities. It provides special handling for:
-///     </para>
-///     <list type="bullet">
-///         <item>
-///             <description>Arrays - Comma-separated string values converted to typed arrays</description>
-///         </item>
-///         <item>
-///             <description>Generic Collections - Support for IReadOnlyList&lt;T&gt; and other generic types</description>
-///         </item>
-///         <item>
-///             <description>Custom Converters - User-defined conversion functions for specialized types</description>
-///         </item>
-///         <item>
-///             <description>Nullable Types - Proper handling of nullable reference and value types</description>
-///         </item>
-///     </list>
-///     <para>
-///         The conversion process follows this priority order:
-///     </para>
-///     <list type="number">
-///         <item>
-///             <description>Null Check - Returns default if input string is null</description>
-///         </item>
-///         <item>
-///             <description>Custom Converter - Uses provided converter function if available</description>
-///         </item>
-///         <item>
-///             <description>Array Conversion - Handles array types with comma-separated values</description>
-///         </item>
-///         <item>
-///             <description>Generic Conversion - Processes generic types like collections</description>
-///         </item>
-///         <item>
-///             <description>Standard Conversion - Falls back to TypeDescriptor conversion</description>
-///         </item>
-///     </list>
-///     <para>
-///         This class is thread-safe and designed for high-performance scenarios where
-///         type conversion is performed frequently, such as parameter resolution systems.
-///     </para>
+///     This utility class is designed to handle complex type conversions beyond standard .NET capabilities,
+///     with special handling for arrays (from comma-separated strings) and generic collections. It supports
+///     custom converters for specialized types and is optimized for performance-sensitive scenarios like
+///     parameter resolution.
 /// </remarks>
-/// <example>
-///     <code>
-/// // Basic type conversion
-/// var intValue = TypeUtil.Convert&lt;int&gt;("42", null);
-/// // Array conversion
-/// var intArray = TypeUtil.Convert&lt;int[]&gt;("1,2,3,4", null);
-/// // Collection conversion
-/// var stringList = TypeUtil.Convert&lt;IReadOnlyList&lt;string&gt;&gt;("a,b,c", null);
-/// // Custom converter
-/// var customValue = TypeUtil.Convert&lt;DateTime&gt;("2023-12-25",
-///     str => DateTime.ParseExact(str, "yyyy-MM-dd", null));
-/// // Nullable handling
-/// var nullableInt = TypeUtil.Convert&lt;int?&gt;(null, null); // Returns null
-/// </code>
-/// </example>
 [PublicAPI]
 public static class TypeUtil
 {
     /// <summary>
-    ///     Converts a string value to the specified target type with optional custom conversion logic.
+    ///     Converts a string value to a specified target type, with optional custom conversion logic.
     /// </summary>
-    /// <typeparam name="T">
-    ///     The target type to convert the string value to. Can be any type including
-    ///     arrays, generic collections, nullable types, and custom types.
-    /// </typeparam>
-    /// <param name="stringValue">
-    ///     The string value to convert. If null, the method returns the default value for type T.
-    ///     For array conversions, comma-separated values are expected.
-    /// </param>
-    /// <param name="converter">
-    ///     Optional custom conversion function that takes precedence over built-in conversion logic.
-    ///     When provided, this function is responsible for the entire conversion process.
-    ///     Can be null to use automatic type conversion based on the target type.
-    /// </param>
-    /// <returns>
-    ///     The converted value of type <typeparamref name="T" />, or the default value for the type
-    ///     if conversion fails or the input string is null.
-    /// </returns>
+    /// <typeparam name="T">The target type to convert to.</typeparam>
+    /// <param name="stringValue">The string value to convert. For array types, a comma-separated string is expected.</param>
+    /// <param name="converter">An optional custom conversion function that takes precedence over built-in logic.</param>
+    /// <returns>The converted value, or the default value for the type if conversion is not possible.</returns>
     /// <remarks>
-    ///     <para>
-    ///         The method handles conversion using the following strategy:
-    ///     </para>
-    ///     <list type="bullet">
-    ///         <item>
-    ///             <description><strong>Null Input</strong> - Returns default(T) immediately</description>
-    ///         </item>
-    ///         <item>
-    ///             <description>
-    ///                 <strong>Custom Converter</strong> - If provided, delegates all conversion logic to the custom
-    ///                 function
-    ///             </description>
-    ///         </item>
-    ///         <item>
-    ///             <description>
-    ///                 <strong>Array Types</strong> - Splits input by comma and converts each element to the array's
-    ///                 element type
-    ///             </description>
-    ///         </item>
-    ///         <item>
-    ///             <description>
-    ///                 <strong>Generic Types</strong> - Special handling for supported generic types like
-    ///                 IReadOnlyList&lt;T&gt;
-    ///             </description>
-    ///         </item>
-    ///         <item>
-    ///             <description>
-    ///                 <strong>Standard Types</strong> - Uses TypeDescriptor.GetConverter() for built-in type
-    ///                 conversion
-    ///             </description>
-    ///         </item>
-    ///     </list>
-    ///     <para>
-    ///         For array conversions, the input string is split using comma (',') as the delimiter.
-    ///         Each resulting substring is then converted to the array's element type.
-    ///     </para>
-    ///     <para>
-    ///         Currently supported generic types include IReadOnlyList&lt;T&gt;. Additional generic
-    ///         types will throw a NotSupportedException with details about the unsupported type.
-    ///     </para>
+    ///     The method uses a prioritized strategy: custom converter, array conversion, generic collection conversion,
+    ///     and finally, standard <see cref="TypeDescriptor" /> conversion. It is designed to be AOT-friendly by
+    ///     attempting simple, reflection-free conversions first.
     /// </remarks>
-    /// <exception cref="NotSupportedException">
-    ///     Thrown when attempting to convert to an unsupported generic type.
-    ///     Currently only IReadOnlyList&lt;T&gt; is supported among generic types.
-    /// </exception>
-    /// <exception cref="InvalidOperationException">
-    ///     Thrown when the underlying TypeDescriptor conversion fails for standard types,
-    ///     or when array element conversion fails.
-    /// </exception>
-    /// <example>
-    ///     <code>
-    /// // Converting to primitive types
-    /// var number = TypeUtil.Convert&lt;int&gt;("123", null);
-    /// var flag = TypeUtil.Convert&lt;bool&gt;("true", null);
-    /// var date = TypeUtil.Convert&lt;DateTime&gt;("2023-12-25", null);
-    /// // Converting to arrays
-    /// var numbers = TypeUtil.Convert&lt;int[]&gt;("1,2,3,4,5", null);
-    /// var names = TypeUtil.Convert&lt;string[]&gt;("John,Jane,Bob", null);
-    /// // Converting to collections
-    /// var readOnlyList = TypeUtil.Convert&lt;IReadOnlyList&lt;string&gt;&gt;("apple,banana,cherry", null);
-    /// // Using custom converters
-    /// var customDate = TypeUtil.Convert&lt;DateTime&gt;("25-12-2023",
-    ///     str => DateTime.ParseExact(str, "dd-MM-yyyy", CultureInfo.InvariantCulture));
-    /// var enumValue = TypeUtil.Convert&lt;MyEnum&gt;("Value1",
-    ///     str => Enum.Parse&lt;MyEnum&gt;(str, ignoreCase: true));
-    /// // Handling null and empty values
-    /// var nullResult = TypeUtil.Convert&lt;int?&gt;(null, null); // Returns null
-    /// var emptyResult = TypeUtil.Convert&lt;string&gt;("", null); // Returns empty string
-    /// </code>
-    /// </example>
     [UnconditionalSuppressMessage("Trimming",
         "IL2026",
         Justification =
@@ -179,6 +45,9 @@ public static class TypeUtil
                                 ? tValue
                                 : default;
 
+    /// <summary>
+    ///     Converts a string to a specified type using <see cref="TypeDescriptor" />. This method is not trim-safe.
+    /// </summary>
     [RequiresUnreferencedCode(
         "TypeDescriptor.GetConverter(Type) is not trimming-safe. Converters for some types may be removed during trimming.")]
     [UnconditionalSuppressMessage("Trimming",
@@ -192,7 +61,9 @@ public static class TypeUtil
             .GetConverter(type)
             .ConvertFromInvariantString(value);
 
-    // Best-effort AOT-friendly conversion that avoids TypeDescriptor where possible.
+    /// <summary>
+    ///     Attempts to convert a string to a specified type using AOT-friendly methods.
+    /// </summary>
     private static bool TryConvert(string value, Type type, out object? result)
     {
         // Handle Nullable<T> by unwrapping the underlying type
@@ -233,6 +104,9 @@ public static class TypeUtil
         return false;
     }
 
+    /// <summary>
+    ///     Checks if a type is a nullable value type and returns its underlying type.
+    /// </summary>
     private static bool IsNullableValueType(Type type, out Type? underlying)
     {
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -247,6 +121,9 @@ public static class TypeUtil
         return false;
     }
 
+    /// <summary>
+    ///     Attempts to convert a string to common simple types without using reflection-heavy APIs.
+    /// </summary>
     private static bool TryConvertSimple(string value, Type type, out object? result)
     {
         // String is already simple
@@ -526,6 +403,9 @@ public static class TypeUtil
         return false;
     }
 
+    /// <summary>
+    ///     Converts a comma-separated string into an array of the specified type.
+    /// </summary>
     [UnconditionalSuppressMessage("AssemblyLoadTrimming",
         "IL2026:RequiresUnreferencedCode",
         Justification =
@@ -556,6 +436,9 @@ public static class TypeUtil
         return (T)(object)array;
     }
 
+    /// <summary>
+    ///     Converts a comma-separated string into a supported generic collection type.
+    /// </summary>
     [UnconditionalSuppressMessage("AssemblyLoadTrimming",
         "IL2026:RequiresUnreferencedCode",
         Justification =
