@@ -1,62 +1,34 @@
 ﻿namespace DecSm.Atom.Args;
 
 /// <summary>
-///     Parses command-line arguments for an Atom build process.
-///     It identifies known options (like help, generate, skip, headless, verbose, project),
-///     parameters (defined in the build definition), and commands (targets to be executed).
+///     Parses raw command-line arguments into a structured <see cref="CommandLineArgs" /> object.
 /// </summary>
 /// <remarks>
-///     <para>
-///         This parser is a core component of the Atom framework's command-line interface.
-///         It takes raw string arguments and converts them into a structured <see cref="CommandLineArgs" /> object.
-///         The parser relies on an <see cref="IBuildDefinition" /> to understand available targets and their parameters.
-///         It also uses an <see cref="Spectre.Console.IAnsiConsole" /> for displaying error messages or help information
-///         related to argument
-///         parsing.
-///     </para>
-///     <para>
-///         Ambiguous or unknown arguments will result in the <see cref="CommandLineArgs.IsValid" /> property being set to
-///         false,
-///         and diagnostic messages may be printed to the console.
-///     </para>
+///     This parser identifies known options (e.g., <c>--help</c>), parameters, and commands (targets) by referencing an
+///     <see cref="IBuildDefinition" />.
+///     Unrecognized arguments will invalidate the result and trigger diagnostic messages.
 /// </remarks>
 internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IAnsiConsole console)
 {
     /// <summary>
-    ///     Parses the provided raw command-line arguments into a structured <see cref="CommandLineArgs" /> object.
+    ///     Parses the provided command-line arguments into a <see cref="CommandLineArgs" /> object.
     /// </summary>
-    /// <param name="rawArgs">
-    ///     A read-only list of string arguments, typically obtained from the application's entry point (e.g., `string[] args`
-    ///     in
-    ///     `Main`).
-    /// </param>
+    /// <param name="rawArgs">A read-only list of string arguments from the application's entry point.</param>
     /// <returns>
-    ///     A <see cref="CommandLineArgs" /> object representing the parsed arguments.
-    ///     The <see cref="CommandLineArgs.IsValid" /> property will indicate if parsing was successful and all arguments were
-    ///     recognized.
+    ///     A <see cref="CommandLineArgs" /> object representing the parsed arguments. Check the
+    ///     <see cref="CommandLineArgs.IsValid" /> property to determine if parsing was successful.
     /// </returns>
-    /// <exception cref="System.ArgumentException">
-    ///     Thrown if a parameter requiring a value is provided without one (e.g., `--project` without a project name following
-    ///     it, or a custom
-    ///     parameter `--paramName` without its value).
+    /// <exception cref="ArgumentException">
+    ///     Thrown if an argument requiring a value is provided without one (e.g., <c>--project</c> or a defined parameter).
     /// </exception>
     /// <example>
-    ///     Given the command: <c>atom BuildProject --version 1.0.0 -s --headless</c>
-    ///     The parser might produce a <see cref="CommandLineArgs" /> object containing:
-    ///     <list type="bullet">
-    ///         <item>
-    ///             <description><see cref="HelpArg" /> if `-h` or `--help` is provided.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description><see cref="GenArg" /> if `-g` or `--gen` is provided.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description><see cref="SkipArg" /> if `-s` or `--skip` is provided.</description>
-    ///         </item>
-    ///         <item>
-    ///             <description><see cref="HeadlessArg" /> if `-hl` or `--headless` is provided.</description>
-    ///         </item>
-    ///     </list>
+    ///     <code>
+    ///       var rawArgs = new[] { "Build", "--version", "1.0.0", "-s" };
+    ///       var commandLineArgs = parser.Parse(rawArgs);
+    ///       // commandLineArgs.Commands will contain "Build"
+    ///       // commandLineArgs.Params will contain a ParamArg for "version" with value "1.0.0"
+    ///       // commandLineArgs.HasSkip will be true
+    ///     </code>
     /// </example>
     public CommandLineArgs Parse(IReadOnlyList<string> rawArgs)
     {
@@ -160,9 +132,14 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
             isValid = false;
         }
 
-        return new(isValid, args.ToArray());
+        return new(isValid, args.ToList());
     }
 
+    /// <summary>
+    ///     Attempts to parse a raw argument as a built-in option (e.g., <c>--help</c>, <c>--skip</c>).
+    /// </summary>
+    /// <param name="rawArg">The raw string argument.</param>
+    /// <returns>An <see cref="IArg" /> representing the option if recognized; otherwise, <c>null</c>.</returns>
     private static IArg? TryParseOption(string rawArg) =>
         rawArg.ToLower() switch
         {
@@ -176,6 +153,12 @@ internal sealed class CommandLineArgsParser(IBuildDefinition buildDefinition, IA
             _ => null,
         };
 
+    /// <summary>
+    ///     Attempts to parse a raw argument as a defined command (target) from the build definition.
+    /// </summary>
+    /// <param name="targetDefinitions">The available target definitions.</param>
+    /// <param name="rawArg">The raw string argument.</param>
+    /// <returns>A <see cref="CommandArg" /> if the argument matches a known target; otherwise, <c>null</c>.</returns>
     private static CommandArg? TryParseCommand(IReadOnlyDictionary<string, Target> targetDefinitions, string rawArg) =>
         targetDefinitions
             .Where(buildTarget => string.Equals(rawArg, buildTarget.Key, StringComparison.OrdinalIgnoreCase))
