@@ -7,9 +7,6 @@
 [PublicAPI]
 public sealed record WorkflowTargetDefinition(string Name)
 {
-    public static implicit operator WorkflowTargetDefinition(string name) =>
-        new(name);
-
     /// <summary>
     ///     Gets the matrix dimensions for this workflow target, allowing it to run in multiple configurations.
     /// </summary>
@@ -33,6 +30,9 @@ public sealed record WorkflowTargetDefinition(string Name)
         {
             SuppressArtifactPublishing = true,
         };
+
+    public static implicit operator WorkflowTargetDefinition(string name) =>
+        new(name);
 
     /// <summary>
     ///     Creates a <see cref="WorkflowStepModel" /> from this target definition.

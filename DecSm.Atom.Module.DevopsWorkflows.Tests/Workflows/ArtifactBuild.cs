@@ -26,9 +26,9 @@ public partial class ArtifactBuild : MinimalBuildDefinition,
                 WorkflowTargets.ArtifactTarget3,
                 WorkflowTargets.ArtifactTarget4.WithMatrixDimensions(
                     new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
-                {
-                    Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
-                }),
+                    {
+                        Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
+                    }),
             ],
             WorkflowTypes = [Devops.WorkflowType],
         },
@@ -64,9 +64,9 @@ public partial class CustomArtifactBuild : MinimalBuildDefinition,
                 WorkflowTargets.ArtifactTarget3,
                 WorkflowTargets.ArtifactTarget4.WithMatrixDimensions(
                     new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
-                {
-                    Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
-                }),
+                    {
+                        Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
+                    }),
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [UseCustomArtifactProvider.Enabled],

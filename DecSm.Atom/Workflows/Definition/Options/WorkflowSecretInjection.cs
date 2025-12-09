@@ -11,7 +11,6 @@
 ///     <code>
 /// // Inject a GitHub token secret
 /// var githubTokenSecret = WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken));
-///
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(githubTokenSecret);
 ///     </code>

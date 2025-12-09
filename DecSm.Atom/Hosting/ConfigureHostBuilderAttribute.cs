@@ -21,11 +21,9 @@
 ///         // Configuration logic here
 ///     }
 /// }
-///
 /// // 2. Implement the interface in your build definition
 /// [BuildDefinition]
 /// partial class Build : IMyHostBuilderConfigurator;
-///
 /// // The source generator will now apply the Configure method during host builder setup.
 ///     </code>
 /// </example>

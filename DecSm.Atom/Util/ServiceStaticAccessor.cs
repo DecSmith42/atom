@@ -17,7 +17,6 @@
 ///     <code>
 /// // 1. Register the service
 /// services.AddSingletonWithStaticAccessor&lt;IMyService, MyService&gt;();
-///
 /// // 2. Access the service statically from anywhere
 /// ServiceStaticAccessor&lt;IMyService&gt;.Service?.DoSomething();
 ///     </code>

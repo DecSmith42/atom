@@ -8,6 +8,11 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
     private const string GenerateSolutionModelAttributeFull =
         "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
 
+    private static readonly Regex SlnProjectLineRegex = new("""
+                                                            ^Project\s*\(\s*"\{[A-F0-9\-]+\}"\s*\)\s*=\s*"([^"]+)",\s*"([^"]+)"
+                                                            """,
+        RegexOptions.Multiline | RegexOptions.Compiled);
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var classSymbolsProvider = context
@@ -121,11 +126,6 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 
         return builder.ToImmutable();
     }
-
-    private static readonly Regex SlnProjectLineRegex = new("""
-                                                            ^Project\s*\(\s*"\{[A-F0-9\-]+\}"\s*\)\s*=\s*"([^"]+)",\s*"([^"]+)"
-                                                            """,
-        RegexOptions.Multiline | RegexOptions.Compiled);
 
     private static ImmutableDictionary<string, string> ParseSln(string slnContent, string slnPath)
     {
