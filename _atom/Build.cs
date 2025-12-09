@@ -1,7 +1,10 @@
 namespace Atom;
 
 [BuildDefinition]
-internal partial class Build : IAzureKeyVault,
+[GenerateEntryPoint]
+[GenerateSolutionModel]
+internal partial class Build : BuildDefinition,
+    IAzureKeyVault,
     IDevopsWorkflows,
     IGithubWorkflows,
     IGitVersion,
@@ -34,10 +37,10 @@ internal partial class Build : IAzureKeyVault,
             Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
-                Targets.SetupBuildInfo,
-                Targets.PackProjects.WithSuppressedArtifactPublishing,
-                Targets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
-                Targets
+                WorkflowTargets.SetupBuildInfo,
+                WorkflowTargets.PackProjects.WithSuppressedArtifactPublishing,
+                WorkflowTargets.PackTool.WithSuppressedArtifactPublishing.WithGithubRunnerMatrix(PlatformNames),
+                WorkflowTargets
                     .TestProjects
                     .WithGithubRunnerMatrix(PlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
@@ -58,19 +61,19 @@ internal partial class Build : IAzureKeyVault,
             ],
             Targets =
             [
-                Targets.SetupBuildInfo,
-                Targets.PackProjects,
-                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
-                Targets
+                WorkflowTargets.SetupBuildInfo,
+                WorkflowTargets.PackProjects,
+                WorkflowTargets.PackTool.WithGithubRunnerMatrix(PlatformNames),
+                WorkflowTargets
                     .TestProjects
                     .WithGithubRunnerMatrix(PlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                Targets.PushToNuget,
-                Targets
+                WorkflowTargets.PushToNuget,
+                WorkflowTargets
                     .PushToRelease
                     .WithGithubTokenInjection()
-                    .WithOptions(GithubIf.Create(new ConsumedVariableExpression(nameof(Targets.SetupBuildInfo),
+                    .WithOptions(GithubIf.Create(new ConsumedVariableExpression(nameof(WorkflowTargets.SetupBuildInfo),
                             ParamDefinitions[nameof(ISetupBuildInfo.BuildVersion)].ArgName)
                         .Contains(new StringExpression("-"))
                         .EqualTo("false"))),
@@ -84,15 +87,15 @@ internal partial class Build : IAzureKeyVault,
             Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
-                Targets.SetupBuildInfo,
-                Targets.PackProjects,
-                Targets.PackTool.WithGithubRunnerMatrix(PlatformNames),
-                Targets
+                WorkflowTargets.SetupBuildInfo,
+                WorkflowTargets.PackProjects,
+                WorkflowTargets.PackTool.WithGithubRunnerMatrix(PlatformNames),
+                WorkflowTargets
                     .TestProjects
                     .WithDevopsPoolMatrix(PlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                Targets.PushToNuget,
+                WorkflowTargets.PushToNuget,
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],

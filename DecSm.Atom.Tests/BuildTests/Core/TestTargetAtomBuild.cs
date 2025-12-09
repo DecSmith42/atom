@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Core;
 
-[MinimalBuildDefinition]
-public partial class TestTargetAtomBuild : ITestTarget
+[BuildDefinition]
+public partial class TestTargetAtomBuild : MinimalBuildDefinition, ITestTarget
 {
     public string Description { get; set; } = "Test target";
 

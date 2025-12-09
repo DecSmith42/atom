@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class EnvironmentBuild : MinimalBuildDefinition, IDevopsWorkflows, IEnvironmentTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -8,7 +8,7 @@ public partial class EnvironmentBuild : MinimalBuildDefinition, IDevopsWorkflows
         new("environment-workflow")
         {
             Triggers = [ManualTrigger.Empty],
-            Targets = [Targets.EnvironmentTarget.WithOptions(DeployToEnvironment.Create("test-env-1"))],
+            Targets = [WorkflowTargets.EnvironmentTarget.WithOptions(DeployToEnvironment.Create("test-env-1"))],
             WorkflowTypes = [Devops.WorkflowType],
         },
     ];

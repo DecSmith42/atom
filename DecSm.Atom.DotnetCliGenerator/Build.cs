@@ -9,9 +9,9 @@
 ///     option classes for each `dotnet` command. The generated files are placed in the
 ///     `DecSm.Atom.Module.Dotnet/Cli/Generated` directory.
 /// </remarks>
-[MinimalBuildDefinition]
+[BuildDefinition]
 [GenerateEntryPoint]
-internal sealed partial class Build : BuildDefinition
+internal sealed partial class Build : MinimalBuildDefinition
 {
     /// <summary>
     ///     The target that generates the .NET CLI wrapper code.

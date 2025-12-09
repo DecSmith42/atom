@@ -5,6 +5,7 @@
 // This is automatically globally included when using DecSm.Atom from a nuget package
 
 using DecSm.Atom.Build.Definition;
+using DecSm.Atom.Hosting;
 
 namespace Atom;
 
@@ -17,7 +18,8 @@ namespace Atom;
 ///     <code>dotnet run -- HelloWorld</code>
 /// </remarks>
 [BuildDefinition]
-internal partial class Build
+[GenerateEntryPoint]
+internal partial class Build : BuildDefinition
 {
     /// <summary>
     ///     The "HelloWorld" target prints a simple greeting message to the console.

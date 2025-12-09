@@ -3,6 +3,7 @@
 #nullable enable
 
 global using static TestNamespace.ChainedParamBuild;
+
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,10 +16,8 @@ using DecSm.Atom.Process;
 namespace TestNamespace;
 
 [JetBrains.Annotations.PublicAPI]
-partial class ChainedParamBuild : DecSm.Atom.Build.Definition.BuildDefinition
+partial class ChainedParamBuild : DecSm.Atom.Build.Definition.IBuildDefinition
 {
-    private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
-
     public ChainedParamBuild(System.IServiceProvider services) : base(services) { }
 
     private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("TestNamespace.ChainedParamBuild");
@@ -33,28 +32,50 @@ partial class ChainedParamBuild : DecSm.Atom.Build.Definition.BuildDefinition
             ? (T)(IBuildDefinition)this
             : Services.GetRequiredService<T>();
 
-   private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
+    private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
         where T : notnull =>
         typeof(T).GetInterface(nameof(IBuildDefinition)) != null
             ? [(T)(IBuildDefinition)this]
             : Services.GetServices<T>();
 
     [return: NotNullIfNotNull(nameof(defaultValue))]
-    private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
-        Services
-            .GetRequiredService<IParamService>()
-            .GetParam(parameterExpression, defaultValue, converter);
+    private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+        Expression<Func<T?>> parameterExpression,
+        T? defaultValue = default,
+        Func<string?, T?>? converter = null) =>
+            Services
+                .GetRequiredService<IParamService>()
+                .GetParam(parameterExpression, defaultValue, converter);
 
+    #region Targets
 
-    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, DecSm.Atom.Build.Definition.Target>
+    private System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Build.Definition.Target>? _targetDefinitions;
+
+    public override System.Collections.Generic.IReadOnlyDictionary<string, Target> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, Target>
     {
-        { "ChainedParamTarget", ((TestNamespace.IChainedParamTarget)this).ChainedParamTarget },
+        { nameof(TestNamespace.IChainedParamTarget.ChainedParamTarget), ((TestNamespace.IChainedParamTarget)this).ChainedParamTarget },
     };
 
-    public override System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>
+    public static class WorkflowTargets
+    {
+        public static readonly DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition ChainedParamTarget = new(nameof(TestNamespace.IChainedParamTarget.ChainedParamTarget));
+    }
+
+    private static DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition WorkflowTarget(string name) =>
+        name switch
+        {
+            nameof(TestNamespace.IChainedParamTarget.ChainedParamTarget) => WorkflowTargets.ChainedParamTarget,
+            _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name))
+        };
+
+    #endregion Targets
+
+    #region Params
+
+    private readonly System.Collections.Generic.IReadOnlyDictionary<string, DecSm.Atom.Params.ParamDefinition> _paramDefinitions = new System.Collections.Generic.Dictionary<string, DecSm.Atom.Params.ParamDefinition>()
     {
         {
-            "Param1", new("Param1")
+            nameof(TestNamespace.IChainedParamTarget.Param1), new(nameof(TestNamespace.IChainedParamTarget.Param1))
             {
                 ArgName = "param-1",
                 Description = "Param 1",
@@ -64,45 +85,36 @@ partial class ChainedParamBuild : DecSm.Atom.Build.Definition.BuildDefinition
             }
         },
         {
-            "Param2", new("Param2")
+            nameof(TestNamespace.IChainedParamTarget.Param2), new(nameof(TestNamespace.IChainedParamTarget.Param2))
             {
                 ArgName = "param-2",
                 Description = "Param 2",
                 Sources = (DecSm.Atom.Params.ParamSource)47,
                 IsSecret = false,
-                ChainedParams = [ "Param1" ],
+                ChainedParams = [ "Param1", ],
             }
         },
     };
 
+    public override System.Collections.Generic.IReadOnlyDictionary<string, ParamDefinition> ParamDefinitions => _paramDefinitions;
+
+    public sealed class ParamsData(DecSm.Atom.Build.Definition.IBuildDefinition buildDefinition)
+    {
+        public ParamDefinition Param1 => buildDefinition.ParamDefinitions[nameof(TestNamespace.IChainedParamTarget.Param1)];
+        public ParamDefinition Param2 => buildDefinition.ParamDefinitions[nameof(TestNamespace.IChainedParamTarget.Param2)];
+    }
+
+    private ParamsData? _params;
+
+    public ParamsData Params => _params ??= new(this);
+
     public override object? AccessParam(string paramName) =>
         paramName switch
         {
-            "Param1" => ((TestNamespace.IChainedParamTarget)this).Param1,
-            "Param2" => ((TestNamespace.IChainedParamTarget)this).Param2,
-        _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName)),
+            nameof(TestNamespace.IChainedParamTarget.Param1) => ((TestNamespace.IChainedParamTarget)this).Param1,
+            nameof(TestNamespace.IChainedParamTarget.Param2) => ((TestNamespace.IChainedParamTarget)this).Param2,
+            _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName))
         };
 
-    [JetBrains.Annotations.PublicAPI]
-    private static class Targets
-    {
-        public static DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition ChainedParamTarget = new("ChainedParamTarget");
-    }
-
-    private static DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition Target(string name) => name switch
-    {
-        "ChainedParamTarget" => Targets.ChainedParamTarget,
-        _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name)),
-    };
-
-    [JetBrains.Annotations.PublicAPI]
-    private static class Params
-    {
-        public static string Param1 = "Param1";
-        public static string Param2 = "Param2";
-    }
-
-    // Build has no defined HostBuilder configuration
-
-    // Build has no defined Host configuration
+    #endregion Params
 }

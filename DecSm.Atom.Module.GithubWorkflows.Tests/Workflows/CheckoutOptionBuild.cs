@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class CheckoutOptionBuild : MinimalBuildDefinition, IGithubWorkflows, ICheckoutOptionTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -10,7 +10,7 @@ public partial class CheckoutOptionBuild : MinimalBuildDefinition, IGithubWorkfl
             Triggers = [ManualTrigger.Empty],
             Targets =
             [
-                Targets.CheckoutOptionTarget.WithOptions(GithubCheckoutOption.Create(new("v4",
+                WorkflowTargets.CheckoutOptionTarget.WithOptions(GithubCheckoutOption.Create(new("v4",
                     true,
                     "recursive",
                     "some-token"))),

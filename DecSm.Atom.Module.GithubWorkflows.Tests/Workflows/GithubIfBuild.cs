@@ -2,7 +2,7 @@
 
 namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class GithubIfBuild : MinimalBuildDefinition, IGithubWorkflows
 {
     private Target GithubIfTarget => t => t;
@@ -14,7 +14,7 @@ public partial class GithubIfBuild : MinimalBuildDefinition, IGithubWorkflows
             Triggers = [ManualTrigger.Empty],
             Targets =
             [
-                Targets.GithubIfTarget.WithOptions(
+                WorkflowTargets.GithubIfTarget.WithOptions(
                     GithubIf.Create(new GreaterThanExpression(new NumberExpression(4), new NumberExpression(3)))),
             ],
             WorkflowTypes = [new GithubWorkflowType()],

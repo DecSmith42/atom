@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class ArtifactBuild : MinimalBuildDefinition,
     IGithubWorkflows,
     IArtifactTarget1,
@@ -21,10 +21,11 @@ public partial class ArtifactBuild : MinimalBuildDefinition,
             ],
             Targets =
             [
-                Targets.ArtifactTarget1,
-                Targets.ArtifactTarget2,
-                Targets.ArtifactTarget3,
-                Targets.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
+                WorkflowTargets.ArtifactTarget1,
+                WorkflowTargets.ArtifactTarget2,
+                WorkflowTargets.ArtifactTarget3,
+                WorkflowTargets.ArtifactTarget4.WithMatrixDimensions(
+                    new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
                 {
                     Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
                 }),
@@ -34,7 +35,7 @@ public partial class ArtifactBuild : MinimalBuildDefinition,
     ];
 }
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class CustomArtifactBuild : MinimalBuildDefinition,
     IGithubWorkflows,
     IStoreArtifact,
@@ -57,11 +58,12 @@ public partial class CustomArtifactBuild : MinimalBuildDefinition,
             ],
             Targets =
             [
-                Targets.SetupBuildInfo,
-                Targets.ArtifactTarget1,
-                Targets.ArtifactTarget2,
-                Targets.ArtifactTarget3,
-                Targets.ArtifactTarget4.WithMatrixDimensions(new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
+                WorkflowTargets.SetupBuildInfo,
+                WorkflowTargets.ArtifactTarget1,
+                WorkflowTargets.ArtifactTarget2,
+                WorkflowTargets.ArtifactTarget3,
+                WorkflowTargets.ArtifactTarget4.WithMatrixDimensions(
+                    new MatrixDimension(nameof(IArtifactSliceTarget1.Slice))
                 {
                     Values = [IArtifactTarget2.Slice1, IArtifactTarget2.Slice2],
                 }),

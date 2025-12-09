@@ -1,6 +1,11 @@
-﻿using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
+﻿namespace DecSm.Atom.SourceGenerators;
 
-namespace DecSm.Atom.SourceGenerators;
+using ClassNameWithSourceCode = (string ClassName, string? SourceCode);
+using TypeWithProperty = (INamedTypeSymbol Type, IPropertySymbol Property);
+using TypeWithMethod = (INamedTypeSymbol Type, IMethodSymbol Method);
+using PropertiesWithMethods =
+    (ImmutableArray<(INamedTypeSymbol Type, IPropertySymbol Property)> Properties,
+    ImmutableArray<(INamedTypeSymbol Type, IMethodSymbol Method)> Methods);
 
 [Generator]
 public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
@@ -8,60 +13,147 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     private const string GenerateInterfaceMembersAttributeFull =
         "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
 
-    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
 
-    public void Initialize(IncrementalGeneratorInitializationContext context) =>
-        context.RegisterSourceOutput(context.CompilationProvider.Combine(context
-                .SyntaxProvider
-                .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is ClassDeclarationSyntax,
-                    static (context, _) => GetClassDeclaration(context))
-                .WithTrackingName("GenerateInterfaceMembersSourceGenerator")
-                .Where(static declarationResult => declarationResult.HasAttribute)
-                .Select(static (declarationResult, _) => declarationResult.Declaration)
-                .Collect()),
-            GenerateCode);
+    private static readonly HashSet<string> ExcludedPropertyNames =
+    [
+        "GlobalWorkflowOptions",
+        "Workflows",
+        "ParamDefinitions",
+        "TargetDefinitions",
+        "Logger",
+        "FileSystem",
+        "ProcessRunner",
+        "Services",
+    ];
 
-    private static DeclarationResult GetClassDeclaration(GeneratorSyntaxContext context)
+    private static readonly HashSet<string> ExcludedMethodNames =
+    [
+        ".ctor", "ConfigureBuilder", "GetService", "GetServices", "GetParam",
+    ];
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
+        var classSymbols = context
+            .SyntaxProvider
+            .ForAttributeWithMetadataName(GenerateInterfaceMembersAttributeFull,
+                static (node, _) => node is ClassDeclarationSyntax,
+                static (context, _) => (INamedTypeSymbol)context.TargetSymbol)
+            .WithTrackingName(nameof(GenerateInterfaceMembersSourceGenerator));
 
-        // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - Perf
-        foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
-        foreach (var attributeSyntax in attributeListSyntax.Attributes)
+        context.RegisterSourceOutput(classSymbols.Select(static (symbol, ct) => GeneratePartial(symbol, ct)),
+            static (context, data) =>
+            {
+                if (data.SourceCode is not null)
+                    context.AddSource($"{data.ClassName}.g.cs", SourceText.From(data.SourceCode, Encoding.UTF8));
+            });
+    }
+
+    private static ClassNameWithSourceCode GeneratePartial(
+        INamedTypeSymbol classSymbol,
+        CancellationToken cancellationToken)
+    {
+        var (properties, methods) = GetInterestingMembers(classSymbol, cancellationToken);
+
+        if (properties.IsEmpty && methods.IsEmpty)
+            return (classSymbol.Name, null);
+
+        var memberLines = GenerateMemberLines(properties, methods);
+        var indentedMembers = string.Join("\n\n", memberLines.Select(line => $"    {line}"));
+
+        var sourceCode = BuildSourceCode(classSymbol, indentedMembers);
+
+        return (classSymbol.Name, sourceCode);
+    }
+
+    private static PropertiesWithMethods GetInterestingMembers(
+        INamedTypeSymbol classSymbol,
+        CancellationToken cancellationToken)
+    {
+        var allInterfaceMembers = classSymbol
+            .AllInterfaces
+            .Where(static x => x.ToDisplayString() != IBuildDefinitionFull)
+            .SelectMany(static interfaceSymbol => interfaceSymbol.GetMembers(),
+                (interfaceSymbol, member) => (interfaceSymbol, member));
+
+        var propertiesBuilder = ImmutableArray.CreateBuilder<TypeWithProperty>();
+        var methodsBuilder = ImmutableArray.CreateBuilder<TypeWithMethod>();
+
+        foreach (var (interfaceSymbol, member) in allInterfaceMembers)
         {
-            var symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+            cancellationToken.ThrowIfCancellationRequested();
 
-            if (symbolInfo.Symbol is not IMethodSymbol attributeSymbol)
+            if (member.DeclaredAccessibility is not (Accessibility.Public
+                or Accessibility.Protected
+                or Accessibility.ProtectedOrInternal))
                 continue;
 
-            var attributeName = attributeSymbol.ContainingType.ToDisplayString();
+            switch (member)
+            {
+                case IPropertySymbol propertySymbol:
+                {
+                    if (!propertySymbol.IsStatic && !ExcludedPropertyNames.Contains(propertySymbol.Name))
+                        propertiesBuilder.Add(new(interfaceSymbol, propertySymbol));
 
-            if (attributeName is GenerateInterfaceMembersAttributeFull or BuildDefinitionAttributeFull)
-                return (classDeclarationSyntax, true);
+                    break;
+                }
+
+                case IMethodSymbol methodSymbol:
+                {
+                    if (!methodSymbol.IsStatic &&
+                        !methodSymbol.Name.StartsWith("get_") &&
+                        !ExcludedMethodNames.Contains(methodSymbol.Name))
+                        methodsBuilder.Add(new(interfaceSymbol, methodSymbol));
+
+                    break;
+                }
+            }
         }
 
-        // ReSharper restore ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-
-        return (classDeclarationSyntax, false);
+        return (propertiesBuilder.ToImmutable(), methodsBuilder.ToImmutable());
     }
 
-    private static void GenerateCode(
-        SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
-            compilationWithClassDeclarations)
+    private static ImmutableArray<string> GenerateMemberLines(
+        ImmutableArray<TypeWithProperty> properties,
+        ImmutableArray<TypeWithMethod> methods)
     {
-        foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
-            if (compilationWithClassDeclarations
-                    .Compilation
-                    .GetSemanticModel(classDeclarationSyntax.SyntaxTree)
-                    .GetDeclaredSymbol(classDeclarationSyntax) is INamedTypeSymbol classSymbol)
-                GeneratePartial(context, classSymbol, classDeclarationSyntax);
+        var propertyLines = properties.Select(GeneratePropertyLine);
+        var methodLines = methods.Select(GenerateMethodLine);
+
+        return [..propertyLines.Concat(methodLines)];
+
+        static string GeneratePropertyLine(TypeWithProperty typeWithProperty)
+        {
+            var interfaceName = typeWithProperty.Type.ToDisplayString();
+            var propertyName = typeWithProperty.Property.Name;
+            var propertyType = typeWithProperty.Property.Type.ToDisplayString();
+
+            return $"private {propertyType} {propertyName} => (({interfaceName})this).{propertyName};";
+        }
+
+        static string GenerateMethodLine(TypeWithMethod typeWithMethod)
+        {
+            var interfaceName = typeWithMethod.Type.ToDisplayString();
+            var methodName = typeWithMethod.Method.Name;
+            var methodReturnType = typeWithMethod.Method.ReturnType.ToDisplayString();
+
+            var methodParameters = string.Join(", ",
+                typeWithMethod.Method.Parameters.Select(static param =>
+                    $"{param.Type.ToDisplayString()} {param.Name}"));
+
+            var methodParameterNames =
+                string.Join(", ", typeWithMethod.Method.Parameters.Select(static param => param.Name));
+
+            var genericParameters = typeWithMethod.Method.IsGenericMethod
+                ? $"<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(static param => param.Name))}>"
+                : string.Empty;
+
+            return
+                $"private {methodReturnType} {methodName}{genericParameters}({methodParameters}) => (({interfaceName})this).{methodName}{genericParameters}({methodParameterNames});";
+        }
     }
 
-    private static void GeneratePartial(
-        SourceProductionContext context,
-        INamedTypeSymbol classSymbol,
-        ClassDeclarationSyntax classDeclarationSyntax)
+    private static string BuildSourceCode(INamedTypeSymbol classSymbol, string classMembers)
     {
         var @namespace = classSymbol.ContainingNamespace.ToDisplayString();
 
@@ -69,134 +161,28 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             ? string.Empty
             : $"namespace {@namespace};";
 
-        var @class = classDeclarationSyntax.Identifier.Text;
-        var classFull = $"{classSymbol.ContainingNamespace}.{@class}";
+        var @class = classSymbol.Name;
+        var classFull = classSymbol.ToDisplayString();
 
         var globalUsingStaticLine = @namespace is "<global namespace>"
             ? string.Empty
             : $"global using static {classFull};";
 
-        var interfacesWithProperties = classSymbol
-            .AllInterfaces
-            .Where(x => x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
-            .SelectMany(static interfaceSymbol => interfaceSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new TypeWithProperty(interfaceSymbol, propertySymbol)))
-            .Where(x => x.Property.DeclaredAccessibility is not Accessibility.Private &&
-                        x.Property is
-                        {
-                            IsStatic: false,
-                            Name: not "GlobalWorkflowOptions"
-                            and not "Workflows"
-                            and not "ParamDefinitions"
-                            and not "TargetDefinitions"
-                            and not "Logger"
-                            and not "FileSystem"
-                            and not "ProcessRunner"
-                            and not "Services",
-                        })
-            .ToArray();
+        return $$"""
+                 // <auto-generated/>
 
-        var interfacesWithMethods = classSymbol
-            .AllInterfaces
-            .Where(x => x.Name != classFull &&
-                        x.Name is not "DecSm.Atom.Build.Definition.IBuildDefinition" and not "IBuildDefinition")
-            .SelectMany(static interfaceSymbol => interfaceSymbol
-                .GetMembers()
-                .OfType<IMethodSymbol>()
-                .Select(methodSymbol => new TypeWithMethod(interfaceSymbol, methodSymbol)))
-            .Where(x => x.Method.DeclaredAccessibility is not Accessibility.Private &&
-                        !x.Method.IsStatic &&
-                        !x.Method.Name.StartsWith("get_") &&
-                        x.Method.Name is not ".ctor"
-                            and not "ConfigureBuilder"
-                            and not "GetService"
-                            and not "GetServices"
-                            and not "GetParam")
-            .ToArray();
+                 // ReSharper disable MemberHidesInterfaceMemberWithDefaultImplementation
 
-        // We want to generate methods in the partial class that allow us to directly access properties and methods
-        // that have default implementations in parent interfaces.
-        // E.g.
-        //
-        // (in IInterface)
-        // string Name => "Bob";
-        // string GetName() => Name;
-        //
-        // (generated in PartialClass : IInterface)
-        // // ReSharper disable once MemberHidesInterfaceMemberWithDefaultImplementation
-        // private string Name => ((IInterface)this).Name;
-        //
-        // // ReSharper disable once MemberHidesInterfaceMemberWithDefaultImplementation
-        // private string GetName() => ((IInterface)this).GetName();
+                 #nullable enable
 
-        var propertyLines = interfacesWithProperties
-            .Where(t => t.Property.DeclaredAccessibility is Accessibility.Public
-                or Accessibility.Protected
-                or Accessibility.ProtectedOrInternal)
-            .Select(typeWithProperty =>
-            {
-                var interfaceName = typeWithProperty.Interface.ToDisplayString();
-                var propertyName = typeWithProperty.Property.Name;
-                var propertyType = typeWithProperty.Property.Type.ToDisplayString();
+                 {{globalUsingStaticLine}}
 
-                return $"private {propertyType} {propertyName} => (({interfaceName})this).{propertyName};";
-            })
-            .ToArray();
+                 {{namespaceLine}}
 
-        var methodLines = interfacesWithMethods
-            .Where(t => t.Method.DeclaredAccessibility is Accessibility.Public
-                or Accessibility.Protected
-                or Accessibility.ProtectedOrInternal)
-            .Select(typeWithMethod =>
-            {
-                var interfaceName = typeWithMethod.Interface.ToDisplayString();
-                var methodName = typeWithMethod.Method.Name;
-
-                var methodParameters = string.Join(", ",
-                    typeWithMethod.Method.Parameters.Select(param => $"{param.Type.ToDisplayString()} {param.Name}"));
-
-                var methodReturnType = typeWithMethod.Method.ReturnType.ToDisplayString();
-
-                return typeWithMethod.Method.IsGenericMethod
-                    ? $"private {methodReturnType} {methodName}<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(param => param.Name))}>({methodParameters}) => (({interfaceName})this).{methodName}<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(param => param.Name))}>({string.Join(", ", typeWithMethod.Method.Parameters.Select(param => param.Name))});"
-                    : $"private {methodReturnType} {methodName}({methodParameters}) => (({interfaceName})this).{methodName}({string.Join(", ", typeWithMethod.Method.Parameters.Select(param => param.Name))});";
-            })
-            .ToArray();
-
-        var propertyCode = propertyLines.Any()
-            ? $"{string.Join("\n\n", propertyLines)}"
-            : string.Empty;
-
-        var methodCode = methodLines.Any()
-            ? $"{string.Join("\n\n", methodLines)}"
-            : string.Empty;
-
-        var code = $$"""
-                     // <auto-generated/>
-
-                     // ReSharper disable MemberHidesInterfaceMemberWithDefaultImplementation
-
-                     #nullable enable
-
-                     {{globalUsingStaticLine}}
-
-                     {{namespaceLine}}
-
-                     partial class {{@class}}
-                     {
-                     {{propertyCode}}
-
-                     {{methodCode}}
-                     }
-
-                     """;
-
-        context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
+                 partial class {{@class}}
+                 {
+                 {{classMembers}}
+                 }
+                 """;
     }
-
-    private record struct TypeWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
-
-    private record struct TypeWithMethod(INamedTypeSymbol Interface, IMethodSymbol Method);
 }

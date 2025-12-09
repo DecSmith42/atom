@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class EnvironmentBuild : MinimalBuildDefinition, IGithubWorkflows, IEnvironmentTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -8,7 +8,7 @@ public partial class EnvironmentBuild : MinimalBuildDefinition, IGithubWorkflows
         new("environment-workflow")
         {
             Triggers = [ManualTrigger.Empty],
-            Targets = [Targets.EnvironmentTarget.WithOptions(DeployToEnvironment.Create("test-env-1"))],
+            Targets = [WorkflowTargets.EnvironmentTarget.WithOptions(DeployToEnvironment.Create("test-env-1"))],
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];

@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class DuplicateDependencyBuild : MinimalBuildDefinition, IGithubWorkflows, IDuplicateDependencyTarget
 {
     public override IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => [UseCustomArtifactProvider.Enabled];
@@ -10,7 +10,7 @@ public partial class DuplicateDependencyBuild : MinimalBuildDefinition, IGithubW
         new("duplicatedependency-workflow")
         {
             Triggers = [ManualTrigger.Empty],
-            Targets = [Targets.DuplicateDependencyTarget1],
+            Targets = [WorkflowTargets.DuplicateDependencyTarget1],
             WorkflowTypes = [Github.WorkflowType],
         },
     ];

@@ -1,14 +1,14 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Workflows;
 
-[MinimalBuildDefinition]
-public partial class WorkflowSingleTargetBuild : IWorkflowSingleTarget
+[BuildDefinition]
+public partial class WorkflowSingleTargetBuild : MinimalBuildDefinition, IWorkflowSingleTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
         new("workflow-1")
         {
             Triggers = [new TestWorkflowTrigger()],
-            Targets = [Targets.WorkflowSingleTarget],
+            Targets = [WorkflowTargets.WorkflowSingleTarget],
             Options = [new TestWorkflowOption()],
             WorkflowTypes = [new TestWorkflowType()],
         },

@@ -12,7 +12,7 @@
 ///     <para>
 ///         The <see cref="TargetDefinitions" /> and <see cref="ParamDefinitions" /> properties are populated by source
 ///         generators based on the interfaces and attributes used in the derived class. A derived class must be
-///         decorated with <see cref="MinimalBuildDefinitionAttribute" />.
+///         decorated with <see cref="BuildDefinitionAttribute" />.
 ///     </para>
 /// </remarks>
 /// <example>

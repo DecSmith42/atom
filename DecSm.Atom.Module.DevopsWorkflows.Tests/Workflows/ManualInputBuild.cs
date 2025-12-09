@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class ManualInputBuild : MinimalBuildDefinition, IDevopsWorkflows, IManualInputTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -24,7 +24,7 @@ public partial class ManualInputBuild : MinimalBuildDefinition, IDevopsWorkflows
                     ],
                 },
             ],
-            Targets = [Targets.ManualInputTarget],
+            Targets = [WorkflowTargets.ManualInputTarget],
             WorkflowTypes = [Devops.WorkflowType],
         },
     ];

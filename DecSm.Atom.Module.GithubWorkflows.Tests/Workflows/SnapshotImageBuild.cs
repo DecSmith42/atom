@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class SnapshotImageBuild : MinimalBuildDefinition, IGithubWorkflows, ICheckoutOptionTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -10,7 +10,7 @@ public partial class SnapshotImageBuild : MinimalBuildDefinition, IGithubWorkflo
             Triggers = [ManualTrigger.Empty],
             Targets =
             [
-                Targets.CheckoutOptionTarget.WithOptions(
+                WorkflowTargets.CheckoutOptionTarget.WithOptions(
                     GithubSnapshotImageOption.Create(new("snapshot-image-test", "1.*.*"))),
             ],
             WorkflowTypes = [new GithubWorkflowType()],

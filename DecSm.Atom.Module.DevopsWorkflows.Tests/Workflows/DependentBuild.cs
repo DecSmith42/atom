@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.DevopsWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class DependentBuild : MinimalBuildDefinition, IDevopsWorkflows, IDependentTarget1, IDependentTarget2
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -14,7 +14,7 @@ public partial class DependentBuild : MinimalBuildDefinition, IDevopsWorkflows, 
                     IncludedBranches = ["main"],
                 },
             ],
-            Targets = [Targets.DependentTarget1, Targets.DependentTarget2],
+            Targets = [WorkflowTargets.DependentTarget1, WorkflowTargets.DependentTarget2],
             WorkflowTypes = [Devops.WorkflowType],
         },
     ];
