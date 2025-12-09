@@ -22,6 +22,7 @@ public static class Extensions
         ///     to execute on multiple runner environments. It also adds the <see cref="GithubRunsOn.SetByMatrix" />
         ///     option to indicate that the runner is determined by the matrix.
         /// </remarks>
+        [PublicAPI]
         public WorkflowTargetDefinition WithGithubRunnerMatrix(string[] labels) =>
             workflowTargetDefinition
                 .WithMatrixDimensions(new MatrixDimension(nameof(IJobRunsOn.JobRunsOn))
@@ -38,6 +39,7 @@ public static class Extensions
         ///     This method adds a <see cref="WorkflowSecretInjection" /> option for the <see cref="IGithubHelper.GithubToken" />,
         ///     making the GitHub Actions token available as a secret within the workflow job.
         /// </remarks>
+        [PublicAPI]
         public WorkflowTargetDefinition WithGithubTokenInjection() =>
             workflowTargetDefinition.WithOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
     }
