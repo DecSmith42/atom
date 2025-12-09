@@ -11,7 +11,6 @@
 ///     <code>
 /// // Trigger on pushes to the main branch only
 /// var mainTrigger = GitPushTrigger.ToMain;
-///
 /// // Trigger on pushes to any branch, excluding documentation changes
 /// var featureTrigger = new GitPushTrigger
 /// {

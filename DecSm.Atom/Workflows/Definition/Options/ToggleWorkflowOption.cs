@@ -11,7 +11,6 @@
 /// <example>
 ///     <code>
 /// public sealed record UseCustomFeature : ToggleWorkflowOption&lt;UseCustomFeature&gt;;
-///
 /// // Usage:
 /// var options = new List&lt;IWorkflowOption&gt; { UseCustomFeature.Enabled };
 /// bool isEnabled = UseCustomFeature.IsEnabled(options); // true

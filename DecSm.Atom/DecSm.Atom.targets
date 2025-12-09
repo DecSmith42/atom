@@ -1,19 +1,9 @@
-<!-- 
-    This file must be packed into the "build" folder of your NuGet package.
-    e.g., /build/MyLibrary.targets
-    
-    NuGet automatically imports .targets files found in the build folder 
-    into the consuming project.
--->
 <Project>
-
-    <!-- 
-        CompilerVisibleProperty tells MSBuild to make a specific property 
-        available to the Analyzer/Source Generator context.
-    -->
-    <ItemGroup>
-        <CompilerVisibleProperty Include="SolutionPath" />
-        <CompilerVisibleProperty Include="SolutionDir" />
-    </ItemGroup>
-
+  <!--
+    This file makes the project's directory path visible to the DecSm.Atom
+    source generator, so it can magically find the solution file.
+  -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="MSBuildProjectDirectory" />
+  </ItemGroup>
 </Project>

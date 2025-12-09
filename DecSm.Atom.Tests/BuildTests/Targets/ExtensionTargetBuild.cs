@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
-[MinimalBuildDefinition]
-public partial class ExtensionTargetBuild : IBaseExtensionTarget, IExtendedExtensionTarget
+[BuildDefinition]
+public partial class ExtensionTargetBuild : MinimalBuildDefinition, IBaseExtensionTarget, IExtendedExtensionTarget
 {
     public bool BaseExtensionTargetExecuted { get; set; }
 

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Params;
 
-[MinimalBuildDefinition]
-public partial class ChainedParamBuild : IChainedParamTarget;
+[BuildDefinition]
+public partial class ChainedParamBuild : MinimalBuildDefinition, IChainedParamTarget;
 
 [TargetDefinition]
 public partial interface IChainedParamTarget

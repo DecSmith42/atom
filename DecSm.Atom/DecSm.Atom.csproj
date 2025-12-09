@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <None Include="DecSm.Atom.props" Pack="true" PackagePath="buildTransitive/" />
-    <None Include="DecSm.Atom.targets" Pack="true" PackagePath="build/" />
+    <None Include="DecSm.Atom.targets" Pack="true" PackagePath="buildTransitive/" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.BuildInfo;
 
-[MinimalBuildDefinition]
-public sealed partial class BuildInfoBuild : IBuildInfoTarget
+[BuildDefinition]
+public sealed partial class BuildInfoBuild : MinimalBuildDefinition, IBuildInfoTarget
 {
     public string? BuildNameResult { get; set; }
 

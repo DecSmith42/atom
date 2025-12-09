@@ -31,6 +31,9 @@ public sealed record WorkflowTargetDefinition(string Name)
             SuppressArtifactPublishing = true,
         };
 
+    public static implicit operator WorkflowTargetDefinition(string name) =>
+        new(name);
+
     /// <summary>
     ///     Creates a <see cref="WorkflowStepModel" /> from this target definition.
     /// </summary>

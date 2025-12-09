@@ -1,464 +1,560 @@
-using DeclarationResult = (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax Declaration, bool HasAttribute);
-
-// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
+﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator - Perf
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - Perf
 
 namespace DecSm.Atom.SourceGenerators;
 
+using ClassNameWithSourceCode = (string ClassName, string? SourceCode);
+using CodeRegion = (string? RegionName, string[] RegionBlocks);
+using TargetData = (IPropertySymbol Property, INamedTypeSymbol Type);
+using ParamData = (IPropertySymbol Property, AttributeData Attribute, INamedTypeSymbol Type);
+using TargetsAndParams =
+    (ImmutableArray<(IPropertySymbol Property, INamedTypeSymbol Type)> Targets,
+    ImmutableArray<(IPropertySymbol Property, AttributeData Attribute, INamedTypeSymbol Type)> Params);
+using TextResult = (string Text, bool Any);
+
 [Generator]
-public class BuildDefinitionSourceGenerator : IIncrementalGenerator
+public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
-    private const string MinimalBuildDefinitionAttributeFull =
-        "DecSm.Atom.Build.Definition.MinimalBuildDefinitionAttribute";
-
     private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
-
-    private const string MinimalBuildDefinitionFull = "DecSm.Atom.Build.Definition.MinimalBuildDefinition";
-    private const string BuildDefinitionFull = "DecSm.Atom.Build.Definition.BuildDefinition";
-
-    private const string Target = "Target";
+    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
+    private const string IBuildAccessorFull = "DecSm.Atom.Build.IBuildAccessor";
     private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
-    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
     private const string WorkflowTargetDefinitionFull = "DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition";
     private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
     private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
     private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
-    private const string IBuildDefinition = "IBuildDefinition";
-    private const string IBuildAccessor = "IBuildAccessor";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-    private const string Register = "Register";
-    private const string RegisterTarget = "RegisterTarget";
+    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
+    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
 
-    public void Initialize(IncrementalGeneratorInitializationContext context) =>
-        context.RegisterSourceOutput(context.CompilationProvider.Combine(context
-                .SyntaxProvider
-                .CreateSyntaxProvider(static (syntaxNode, _) => syntaxNode is ClassDeclarationSyntax,
-                    static (context, _) => GetClassDeclaration(context))
-                .WithTrackingName("BuildDefinitionSourceGenerator")
-                .Where(static declarationResult => declarationResult.HasAttribute)
-                .Select(static (declarationResult, _) => declarationResult.Declaration)
-                .Collect()),
-            GenerateCode);
+    private const string IReadOnlyDictionary = "System.Collections.Generic.IReadOnlyDictionary";
+    private const string Dictionary = "System.Collections.Generic.Dictionary";
 
-    private static DeclarationResult GetClassDeclaration(GeneratorSyntaxContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
+        var classSymbols = context
+            .SyntaxProvider
+            .ForAttributeWithMetadataName(BuildDefinitionAttributeFull,
+                static (node, _) => node is ClassDeclarationSyntax,
+                static (context, _) => (INamedTypeSymbol)context.TargetSymbol)
+            .WithTrackingName(nameof(GenerateInterfaceMembersSourceGenerator));
 
-        foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
-        foreach (var attributeSyntax in attributeListSyntax.Attributes)
+        context.RegisterSourceOutput(classSymbols.Select(static (symbol, ct) => GeneratePartial(symbol, ct)),
+            static (context, data) =>
+            {
+                if (data.SourceCode is not null)
+                    context.AddSource($"{data.ClassName}.g.cs", SourceText.From(data.SourceCode, Encoding.UTF8));
+            });
+    }
+
+    private static ClassNameWithSourceCode GeneratePartial(
+        INamedTypeSymbol classSymbol,
+        CancellationToken cancellationToken)
+    {
+        var namespaceName = classSymbol.ContainingNamespace.ToDisplayString();
+        var isGlobalNamespace = namespaceName is "<global namespace>";
+
+        var allInterfaces = classSymbol.AllInterfaces;
+        var (allTargets, allParams) = GetTargetsAndParams(classSymbol, allInterfaces);
+
+        var configureHostMethod = GetConfigureHostMethod(allInterfaces);
+        var configureHostBuilderMethod = GetConfigureBuilderMethod(allInterfaces);
+
+        var inheritConfigureHostLine = configureHostMethod.Any || configureHostBuilderMethod.Any
+            ? ", DecSm.Atom.Hosting.IConfigureHost"
+            : string.Empty;
+
+        var configureHostText = configureHostMethod.Any || configureHostBuilderMethod.Any
+            ? configureHostMethod.Text
+            : string.Empty;
+
+        var configureHostBuilderText = configureHostMethod.Any || configureHostBuilderMethod.Any
+            ? configureHostBuilderMethod.Text
+            : string.Empty;
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var sourceCode = BuildSourceCode(isGlobalNamespace
+                ? string.Empty
+                : $"global using static {classSymbol.ToDisplayString()};",
+            isGlobalNamespace
+                ? string.Empty
+                : $"namespace {namespaceName};",
+            classSymbol.Name,
+            classSymbol.ToDisplayString(),
+            inheritConfigureHostLine,
+            [
+                new("Targets",
+                [
+                    GetTargetDefinitionsField(allTargets),
+                    GetTargetDefinitionsProperty(allTargets),
+                    GetWorkflowTargetsClass(allTargets),
+                    GetWorkflowTargetMethod(allTargets),
+                ]),
+                new("Params",
+                [
+                    GetParamDefinitionsField(allParams),
+                    GetParamDefinitionsProperty(allParams),
+                    GetParamsDataClass(allParams),
+                    GetParamsField(),
+                    GetParamsProperty(allParams),
+                    GetAccessParamMethod(allParams),
+                ]),
+                new("Host", [configureHostText, configureHostBuilderText]),
+            ]);
+
+        return new(classSymbol.Name, sourceCode);
+    }
+
+    private static string BuildSourceCode(
+        string globalUsingStaticLine,
+        string namespaceLine,
+        string classNameSimple,
+        string classNameFull,
+        string configureHostInherit,
+        CodeRegion[] codeRegions)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine("""
+                      // <auto-generated/>
+
+                      #nullable enable
+
+                      """);
+
+        sb.AppendLineIfNotBlank(globalUsingStaticLine, null, string.Empty);
+
+        sb.AppendLine("""
+                      using System.Diagnostics.CodeAnalysis;
+                      using System.Linq.Expressions;
+                      using Microsoft.Extensions.DependencyInjection;
+                      using Microsoft.Extensions.Logging;
+                      using DecSm.Atom.Build.Definition;
+                      using DecSm.Atom.Params;
+                      using DecSm.Atom.Paths;
+                      using DecSm.Atom.Process;
+
+                      """);
+
+        sb.AppendLineIfNotBlank(namespaceLine, null, string.Empty);
+
+        sb.AppendLine($$"""
+                        [JetBrains.Annotations.PublicAPI]
+                        partial class {{classNameSimple}} : {{IBuildDefinitionFull}}{{configureHostInherit}}
+                        {
+                        """);
+
+        sb.AppendLine($$"""
+                            public {{classNameSimple}}(System.IServiceProvider services) : base(services) { }
+
+                            private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("{{classNameFull}}");
+
+                            private IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
+
+                            private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
+
+                            private T GetService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
+                                where T : notnull =>
+                                typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+                                    ? (T)(IBuildDefinition)this
+                                    : Services.GetRequiredService<T>();
+
+                            private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
+                                where T : notnull =>
+                                typeof(T).GetInterface(nameof(IBuildDefinition)) != null
+                                    ? [(T)(IBuildDefinition)this]
+                                    : Services.GetServices<T>();
+
+                            [return: NotNullIfNotNull(nameof(defaultValue))]
+                            private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
+                                Expression<Func<T?>> parameterExpression,
+                                T? defaultValue = default,
+                                Func<string?, T?>? converter = null) =>
+                                    Services
+                                        .GetRequiredService<IParamService>()
+                                        .GetParam(parameterExpression, defaultValue, converter);
+                        """);
+
+        foreach (var codeRegion in codeRegions)
         {
-            var symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+            var appendRegion = false;
 
-            if (symbolInfo.Symbol is not IMethodSymbol attributeSymbol)
+            foreach (var block in codeRegion.RegionBlocks)
+                if (block.Length > 0)
+                    appendRegion = true;
+
+            if (!appendRegion)
                 continue;
 
-            var attributeName = attributeSymbol.ContainingType.ToDisplayString();
+            sb.AppendLine();
+            sb.AppendLine($"    #region {codeRegion.RegionName}");
 
-            if (attributeName is MinimalBuildDefinitionAttributeFull or BuildDefinitionAttributeFull)
-                return (classDeclarationSyntax, true);
+            foreach (var fieldDeclaration in codeRegion.RegionBlocks)
+                sb.AppendLineIfNotBlank(fieldDeclaration, string.Empty);
+
+            sb.AppendLine();
+            sb.AppendLine($"    #endregion {codeRegion.RegionName}");
         }
 
-        return (classDeclarationSyntax, false);
+        sb.AppendLine("}");
+
+        return sb.ToString();
     }
 
-    private static void GenerateCode(
-        SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<ClassDeclarationSyntax> ClassDeclarations)
-            compilationWithClassDeclarations)
+    private static TargetsAndParams GetTargetsAndParams(
+        INamedTypeSymbol classSymbol,
+        ImmutableArray<INamedTypeSymbol> allInterfaces)
     {
-        foreach (var classDeclarationSyntax in compilationWithClassDeclarations.ClassDeclarations)
-            if (compilationWithClassDeclarations
-                    .Compilation
-                    .GetSemanticModel(classDeclarationSyntax.SyntaxTree)
-                    .GetDeclaredSymbol(classDeclarationSyntax) is INamedTypeSymbol classSymbol)
-                GeneratePartial(context, classSymbol, classDeclarationSyntax);
-    }
+        var targetsBuilder = ImmutableArray.CreateBuilder<TargetData>(64);
+        var paramsBuilder = ImmutableArray.CreateBuilder<ParamData>(64);
+        HashSet<string> addedTargetNames = [];
 
-    private static string SimpleName(string fullName) =>
-        fullName
-            .Split('.')
-            .Last();
-
-    private static List<TypeWithProperty> DeduplicateTargets(IEnumerable<TypeWithProperty> interfacesWithTargets)
-    {
-        var interfacesWithTargetsList = interfacesWithTargets.ToList();
-
-        while (true)
-        {
-            var continueWhile = false;
-
-            foreach (var interfaceWithTarget in interfacesWithTargetsList)
+        foreach (var memberSymbol in classSymbol.GetMembers())
+            if (memberSymbol is IPropertySymbol propertySymbol)
             {
-                var (interfaceSymbol, propertySymbol) = interfaceWithTarget;
+                if (propertySymbol.Type.ToDisplayString() is TargetFull && addedTargetNames.Add(propertySymbol.Name))
+                    targetsBuilder.Add(new(propertySymbol, classSymbol));
 
-                var duplicateInterfaceTarget = new TypeWithProperty();
-
-                var matches = interfacesWithTargetsList.Where(p =>
-                    SimpleName(p.Property.Name) == SimpleName(propertySymbol.Name) &&
-                    !p.Interface.Equals(interfaceSymbol, SymbolEqualityComparer.IncludeNullability));
-
-                foreach (var match in matches)
+                foreach (var attributeData in propertySymbol.GetAttributes())
                 {
-                    duplicateInterfaceTarget = match;
+                    if (attributeData.AttributeClass is not
+                        {
+                            Name: ParamDefinitionAttribute or SecretDefinitionAttribute,
+                        })
+                        continue;
+
+                    paramsBuilder.Add(new(propertySymbol, attributeData, classSymbol));
 
                     break;
                 }
+            }
 
-                if (duplicateInterfaceTarget == default)
+        foreach (var interfaceSymbol in allInterfaces)
+        foreach (var memberSymbol in interfaceSymbol.GetMembers())
+            if (memberSymbol is IPropertySymbol propertySymbol)
+            {
+                if (propertySymbol.Type.ToDisplayString() is TargetFull && addedTargetNames.Add(propertySymbol.Name))
+                    targetsBuilder.Add(new(propertySymbol, interfaceSymbol));
+
+                foreach (var attributeData in propertySymbol.GetAttributes())
+                {
+                    if (attributeData.AttributeClass is not
+                        {
+                            Name: ParamDefinitionAttribute or SecretDefinitionAttribute,
+                        })
+                        continue;
+
+                    paramsBuilder.Add(new(propertySymbol, attributeData, interfaceSymbol));
+
+                    break;
+                }
+            }
+
+        return (targetsBuilder.ToImmutable(), paramsBuilder.ToImmutable());
+    }
+
+    private static string GetTargetDefinitionsField(ImmutableArray<TargetData> allTargets) =>
+        allTargets.IsEmpty
+            ? string.Empty
+            : $"    private {IReadOnlyDictionary}<string, {TargetFull}>? _targetDefinitions;";
+
+    private static string GetParamDefinitionsField(ImmutableArray<ParamData> allParams)
+    {
+        if (allParams.IsEmpty)
+            return string.Empty;
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine(
+            $"    private readonly {IReadOnlyDictionary}<string, {ParamDefinitionFull}> _paramDefinitions = new {Dictionary}<string, {ParamDefinitionFull}>()");
+
+        sb.AppendLine("    {");
+
+        foreach (var param in allParams)
+        {
+            var nameofExpression = $"nameof({param.Type.ToDisplayString()}.{param.Property.Name})";
+
+            var argName = param
+                .Attribute
+                .ConstructorArguments[0]
+                .Value
+                ?.ToString();
+
+            var description = param
+                .Attribute
+                .ConstructorArguments[1]
+                .Value
+                ?.ToString();
+
+            var sources =
+                $"({param.Attribute.ConstructorArguments[2].Type?.ToDisplayString()}){param.Attribute.ConstructorArguments[2].Value}";
+
+            var isSecret = param.Attribute.AttributeClass?.Name is SecretDefinitionAttribute;
+
+            var chainedParams = param.Attribute.ConstructorArguments.Length > 3
+                ? param.Attribute.ConstructorArguments[3].Kind is TypedConstantKind.Array
+                    ? param.Attribute.ConstructorArguments[3].Values
+                    : []
+                : [];
+
+            sb.AppendLine("        {");
+            sb.AppendLine($"            {nameofExpression}, new({nameofExpression})");
+            sb.AppendLine("            {");
+            sb.AppendLine($"""                ArgName = "{argName}",""");
+            sb.AppendLine($"""                Description = "{description}",""");
+            sb.AppendLine($"                Sources = {sources},");
+            sb.AppendLine($"                IsSecret = {isSecret.ToString().ToLower()},");
+
+            if (chainedParams.IsDefaultOrEmpty)
+            {
+                sb.AppendLine("                ChainedParams = [],");
+            }
+            else
+            {
+                sb.Append("                ChainedParams = [ ");
+
+                foreach (var v in chainedParams)
+                    sb.Append($"\"{v.Value?.ToString() ?? string.Empty}\", ");
+
+                sb.AppendLine("],");
+            }
+
+            sb.AppendLine("            }");
+            sb.AppendLine("        },");
+        }
+
+        sb.AppendLine("    };");
+
+        return sb.ToString();
+    }
+
+    private static string GetParamsField() =>
+        "    private ParamsData? _params;";
+
+    private static string GetTargetDefinitionsProperty(ImmutableArray<TargetData> allTargets)
+    {
+        if (allTargets.IsEmpty)
+            return
+                $$"""    public override {{IReadOnlyDictionary}}<string, {{TargetFull}}> TargetDefinitions { get; } = new {{Dictionary}}<string, {{TargetFull}}>();""";
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine(
+            $"    public override {IReadOnlyDictionary}<string, Target> TargetDefinitions => _targetDefinitions ??= new {Dictionary}<string, Target>");
+
+        sb.AppendLine("    {");
+
+        foreach (var target in allTargets)
+            sb.AppendLine(
+                $$"""        { nameof({{target.Type.ToDisplayString()}}.{{target.Property.Name}}), (({{target.Type.ToDisplayString()}})this).{{target.Property.Name}} },""");
+
+        sb.AppendLine("    };");
+
+        return sb.ToString();
+    }
+
+    private static string GetParamDefinitionsProperty(ImmutableArray<ParamData> allParams) =>
+        allParams.IsEmpty
+            ? $$"""    public override {{IReadOnlyDictionary}}<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new {{Dictionary}}<string, {{ParamDefinitionFull}}>();"""
+            : $"    public override {IReadOnlyDictionary}<string, ParamDefinition> ParamDefinitions => _paramDefinitions;";
+
+    private static string GetWorkflowTargetsClass(ImmutableArray<TargetData> allTargets)
+    {
+        if (allTargets.IsEmpty)
+            return string.Empty;
+
+        var sb = new StringBuilder();
+        sb.AppendLine("    public static class WorkflowTargets");
+        sb.AppendLine("    {");
+
+        foreach (var target in allTargets)
+            sb.AppendLine(
+                $"        public static readonly {WorkflowTargetDefinitionFull} {target.Property.Name} = new(nameof({target.Type.ToDisplayString()}.{target.Property.Name}));");
+
+        sb.AppendLine("    }");
+
+        return sb.ToString();
+    }
+
+    private static string GetWorkflowTargetMethod(ImmutableArray<TargetData> allTargets)
+    {
+        if (allTargets.IsEmpty)
+            return
+                $$"""private static {{WorkflowTargetDefinitionFull}} Target(string name) => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name));""";
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"    private static {WorkflowTargetDefinitionFull} WorkflowTarget(string name) =>");
+        sb.AppendLine("        name switch");
+        sb.AppendLine("        {");
+
+        foreach (var target in allTargets)
+            sb.AppendLine(
+                $"            nameof({target.Type.ToDisplayString()}.{target.Property.Name}) => WorkflowTargets.{target.Property.Name},");
+
+        sb.AppendLine(
+            """            _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name))""");
+
+        sb.AppendLine("        };");
+
+        return sb.ToString();
+    }
+
+    private static string GetParamsDataClass(ImmutableArray<ParamData> allParams)
+    {
+        if (allParams.IsEmpty)
+            return "    public sealed class ParamsData() { }";
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"    public sealed class ParamsData({IBuildDefinitionFull} buildDefinition)");
+        sb.AppendLine("    {");
+
+        foreach (var param in allParams)
+            sb.AppendLine(
+                $"        public ParamDefinition {param.Property.Name} => buildDefinition.ParamDefinitions[nameof({param.Type.ToDisplayString()}.{param.Property.Name})];");
+
+        sb.AppendLine("    }");
+
+        return sb.ToString();
+    }
+
+    private static string GetParamsProperty(ImmutableArray<ParamData> allParams) =>
+        allParams.IsEmpty
+            ? "    public ParamsData Params => _params ??= new();"
+            : "    public ParamsData Params => _params ??= new(this);";
+
+    private static string GetAccessParamMethod(ImmutableArray<ParamData> allParams)
+    {
+        if (allParams.IsEmpty)
+            return
+                """    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));""";
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("    public override object? AccessParam(string paramName) =>");
+        sb.AppendLine("        paramName switch");
+        sb.AppendLine("        {");
+
+        foreach (var param in allParams)
+            sb.AppendLine(
+                $"            nameof({param.Type.ToDisplayString()}.{param.Property.Name}) => (({param.Type.ToDisplayString()})this).{param.Property.Name},");
+
+        sb.AppendLine(
+            """            _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName))""");
+
+        sb.AppendLine("        };");
+
+        return sb.ToString();
+    }
+
+    private static TextResult GetConfigureHostMethod(ImmutableArray<INamedTypeSymbol> allInterfaces)
+    {
+        var configureHostInterfaces = new List<INamedTypeSymbol>(64);
+
+        foreach (var interfaceSymbol in allInterfaces)
+        foreach (var attributeData in interfaceSymbol.GetAttributes())
+        {
+            if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostAttributeFull)
+                continue;
+
+            configureHostInterfaces.Add(interfaceSymbol);
+
+            break;
+        }
+
+        if (configureHostInterfaces.Count is 0)
+            return ("    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder) { }", false);
+
+        var sb = new StringBuilder();
+
+        sb.AppendLine("    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)");
+        sb.AppendLine("    {");
+
+        foreach (var interfaceSymbol in configureHostInterfaces)
+            sb.AppendLine($"        {interfaceSymbol.ToDisplayString()}.ConfigureHost(builder);");
+
+        sb.AppendLine("    }");
+
+        return (sb.ToString(), true);
+    }
+
+    private static TextResult GetConfigureBuilderMethod(ImmutableArray<INamedTypeSymbol> allInterfaces)
+    {
+        var configureHostInterfaces = new List<INamedTypeSymbol>(64);
+        var registerHostInterfaces = new List<INamedTypeSymbol>(64);
+
+        foreach (var interfaceSymbol in allInterfaces)
+        {
+            foreach (var subInterfaceSymbol in interfaceSymbol.AllInterfaces)
+            {
+                if (subInterfaceSymbol.ToDisplayString() is not IBuildDefinitionFull and not IBuildAccessorFull)
                     continue;
 
-                var interfaceTargetInheritsFromDuplicate =
-                    interfaceWithTarget.Interface.AllInterfaces.Contains(duplicateInterfaceTarget.Interface);
-
-                interfacesWithTargetsList.Remove(interfaceTargetInheritsFromDuplicate
-                    ? duplicateInterfaceTarget
-                    : interfaceWithTarget);
-
-                continueWhile = true;
+                registerHostInterfaces.Add(interfaceSymbol);
 
                 break;
             }
 
-            if (!continueWhile)
+            foreach (var attributeData in interfaceSymbol.GetAttributes())
+            {
+                if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostBuilderAttributeFull)
+                    continue;
+
+                configureHostInterfaces.Add(interfaceSymbol);
+
                 break;
+            }
         }
 
-        return interfacesWithTargetsList;
-    }
+        if (configureHostInterfaces.Count + registerHostInterfaces.Count is 0)
+            return (
+                "    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder) { }",
+                false);
 
-    private static void GeneratePartial(
-        SourceProductionContext context,
-        INamedTypeSymbol classSymbol,
-        ClassDeclarationSyntax classDeclarationSyntax)
+        var sb = new StringBuilder();
+
+        sb.AppendLine(
+            "    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)");
+
+        sb.AppendLine("    {");
+
+        foreach (var interfaceSymbol in registerHostInterfaces)
+        {
+            var interfaceFullName = interfaceSymbol.ToDisplayString();
+
+            sb.AppendLine(
+                $"        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{interfaceFullName}>(builder.Services, static p => ({interfaceFullName})p.GetRequiredService<{IBuildDefinitionFull}>());");
+        }
+
+        foreach (var interfaceSymbol in configureHostInterfaces)
+            sb.AppendLine($"        {interfaceSymbol.ToDisplayString()}.ConfigureBuilder(builder);");
+
+        sb.AppendLine("    }");
+
+        return (sb.ToString(), true);
+    }
+}
+
+public static class StringBuilderExtensions
+{
+    public static void AppendLineIfNotBlank(
+        this StringBuilder sb,
+        string? value,
+        string? conditionalPrefix = null,
+        string? conditionalSuffix = null)
     {
-        var @namespace = classSymbol.ContainingNamespace.ToDisplayString();
+        if (string.IsNullOrWhiteSpace(value))
+            return;
 
-        var namespaceLine = @namespace is "<global namespace>"
-            ? string.Empty
-            : $"namespace {@namespace};";
+        if (conditionalPrefix is not null)
+            sb.AppendLine(conditionalPrefix);
 
-        var @class = classDeclarationSyntax.Identifier.Text;
-        var classFull = $"{@namespace}.{@class}";
+        if (value?.EndsWith("\n") is true)
+            sb.Append(value);
+        else
+            sb.AppendLine(value);
 
-        var globalUsingStaticLine = @namespace is "<global namespace>"
-            ? string.Empty
-            : $"global using static {classFull};";
-
-        var typesWithProperties = classSymbol
-            .AllInterfaces
-            .SelectMany(static interfaceSymbol => interfaceSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new TypeWithProperty(interfaceSymbol, propertySymbol)))
-            .Concat(classSymbol
-                .GetMembers()
-                .OfType<IPropertySymbol>()
-                .Select(propertySymbol => new TypeWithProperty(classSymbol, propertySymbol)))
-            .ToArray();
-
-        var typesWithTargets =
-            DeduplicateTargets(typesWithProperties.Where(static p => p.Property.Type.Name is Target));
-
-        var typesWithParams = typesWithProperties
-            .Where(static p => p
-                .Property
-                .GetAttributes()
-                .Any(static attribute =>
-                    attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute))
-            .Select(static interfaceWithProperty => new TypeWithPropertyAndAttribute(interfaceWithProperty.Interface,
-                interfaceWithProperty.Property,
-                interfaceWithProperty
-                    .Property
-                    .GetAttributes()
-                    .First(attribute =>
-                        attribute.AttributeClass?.Name is ParamDefinitionAttribute or SecretDefinitionAttribute)))
-            .ToList();
-
-        var interfacesWithConfigureBuilder = classSymbol
-            .AllInterfaces
-            .Where(static @interface => @interface
-                .GetAttributes()
-                .Any(static attribute =>
-                    attribute.AttributeClass?.ToDisplayString() is ConfigureHostBuilderAttributeFull))
-            .ToArray();
-
-        var interfacesWithConfigureHost = classSymbol
-            .AllInterfaces
-            .Where(static @interface => @interface
-                .GetAttributes()
-                .Any(static attribute => attribute.AttributeClass?.ToDisplayString() is ConfigureHostAttributeFull))
-            .ToArray();
-
-        var targetDefinitionsPropertyBodyLines = typesWithTargets
-            .Select(static p =>
-                $$"""        { "{{SimpleName(p.Property.Name)}}", (({{p.Interface}})this).{{SimpleName(p.Property.Name)}} },""")
-            .ToArray();
-
-        var targetDefinitionsField = targetDefinitionsPropertyBodyLines.Any()
-            ? $"    private System.Collections.Generic.IReadOnlyDictionary<string, {TargetFull}>? _targetDefinitions;"
-            : "    // Build has no defined targets";
-
-        var targetDefinitionsProperty = targetDefinitionsPropertyBodyLines.Any()
-            ? $$"""
-                    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, {{TargetFull}}>
-                    {
-                {{string.Join("\n", targetDefinitionsPropertyBodyLines)}}
-                    };
-                """
-            : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{TargetFull}}> TargetDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{TargetFull}}>();""";
-
-        var paramDefinitionsPropertyBodyLines = typesWithParams
-            .Select(static x => new
-            {
-                x.Property.Name,
-                ArgName = (string)x.Attribute.ConstructorArguments[0].Value!,
-                Description = (string)x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(1)
-                    .First()
-                    .Value!,
-                Sources = $"({x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(2)
-                    .First().Type!.ToDisplayString()}){x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(2)
-                    .First().Value}",
-                IsSecret = x.Attribute.AttributeClass?.Name is SecretDefinitionAttribute,
-                ChainedParams = x
-                    .Attribute
-                    .ConstructorArguments
-                    .Skip(3)
-                    .FirstOrDefault()
-                    .Kind is TypedConstantKind.Array
-                    ? x
-                        .Attribute
-                        .ConstructorArguments
-                        .Skip(3)
-                        .First()
-                        .Values
-                    : [],
-            })
-            .Select(static p => $$"""
-                                          {
-                                              "{{p.Name}}", new("{{p.Name}}")
-                                              {
-                                                  ArgName = "{{p.ArgName}}",
-                                                  Description = "{{p.Description}}",
-                                                  Sources = {{p.Sources}},
-                                                  IsSecret = {{p.IsSecret.ToString().ToLower()}},
-                                                  ChainedParams = {{(p.ChainedParams.IsDefaultOrEmpty ? "[]" : $"[ {string.Join(", ", p.ChainedParams.Select(v => $"\"{v.Value?.ToString() ?? string.Empty}\""))} ]")}},
-                                              }
-                                          },
-                                  """)
-            .ToArray();
-
-        var paramDefinitionsProperty = paramDefinitionsPropertyBodyLines.Any()
-            ? $$"""
-                    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>
-                    {
-                {{string.Join("\n", paramDefinitionsPropertyBodyLines)}}
-                    };
-                """
-            : $$"""    public override System.Collections.Generic.IReadOnlyDictionary<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new System.Collections.Generic.Dictionary<string, {{ParamDefinitionFull}}>();""";
-
-        var accessParamMethodLines = typesWithParams
-            .Where(typeWithPropertyAndAttribute => typeWithPropertyAndAttribute.Type.ToDisplayString() == classFull ||
-                                                   typeWithPropertyAndAttribute.Property.DeclaredAccessibility is
-                                                       Accessibility.Public
-                                                       or Accessibility.Protected
-                                                       or Accessibility.ProtectedOrInternal)
-            .Select(p => p.Property)
-            .Select(p => $"""
-                                      "{SimpleName(p.Name)}" => (({p.ContainingType})this).{SimpleName(p.Name)},
-                          """)
-            .ToArray();
-
-        var accessParamMethod = accessParamMethodLines.Any()
-            ? $$"""
-                    public override object? AccessParam(string paramName) =>
-                        paramName switch
-                        {
-                {{string.Join("\n", accessParamMethodLines)}}
-                        _ => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName)),
-                        };
-                """
-            : """    public override object? AccessParam(string paramName) => throw new System.ArgumentException($"Param with name '{paramName}' is not defined in the build definition.", nameof(paramName));""";
-
-        var targetsPropertiesLines = typesWithTargets
-            .Select(static p =>
-                $"""        public static {WorkflowTargetDefinitionFull} {SimpleName(p.Property.Name)} = new("{SimpleName(p.Property.Name)}");""")
-            .ToArray();
-
-        var targetsClass = targetsPropertiesLines.Any()
-            ? $$"""
-                    [JetBrains.Annotations.PublicAPI]
-                    private static class Targets
-                    {
-                {{string.Join("\n", targetsPropertiesLines)}}
-                    }
-
-                    private static {{WorkflowTargetDefinitionFull}} Target(string name) => name switch
-                    {
-                {{string.Join("\n", typesWithTargets.Select(static p => $"""        "{SimpleName(p.Property.Name)}" => Targets.{SimpleName(p.Property.Name)},"""))}}
-                        _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name)),
-                    };
-                """
-            : "    // Build has no defined targets";
-
-        var paramsPropertiesLines = typesWithParams
-            .Select(static p =>
-                $"""        public static string {p.Property.Name} = "{SimpleName(p.Property.Name)}";""")
-            .ToArray();
-
-        var paramsClass = paramsPropertiesLines.Any()
-            ? $$"""
-                    [JetBrains.Annotations.PublicAPI]
-                    private static class Params
-                    {
-                {{string.Join("\n", paramsPropertiesLines)}}
-                    }
-                """
-            : "    // Build has no defined params";
-
-        var registerTargetsToServicesLines = classSymbol
-            .AllInterfaces
-            .Where(static x => x.AllInterfaces.Any(i => i.Name is IBuildDefinition or IBuildAccessor))
-            .Select(static @interface => @interface
-                .GetMembers($"{IBuildDefinitionFull}.{Register}")
-                .Any()
-                ? $"""
-
-                           Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{@interface}>(builder.Services, static p => ({@interface})p.GetRequiredService<{IBuildDefinitionFull}>());
-                           {RegisterTarget}<{@interface}>(services);
-                   """
-                : $"        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{@interface}>(builder.Services, static p => ({@interface})p.GetRequiredService<{IBuildDefinitionFull}>());");
-
-        var configureBuildHostBuilderLines = interfacesWithConfigureBuilder.Select(static @interface =>
-            $"        {@interface}.ConfigureBuilder(builder);");
-
-        var configureBuildHostBuilderMethodBodyLines = registerTargetsToServicesLines
-            .Concat(configureBuildHostBuilderLines)
-            .ToArray();
-
-        var configureBuildHostMethodBodyLines = interfacesWithConfigureHost
-            .Select(static @interface => $"        {@interface}.ConfigureHost(builder);")
-            .ToArray();
-
-        var configureBuildHostBuilderMethod =
-            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-                ? $$"""
-                        public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder)
-                        {
-                    {{string.Join("\n", configureBuildHostBuilderMethodBodyLines)}}
-                        }
-                    """
-                : "    // Build has no defined HostBuilder configuration";
-
-        var configureBuildHostMethod =
-            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-                ? $$"""
-                        public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder)
-                        {
-                    {{string.Join("\n", configureBuildHostMethodBodyLines)}}
-                        }
-                    """
-                : "    // Build has no defined Host configuration";
-
-        var configureHostInherit =
-            configureBuildHostBuilderMethodBodyLines.Any() || configureBuildHostMethodBodyLines.Any()
-                ? ", DecSm.Atom.Hosting.IConfigureHost"
-                : string.Empty;
-
-        // If class has a base type, only implement IBuildDefinition
-        // If the class doesn't have a base type, inherit from BuildDefinition or MinimalBuildDefinition depending on the attribute
-
-        var typeToInherit = IBuildDefinitionFull;
-
-        if (classSymbol.BaseType?.Name is null or "object" or "Object" or "System.Object")
-            typeToInherit = classSymbol
-                .GetAttributes()
-                .Any(x => x.AttributeClass?.ToDisplayString() is MinimalBuildDefinitionAttributeFull)
-                ? MinimalBuildDefinitionFull
-                : BuildDefinitionFull;
-
-        var code = $$"""
-                     // <auto-generated/>
-
-                     #nullable enable
-
-                     {{globalUsingStaticLine}}
-                     using System.Diagnostics.CodeAnalysis;
-                     using System.Linq.Expressions;
-                     using Microsoft.Extensions.DependencyInjection;
-                     using Microsoft.Extensions.Logging;
-                     using DecSm.Atom.Build.Definition;
-                     using DecSm.Atom.Params;
-                     using DecSm.Atom.Paths;
-                     using DecSm.Atom.Process;
-
-                     {{namespaceLine}}
-
-                     [JetBrains.Annotations.PublicAPI]
-                     partial class {{@class}} : {{typeToInherit}}{{configureHostInherit}}
-                     {
-                     {{targetDefinitionsField}}
-
-                         public {{@class}}(System.IServiceProvider services) : base(services) { }
-
-                         private ILogger Logger => Services.GetRequiredService<ILoggerFactory>().CreateLogger("{{classFull}}");
-
-                         private IAtomFileSystem FileSystem => GetService<IAtomFileSystem>();
-
-                         private IProcessRunner ProcessRunner => GetService<IProcessRunner>();
-
-                         private T GetService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
-                             where T : notnull =>
-                             typeof(T).GetInterface(nameof(IBuildDefinition)) != null
-                                 ? (T)(IBuildDefinition)this
-                                 : Services.GetRequiredService<T>();
-
-                        private IEnumerable<T> GetServices<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] T>()
-                             where T : notnull =>
-                             typeof(T).GetInterface(nameof(IBuildDefinition)) != null
-                                 ? [(T)(IBuildDefinition)this]
-                                 : Services.GetServices<T>();
-
-                         [return: NotNullIfNotNull(nameof(defaultValue))]
-                         private T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(Expression<Func<T?>> parameterExpression, T? defaultValue = default, Func<string?, T?>? converter = null) =>
-                             Services
-                                 .GetRequiredService<IParamService>()
-                                 .GetParam(parameterExpression, defaultValue, converter);
-
-
-                     {{targetDefinitionsProperty}}
-
-                     {{paramDefinitionsProperty}}
-
-                     {{accessParamMethod}}
-
-                     {{targetsClass}}
-
-                     {{paramsClass}}
-
-                     {{configureBuildHostBuilderMethod}}
-
-                     {{configureBuildHostMethod}}
-                     }
-
-                     """;
-
-        context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
+        if (conditionalSuffix is not null)
+            sb.AppendLine(conditionalSuffix);
     }
-
-    private record struct TypeWithProperty(INamedTypeSymbol Interface, IPropertySymbol Property);
-
-    private record struct TypeWithPropertyAndAttribute(
-        INamedTypeSymbol Type,
-        IPropertySymbol Property,
-        AttributeData Attribute
-    );
 }

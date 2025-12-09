@@ -34,4 +34,7 @@ public sealed record ParamDefinition(string Name)
     ///     Gets a list of other parameters that this parameter depends on for its resolution.
     /// </summary>
     public required IReadOnlyList<string> ChainedParams { get; init; }
+
+    public static implicit operator string(ParamDefinition definition) =>
+        definition.Name;
 }

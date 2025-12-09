@@ -1,4 +1,4 @@
-// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator - perf
+using System.Xml;
 
 namespace DecSm.Atom.SourceGenerators;
 
@@ -8,80 +8,153 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
     private const string GenerateSolutionModelAttributeFull =
         "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
 
-    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
+    private static readonly Regex SlnProjectLineRegex = new("""
+                                                            ^Project\s*\(\s*"\{[A-F0-9\-]+\}"\s*\)\s*=\s*"([^"]+)",\s*"([^"]+)"
+                                                            """,
+        RegexOptions.Multiline | RegexOptions.Compiled);
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var solutionPathProvider = context.AnalyzerConfigOptionsProvider.Select((options, _) =>
-            options.GlobalOptions.TryGetValue("build_property.SolutionPath", out var path) &&
-            !string.IsNullOrWhiteSpace(path) &&
-            path != "*Undefined*"
-                ? Path.GetFullPath(path)
-                : null);
-
-        var classesProvider = context
+        var classSymbolsProvider = context
             .SyntaxProvider
-            .CreateSyntaxProvider((s, _) => s is ClassDeclarationSyntax, (ctx, _) => GetClassDeclaration(ctx))
-            .WithTrackingName("GenerateSolutionModelSourceGenerator")
-            .Where(t => t.attributeFound)
-            .Select((t, _) => t.Item1)
+            .ForAttributeWithMetadataName(GenerateSolutionModelAttributeFull,
+                static (node, _) => node is ClassDeclarationSyntax,
+                static (ctx, _) => (INamedTypeSymbol)ctx.TargetSymbol)
+            .WithTrackingName(nameof(GenerateSolutionModelSourceGenerator))
             .Collect();
 
-        var sourcePipeline = context
-            .CompilationProvider
-            .Combine(classesProvider)
-            .Combine(solutionPathProvider);
+        var projectDirProvider = context.AnalyzerConfigOptionsProvider.Select((options, _) =>
+            options.GlobalOptions.TryGetValue("build_property.MSBuildProjectDirectory", out var path)
+                ? path
+                : null);
 
-        context.RegisterSourceOutput(sourcePipeline,
-            (spc, source) =>
-            {
-                var ((compilation, classes), solutionPath) = source;
-                GenerateCode(spc, compilation, classes, solutionPath);
-            });
-    }
+        var combinedProvider = classSymbolsProvider.Combine(projectDirProvider);
 
-    private static (ClassDeclarationSyntax, bool attributeFound) GetClassDeclaration(GeneratorSyntaxContext context)
-    {
-        var classDeclarationSyntax = (ClassDeclarationSyntax)context.Node;
-
-        foreach (var attributeListSyntax in classDeclarationSyntax.AttributeLists)
-        foreach (var attributeSyntax in attributeListSyntax.Attributes)
-        {
-            if (context.SemanticModel.GetSymbolInfo(attributeSyntax)
-                    .Symbol is not IMethodSymbol attributeSymbol)
-                continue;
-
-            var attributeName = attributeSymbol.ContainingType.ToDisplayString();
-
-            if (attributeName is GenerateSolutionModelAttributeFull or BuildDefinitionAttributeFull)
-                return (classDeclarationSyntax, true);
-        }
-
-        return (classDeclarationSyntax, false);
+        context.RegisterSourceOutput(combinedProvider, (spc, source) => GenerateCode(spc, source.Left, source.Right));
     }
 
     private static void GenerateCode(
         SourceProductionContext context,
-        Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> classDeclarations,
-        string? solutionPath)
+        ImmutableArray<INamedTypeSymbol> classSymbols,
+        string? projectDir)
     {
-        // Safety check: if MSBuild didn't pass the path, we can't generate the specific solution model.
-        if (string.IsNullOrEmpty(solutionPath))
+        if (classSymbols.IsDefaultOrEmpty || string.IsNullOrEmpty(projectDir))
             return;
 
-        foreach (var classDeclarationSyntax in classDeclarations)
-            if (compilation
-                    .GetSemanticModel(classDeclarationSyntax.SyntaxTree)
-                    .GetDeclaredSymbol(classDeclarationSyntax) is INamedTypeSymbol classSymbol)
-                GeneratePartial(context, classSymbol, classDeclarationSyntax, solutionPath!);
+        var solutionFilePath = FindSolutionFile(projectDir!);
+
+        if (solutionFilePath is null)
+            return;
+
+        try
+        {
+#pragma warning disable RS1035
+            var solutionContent = File.ReadAllText(solutionFilePath);
+#pragma warning restore RS1035
+            var projects = ParseSolution(solutionContent, solutionFilePath);
+
+            if (projects.IsEmpty)
+                return;
+
+            foreach (var classSymbol in classSymbols)
+                GeneratePartial(context, classSymbol, solutionFilePath, projects);
+        }
+        catch
+        {
+            // Ignored
+        }
+    }
+
+    private static string? FindSolutionFile(string projectDir)
+    {
+        var currentDir = new DirectoryInfo(projectDir);
+
+        while (currentDir is not null)
+        {
+            var solutionFile = currentDir
+                                   .EnumerateFiles("*.slnx", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault() ??
+                               currentDir
+                                   .EnumerateFiles("*.sln", SearchOption.TopDirectoryOnly)
+                                   .FirstOrDefault();
+
+            if (solutionFile != null)
+                return solutionFile.FullName;
+
+            currentDir = currentDir.Parent;
+        }
+
+        return null;
+    }
+
+    private static ImmutableDictionary<string, string> ParseSolution(string solutionContent, string solutionPath) =>
+        solutionPath.EndsWith(".slnx", StringComparison.OrdinalIgnoreCase)
+            ? ParseSlnx(solutionContent, solutionPath)
+            : ParseSln(solutionContent, solutionPath);
+
+    private static ImmutableDictionary<string, string> ParseSlnx(string slnxContent, string slnxPath)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<string, string>();
+        var slnxDir = Path.GetDirectoryName(slnxPath);
+
+        if (slnxDir is null)
+            return builder.ToImmutable();
+
+        try
+        {
+            var doc = XDocument.Parse(slnxContent);
+
+            foreach (var projectElement in doc.Descendants("Project"))
+            {
+                var projectPath = projectElement.Attribute("Path")
+                    ?.Value;
+
+                if (string.IsNullOrEmpty(projectPath))
+                    continue;
+
+                var fullPath = Path.GetFullPath(Path.Combine(slnxDir, projectPath));
+                var projectName = Path.GetFileNameWithoutExtension(projectPath);
+
+                if (!string.IsNullOrEmpty(projectName))
+                    builder[projectName] = fullPath;
+            }
+        }
+        catch (XmlException)
+        {
+            // Ignored
+        }
+
+        return builder.ToImmutable();
+    }
+
+    private static ImmutableDictionary<string, string> ParseSln(string slnContent, string slnPath)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<string, string>();
+        var slnDir = Path.GetDirectoryName(slnPath);
+
+        if (slnDir is null)
+            return builder.ToImmutable();
+
+        foreach (Match match in SlnProjectLineRegex.Matches(slnContent))
+        {
+            var name = match.Groups[1].Value;
+            var path = match.Groups[2].Value;
+
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(path))
+                continue;
+
+            var fullPath = Path.GetFullPath(Path.Combine(slnDir, path));
+            builder[name] = fullPath;
+        }
+
+        return builder.ToImmutable();
     }
 
     private static void GeneratePartial(
         SourceProductionContext context,
         INamedTypeSymbol classSymbol,
-        ClassDeclarationSyntax classDeclarationSyntax,
-        string solutionPath)
+        string solutionPath,
+        ImmutableDictionary<string, string> projects)
     {
         var @namespace = classSymbol.ContainingNamespace.ToDisplayString();
 
@@ -89,26 +162,35 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
             ? string.Empty
             : $"namespace {@namespace};";
 
-        var @class = classDeclarationSyntax.Identifier.Text;
-
-        var projects = Parser.GetProjectsFromSolution(solutionPath);
-
         var projectFileTypeLines = string.Join("\n\n",
-            projects.Select(kvp => $$"""
-                                         /// <summary>
-                                         ///    {{kvp.Value.Replace("\\", "/")}}
-                                         /// </summary>
-                                         public interface {{kvp.Key.Replace('.', '_')}} : IFileMarker
-                                         {
-                                             public const string Name = @"{{kvp.Key}}";
+            projects.Select(kvp =>
+            {
+                var validIdentifier = kvp
+                    .Key
+                    .Replace('.', '_')
+                    .Replace(' ', '_');
 
-                                             static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
-                                                 fileSystem.CreateRootedPath(@"{{kvp.Value.Replace("\\", "/")}}");
+                var projectPath = kvp.Value.Replace("\\", "/");
 
-                                             new static RootedPath Path(IAtomFileSystem fileSystem) =>
-                                                 fileSystem.CreateRootedPath(@"{{kvp.Value.Replace("\\", "/")}}");
-                                         }
-                                     """));
+                return $$"""
+                             /// <summary>
+                             ///    {{projectPath}}
+                             /// </summary>
+                             public interface {{validIdentifier}} : IFileMarker
+                             {
+                                 public const string Name = @"{{kvp.Key}}";
+
+                                 static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
+                                     fileSystem.CreateRootedPath(@"{{projectPath}}");
+
+                                 new static RootedPath Path(IAtomFileSystem fileSystem) =>
+                                     fileSystem.CreateRootedPath(@"{{projectPath}}");
+                             }
+                         """;
+            }));
+
+        var solutionName = Path.GetFileNameWithoutExtension(solutionPath);
+        var solutionPathNormalized = solutionPath.Replace("\\", "/");
 
         var code = $$"""
                      // <auto-generated/>
@@ -120,14 +202,14 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                      {{namespaceLine}}
 
                      /// <summary>
-                     ///    {{solutionPath.Replace("\\", "/")}}
+                     ///    {{solutionPathNormalized}}
                      /// </summary>
                      public interface Solution : IFileMarker
                      {
-                         public const string Name = @"{{Path.GetFileNameWithoutExtension(solutionPath.Replace("\\", "/"))}}";
+                         public const string Name = @"{{solutionName}}";
 
                          static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
-                            fileSystem.CreateRootedPath(@"{{solutionPath.Replace("\\", "/")}}");
+                            fileSystem.CreateRootedPath(@"{{solutionPathNormalized}}");
                      }
 
                      public static class Projects
@@ -136,6 +218,6 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                      }
                      """;
 
-        context.AddSource($"{@class}.g.cs", SourceText.From(code, Encoding.UTF8));
+        context.AddSource($"{classSymbol.Name}.g.cs", SourceText.From(code, Encoding.UTF8));
     }
 }

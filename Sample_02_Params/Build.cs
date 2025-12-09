@@ -17,6 +17,7 @@
 // These are automatically globally included when using DecSm.Atom from a nuget package
 
 using DecSm.Atom.Build.Definition;
+using DecSm.Atom.Hosting;
 using DecSm.Atom.Params;
 
 namespace Atom;
@@ -45,7 +46,8 @@ namespace Atom;
 ///     </para>
 /// </remarks>
 [BuildDefinition]
-internal partial class Build
+[GenerateEntryPoint]
+internal partial class Build : BuildDefinition
 {
     /// <summary>
     ///     Defines a required parameter named "my-name".

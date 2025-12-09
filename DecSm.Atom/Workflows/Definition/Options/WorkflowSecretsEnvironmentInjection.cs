@@ -11,7 +11,6 @@
 ///     <code>
 /// // Inject a database connection string secret
 /// var dbSecret = WorkflowSecretsEnvironmentInjection.Create("DATABASE_CONNECTION_STRING");
-///
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(dbSecret);
 ///     </code>

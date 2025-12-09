@@ -12,7 +12,7 @@ public class BuildDefinitionSourceGeneratorTests
 
                               namespace TestNamespace;
 
-                              [MinimalBuildDefinition]
+                              [BuildDefinition]
                               public partial class MinimalTestDefinition;
                               """;
 
@@ -34,7 +34,7 @@ public class BuildDefinitionSourceGeneratorTests
 
                               namespace TestNamespace;
 
-                              [MinimalBuildDefinition]
+                              [BuildDefinition]
                               public partial class MinimalTestDefinition : MinimalBuildDefinition;
                               """;
 

@@ -1,7 +1,10 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
-[MinimalBuildDefinition]
-internal partial class UnspecifiedTargetsBuild : IUnspecifiedTarget1, IUnspecifiedTarget2, IUnspecifiedTarget3;
+[BuildDefinition]
+internal partial class UnspecifiedTargetsBuild : MinimalBuildDefinition,
+    IUnspecifiedTarget1,
+    IUnspecifiedTarget2,
+    IUnspecifiedTarget3;
 
 [TargetDefinition]
 internal partial interface IUnspecifiedTarget1

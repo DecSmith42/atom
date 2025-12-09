@@ -1,6 +1,6 @@
 ﻿namespace DecSm.Atom.Module.GithubWorkflows.Tests.Workflows;
 
-[MinimalBuildDefinition]
+[BuildDefinition]
 public partial class ReleaseTriggerBuild : MinimalBuildDefinition, IGithubWorkflows, IReleaseTriggerTarget
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -8,7 +8,7 @@ public partial class ReleaseTriggerBuild : MinimalBuildDefinition, IGithubWorkfl
         new("releasetrigger-workflow")
         {
             Triggers = [GithubReleaseTrigger.OnReleased],
-            Targets = [Targets.ReleaseTriggerTarget],
+            Targets = [WorkflowTargets.ReleaseTriggerTarget],
             WorkflowTypes = [new GithubWorkflowType()],
         },
     ];

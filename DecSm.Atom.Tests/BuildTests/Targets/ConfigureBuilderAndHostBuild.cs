@@ -1,8 +1,9 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
 // ReSharper disable once RedundantExtendsListEntry
-[MinimalBuildDefinition]
-public partial class ConfigureBuilderAndHostBuild : ITargetWithConfigureBuilder,
+[BuildDefinition]
+public partial class ConfigureBuilderAndHostBuild : MinimalBuildDefinition,
+    ITargetWithConfigureBuilder,
     ITargetWithConfigureBuilderAndConfigureHost,
     ITargetWithInheritAndConfigureBuilderAndConfigureHost
 {

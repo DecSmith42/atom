@@ -14,7 +14,6 @@
 ///     <code>
 /// // Inject a secret for an Azure Key Vault provider
 /// var vaultClientSecret = WorkflowSecretsSecretInjection.Create("AZURE_CLIENT_SECRET");
-///
 /// // Add to workflow configuration
 /// var workflowDefinition = new WorkflowDefinition().WithAddedOptions(vaultClientSecret);
 ///     </code>

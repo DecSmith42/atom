@@ -11,7 +11,6 @@
 ///     <code>
 /// // Trigger on pull requests into the main branch
 /// var mainPrTrigger = GitPullRequestTrigger.IntoMain;
-///
 /// // Trigger on pull requests that modify files in the 'src' directory
 /// var srcPrTrigger = new GitPullRequestTrigger
 /// {

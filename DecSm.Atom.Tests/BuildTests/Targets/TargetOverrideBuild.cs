@@ -1,7 +1,7 @@
 ﻿namespace DecSm.Atom.Tests.BuildTests.Targets;
 
-[MinimalBuildDefinition]
-public partial class TargetOverrideBuild : IOverrideTarget
+[BuildDefinition]
+public partial class TargetOverrideBuild : MinimalBuildDefinition, IOverrideTarget
 {
     public bool BaseOverrideTargetExecuted { get; set; }
 
