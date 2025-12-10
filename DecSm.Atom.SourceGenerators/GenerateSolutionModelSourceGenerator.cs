@@ -176,11 +176,11 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                              /// <summary>
                              ///    {{projectPath}}
                              /// </summary>
-                             public interface {{validIdentifier}} : IFileMarker
+                             public interface {{validIdentifier}} : IPathLocator
                              {
                                  public const string Name = @"{{kvp.Key}}";
 
-                                 static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
+                                 static RootedPath IPathLocator.Path(IAtomFileSystem fileSystem) =>
                                      fileSystem.CreateRootedPath(@"{{projectPath}}");
 
                                  new static RootedPath Path(IAtomFileSystem fileSystem) =>
@@ -204,11 +204,11 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                      /// <summary>
                      ///    {{solutionPathNormalized}}
                      /// </summary>
-                     public interface Solution : IFileMarker
+                     public interface Solution : IPathLocator
                      {
                          public const string Name = @"{{solutionName}}";
 
-                         static RootedPath IFileMarker.Path(IAtomFileSystem fileSystem) =>
+                         static RootedPath IPathLocator.Path(IAtomFileSystem fileSystem) =>
                             fileSystem.CreateRootedPath(@"{{solutionPathNormalized}}");
                      }
 

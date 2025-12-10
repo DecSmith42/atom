@@ -35,15 +35,15 @@ public partial interface IDevopsWorkflows : IJobRunsOn
             builder
                 .Services
                 .AddSingleton<IOutcomeReportWriter, DevopsSummaryOutcomeReportWriter>()
-                .ProvidePath((key, locator) => Devops.IsDevopsPipelines
+                .ProvidePath((key, fileSystem) => Devops.IsDevopsPipelines
                     ? key switch
                     {
-                        AtomPaths.Artifacts => locator(AtomPaths.Root)
-                                                   .Parent! /
-                                               "a", // Corresponds to $(Build.ArtifactStagingDirectory)
-                        AtomPaths.Publish => locator(AtomPaths.Root)
-                                                 .Parent! /
-                                             "b", // Corresponds to $(Build.BinariesDirectory)
+                        // Corresponds to $(Build.ArtifactStagingDirectory)
+                        AtomPaths.Artifacts => fileSystem.AtomRootDirectory.Parent! / "a",
+
+                        // Corresponds to $(Build.BinariesDirectory)
+                        AtomPaths.Publish => fileSystem.AtomRootDirectory.Parent! / "b",
+
                         _ => null,
                     }
                     : null);

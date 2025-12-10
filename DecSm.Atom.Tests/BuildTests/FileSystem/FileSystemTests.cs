@@ -26,9 +26,9 @@ public sealed class FileSystemTests
     {
         // Arrange
         var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
-            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
+            builder.Services.AddSingleton<IPathProvider>(provider => new FunctionPathProvider
             {
-                Locator = (key, _) => key is AtomPaths.Root
+                Resolver = key => key is AtomPaths.Root
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
                         .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
@@ -73,9 +73,9 @@ public sealed class FileSystemTests
     {
         // Arrange
         var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
-            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
+            builder.Services.AddSingleton<IPathProvider>(provider => new FunctionPathProvider
             {
-                Locator = (key, _) => key is AtomPaths.Artifacts
+                Resolver = key => key is AtomPaths.Artifacts
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
                         .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
@@ -120,9 +120,9 @@ public sealed class FileSystemTests
     {
         // Arrange
         var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
-            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
+            builder.Services.AddSingleton<IPathProvider>(provider => new FunctionPathProvider
             {
-                Locator = (key, _) => key is AtomPaths.Publish
+                Resolver = key => key is AtomPaths.Publish
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
                         .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT
@@ -167,9 +167,9 @@ public sealed class FileSystemTests
     {
         // Arrange
         var host = CreateTestHost<MinimalAtomBuild>(configure: builder =>
-            builder.Services.AddSingleton<IPathProvider>(provider => new PathProvider
+            builder.Services.AddSingleton<IPathProvider>(provider => new FunctionPathProvider
             {
-                Locator = (key, _) => key is AtomPaths.Temp
+                Resolver = key => key is AtomPaths.Temp
                     ? provider
                         .GetRequiredService<IAtomFileSystem>()
                         .CreateRootedPath(Environment.OSVersion.Platform is PlatformID.Win32NT

@@ -3,7 +3,7 @@ namespace DecSm.Atom.Paths;
 /// <summary>
 ///     Defines a contract for types that represent a specific, well-known file path within the file system.
 /// </summary>
-public interface IFileMarker
+public interface IPathLocator
 {
     /// <summary>
     ///     Gets the rooted path of the file.

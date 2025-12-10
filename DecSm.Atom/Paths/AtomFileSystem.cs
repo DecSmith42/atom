@@ -79,10 +79,10 @@ public interface IAtomFileSystem : IFileSystem
     /// <summary>
     ///     Resolves the path for a given file marker type.
     /// </summary>
-    /// <typeparam name="T">The type of the file marker, which must implement <see cref="IFileMarker" />.</typeparam>
+    /// <typeparam name="T">The type of the file marker, which must implement <see cref="IPathLocator" />.</typeparam>
     /// <returns>A <see cref="RootedPath" /> for the specified file marker.</returns>
     RootedPath GetPath<T>()
-        where T : IFileMarker =>
+        where T : IPathLocator =>
         T.Path(this);
 
     /// <summary>
@@ -109,50 +109,54 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
 
     public required IFileSystem FileSystem { get; init; }
 
+    private int _getPathDepth;
+
     /// <inheritdoc />
     public RootedPath GetPath(string key)
     {
-        if (_pathCache.TryGetValue(key, out var path))
-        {
-            logger.LogDebug("Path for key '{Key}' found in cache: {Path}", key, path);
+        if (_getPathDepth > 100)
+            throw new InvalidOperationException(
+                "Path resolution depth exceeded. It is likely that a circular dependency exists.");
 
-            return path;
+        _getPathDepth++;
+
+        try
+        {
+            if (_pathCache.TryGetValue(key, out var path))
+            {
+                logger.LogDebug("Path for key '{Key}' found in cache: {Path}", key, path);
+
+                return path;
+            }
+
+            path = PathLocators
+                .Select(x => x.GetPath(key))
+                .FirstOrDefault(x => x is not null);
+
+            if (path is not null)
+            {
+                logger.LogDebug("Path for key '{Key}' located: {Path}", key, path);
+
+                return _pathCache[key] = path;
+            }
+
+            var result = _pathCache[key] = key switch
+            {
+                AtomPaths.Root => GetRoot(),
+                AtomPaths.Artifacts or AtomPaths.Publish => GetPath(AtomPaths.Root) / "atom-publish",
+                AtomPaths.Temp => new(this, FileSystem.Path.GetTempPath()),
+                _ => throw new InvalidOperationException($"Could not locate path for key '{key}'"),
+            };
+
+            logger.LogDebug("Path for key '{Key}' computed: {Path}", key, result);
+
+            return result;
         }
-
-        var locate = (string locatorKey) => locatorKey == key
-            ? throw new InvalidOperationException($"Locator for key '{key}' is circular")
-            : GetPath(locatorKey);
-
-        path = PathLocators
-            .Select(x => x.Locate(key, locate))
-            .FirstOrDefault(x => x is not null);
-
-        if (path is not null)
+        finally
         {
-            logger.LogDebug("Path for key '{Key}' located by provider: {Path}", key, path);
-
-            return _pathCache[key] = path;
+            _getPathDepth--;
         }
-
-        var result = _pathCache[key] = key switch
-        {
-            AtomPaths.Root => GetRoot(),
-            AtomPaths.Artifacts => GetArtifacts(),
-            AtomPaths.Publish => GetPublish(),
-            AtomPaths.Temp => GetTemp(),
-            _ => throw new InvalidOperationException($"Could not locate path for key '{key}'"),
-        };
-
-        logger.LogDebug("Path for key '{Key}' computed: {Path}", key, result);
-
-        return result;
     }
-
-    /// <summary>
-    ///     Clears the internal path cache.
-    /// </summary>
-    internal void ClearCache() =>
-        _pathCache.Clear();
 
     /// <summary>
     ///     Determines the root directory by traversing up from the current directory and looking for project markers.
@@ -167,37 +171,19 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
 
             if (FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, ProjectName, SearchOption.TopDirectoryOnly)
+                    .EnumerateDirectories(currentDir, "*.git", SearchOption.TopDirectoryOnly)
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.git")
+                    .EnumerateDirectories(currentDir, "*.slnx", SearchOption.TopDirectoryOnly)
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.sln")
+                    .EnumerateDirectories(currentDir, "*.sln", SearchOption.TopDirectoryOnly)
                     .Any())
                 return currentDir;
         }
 
         return ((IAtomFileSystem)this).CurrentDirectory;
     }
-
-    /// <summary>
-    ///     Gets the default artifacts directory path.
-    /// </summary>
-    private RootedPath GetArtifacts() =>
-        GetPath(AtomPaths.Root) / "atom-publish";
-
-    /// <summary>
-    ///     Gets the default publish directory path.
-    /// </summary>
-    private RootedPath GetPublish() =>
-        GetPath(AtomPaths.Root) / "atom-publish";
-
-    /// <summary>
-    ///     Gets the system's temporary directory path.
-    /// </summary>
-    private RootedPath GetTemp() =>
-        new(this, FileSystem.Path.GetTempPath());
 }

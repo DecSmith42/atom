@@ -18,8 +18,6 @@ public class DefaultBuildVersionProviderTests
             ProjectName = "Atom",
         };
 
-        result.ClearCache();
-
         return result;
     }
 
