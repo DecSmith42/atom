@@ -79,7 +79,7 @@ branches:
       when-current-commit-tagged: false
     track-merge-target: true
     track-merge-message: true
-    regex: ^(?<BranchType>chore|feat|feature|features|fix|improvement)?[/-](?<BranchName>.+)
+    regex: ^(<BranchType>chore|feat|feature|features|fix|improvement|refactor)?[/-](?<BranchName>.+)
     is-release-branch: false
     is-main-branch: false
     pre-release-weight: 2000     # 2,000–2,999
