@@ -99,6 +99,14 @@ public static class TypeUtil
             }
         }
 
+        // If type is just 'object', we can just return the string value
+        if (type == typeof(object))
+        {
+            result = value;
+
+            return true;
+        }
+
         result = null;
 
         return false;
