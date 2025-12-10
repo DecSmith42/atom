@@ -38,6 +38,7 @@ internal sealed class BuildExecutor(
             return;
         }
 
+        console.WriteLine();
         logger.LogInformation("Executing build");
 
         foreach (var command in commands)
@@ -154,10 +155,6 @@ internal sealed class BuildExecutor(
         buildModel.TargetStates[target].Status = TargetRunState.Running;
 
         var startTime = Stopwatch.GetTimestamp();
-
-        console.WriteLine();
-        console.Write(new Markup($"Executing target [bold]{target.Name}[/]...\n"));
-        console.WriteLine();
 
         using (logger.BeginScope(new Dictionary<string, object>
                {
