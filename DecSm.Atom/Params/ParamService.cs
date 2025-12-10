@@ -129,17 +129,17 @@ internal sealed class ParamService(
     /// <summary>
     ///     Gets or sets a value indicating whether parameter caching is disabled.
     /// </summary>
-    private bool _noCache;
+    private readonly AsyncLocal<bool> _noCache = new();
 
     /// <summary>
     ///     Gets or sets a value indicating whether parameter resolution is currently suppressed.
     /// </summary>
-    private bool _defaultValuesOnly;
+    private readonly AsyncLocal<bool> _defaultValuesOnly = new();
 
     /// <summary>
     ///     Gets or sets an optional override for parameter sources to use when resolving parameters.
     /// </summary>
-    private ParamSource? _overrideSources;
+    private readonly AsyncLocal<ParamSource?> _overrideSources = new();
 
     /// <inheritdoc />
     public IDisposable CreateNoCacheScope() =>
@@ -200,10 +200,10 @@ internal sealed class ParamService(
         T? defaultValue = default,
         Func<string?, T?>? converter = null)
     {
-        if (_defaultValuesOnly)
+        if (_defaultValuesOnly.Value)
             return defaultValue;
 
-        var source = _overrideSources ?? paramDefinition.Sources;
+        var source = _overrideSources.Value ?? paramDefinition.Sources;
 
         T? result;
 
@@ -260,7 +260,7 @@ internal sealed class ParamService(
                             : result.ToString());
         }
 
-        if (!_noCache)
+        if (!_noCache.Value)
             _cache[paramDefinition.Name] = result;
 
         if (paramDefinition.IsSecret)
@@ -432,11 +432,11 @@ internal sealed class ParamService(
         public NoCacheScope(ParamService paramService)
         {
             _paramService = paramService;
-            paramService._noCache = true;
+            paramService._noCache.Value = true;
         }
 
         public void Dispose() =>
-            _paramService._noCache = false;
+            _paramService._noCache.Value = false;
     }
 
     /// <summary>
@@ -450,11 +450,11 @@ internal sealed class ParamService(
         public DefaultValuesOnlyScope(ParamService paramService)
         {
             _paramService = paramService;
-            paramService._defaultValuesOnly = true;
+            paramService._defaultValuesOnly.Value = true;
         }
 
         public void Dispose() =>
-            _paramService._defaultValuesOnly = false;
+            _paramService._defaultValuesOnly.Value = false;
     }
 
     /// <summary>
@@ -469,10 +469,10 @@ internal sealed class ParamService(
         {
             _paramService = paramService;
             _sources = sources;
-            paramService._overrideSources = sources;
+            paramService._overrideSources.Value = sources;
         }
 
         public void Dispose() =>
-            _paramService._overrideSources = _sources;
+            _paramService._overrideSources.Value = null;
     }
 }
