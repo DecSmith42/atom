@@ -175,11 +175,11 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.slnx", SearchOption.TopDirectoryOnly)
+                    .EnumerateFiles(currentDir, "*.slnx", SearchOption.TopDirectoryOnly)
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.sln", SearchOption.TopDirectoryOnly)
+                    .EnumerateFiles(currentDir, "*.sln", SearchOption.TopDirectoryOnly)
                     .Any())
                 return currentDir;
         }
