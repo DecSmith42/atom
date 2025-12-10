@@ -5,8 +5,8 @@ public class WorkflowTests
 {
     private static string WorkflowDir =>
         Environment.OSVersion.Platform is PlatformID.Win32NT
-            ? @"C:\Atom\_atom\.devops\workflows\"
-            : "/Atom/_atom/.devops/workflows/";
+            ? @"C:\Atom\.devops\workflows\"
+            : "/Atom/.devops/workflows/";
 
     [Test]
     public void MinimalBuild_GeneratesNoWorkflows()

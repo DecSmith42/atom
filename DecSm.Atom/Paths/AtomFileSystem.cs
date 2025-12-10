@@ -109,16 +109,16 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
 
     public required IFileSystem FileSystem { get; init; }
 
-    private int _getPathDepth;
+    private readonly AsyncLocal<int> _getPathDepth = new();
 
     /// <inheritdoc />
     public RootedPath GetPath(string key)
     {
-        if (_getPathDepth > 100)
+        if (_getPathDepth.Value > 100)
             throw new InvalidOperationException(
                 "Path resolution depth exceeded. It is likely that a circular dependency exists.");
 
-        _getPathDepth++;
+        _getPathDepth.Value++;
 
         try
         {
@@ -154,7 +154,7 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
         }
         finally
         {
-            _getPathDepth--;
+            _getPathDepth.Value--;
         }
     }
 
@@ -175,11 +175,11 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.slnx", SearchOption.TopDirectoryOnly)
+                    .EnumerateFiles(currentDir, "*.slnx", SearchOption.TopDirectoryOnly)
                     .Any() ||
                 FileSystem
                     .Directory
-                    .EnumerateDirectories(currentDir, "*.sln", SearchOption.TopDirectoryOnly)
+                    .EnumerateFiles(currentDir, "*.sln", SearchOption.TopDirectoryOnly)
                     .Any())
                 return currentDir;
         }
