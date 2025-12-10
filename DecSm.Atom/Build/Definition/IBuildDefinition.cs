@@ -48,45 +48,9 @@ public interface IBuildDefinition
     IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions { get; }
 
     /// <summary>
-    ///     Gets or sets a value indicating whether parameter resolution is currently suppressed.
-    /// </summary>
-    bool SuppressParamResolution { get; protected internal set; }
-
-    /// <summary>
     ///     Retrieves the value of a build parameter by its name.
     /// </summary>
     /// <param name="paramName">The name of the parameter to access.</param>
     /// <returns>The value of the specified parameter, or <c>null</c> if not defined or has no value.</returns>
     object? AccessParam(string paramName);
-
-    /// <summary>
-    ///     Creates a disposable scope that temporarily suppresses parameter resolution.
-    /// </summary>
-    /// <returns>An <see cref="IDisposable" /> that restores the previous state upon disposal.</returns>
-    IDisposable CreateParamResolutionSuppressionScope() =>
-        new ParamResolutionSuppressionScope(this);
-
-    /// <summary>
-    ///     A disposable struct that temporarily suppresses parameter resolution for a build definition.
-    /// </summary>
-    private readonly record struct ParamResolutionSuppressionScope : IDisposable
-    {
-        private readonly IBuildDefinition _buildDefinition;
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ParamResolutionSuppressionScope" />.
-        /// </summary>
-        /// <param name="buildDefinition">The build definition to apply the suppression to.</param>
-        public ParamResolutionSuppressionScope(IBuildDefinition buildDefinition)
-        {
-            _buildDefinition = buildDefinition;
-            buildDefinition.SuppressParamResolution = true;
-        }
-
-        /// <summary>
-        ///     Restores parameter resolution for the build definition.
-        /// </summary>
-        public void Dispose() =>
-            _buildDefinition.SuppressParamResolution = false;
-    }
 }

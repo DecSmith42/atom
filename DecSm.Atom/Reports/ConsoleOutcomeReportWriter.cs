@@ -47,7 +47,9 @@ internal partial class ConsoleOutcomeReportWriter(
 
             var durationText = state.Status is TargetRunState.Succeeded or TargetRunState.Failed &&
                                targetDuration is not null
-                ? $"{targetDuration.Value.TotalSeconds:0.00}s"
+                ? targetDuration.Value.TotalMilliseconds < 10
+                    ? "<0.01s"
+                    : $"{targetDuration.Value.TotalSeconds:0.00}s"
                 : string.Empty;
 
             if (state.Status is TargetRunState.NotRun && args.HasHeadless)
@@ -56,6 +58,7 @@ internal partial class ConsoleOutcomeReportWriter(
             table.AddRow(paramService.MaskMatchingSecrets(state.Name), outcome, durationText);
         }
 
+        console.WriteLine();
         console.Write(new Text("Build Summary", new(decoration: Decoration.Underline)));
         console.WriteLine();
         console.Write(table);

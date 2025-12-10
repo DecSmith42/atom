@@ -4,6 +4,7 @@ internal sealed class GithubWorkflowWriter(
     IAtomFileSystem fileSystem,
     IBuildDefinition buildDefinition,
     BuildModel buildModel,
+    IParamService paramService,
     ILogger<GithubWorkflowWriter> logger
 ) : WorkflowFileWriter<GithubWorkflowType>(fileSystem, logger)
 {
@@ -49,7 +50,7 @@ internal sealed class GithubWorkflowWriter(
                                     switch (input)
                                     {
                                         case ManualBoolInput boolInput:
-
+                                        {
                                             bool? defaultBoolValue = null;
 
                                             if (boolInput.DefaultValue.HasValue)
@@ -58,14 +59,19 @@ internal sealed class GithubWorkflowWriter(
                                             }
                                             else
                                             {
+                                                using var defaultValuesOnlyScope =
+                                                    paramService.CreateDefaultValuesOnlyScope();
+
                                                 var accessedParam = buildDefinition.AccessParam(inputParamName);
 
                                                 switch (accessedParam)
                                                 {
                                                     case bool boolParam:
+                                                    {
                                                         defaultBoolValue = boolParam;
 
                                                         break;
+                                                    }
 
                                                     case string stringParam:
                                                     {
@@ -89,8 +95,12 @@ internal sealed class GithubWorkflowWriter(
                                                 WriteLine($"default: {(defaultBoolValue.Value ? "true" : "false")}");
 
                                             break;
+                                        }
 
                                         case ManualStringInput stringInput:
+                                        {
+                                            using var defaultValuesOnlyScope =
+                                                paramService.CreateDefaultValuesOnlyScope();
 
                                             var defaultStringValue = stringInput.DefaultValue is { Length: > 0 }
                                                 ? stringInput.DefaultValue
@@ -111,8 +121,12 @@ internal sealed class GithubWorkflowWriter(
                                                 WriteLine($"default: {defaultStringValue}");
 
                                             break;
+                                        }
 
                                         case ManualChoiceInput choiceInput:
+                                        {
+                                            using var defaultValuesOnlyScope =
+                                                paramService.CreateDefaultValuesOnlyScope();
 
                                             var defaultChoiceValue = choiceInput.DefaultValue is { Length: > 0 }
                                                 ? choiceInput.DefaultValue
@@ -139,6 +153,7 @@ internal sealed class GithubWorkflowWriter(
                                                 WriteLine($"default: {defaultChoiceValue}");
 
                                             break;
+                                        }
                                     }
                                 }
                         }

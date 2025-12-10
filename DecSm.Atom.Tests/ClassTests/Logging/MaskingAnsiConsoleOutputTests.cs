@@ -96,6 +96,12 @@ public class MaskingAnsiConsoleOutputTests
         public IDisposable CreateNoCacheScope() =>
             new DummyDisposable();
 
+        public IDisposable CreateDefaultValuesOnlyScope() =>
+            new DummyDisposable();
+
+        public IDisposable CreateOverrideSourcesScope(ParamSource sources) =>
+            new DummyDisposable();
+
         public string MaskMatchingSecrets(string text) =>
             text.Replace(secret, mask, StringComparison.OrdinalIgnoreCase);
 

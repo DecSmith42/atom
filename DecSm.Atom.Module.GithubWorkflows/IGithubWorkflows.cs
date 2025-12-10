@@ -45,11 +45,11 @@ public partial interface IGithubWorkflows : IJobRunsOn
         builder
             .Services
             .AddSingleton<IOutcomeReportWriter, GithubSummaryOutcomeReportWriter>()
-            .ProvidePath((key, locator) => Github.IsGithubActions
+            .ProvidePath((key, fileSystem) => Github.IsGithubActions
                 ? key switch
                 {
-                    AtomPaths.Artifacts => locator(AtomPaths.Root) / ".github" / "artifacts",
-                    AtomPaths.Publish => locator(AtomPaths.Root) / ".github" / "publish",
+                    AtomPaths.Artifacts => fileSystem.AtomRootDirectory / ".github" / "artifacts",
+                    AtomPaths.Publish => fileSystem.AtomRootDirectory / ".github" / "publish",
                     _ => null,
                 }
                 : null);

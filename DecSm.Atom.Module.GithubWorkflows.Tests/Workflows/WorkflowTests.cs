@@ -150,6 +150,71 @@ public class WorkflowTests
     }
 
     [Test]
+    public async Task ManualInputStabilityBuild_GeneratesWorkflowWithStableInputs()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build1 = CreateTestHost<ManualInputStabilityBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true,
+            [
+                new GenArg(),
+                new ParamArg("--string-param-without-default",
+                    nameof(IManualInputStabilityTarget.StringParamWithoutDefault),
+                    "1"),
+                new ParamArg("--string-param-with-default",
+                    nameof(IManualInputStabilityTarget.StringParamWithDefault),
+                    "1"),
+                new ParamArg("--bool-param-without-default",
+                    nameof(IManualInputStabilityTarget.BoolParamWithoutDefault),
+                    "true"),
+                new ParamArg("--bool-param-with-default",
+                    nameof(IManualInputStabilityTarget.BoolParamWithDefault),
+                    "true"),
+                new ParamArg("--choice-param-without-default",
+                    nameof(IManualInputStabilityTarget.ChoiceParamWithoutDefault),
+                    "choice 1"),
+                new ParamArg("--choice-param-with-default",
+                    nameof(IManualInputStabilityTarget.ChoiceParamWithDefault),
+                    "choice 1"),
+            ]));
+
+        var build2 = CreateTestHost<ManualInputStabilityBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true,
+            [
+                new GenArg(),
+                new ParamArg("--string-param-without-default",
+                    nameof(IManualInputStabilityTarget.StringParamWithoutDefault),
+                    "2"),
+                new ParamArg("--string-param-with-default",
+                    nameof(IManualInputStabilityTarget.StringParamWithDefault),
+                    "2"),
+                new ParamArg("--bool-param-without-default",
+                    nameof(IManualInputStabilityTarget.BoolParamWithoutDefault),
+                    "false"),
+                new ParamArg("--bool-param-with-default",
+                    nameof(IManualInputStabilityTarget.BoolParamWithDefault),
+                    "false"),
+                new ParamArg("--choice-param-without-default",
+                    nameof(IManualInputStabilityTarget.ChoiceParamWithoutDefault),
+                    "choice 2"),
+                new ParamArg("--choice-param-with-default",
+                    nameof(IManualInputStabilityTarget.ChoiceParamWithDefault),
+                    "choice 2"),
+            ]));
+
+        // Act
+        await build1.RunAsync();
+        var workflow1 = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}manual-input-stability-workflow.yml");
+
+        await build2.RunAsync();
+        var workflow2 = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}manual-input-stability-workflow.yml");
+
+        // Assert
+        workflow1.ShouldBe(workflow2);
+    }
+
+    [Test]
     public async Task SetupDotnetBuild_GeneratesWorkflow()
     {
         // Arrange

@@ -38,11 +38,27 @@ public static class AtomPaths
     /// <param name="priority">The priority of the provider. Higher values take precedence.</param>
     public static void ProvidePath(
         this IServiceCollection services,
-        Func<string, Func<string, RootedPath>, RootedPath?> locate,
+        Func<string, RootedPath?> locate,
         int priority = 1) =>
-        services.AddSingleton<IPathProvider>(new PathProvider
+        services.AddSingleton<IPathProvider>(new FunctionPathProvider
         {
             Priority = priority,
-            Locator = locate,
+            Resolver = locate,
+        });
+
+    /// <summary>
+    ///     Registers a custom path provider with the dependency injection container.
+    /// </summary>
+    /// <param name="services">The service collection to add the provider to.</param>
+    /// <param name="locate">A function that resolves a <see cref="RootedPath" /> based on a key.</param>
+    /// <param name="priority">The priority of the provider. Higher values take precedence.</param>
+    public static void ProvidePath(
+        this IServiceCollection services,
+        Func<string, IAtomFileSystem, RootedPath?> locate,
+        int priority = 1) =>
+        services.AddSingleton<IPathProvider>(provider => new FunctionPathProvider
+        {
+            Priority = priority,
+            Resolver = key => locate(key, provider.GetRequiredService<IAtomFileSystem>()),
         });
 }
