@@ -4,8 +4,13 @@
 ///     Resolves the complete <see cref="BuildModel" /> by processing target definitions, dependencies, and parameters.
 /// </summary>
 /// <param name="buildDefinition">The core build definition.</param>
+/// <param name="paramService">The service for resolving parameters.</param>
 /// <param name="commandLineArgs">The parsed command-line arguments.</param>
-internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLineArgs commandLineArgs)
+internal sealed class BuildResolver(
+    IBuildDefinition buildDefinition,
+    IParamService paramService,
+    CommandLineArgs commandLineArgs
+)
 {
     /// <summary>
     ///     Resolves and constructs the <see cref="BuildModel" /> for the current build.
@@ -14,7 +19,7 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
     /// <exception cref="InvalidOperationException">Thrown if duplicate or circular target dependencies are detected.</exception>
     public BuildModel Resolve()
     {
-        var defaultScope = buildDefinition.CreateParamResolutionSuppressionScope();
+        var defaultValuesOnlyScope = paramService.CreateDefaultValuesOnlyScope();
 
         var paramModels = buildDefinition
             .ParamDefinitions
@@ -31,7 +36,7 @@ internal sealed class BuildResolver(IBuildDefinition buildDefinition, CommandLin
             })
             .ToDictionary(x => x.Name);
 
-        defaultScope.Dispose();
+        defaultValuesOnlyScope.Dispose();
 
         var specifiedTargets = commandLineArgs
             .Commands

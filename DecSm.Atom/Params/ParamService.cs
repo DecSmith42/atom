@@ -88,6 +88,20 @@ public interface IParamService
     /// </summary>
     /// <returns>An <see cref="IDisposable" /> that restores the previous cache state upon disposal.</returns>
     IDisposable CreateNoCacheScope();
+
+    /// <summary>
+    ///     Creates a disposable scope that temporarily causes parameter resolution to be suppressed, returning only default
+    ///     values (when they exist).
+    /// </summary>
+    /// <returns>An <see cref="IDisposable" /> that restores the previous state upon disposal.</returns>
+    IDisposable CreateDefaultValuesOnlyScope();
+
+    /// <summary>
+    ///     Creates a disposable scope that temporarily overrides parameter sources.
+    /// </summary>
+    /// <param name="sources">The parameter sources to use within the scope.</param>
+    /// <returns>An <see cref="IDisposable" /> that restores the previous state upon disposal.</returns>
+    IDisposable CreateOverrideSourcesScope(ParamSource sources);
 }
 
 /// <summary>
@@ -115,11 +129,29 @@ internal sealed class ParamService(
     /// <summary>
     ///     Gets or sets a value indicating whether parameter caching is disabled.
     /// </summary>
-    private bool NoCache { get; set; }
+    private bool _noCache;
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether parameter resolution is currently suppressed.
+    /// </summary>
+    private bool _defaultValuesOnly;
+
+    /// <summary>
+    ///     Gets or sets an optional override for parameter sources to use when resolving parameters.
+    /// </summary>
+    private ParamSource? _overrideSources;
 
     /// <inheritdoc />
     public IDisposable CreateNoCacheScope() =>
         new NoCacheScope(this);
+
+    /// <inheritdoc />
+    public IDisposable CreateDefaultValuesOnlyScope() =>
+        new DefaultValuesOnlyScope(this);
+
+    /// <inheritdoc />
+    public IDisposable CreateOverrideSourcesScope(ParamSource sources) =>
+        new OverrideSourcesScope(this, sources);
 
     /// <inheritdoc />
     public string MaskMatchingSecrets(string text) =>
@@ -168,36 +200,38 @@ internal sealed class ParamService(
         T? defaultValue = default,
         Func<string?, T?>? converter = null)
     {
-        if (buildDefinition.SuppressParamResolution)
+        if (_defaultValuesOnly)
             return defaultValue;
+
+        var source = _overrideSources ?? paramDefinition.Sources;
 
         T? result;
 
-        if (paramDefinition.Sources.HasFlag(ParamSource.Cache) &&
+        if (source.HasFlag(ParamSource.Cache) &&
             TryGetParamFromCache(paramDefinition, _cache, converter) is (true, { } cacheValue))
         {
             result = cacheValue;
             logger.LogDebug("Resolved param {ParamName} from cache", paramDefinition.Name);
         }
-        else if (paramDefinition.Sources.HasFlag(ParamSource.CommandLineArgs) &&
+        else if (source.HasFlag(ParamSource.CommandLineArgs) &&
                  TryGetParamFromArgs(paramDefinition, args, converter) is (true, { } argsValue))
         {
             result = argsValue;
             logger.LogDebug("Resolved param {ParamName} from command line args", paramDefinition.Name);
         }
-        else if (paramDefinition.Sources.HasFlag(ParamSource.EnvironmentVariables) &&
+        else if (source.HasFlag(ParamSource.EnvironmentVariables) &&
                  TryGetParamFromEnvironmentVariables(paramDefinition, converter) is (true, { } envVarValue))
         {
             result = envVarValue;
             logger.LogDebug("Resolved param {ParamName} from environment variables", paramDefinition.Name);
         }
-        else if (paramDefinition.Sources.HasFlag(ParamSource.Configuration) &&
+        else if (source.HasFlag(ParamSource.Configuration) &&
                  TryGetParamFromConfig(paramDefinition, config, converter) is (true, { } configValue))
         {
             result = configValue;
             logger.LogDebug("Resolved param {ParamName} from configuration", paramDefinition.Name);
         }
-        else if (paramDefinition.Sources.HasFlag(ParamSource.Secrets) &&
+        else if (source.HasFlag(ParamSource.Secrets) &&
                  paramDefinition.IsSecret &&
                  TryGetParamFromSecrets(paramDefinition, _secretsProviders, converter) is (true, { } secretValue))
         {
@@ -226,7 +260,7 @@ internal sealed class ParamService(
                             : result.ToString());
         }
 
-        if (!NoCache)
+        if (!_noCache)
             _cache[paramDefinition.Name] = result;
 
         if (paramDefinition.IsSecret)
@@ -398,10 +432,47 @@ internal sealed class ParamService(
         public NoCacheScope(ParamService paramService)
         {
             _paramService = paramService;
-            paramService.NoCache = true;
+            paramService._noCache = true;
         }
 
         public void Dispose() =>
-            _paramService.NoCache = false;
+            _paramService._noCache = false;
+    }
+
+    /// <summary>
+    ///     A disposable struct that temporarily causes parameter resolution to be suppressed, returning only default values
+    ///     (when they exist).
+    /// </summary>
+    private readonly record struct DefaultValuesOnlyScope : IDisposable
+    {
+        private readonly ParamService _paramService;
+
+        public DefaultValuesOnlyScope(ParamService paramService)
+        {
+            _paramService = paramService;
+            paramService._defaultValuesOnly = true;
+        }
+
+        public void Dispose() =>
+            _paramService._defaultValuesOnly = false;
+    }
+
+    /// <summary>
+    ///     A disposable struct that temporarily overrides parameter sources.
+    /// </summary>
+    private readonly record struct OverrideSourcesScope : IDisposable
+    {
+        private readonly ParamService _paramService;
+        private readonly ParamSource _sources;
+
+        public OverrideSourcesScope(ParamService paramService, ParamSource sources)
+        {
+            _paramService = paramService;
+            _sources = sources;
+            paramService._overrideSources = sources;
+        }
+
+        public void Dispose() =>
+            _paramService._overrideSources = _sources;
     }
 }

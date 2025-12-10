@@ -49,7 +49,4 @@ public abstract class MinimalBuildDefinition(IServiceProvider services) : IBuild
 
     /// <inheritdoc />
     public virtual IReadOnlyList<IWorkflowOption> GlobalWorkflowOptions => [];
-
-    /// <inheritdoc />
-    public bool SuppressParamResolution { get; set; }
 }
