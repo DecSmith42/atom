@@ -17,8 +17,8 @@ public sealed class FileSystemTests
         atomRootDirectory
             .ToString()
             .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
-                ? @"C:\Atom\_atom"
-                : "/Atom/_atom");
+                ? @"C:\Atom\"
+                : "/Atom/");
     }
 
     [Test]
@@ -64,8 +64,8 @@ public sealed class FileSystemTests
         atomRootDirectory
             .ToString()
             .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
-                ? @"C:\Atom\_atom\atom-publish"
-                : "/Atom/_atom/atom-publish");
+                ? @"C:\Atom\atom-publish"
+                : "/Atom/atom-publish");
     }
 
     [Test]
@@ -111,8 +111,8 @@ public sealed class FileSystemTests
         atomRootDirectory
             .ToString()
             .ShouldBe(Environment.OSVersion.Platform is PlatformID.Win32NT
-                ? @"C:\Atom\_atom\atom-publish"
-                : "/Atom/_atom/atom-publish");
+                ? @"C:\Atom\atom-publish"
+                : "/Atom/atom-publish");
     }
 
     [Test]
