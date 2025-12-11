@@ -48,6 +48,21 @@ public static class Extensions
                 : workflowTargetDefinition.WithOptions(
                     WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
 
+        /// <summary>
+        ///     Configures the workflow target to set specific permissions for the injected GitHub token.
+        /// </summary>
+        /// <param name="permissions">The permissions to assign to the GitHub Actions token for this workflow job.</param>
+        /// <returns>The modified <see cref="WorkflowTargetDefinition" /> for chaining.</returns>
+        /// <remarks>
+        ///     This method adds a <see cref="GithubTokenPermissionsOption" /> to the workflow target, allowing you to
+        ///     specify fine-grained permissions for the GitHub Actions token used in the job.
+        ///     <para>
+        ///         Example:
+        ///         <code>
+        ///         target.WithGithubTokenPermissions(GithubTokenPermissionsOption.ReadPackages);
+        ///         </code>
+        ///     </para>
+        /// </remarks>
         [PublicAPI]
         public WorkflowTargetDefinition WithGithubTokenPermissions(GithubTokenPermissionsOption permissions) =>
             workflowTargetDefinition.WithOptions(permissions);
