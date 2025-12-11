@@ -121,36 +121,47 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         var methodLines = methods.Select(GenerateMethodLine);
 
         return [..propertyLines.Concat(methodLines)];
+    }
 
-        static string GeneratePropertyLine(TypeWithProperty typeWithProperty)
-        {
-            var interfaceName = typeWithProperty.Type.ToDisplayString();
-            var propertyName = typeWithProperty.Property.Name;
-            var propertyType = typeWithProperty.Property.Type.ToDisplayString();
+    private static string GeneratePropertyLine(TypeWithProperty typeWithProperty)
+    {
+        var interfaceName = typeWithProperty.Type.ToDisplayString();
+        var propertyName = typeWithProperty.Property.Name;
+        var propertyType = typeWithProperty.Property.Type.ToDisplayString();
 
-            return $"private {propertyType} {propertyName} => (({interfaceName})this).{propertyName};";
-        }
+        return $"private {propertyType} {propertyName} => (({interfaceName})this).{propertyName};";
+    }
 
-        static string GenerateMethodLine(TypeWithMethod typeWithMethod)
-        {
-            var interfaceName = typeWithMethod.Type.ToDisplayString();
-            var methodName = typeWithMethod.Method.Name;
-            var methodReturnType = typeWithMethod.Method.ReturnType.ToDisplayString();
+    private static string GenerateMethodLine(TypeWithMethod typeWithMethod)
+    {
+        var interfaceName = typeWithMethod.Type.ToDisplayString();
+        var methodName = typeWithMethod.Method.Name;
+        var methodReturnType = typeWithMethod.Method.ReturnType.ToDisplayString();
 
-            var methodParameters = string.Join(", ",
-                typeWithMethod.Method.Parameters.Select(static param =>
-                    $"{param.Type.ToDisplayString()} {param.Name}"));
+        var methodInputParams = string.Join(", ",
+            typeWithMethod.Method.Parameters.Select(static param => param
+                .DeclaringSyntaxReferences[0]
+                .SyntaxTree
+                .GetRoot()
+                .FindNode(param.DeclaringSyntaxReferences[0].Span)
+                .ToFullString()));
 
-            var methodParameterNames =
-                string.Join(", ", typeWithMethod.Method.Parameters.Select(static param => param.Name));
+        var methodCallParams = string.Join(", ",
+            typeWithMethod.Method.Parameters.Select(static param => param.RefKind switch
+            {
+                RefKind.None => param.Name,
+                RefKind.Ref => $"ref {param.Name}",
+                RefKind.Out => $"out {param.Name}",
+                RefKind.In => $"in {param.Name}",
+                _ => param.Name,
+            }));
 
-            var genericParameters = typeWithMethod.Method.IsGenericMethod
-                ? $"<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(static param => param.Name))}>"
-                : string.Empty;
+        var genericParameters = typeWithMethod.Method.IsGenericMethod
+            ? $"<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(static param => param.Name))}>"
+            : string.Empty;
 
-            return
-                $"private {methodReturnType} {methodName}{genericParameters}({methodParameters}) => (({interfaceName})this).{methodName}{genericParameters}({methodParameterNames});";
-        }
+        return
+            $"private {methodReturnType} {methodName}{genericParameters}({methodInputParams}) => (({interfaceName})this).{methodName}{genericParameters}({methodCallParams});";
     }
 
     private static string BuildSourceCode(INamedTypeSymbol classSymbol, string classMembers)
