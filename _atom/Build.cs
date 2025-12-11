@@ -47,6 +47,7 @@ internal partial class Build : BuildDefinition,
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
             ],
             WorkflowTypes = [Github.WorkflowType],
+            Options = [GithubTokenPermissionsOption.NoneAll],
         },
         new("Build")
         {
@@ -82,6 +83,7 @@ internal partial class Build : BuildDefinition,
                         .EqualTo("false"))),
             ],
             WorkflowTypes = [Github.WorkflowType],
+            Options = [GithubTokenPermissionsOption.NoneAll],
         },
 
         // Test workflows
