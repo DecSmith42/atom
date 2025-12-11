@@ -21,24 +21,7 @@ internal sealed class GithubWorkflowWriter(
         WriteLine($"name: {workflow.Name}");
         WriteLine();
 
-        var githubPermissionsOption = workflow
-            .Options
-            .OfType<GithubTokenPermissionsOption>()
-            .FirstOrDefault();
-
-        if (githubPermissionsOption is not null)
-        {
-            if (githubPermissionsOption == GithubTokenPermissionsOption.WriteAll)
-                WriteLine("permissions: write-all");
-            else if (githubPermissionsOption == GithubTokenPermissionsOption.ReadAll)
-                WriteLine("permissions: read-all");
-            else
-                using (WriteSection("permissions:"))
-                {
-                    foreach (var (key, value) in githubPermissionsOption.GetStrings)
-                        WriteLine($"{key}: {value}");
-                }
-        }
+        WritePermissions(workflow.Options);
 
         using (WriteSection("on:"))
         {
@@ -365,24 +348,7 @@ internal sealed class GithubWorkflowWriter(
             foreach (var githubIfOption in githubIfOptions)
                 WriteLine($"if: {githubIfOption.Value}");
 
-            var githubPermissionsOption = job
-                .Options
-                .OfType<GithubTokenPermissionsOption>()
-                .FirstOrDefault();
-
-            if (githubPermissionsOption is not null)
-            {
-                if (githubPermissionsOption == GithubTokenPermissionsOption.WriteAll)
-                    WriteLine("permissions: write-all");
-                else if (githubPermissionsOption == GithubTokenPermissionsOption.ReadAll)
-                    WriteLine("permissions: read-all");
-                else
-                    using (WriteSection("permissions:"))
-                    {
-                        foreach (var (key, value) in githubPermissionsOption.GetStrings)
-                            WriteLine($"{key}: {value}");
-                    }
-            }
+            WritePermissions(job.Options);
 
             var outputs = new List<string>();
 
@@ -407,6 +373,27 @@ internal sealed class GithubWorkflowWriter(
                 }
             }
         }
+    }
+
+    private void WritePermissions(IReadOnlyList<IWorkflowOption> options)
+    {
+        var githubPermissionsOption = options
+            .OfType<GithubTokenPermissionsOption>()
+            .FirstOrDefault();
+
+        if (githubPermissionsOption is null)
+            return;
+
+        if (githubPermissionsOption == GithubTokenPermissionsOption.WriteAll)
+            WriteLine("permissions: write-all");
+        else if (githubPermissionsOption == GithubTokenPermissionsOption.ReadAll)
+            WriteLine("permissions: read-all");
+        else
+            using (WriteSection("permissions:"))
+            {
+                foreach (var (key, value) in githubPermissionsOption.GetStrings)
+                    WriteLine($"{key}: {value}");
+            }
     }
 
     private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)

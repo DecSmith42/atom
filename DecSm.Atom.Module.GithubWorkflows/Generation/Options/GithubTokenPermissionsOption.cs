@@ -3,8 +3,6 @@
 [PublicAPI]
 public sealed record GithubTokenPermissionsOption : IWorkflowOption
 {
-    public bool AllowMultiple => false;
-
     public GithubTokenPermission? Actions { get; init; }
 
     public GithubTokenPermission? ArtifactMetadata { get; init; }
