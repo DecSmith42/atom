@@ -84,7 +84,7 @@ internal partial class Build : BuildDefinition,
         // Test workflows
         new("Test_Devops_Build")
         {
-            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain, GitPushTrigger.ToMain],
             Targets =
             [
                 WorkflowTargets.SetupBuildInfo,
