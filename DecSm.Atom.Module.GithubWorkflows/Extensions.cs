@@ -47,5 +47,9 @@ public static class Extensions
                     permissions)
                 : workflowTargetDefinition.WithOptions(
                     WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
+
+        [PublicAPI]
+        public WorkflowTargetDefinition WithGithubTokenPermissions(GithubTokenPermissionsOption permissions) =>
+            workflowTargetDefinition.WithOptions(permissions);
     }
 }

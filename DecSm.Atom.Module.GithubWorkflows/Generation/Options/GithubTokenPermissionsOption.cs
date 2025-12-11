@@ -5,8 +5,6 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
 {
     public GithubTokenPermission? Actions { get; init; }
 
-    public GithubTokenPermission? ArtifactMetadata { get; init; }
-
     public GithubTokenPermission? Attestations { get; init; }
 
     public GithubTokenPermission? Checks { get; init; }
@@ -18,8 +16,6 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
     public GithubTokenPermission? IdToken { get; init; }
 
     public GithubTokenPermission? Issues { get; init; }
-
-    public GithubTokenPermission? Models { get; init; }
 
     public GithubTokenPermission? Discussions { get; init; }
 
@@ -33,17 +29,32 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
 
     public GithubTokenPermission? Statuses { get; init; }
 
+    public static GithubTokenPermissionsOption NoneAll { get; } = new()
+    {
+        Actions = GithubTokenPermission.None,
+        Attestations = GithubTokenPermission.None,
+        Checks = GithubTokenPermission.None,
+        Contents = GithubTokenPermission.None,
+        Deployments = GithubTokenPermission.None,
+        IdToken = GithubTokenPermission.None,
+        Issues = GithubTokenPermission.None,
+        Discussions = GithubTokenPermission.None,
+        Packages = GithubTokenPermission.None,
+        Pages = GithubTokenPermission.None,
+        PullRequests = GithubTokenPermission.None,
+        SecurityEvents = GithubTokenPermission.None,
+        Statuses = GithubTokenPermission.None,
+    };
+
     public static GithubTokenPermissionsOption ReadAll { get; } = new()
     {
         Actions = GithubTokenPermission.Read,
-        ArtifactMetadata = GithubTokenPermission.Read,
         Attestations = GithubTokenPermission.Read,
         Checks = GithubTokenPermission.Read,
         Contents = GithubTokenPermission.Read,
         Deployments = GithubTokenPermission.Read,
         IdToken = GithubTokenPermission.Read,
         Issues = GithubTokenPermission.Read,
-        Models = GithubTokenPermission.Read,
         Discussions = GithubTokenPermission.Read,
         Packages = GithubTokenPermission.Read,
         Pages = GithubTokenPermission.Read,
@@ -55,14 +66,12 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
     public static GithubTokenPermissionsOption WriteAll { get; } = new()
     {
         Actions = GithubTokenPermission.Write,
-        ArtifactMetadata = GithubTokenPermission.Write,
         Attestations = GithubTokenPermission.Write,
         Checks = GithubTokenPermission.Write,
         Contents = GithubTokenPermission.Write,
         Deployments = GithubTokenPermission.Write,
         IdToken = GithubTokenPermission.Write,
         Issues = GithubTokenPermission.Write,
-        Models = GithubTokenPermission.Write,
         Discussions = GithubTokenPermission.Write,
         Packages = GithubTokenPermission.Write,
         Pages = GithubTokenPermission.Write,
@@ -75,14 +84,12 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
         new List<(string, string?)>
             {
                 ("actions", GetTokenPermissionString(Actions)),
-                ("artifact-metadata", GetTokenPermissionString(ArtifactMetadata)),
                 ("attestations", GetTokenPermissionString(Attestations)),
                 ("checks", GetTokenPermissionString(Checks)),
                 ("contents", GetTokenPermissionString(Contents)),
                 ("deployments", GetTokenPermissionString(Deployments)),
                 ("id-token", GetTokenPermissionString(IdToken)),
                 ("issues", GetTokenPermissionString(Issues)),
-                ("models", GetTokenPermissionString(Models)),
                 ("discussions", GetTokenPermissionString(Discussions)),
                 ("packages", GetTokenPermissionString(Packages)),
                 ("pages", GetTokenPermissionString(Pages)),

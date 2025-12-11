@@ -388,6 +388,8 @@ internal sealed class GithubWorkflowWriter(
             WriteLine("permissions: write-all");
         else if (githubPermissionsOption == GithubTokenPermissionsOption.ReadAll)
             WriteLine("permissions: read-all");
+        else if (githubPermissionsOption == GithubTokenPermissionsOption.NoneAll)
+            WriteLine("permissions: { }");
         else
             using (WriteSection("permissions:"))
             {
