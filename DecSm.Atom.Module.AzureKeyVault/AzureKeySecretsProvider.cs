@@ -189,7 +189,9 @@ public sealed class AzureKeySecretsProvider(
 
         var port = buildDefinition.AccessParam(nameof(IAzureKeyVault.AzureVaultAuthPort)) switch
         {
-            string portString => int.Parse(portString),
+            string portString => int.TryParse(portString, out var parsedPort)
+                ? parsedPort
+                : throw new InvalidOperationException($"Invalid port value for AzureVaultAuthPort: '{portString}'. Please provide a valid integer."),
             int portInt => portInt,
             _ => 0,
         };
