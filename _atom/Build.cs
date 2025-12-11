@@ -89,7 +89,7 @@ internal partial class Build : BuildDefinition,
             [
                 WorkflowTargets.SetupBuildInfo,
                 WorkflowTargets.PackProjects,
-                WorkflowTargets.PackTool.WithGithubRunnerMatrix(PlatformNames),
+                WorkflowTargets.PackTool.WithDevopsPoolMatrix(PlatformNames),
                 WorkflowTargets
                     .TestProjects
                     .WithDevopsPoolMatrix(PlatformNames)

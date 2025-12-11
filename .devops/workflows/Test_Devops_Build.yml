@@ -92,7 +92,7 @@ jobs:
         003_macos-latest:
           job-runs-on: 'macos-latest'
     pool:
-      vmImage: ubuntu-latest
+      vmImage: $(job-runs-on)
     steps:
       
       - checkout: self
