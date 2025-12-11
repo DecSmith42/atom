@@ -57,7 +57,7 @@ public partial interface IAzureKeyVault
     ///     This port is used when performing device code or interactive authentication flows.
     ///     The default port is 3421. Setting this to 0 will select a random available port.
     /// </remarks>
-    [ParamDefinition("azure-vault-auth-port, ",
+    [ParamDefinition("azure-vault-auth-port",
         "Port for local auth redirect (default 3421). Set to 0 to use a random port.")]
     int AzureVaultAuthPort => GetParam(() => AzureVaultAuthPort, 3421);
 
