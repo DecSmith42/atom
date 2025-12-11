@@ -40,7 +40,12 @@ public static class Extensions
         ///     making the GitHub Actions token available as a secret within the workflow job.
         /// </remarks>
         [PublicAPI]
-        public WorkflowTargetDefinition WithGithubTokenInjection() =>
-            workflowTargetDefinition.WithOptions(WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
+        public WorkflowTargetDefinition WithGithubTokenInjection(GithubTokenPermissionsOption? permissions = null) =>
+            permissions is not null
+                ? workflowTargetDefinition.WithOptions(
+                    WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)),
+                    permissions)
+                : workflowTargetDefinition.WithOptions(
+                    WorkflowSecretInjection.Create(nameof(IGithubHelper.GithubToken)));
     }
 }
