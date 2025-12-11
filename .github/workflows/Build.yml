@@ -267,6 +267,8 @@ jobs:
     needs: [ PackProjects, PackTool, TestProjects, SetupBuildInfo ]
     runs-on: ubuntu-latest
     if: contains(needs.SetupBuildInfo.outputs.build-version, '-') == false
+    permissions:
+      contents: write
     steps:
       
       - name: Checkout

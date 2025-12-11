@@ -72,7 +72,10 @@ internal partial class Build : BuildDefinition,
                 WorkflowTargets.PushToNuget,
                 WorkflowTargets
                     .PushToRelease
-                    .WithGithubTokenInjection()
+                    .WithGithubTokenInjection(new()
+                    {
+                        Contents = GithubTokenPermission.Write,
+                    })
                     .WithOptions(GithubIf.Create(new ConsumedVariableExpression(nameof(WorkflowTargets.SetupBuildInfo),
                             ParamDefinitions[nameof(ISetupBuildInfo.BuildVersion)].ArgName)
                         .Contains(new StringExpression("-"))
