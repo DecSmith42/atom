@@ -187,12 +187,24 @@ public sealed class AzureKeySecretsProvider(
         logger.LogInformation(
             "Attempting interactive browser login for Azure Key Vault. Please ensure you have a browser available.");
 
+        var port = buildDefinition.AccessParam(nameof(IAzureKeyVault.AzureVaultAuthPort)) switch
+        {
+            string portString => int.TryParse(portString, out var parsedPort)
+                ? parsedPort
+                : throw new InvalidOperationException($"Invalid port value for AzureVaultAuthPort: '{portString}'. Please provide a valid integer."),
+            int portInt => portInt,
+            _ => 0,
+        };
+
         return new InteractiveBrowserCredential(new InteractiveBrowserCredentialOptions
         {
             AdditionallyAllowedTenants =
             {
                 definition.AzureVaultTenantId ?? "*",
             },
+            RedirectUri = port > 0
+                ? new($"http://localhost:{port}")
+                : null,
         });
     }
 
