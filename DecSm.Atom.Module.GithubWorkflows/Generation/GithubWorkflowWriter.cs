@@ -21,6 +21,8 @@ internal sealed class GithubWorkflowWriter(
         WriteLine($"name: {workflow.Name}");
         WriteLine();
 
+        WritePermissions(workflow.Options);
+
         using (WriteSection("on:"))
         {
             var manualTrigger = workflow
@@ -346,6 +348,8 @@ internal sealed class GithubWorkflowWriter(
             foreach (var githubIfOption in githubIfOptions)
                 WriteLine($"if: {githubIfOption.Value}");
 
+            WritePermissions(job.Options);
+
             var outputs = new List<string>();
 
             foreach (var step in job.Steps)
@@ -369,6 +373,27 @@ internal sealed class GithubWorkflowWriter(
                 }
             }
         }
+    }
+
+    private void WritePermissions(IReadOnlyList<IWorkflowOption> options)
+    {
+        var githubPermissionsOption = options
+            .OfType<GithubTokenPermissionsOption>()
+            .FirstOrDefault();
+
+        if (githubPermissionsOption is null)
+            return;
+
+        if (githubPermissionsOption == GithubTokenPermissionsOption.WriteAll)
+            WriteLine("permissions: write-all");
+        else if (githubPermissionsOption == GithubTokenPermissionsOption.ReadAll)
+            WriteLine("permissions: read-all");
+        else
+            using (WriteSection("permissions:"))
+            {
+                foreach (var (key, value) in githubPermissionsOption.GetStrings)
+                    WriteLine($"{key}: {value}");
+            }
     }
 
     private void WriteStep(WorkflowModel workflow, WorkflowStepModel step, WorkflowJobModel job)
