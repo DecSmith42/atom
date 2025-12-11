@@ -139,12 +139,44 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         var methodReturnType = typeWithMethod.Method.ReturnType.ToDisplayString();
 
         var methodInputParams = string.Join(", ",
-            typeWithMethod.Method.Parameters.Select(static param => param
-                .DeclaringSyntaxReferences[0]
-                .SyntaxTree
-                .GetRoot()
-                .FindNode(param.DeclaringSyntaxReferences[0].Span)
-                .ToFullString()));
+            typeWithMethod.Method.Parameters.Select(static param =>
+            {
+                var attributes = param.GetAttributes();
+                var type = param.Type.ToDisplayString();
+                var name = param.Name;
+                string? defaultValue = null;
+
+                if (param is { HasExplicitDefaultValue: true, DeclaringSyntaxReferences.Length: > 0 })
+                {
+                    var syntaxNode = param
+                        .DeclaringSyntaxReferences[0]
+                        .SyntaxTree
+                        .GetRoot()
+                        .FindNode(param.DeclaringSyntaxReferences[0].Span);
+
+                    if (syntaxNode is ParameterSyntax { Default: { } equalsValueClauseSyntax })
+                        defaultValue = $" = {equalsValueClauseSyntax.Value.ToFullString().Trim()}";
+                    else
+                        defaultValue = param.ExplicitDefaultValue is null
+                            ? " = null"
+                            : $" = {param.ExplicitDefaultValue}";
+                }
+
+                var attributeString = attributes.Length > 0
+                    ? $"[{string.Join(", ", attributes.Select(a => a.AttributeClass!.ToDisplayString()))}]"
+                    : string.Empty;
+
+                var refKindString = param.RefKind switch
+                {
+                    RefKind.None => string.Empty,
+                    RefKind.Ref => "ref ",
+                    RefKind.Out => "out ",
+                    RefKind.In => "in ",
+                    _ => string.Empty,
+                };
+
+                return $"{attributeString} {refKindString}{type} {name}{defaultValue}".Trim();
+            }));
 
         var methodCallParams = string.Join(", ",
             typeWithMethod.Method.Parameters.Select(static param => param.RefKind switch
@@ -160,8 +192,10 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             ? $"<{string.Join(", ", typeWithMethod.Method.TypeParameters.Select(static param => param.Name))}>"
             : string.Empty;
 
-        return
-            $"private {methodReturnType} {methodName}{genericParameters}({methodInputParams}) => (({interfaceName})this).{methodName}{genericParameters}({methodCallParams});";
+        return $"""
+                private {methodReturnType} {methodName}{genericParameters}({methodInputParams}) =>
+                        (({interfaceName})this).{methodName}{genericParameters}({methodCallParams});
+                """;
     }
 
     private static string BuildSourceCode(INamedTypeSymbol classSymbol, string classMembers)

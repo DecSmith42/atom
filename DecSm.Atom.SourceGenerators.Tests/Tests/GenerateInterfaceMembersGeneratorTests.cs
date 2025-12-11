@@ -9,6 +9,7 @@ public sealed class GenerateInterfaceMembersGeneratorTests
         // Arrange
         const string source = """
                               using DecSm.Atom.Build.Definition;
+                              using System.Collections.Generic;
 
                               namespace TestNamespace;
 
