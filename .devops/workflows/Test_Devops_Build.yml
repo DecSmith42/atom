@@ -207,6 +207,12 @@ jobs:
           artifactName: DecSm.Atom.Module.GithubWorkflows.Tests-$(job-runs-on)-$(test-framework)
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Module.GithubWorkflows.Tests"
       
+      - task: PublishPipelineArtifact@1
+        displayName: DecSm.Atom.Tool.Tests
+        inputs:
+          artifactName: DecSm.Atom.Tool.Tests-$(job-runs-on)-$(test-framework)
+          targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tool.Tests"
+      
   
   - job: PushToNuget
     dependsOn: [ TestProjects, PackProjects, PackTool, SetupBuildInfo ]

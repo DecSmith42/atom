@@ -636,15 +636,26 @@ internal sealed class GithubWorkflowWriter(
         (string name, string value)[] extraParams,
         bool includeId)
     {
-        var projectName = _fileSystem.ProjectName;
-
         using (WriteSection($"- name: {workflowStep.Name}"))
         {
             if (includeId)
                 WriteLine($"id: {workflowStep.Name}");
 
-            WriteLine(
-                $"run: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless");
+            if (_fileSystem.IsFileBasedApp)
+            {
+                if (AppContext.GetData("EntryPointFilePath") is not string fileName)
+                    throw new InvalidOperationException("EntryPointFilePath is null");
+
+                var filePathRelativeToRoot =
+                    _fileSystem.FileSystem.Path.GetRelativePath(_fileSystem.AtomRootDirectory, fileName);
+
+                WriteLine($"run: dotnet run --file {filePathRelativeToRoot} {workflowStep.Name} --skip --headless");
+            }
+            else
+            {
+                var projectPath = FindProjectPath(_fileSystem, _fileSystem.ProjectName);
+                WriteLine($"run: dotnet run --project {projectPath} {workflowStep.Name} --skip --headless");
+            }
 
             var env = new Dictionary<string, string>();
 
@@ -779,5 +790,24 @@ internal sealed class GithubWorkflowWriter(
                         WriteLine($"{key}: {value}");
                 }
         }
+    }
+
+    private static string FindProjectPath(IAtomFileSystem fileSystem, string projectName)
+    {
+        var projectPath = fileSystem
+            .FileSystem
+            .DirectoryInfo
+            .New(fileSystem.FileSystem.Directory.GetCurrentDirectory())
+            .EnumerateFiles()
+            .FirstOrDefault(f => f.Name.Equals($"{projectName}.csproj", StringComparison.OrdinalIgnoreCase));
+
+        if (projectPath?.FullName is null)
+            throw new InvalidOperationException($"Project '{projectName}' not found in current directory.");
+
+        return fileSystem
+            .FileSystem
+            .Path
+            .GetRelativePath(fileSystem.AtomRootDirectory, projectPath.FullName)
+            .Replace("\\", "/");
     }
 }

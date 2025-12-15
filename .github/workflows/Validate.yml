@@ -127,3 +127,9 @@ jobs:
         with:
           name: DecSm.Atom.Module.GithubWorkflows.Tests-${{ matrix.job-runs-on }}-${{ matrix.test-framework }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
+      
+      - name: Upload DecSm.Atom.Tool.Tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-${{ matrix.job-runs-on }}-${{ matrix.test-framework }}
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool.Tests"

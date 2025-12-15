@@ -547,10 +547,26 @@ internal sealed partial class DevopsWorkflowWriter(
         (string name, string value)[] extraParams,
         bool includeName)
     {
-        var projectName = _fileSystem.ProjectName;
+        string runScript;
 
-        using (WriteSection(
-                   $"- script: dotnet run --project {projectName}/{projectName}.csproj {workflowStep.Name} --skip --headless"))
+        if (_fileSystem.IsFileBasedApp)
+        {
+            if (AppContext.GetData("EntryPointFilePath") is not string fileName)
+                throw new InvalidOperationException("EntryPointFilePath is null");
+
+            var filePathRelativeToRoot =
+                _fileSystem.FileSystem.Path.GetRelativePath(_fileSystem.AtomRootDirectory, fileName);
+
+            runScript = $"- script: dotnet run --file {filePathRelativeToRoot} {workflowStep.Name} --skip --headless";
+        }
+        else
+        {
+            var projectPath = FindProjectPath(_fileSystem, _fileSystem.ProjectName);
+
+            runScript = $"- script: dotnet run --project {projectPath} {workflowStep.Name} --skip --headless";
+        }
+
+        using (WriteSection(runScript))
         {
             if (includeName)
                 WriteLine($"name: {workflowStep.Name}");
@@ -686,5 +702,24 @@ internal sealed partial class DevopsWorkflowWriter(
                         WriteLine($"{key}: {value}");
                 }
         }
+    }
+
+    private static string FindProjectPath(IAtomFileSystem fileSystem, string projectName)
+    {
+        var projectPath = fileSystem
+            .FileSystem
+            .DirectoryInfo
+            .New(fileSystem.FileSystem.Directory.GetCurrentDirectory())
+            .EnumerateFiles()
+            .FirstOrDefault(f => f.Name.Equals($"{projectName}.csproj", StringComparison.OrdinalIgnoreCase));
+
+        if (projectPath?.FullName is null)
+            throw new InvalidOperationException($"Project '{projectName}' not found in current directory.");
+
+        return fileSystem
+            .FileSystem
+            .Path
+            .GetRelativePath(fileSystem.AtomRootDirectory, projectPath.FullName)
+            .Replace("\\", "/");
     }
 }

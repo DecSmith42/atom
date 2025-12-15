@@ -13,6 +13,11 @@ public interface IAtomFileSystem : IFileSystem
     string ProjectName { get; }
 
     /// <summary>
+    ///     Gets a value indicating whether the application is file-based (e.g., *.cs) or project-based (e.g., *.csproj).
+    /// </summary>
+    bool IsFileBasedApp { get; }
+
+    /// <summary>
     ///     Gets the underlying <see cref="IFileSystem" /> instance for general-purpose file operations.
     /// </summary>
     IFileSystem FileSystem { get; }
@@ -106,6 +111,8 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
 
     public string ProjectName { get; init; } = Assembly.GetEntryAssembly()!.GetName()
         .Name!;
+
+    public bool IsFileBasedApp => AppContext.GetData("EntryPointFilePath") is string s && s.EndsWith(".cs");
 
     public required IFileSystem FileSystem { get; init; }
 

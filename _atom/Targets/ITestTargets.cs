@@ -9,6 +9,7 @@ internal interface ITestTargets : IDotnetTestHelper
         Projects.DecSm_Atom_SourceGenerators_Tests.Name,
         Projects.DecSm_Atom_Module_DevopsWorkflows_Tests.Name,
         Projects.DecSm_Atom_Module_GithubWorkflows_Tests.Name,
+        Projects.DecSm_Atom_Tool_Tests.Name,
     ];
 
     [ParamDefinition("test-framework", "Test framework to use for unit tests")]

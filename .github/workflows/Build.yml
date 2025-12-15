@@ -180,6 +180,12 @@ jobs:
         with:
           name: DecSm.Atom.Module.GithubWorkflows.Tests-${{ matrix.job-runs-on }}-${{ matrix.test-framework }}
           path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Module.GithubWorkflows.Tests"
+      
+      - name: Upload DecSm.Atom.Tool.Tests
+        uses: actions/upload-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-${{ matrix.job-runs-on }}-${{ matrix.test-framework }}
+          path: "${{ github.workspace }}/.github/publish/DecSm.Atom.Tool.Tests"
   
   PushToNuget:
     needs: [ TestProjects, PackProjects, PackTool, SetupBuildInfo ]
@@ -609,6 +615,60 @@ jobs:
         with:
           name: DecSm.Atom.Module.GithubWorkflows.Tests-macos-latest-net10.0
           path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Module.GithubWorkflows.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-windows-latest-net8.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-windows-latest-net9.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-windows-latest-net10.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-ubuntu-latest-net8.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-ubuntu-latest-net9.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-ubuntu-latest-net10.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-macos-latest-net8.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-macos-latest-net9.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
+      
+      - name: Download DecSm.Atom.Tool.Tests
+        uses: actions/download-artifact@v4
+        with:
+          name: DecSm.Atom.Tool.Tests-macos-latest-net10.0
+          path: "${{ github.workspace }}/.github/artifacts/DecSm.Atom.Tool.Tests"
       
       - name: PushToRelease
         id: PushToRelease
