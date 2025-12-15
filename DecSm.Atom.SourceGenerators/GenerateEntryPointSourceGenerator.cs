@@ -3,13 +3,11 @@ namespace DecSm.Atom.SourceGenerators;
 [Generator]
 public class GenerateEntryPointSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateEntryPointAttributeFull = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var classSymbols = context
             .SyntaxProvider
-            .ForAttributeWithMetadataName(GenerateEntryPointAttributeFull,
+            .ForAttributeWithMetadataName(GenerateEntryPointAttribute,
                 static (node, _) => node is ClassDeclarationSyntax,
                 static (attrContext, _) => (INamedTypeSymbol)attrContext.TargetSymbol)
             .WithTrackingName(nameof(GenerateEntryPointSourceGenerator));
