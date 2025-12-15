@@ -8,8 +8,7 @@ public partial class CircularTargetDependencyBuild : MinimalBuildDefinition, ICi
     public bool CircularTarget2Executed { get; set; }
 }
 
-[TargetDefinition]
-public partial interface ICircularTarget1
+public interface ICircularTarget1
 {
     bool CircularTarget1Executed { get; set; }
 
@@ -24,8 +23,7 @@ public partial interface ICircularTarget1
             });
 }
 
-[TargetDefinition]
-public partial interface ICircularTarget2
+public interface ICircularTarget2
 {
     bool CircularTarget2Executed { get; set; }
 
@@ -53,8 +51,7 @@ public partial class CircularTargetDependencyBuild2 : MinimalBuildDefinition,
     public bool CircularTarget5Executed { get; set; }
 }
 
-[TargetDefinition]
-public partial interface ITestCircularTarget3
+public interface ITestCircularTarget3
 {
     bool CircularTarget3Executed { get; set; }
 
@@ -69,8 +66,7 @@ public partial interface ITestCircularTarget3
             });
 }
 
-[TargetDefinition]
-public partial interface ITestCircularTarget4
+public interface ITestCircularTarget4
 {
     bool CircularTarget4Executed { get; set; }
 
@@ -85,8 +81,7 @@ public partial interface ITestCircularTarget4
             });
 }
 
-[TargetDefinition]
-public partial interface ITestCircularTarget5
+public interface ITestCircularTarget5
 {
     bool CircularTarget5Executed { get; set; }
 

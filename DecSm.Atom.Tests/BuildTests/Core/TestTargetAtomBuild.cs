@@ -8,8 +8,7 @@ public partial class TestTargetAtomBuild : MinimalBuildDefinition, ITestTarget
     public Func<Task> Execute { get; set; } = () => Task.CompletedTask;
 }
 
-[TargetDefinition]
-public partial interface ITestTarget
+public interface ITestTarget
 {
     string Description { get; set; }
 

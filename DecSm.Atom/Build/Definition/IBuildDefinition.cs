@@ -25,7 +25,7 @@ public interface IBuildDefinition
     /// </summary>
     /// <remarks>
     ///     Targets represent individual units of work. This collection is populated by source generation
-    ///     based on interfaces marked with <see cref="TargetDefinitionAttribute" />.
+    ///     based on <see cref="Target"/> properties in interfaces that inherit <see cref="IBuildAccessor"/>
     /// </remarks>
     IReadOnlyDictionary<string, Target> TargetDefinitions { get; }
 

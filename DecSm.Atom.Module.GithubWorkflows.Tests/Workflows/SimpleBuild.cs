@@ -20,8 +20,7 @@ public partial class SimpleBuild : MinimalBuildDefinition, IGithubWorkflows, ISi
     ];
 }
 
-[TargetDefinition]
-public partial interface ISimpleTarget
+public interface ISimpleTarget
 {
     Target SimpleTarget => t => t;
 }

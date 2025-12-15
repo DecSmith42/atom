@@ -16,8 +16,7 @@ public partial class DependencyTargetBuild : MinimalBuildDefinition,
     public bool DependencyTarget2Executed { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IDependencyTarget1
+public interface IDependencyTarget1
 {
     bool DependencyTarget1Executed { get; set; }
 
@@ -30,8 +29,7 @@ public partial interface IDependencyTarget1
         });
 }
 
-[TargetDefinition]
-public partial interface IDependencyTarget2
+public interface IDependencyTarget2
 {
     bool DependencyTarget2Executed { get; set; }
 
@@ -46,8 +44,7 @@ public partial interface IDependencyTarget2
             });
 }
 
-[TargetDefinition]
-public partial interface IDependencyFailTarget1
+public interface IDependencyFailTarget1
 {
     bool DependencyFailTarget1Executed { get; set; }
 
@@ -60,8 +57,7 @@ public partial interface IDependencyFailTarget1
         });
 }
 
-[TargetDefinition]
-public partial interface IDependencyFailTarget2
+public interface IDependencyFailTarget2
 {
     bool DependencyFailTarget2Executed { get; set; }
 

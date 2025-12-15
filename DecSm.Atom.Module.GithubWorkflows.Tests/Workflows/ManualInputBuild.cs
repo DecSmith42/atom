@@ -30,8 +30,7 @@ public partial class ManualInputBuild : MinimalBuildDefinition, IGithubWorkflows
     ];
 }
 
-[TargetDefinition]
-public partial interface IManualInputTarget
+public interface IManualInputTarget : IBuildAccessor
 {
     [ParamDefinition("string-param-without-default", "String param")]
     string StringParamWithoutDefault => GetParam(() => StringParamWithoutDefault)!;

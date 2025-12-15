@@ -20,8 +20,7 @@ public partial class CheckoutOptionBuild : MinimalBuildDefinition, IGithubWorkfl
     ];
 }
 
-[TargetDefinition]
-public partial interface ICheckoutOptionTarget
+public interface ICheckoutOptionTarget
 {
     Target CheckoutOptionTarget => t => t;
 }

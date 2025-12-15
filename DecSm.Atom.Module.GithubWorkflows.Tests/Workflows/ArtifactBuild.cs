@@ -74,8 +74,7 @@ public partial class CustomArtifactBuild : MinimalBuildDefinition,
     ];
 }
 
-[TargetDefinition]
-public partial interface IArtifactSliceTarget1
+public interface IArtifactSliceTarget1 : IBuildAccessor
 {
     const string Slice1 = "Slice1";
     const string Slice2 = "Slice2";
@@ -84,8 +83,7 @@ public partial interface IArtifactSliceTarget1
     string Slice => GetParam(() => Slice)!;
 }
 
-[TargetDefinition]
-public partial interface IArtifactTarget1
+public interface IArtifactTarget1
 {
     const string Artifact1 = "TestArtifact1";
 
@@ -95,8 +93,7 @@ public partial interface IArtifactTarget1
             .ProducesArtifact(Artifact1);
 }
 
-[TargetDefinition]
-public partial interface IArtifactTarget2 : IArtifactSliceTarget1
+public interface IArtifactTarget2 : IArtifactSliceTarget1
 {
     const string Artifact2 = "TestArtifact2";
 
@@ -108,8 +105,7 @@ public partial interface IArtifactTarget2 : IArtifactSliceTarget1
             .ProducesArtifact(Artifact2, Slice2);
 }
 
-[TargetDefinition]
-public partial interface IArtifactTarget3 : IArtifactSliceTarget1
+public interface IArtifactTarget3 : IArtifactSliceTarget1
 {
     Target ArtifactTarget3 =>
         t => t
@@ -119,8 +115,7 @@ public partial interface IArtifactTarget3 : IArtifactSliceTarget1
             .ConsumesArtifact(nameof(IArtifactTarget2.ArtifactTarget2), IArtifactTarget2.Artifact2, Slice2);
 }
 
-[TargetDefinition]
-public partial interface IArtifactTarget4
+public interface IArtifactTarget4
 {
     Target ArtifactTarget4 =>
         t => t

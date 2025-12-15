@@ -16,7 +16,7 @@ public partial class DuplicateDependencyBuild : MinimalBuildDefinition, IDevopsW
     ];
 }
 
-[TargetDefinition]
+
 [ConfigureHostBuilder]
 public partial interface IDuplicateDependencyTarget : IStoreArtifact, IRetrieveArtifact
 {

@@ -6,8 +6,7 @@ public partial class ParamBuild : MinimalBuildDefinition, IParamTarget1, IParamT
     public string? ExecuteValue { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IParamTarget1
+public interface IParamTarget1 : IBuildAccessor
 {
     [ParamDefinition("param-1", "Param 1")]
     string Param1 => GetParam(() => Param1, "DefaultValue");
@@ -23,8 +22,7 @@ public partial interface IParamTarget1
         });
 }
 
-[TargetDefinition]
-public partial interface IParamTarget2
+public interface IParamTarget2 : IBuildAccessor
 {
     [ParamDefinition("param-2", "Param 2")]
     string Param2 => GetParam(() => Param2)!;

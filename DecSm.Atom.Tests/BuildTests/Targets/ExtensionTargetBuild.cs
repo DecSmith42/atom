@@ -8,8 +8,7 @@ public partial class ExtensionTargetBuild : MinimalBuildDefinition, IBaseExtensi
     public bool ExtendedExtensionTargetExecuted { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IBaseExtensionTarget
+public interface IBaseExtensionTarget
 {
     bool BaseExtensionTargetExecuted { get; set; }
 
@@ -22,8 +21,7 @@ public partial interface IBaseExtensionTarget
         });
 }
 
-[TargetDefinition]
-public partial interface IExtendedExtensionTarget
+public interface IExtendedExtensionTarget
 {
     bool ExtendedExtensionTargetExecuted { get; set; }
 

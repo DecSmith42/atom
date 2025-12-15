@@ -18,8 +18,7 @@ public partial class CheckoutOptionBuild : MinimalBuildDefinition, IDevopsWorkfl
     ];
 }
 
-[TargetDefinition]
-public partial interface ICheckoutOptionTarget
+public interface ICheckoutOptionTarget
 {
     Target CheckoutOptionTarget => t => t;
 }

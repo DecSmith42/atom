@@ -11,8 +11,7 @@
 ///     to identify the correct artifacts to download.
 ///     This target is hidden by default, primarily for internal use or custom artifact workflows.
 /// </remarks>
-[TargetDefinition]
-public partial interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInfo
+public interface IRetrieveArtifact : IAtomArtifactsParam, ISetupBuildInfo
 {
     /// <summary>
     ///     Gets the configured <see cref="IArtifactProvider" /> instance.

@@ -8,8 +8,7 @@ public partial class OptionalParamBuild : MinimalBuildDefinition, IOptionalParam
     public string? ExecuteValue2 { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IOptionalParamTarget1
+public interface IOptionalParamTarget1 : IBuildAccessor
 {
     [ParamDefinition("param-1", "Param 1")]
     string? Param1 => GetParam(() => Param1);

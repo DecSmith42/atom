@@ -27,8 +27,7 @@ public partial class PermissionsBuild : MinimalBuildDefinition, IGithubWorkflows
     ];
 }
 
-[TargetDefinition]
-public partial interface IPermissionsTarget
+public interface IPermissionsTarget
 {
     Target PermissionsTarget => t => t;
 }
