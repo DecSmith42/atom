@@ -3,8 +3,7 @@
 [BuildDefinition]
 public partial class ConsoleBuild : BuildDefinition, IConsoleTarget;
 
-[TargetDefinition]
-public partial interface IConsoleTarget
+public interface IConsoleTarget : IBuildAccessor
 {
     [ParamDefinition("required-param", "Required param")]
     string RequiredParam => GetParam(() => RequiredParam)!;

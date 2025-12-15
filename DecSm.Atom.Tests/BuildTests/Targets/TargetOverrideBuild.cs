@@ -8,8 +8,7 @@ public partial class TargetOverrideBuild : MinimalBuildDefinition, IOverrideTarg
     public bool OverrideOverrideTargetExecuted { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IBaseOverrideTarget
+public interface IBaseOverrideTarget
 {
     bool BaseOverrideTargetExecuted { get; set; }
 
@@ -22,8 +21,7 @@ public partial interface IBaseOverrideTarget
         });
 }
 
-[TargetDefinition]
-public partial interface IOverrideTarget : IBaseOverrideTarget
+public interface IOverrideTarget : IBaseOverrideTarget
 {
     bool OverrideOverrideTargetExecuted { get; set; }
 

@@ -9,8 +9,7 @@
 ///     The parameter is typically supplied via the <c>--atom-artifacts</c> command-line argument or an environment
 ///     variable.
 /// </remarks>
-[TargetDefinition]
-public partial interface IAtomArtifactsParam
+public interface IAtomArtifactsParam : IBuildAccessor
 {
     /// <summary>
     ///     Gets the names of the artifacts to be processed.

@@ -18,8 +18,7 @@ public partial class SnapshotImageBuild : MinimalBuildDefinition, IGithubWorkflo
     ];
 }
 
-[TargetDefinition]
-public partial interface ISnapshotImageTarget
+public interface ISnapshotImageTarget
 {
     Target SnapshotImageTarget => t => t;
 }

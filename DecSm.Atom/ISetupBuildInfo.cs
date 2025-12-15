@@ -1,8 +1,7 @@
 ﻿namespace DecSm.Atom;
 
 /// <summary>See <see cref="SetupBuildInfo" /></summary>
-[TargetDefinition]
-public partial interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReportsHelper
+public interface ISetupBuildInfo : IBuildInfo, IVariablesHelper, IReportsHelper
 {
     /// <summary>
     ///     Gets the build target responsible for setting up the build ID, version, and timestamp.

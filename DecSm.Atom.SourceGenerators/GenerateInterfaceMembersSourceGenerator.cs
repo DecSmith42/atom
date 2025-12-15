@@ -1,20 +1,8 @@
 ﻿namespace DecSm.Atom.SourceGenerators;
 
-using ClassNameWithSourceCode = (string ClassName, string? SourceCode);
-using TypeWithProperty = (INamedTypeSymbol Type, IPropertySymbol Property);
-using TypeWithMethod = (INamedTypeSymbol Type, IMethodSymbol Method);
-using PropertiesWithMethods =
-    (ImmutableArray<(INamedTypeSymbol Type, IPropertySymbol Property)> Properties,
-    ImmutableArray<(INamedTypeSymbol Type, IMethodSymbol Method)> Methods);
-
 [Generator]
 public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateInterfaceMembersAttributeFull =
-        "DecSm.Atom.Build.Definition.GenerateInterfaceMembersAttribute";
-
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-
     private static readonly HashSet<string> ExcludedPropertyNames =
     [
         "GlobalWorkflowOptions",
@@ -36,7 +24,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     {
         var classSymbols = context
             .SyntaxProvider
-            .ForAttributeWithMetadataName(GenerateInterfaceMembersAttributeFull,
+            .ForAttributeWithMetadataName(GenerateInterfaceMembersAttribute,
                 static (node, _) => node is ClassDeclarationSyntax,
                 static (context, _) => (INamedTypeSymbol)context.TargetSymbol)
             .WithTrackingName(nameof(GenerateInterfaceMembersSourceGenerator));
@@ -56,14 +44,14 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         var (properties, methods) = GetInterestingMembers(classSymbol, cancellationToken);
 
         if (properties.IsEmpty && methods.IsEmpty)
-            return (classSymbol.Name, null);
+            return new(classSymbol.Name, null);
 
         var memberLines = GenerateMemberLines(properties, methods);
         var indentedMembers = string.Join("\n\n", memberLines.Select(line => $"    {line}"));
 
         var sourceCode = BuildSourceCode(classSymbol, indentedMembers);
 
-        return (classSymbol.Name, sourceCode);
+        return new(classSymbol.Name, sourceCode);
     }
 
     private static PropertiesWithMethods GetInterestingMembers(
@@ -72,7 +60,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
     {
         var allInterfaceMembers = classSymbol
             .AllInterfaces
-            .Where(static x => x.ToDisplayString() != IBuildDefinitionFull)
+            .Where(static x => x.ToDisplayString() != IBuildDefinition)
             .SelectMany(static interfaceSymbol => interfaceSymbol.GetMembers(),
                 (interfaceSymbol, member) => (interfaceSymbol, member));
 
@@ -110,7 +98,7 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
             }
         }
 
-        return (propertiesBuilder.ToImmutable(), methodsBuilder.ToImmutable());
+        return new(propertiesBuilder.ToImmutable(), methodsBuilder.ToImmutable());
     }
 
     private static ImmutableArray<string> GenerateMemberLines(

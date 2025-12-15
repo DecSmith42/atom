@@ -7,8 +7,7 @@
 ///     This interface extends <see cref="IGithubHelper" /> to provide functionality for
 ///     uploading artifacts to a GitHub Release, leveraging the GitHub API.
 /// </remarks>
-[TargetDefinition]
-public partial interface IGithubReleaseHelper : IGithubHelper
+public interface IGithubReleaseHelper : IGithubHelper
 {
     /// <summary>
     ///     Uploads a build artifact to a specified GitHub Release.

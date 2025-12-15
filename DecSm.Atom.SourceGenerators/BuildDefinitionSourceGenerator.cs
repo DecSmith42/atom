@@ -3,37 +3,14 @@
 
 namespace DecSm.Atom.SourceGenerators;
 
-using ClassNameWithSourceCode = (string ClassName, string? SourceCode);
-using CodeRegion = (string? RegionName, string[] RegionBlocks);
-using TargetData = (IPropertySymbol Property, INamedTypeSymbol Type);
-using ParamData = (IPropertySymbol Property, AttributeData Attribute, INamedTypeSymbol Type);
-using TargetsAndParams =
-    (ImmutableArray<(IPropertySymbol Property, INamedTypeSymbol Type)> Targets,
-    ImmutableArray<(IPropertySymbol Property, AttributeData Attribute, INamedTypeSymbol Type)> Params);
-using TextResult = (string Text, bool Any);
-
 [Generator]
 public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 {
-    private const string BuildDefinitionAttributeFull = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
-    private const string IBuildDefinitionFull = "DecSm.Atom.Build.Definition.IBuildDefinition";
-    private const string IBuildAccessorFull = "DecSm.Atom.Build.IBuildAccessor";
-    private const string TargetFull = "DecSm.Atom.Build.Definition.Target";
-    private const string WorkflowTargetDefinitionFull = "DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition";
-    private const string ParamDefinitionFull = "DecSm.Atom.Params.ParamDefinition";
-    private const string ParamDefinitionAttribute = "ParamDefinitionAttribute";
-    private const string SecretDefinitionAttribute = "SecretDefinitionAttribute";
-    private const string ConfigureHostAttributeFull = "DecSm.Atom.Hosting.ConfigureHostAttribute";
-    private const string ConfigureHostBuilderAttributeFull = "DecSm.Atom.Hosting.ConfigureHostBuilderAttribute";
-
-    private const string IReadOnlyDictionary = "System.Collections.Generic.IReadOnlyDictionary";
-    private const string Dictionary = "System.Collections.Generic.Dictionary";
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var classSymbols = context
             .SyntaxProvider
-            .ForAttributeWithMetadataName(BuildDefinitionAttributeFull,
+            .ForAttributeWithMetadataName(BuildDefinitionAttribute,
                 static (node, _) => node is ClassDeclarationSyntax,
                 static (context, _) => (INamedTypeSymbol)context.TargetSymbol)
             .WithTrackingName(nameof(GenerateInterfaceMembersSourceGenerator));
@@ -140,7 +117,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         sb.AppendLine($$"""
                         [JetBrains.Annotations.PublicAPI]
-                        partial class {{classNameSimple}} : {{IBuildDefinitionFull}}{{configureHostInherit}}
+                        partial class {{classNameSimple}} : {{IBuildDefinition}}{{configureHostInherit}}
                         {
                         """);
 
@@ -212,15 +189,13 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         foreach (var memberSymbol in classSymbol.GetMembers())
             if (memberSymbol is IPropertySymbol propertySymbol)
             {
-                if (propertySymbol.Type.ToDisplayString() is TargetFull && addedTargetNames.Add(propertySymbol.Name))
+                if (propertySymbol.Type.ToDisplayString() is Target && addedTargetNames.Add(propertySymbol.Name))
                     targetsBuilder.Add(new(propertySymbol, classSymbol));
 
                 foreach (var attributeData in propertySymbol.GetAttributes())
                 {
-                    if (attributeData.AttributeClass is not
-                        {
-                            Name: ParamDefinitionAttribute or SecretDefinitionAttribute,
-                        })
+                    if (attributeData.AttributeClass?.ToDisplayString() is not ParamDefinitionAttribute
+                        and not SecretDefinitionAttribute)
                         continue;
 
                     paramsBuilder.Add(new(propertySymbol, attributeData, classSymbol));
@@ -233,15 +208,13 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         foreach (var memberSymbol in interfaceSymbol.GetMembers())
             if (memberSymbol is IPropertySymbol propertySymbol)
             {
-                if (propertySymbol.Type.ToDisplayString() is TargetFull && addedTargetNames.Add(propertySymbol.Name))
+                if (propertySymbol.Type.ToDisplayString() is Target && addedTargetNames.Add(propertySymbol.Name))
                     targetsBuilder.Add(new(propertySymbol, interfaceSymbol));
 
                 foreach (var attributeData in propertySymbol.GetAttributes())
                 {
-                    if (attributeData.AttributeClass is not
-                        {
-                            Name: ParamDefinitionAttribute or SecretDefinitionAttribute,
-                        })
+                    if (attributeData.AttributeClass?.ToDisplayString() is not ParamDefinitionAttribute
+                        and not SecretDefinitionAttribute)
                         continue;
 
                     paramsBuilder.Add(new(propertySymbol, attributeData, interfaceSymbol));
@@ -250,13 +223,13 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
                 }
             }
 
-        return (targetsBuilder.ToImmutable(), paramsBuilder.ToImmutable());
+        return new(targetsBuilder.ToImmutable(), paramsBuilder.ToImmutable());
     }
 
     private static string GetTargetDefinitionsField(ImmutableArray<TargetData> allTargets) =>
         allTargets.IsEmpty
             ? string.Empty
-            : $"    private {IReadOnlyDictionary}<string, {TargetFull}>? _targetDefinitions;";
+            : $"    private {IReadOnlyDictionary}<string, {Target}>? _targetDefinitions;";
 
     private static string GetParamDefinitionsField(ImmutableArray<ParamData> allParams)
     {
@@ -266,7 +239,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         var sb = new StringBuilder();
 
         sb.AppendLine(
-            $"    private readonly {IReadOnlyDictionary}<string, {ParamDefinitionFull}> _paramDefinitions = new {Dictionary}<string, {ParamDefinitionFull}>()");
+            $"    private readonly {IReadOnlyDictionary}<string, {ParamDefinition}> _paramDefinitions = new {Dictionary}<string, {ParamDefinition}>()");
 
         sb.AppendLine("    {");
 
@@ -289,7 +262,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
             var sources =
                 $"({param.Attribute.ConstructorArguments[2].Type?.ToDisplayString()}){param.Attribute.ConstructorArguments[2].Value}";
 
-            var isSecret = param.Attribute.AttributeClass?.Name is SecretDefinitionAttribute;
+            var isSecret = param.Attribute.AttributeClass?.ToDisplayString() is SecretDefinitionAttribute;
 
             var chainedParams = param.Attribute.ConstructorArguments.Length > 3
                 ? param.Attribute.ConstructorArguments[3].Kind is TypedConstantKind.Array
@@ -335,7 +308,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
     {
         if (allTargets.IsEmpty)
             return
-                $$"""    public override {{IReadOnlyDictionary}}<string, {{TargetFull}}> TargetDefinitions { get; } = new {{Dictionary}}<string, {{TargetFull}}>();""";
+                $$"""    public override {{IReadOnlyDictionary}}<string, {{Target}}> TargetDefinitions { get; } = new {{Dictionary}}<string, {{Target}}>();""";
 
         var sb = new StringBuilder();
 
@@ -355,7 +328,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
     private static string GetParamDefinitionsProperty(ImmutableArray<ParamData> allParams) =>
         allParams.IsEmpty
-            ? $$"""    public override {{IReadOnlyDictionary}}<string, {{ParamDefinitionFull}}> ParamDefinitions { get; } = new {{Dictionary}}<string, {{ParamDefinitionFull}}>();"""
+            ? $$"""    public override {{IReadOnlyDictionary}}<string, {{ParamDefinition}}> ParamDefinitions { get; } = new {{Dictionary}}<string, {{ParamDefinition}}>();"""
             : $"    public override {IReadOnlyDictionary}<string, ParamDefinition> ParamDefinitions => _paramDefinitions;";
 
     private static string GetWorkflowTargetsClass(ImmutableArray<TargetData> allTargets)
@@ -369,7 +342,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         foreach (var target in allTargets)
             sb.AppendLine(
-                $"        public static readonly {WorkflowTargetDefinitionFull} {target.Property.Name} = new(nameof({target.Type.ToDisplayString()}.{target.Property.Name}));");
+                $"        public static readonly {WorkflowTargetDefinition} {target.Property.Name} = new(nameof({target.Type.ToDisplayString()}.{target.Property.Name}));");
 
         sb.AppendLine("    }");
 
@@ -380,11 +353,11 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
     {
         if (allTargets.IsEmpty)
             return
-                $$"""private static {{WorkflowTargetDefinitionFull}} Target(string name) => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name));""";
+                $$"""private static {{WorkflowTargetDefinition}} Target(string name) => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name));""";
 
         var sb = new StringBuilder();
 
-        sb.AppendLine($"    private static {WorkflowTargetDefinitionFull} WorkflowTarget(string name) =>");
+        sb.AppendLine($"    private static {WorkflowTargetDefinition} WorkflowTarget(string name) =>");
         sb.AppendLine("        name switch");
         sb.AppendLine("        {");
 
@@ -406,7 +379,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
             return "    public sealed class ParamsData() { }";
 
         var sb = new StringBuilder();
-        sb.AppendLine($"    public sealed class ParamsData({IBuildDefinitionFull} buildDefinition)");
+        sb.AppendLine($"    public sealed class ParamsData({IBuildDefinition} buildDefinition)");
         sb.AppendLine("    {");
 
         foreach (var param in allParams)
@@ -454,7 +427,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         foreach (var interfaceSymbol in allInterfaces)
         foreach (var attributeData in interfaceSymbol.GetAttributes())
         {
-            if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostAttributeFull)
+            if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostAttribute)
                 continue;
 
             configureHostInterfaces.Add(interfaceSymbol);
@@ -463,7 +436,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         }
 
         if (configureHostInterfaces.Count is 0)
-            return ("    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder) { }", false);
+            return new("    public void ConfigureBuildHost(Microsoft.Extensions.Hosting.IHost builder) { }", false);
 
         var sb = new StringBuilder();
 
@@ -475,7 +448,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         sb.AppendLine("    }");
 
-        return (sb.ToString(), true);
+        return new(sb.ToString(), true);
     }
 
     private static TextResult GetConfigureBuilderMethod(ImmutableArray<INamedTypeSymbol> allInterfaces)
@@ -487,7 +460,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         {
             foreach (var subInterfaceSymbol in interfaceSymbol.AllInterfaces)
             {
-                if (subInterfaceSymbol.ToDisplayString() is not IBuildDefinitionFull and not IBuildAccessorFull)
+                if (subInterfaceSymbol.ToDisplayString() is not IBuildDefinition and not IBuildAccessor)
                     continue;
 
                 registerHostInterfaces.Add(interfaceSymbol);
@@ -497,7 +470,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
             foreach (var attributeData in interfaceSymbol.GetAttributes())
             {
-                if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostBuilderAttributeFull)
+                if (attributeData.AttributeClass?.ToDisplayString() is not ConfigureHostBuilderAttribute)
                     continue;
 
                 configureHostInterfaces.Add(interfaceSymbol);
@@ -507,7 +480,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
         }
 
         if (configureHostInterfaces.Count + registerHostInterfaces.Count is 0)
-            return (
+            return new(
                 "    public void ConfigureBuildHostBuilder(Microsoft.Extensions.Hosting.IHostApplicationBuilder builder) { }",
                 false);
 
@@ -523,7 +496,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
             var interfaceFullName = interfaceSymbol.ToDisplayString();
 
             sb.AppendLine(
-                $"        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{interfaceFullName}>(builder.Services, static p => ({interfaceFullName})p.GetRequiredService<{IBuildDefinitionFull}>());");
+                $"        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<{interfaceFullName}>(builder.Services, static p => ({interfaceFullName})p.GetRequiredService<{IBuildDefinition}>());");
         }
 
         foreach (var interfaceSymbol in configureHostInterfaces)
@@ -531,7 +504,7 @@ public sealed class BuildDefinitionSourceGenerator : IIncrementalGenerator
 
         sb.AppendLine("    }");
 
-        return (sb.ToString(), true);
+        return new(sb.ToString(), true);
     }
 }
 

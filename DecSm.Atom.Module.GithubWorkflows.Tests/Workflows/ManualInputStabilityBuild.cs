@@ -30,8 +30,7 @@ public partial class ManualInputStabilityBuild : BuildDefinition, IGithubWorkflo
     ];
 }
 
-[TargetDefinition]
-public partial interface IManualInputStabilityTarget
+public interface IManualInputStabilityTarget : IBuildAccessor
 {
     [ParamDefinition("string-param-without-default", "String param")]
     string StringParamWithoutDefault => GetParam(() => StringParamWithoutDefault)!;

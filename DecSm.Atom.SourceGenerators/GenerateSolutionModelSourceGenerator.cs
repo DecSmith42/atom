@@ -1,13 +1,8 @@
-using System.Xml;
-
 namespace DecSm.Atom.SourceGenerators;
 
 [Generator]
 public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
 {
-    private const string GenerateSolutionModelAttributeFull =
-        "DecSm.Atom.Build.Definition.GenerateSolutionModelAttribute";
-
     private static readonly Regex SlnProjectLineRegex = new("""
                                                             ^Project\s*\(\s*"\{[A-F0-9\-]+\}"\s*\)\s*=\s*"([^"]+)",\s*"([^"]+)"
                                                             """,
@@ -17,7 +12,7 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
     {
         var classSymbolsProvider = context
             .SyntaxProvider
-            .ForAttributeWithMetadataName(GenerateSolutionModelAttributeFull,
+            .ForAttributeWithMetadataName(GenerateSolutionModelAttribute,
                 static (node, _) => node is ClassDeclarationSyntax,
                 static (ctx, _) => (INamedTypeSymbol)ctx.TargetSymbol)
             .WithTrackingName(nameof(GenerateSolutionModelSourceGenerator))

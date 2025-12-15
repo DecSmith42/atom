@@ -15,8 +15,7 @@ public partial class WorkflowSingleTargetBuild : MinimalBuildDefinition, IWorkfl
     ];
 }
 
-[TargetDefinition]
-public partial interface IWorkflowSingleTarget
+public interface IWorkflowSingleTarget
 {
     Target WorkflowSingleTarget =>
         t => t

@@ -14,8 +14,7 @@ public partial class EnvironmentBuild : MinimalBuildDefinition, IDevopsWorkflows
     ];
 }
 
-[TargetDefinition]
-public partial interface IEnvironmentTarget
+public interface IEnvironmentTarget
 {
     Target EnvironmentTarget => t => t;
 }

@@ -6,8 +6,7 @@ public partial class UserSecretsBuild : MinimalBuildDefinition, IUserSecretsTarg
     public string? ExecutionValue { get; set; }
 }
 
-[TargetDefinition]
-public partial interface IUserSecretsTarget
+public interface IUserSecretsTarget : IBuildAccessor
 {
     [SecretDefinition("secret-1", "Secret 1")]
     string? Secret1 => GetParam(() => Secret1);

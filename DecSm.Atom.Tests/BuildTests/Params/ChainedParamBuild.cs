@@ -3,8 +3,7 @@
 [BuildDefinition]
 public partial class ChainedParamBuild : MinimalBuildDefinition, IChainedParamTarget;
 
-[TargetDefinition]
-public partial interface IChainedParamTarget
+public interface IChainedParamTarget : IBuildAccessor
 {
     [ParamDefinition("param-1", "Param 1")]
     string Param1 => GetParam(() => Param1)!;

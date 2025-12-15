@@ -8,7 +8,7 @@
 ///     enabling the build to both upload and download artifacts from Azure Blob Storage.
 /// </remarks>
 [ConfigureHostBuilder]
-[TargetDefinition]
+
 public partial interface IAzureArtifactStorage : IStoreArtifact, IRetrieveArtifact
 {
     /// <summary>

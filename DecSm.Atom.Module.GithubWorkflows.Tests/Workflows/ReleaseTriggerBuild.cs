@@ -14,8 +14,7 @@ public partial class ReleaseTriggerBuild : MinimalBuildDefinition, IGithubWorkfl
     ];
 }
 
-[TargetDefinition]
-public partial interface IReleaseTriggerTarget
+public interface IReleaseTriggerTarget
 {
     Target ReleaseTriggerTarget => t => t;
 }

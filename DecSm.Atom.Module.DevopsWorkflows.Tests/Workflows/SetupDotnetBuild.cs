@@ -14,8 +14,7 @@ public partial class SetupDotnetBuild : MinimalBuildDefinition, IDevopsWorkflows
     ];
 }
 
-[TargetDefinition]
-public partial interface ISetupDotnetTarget
+public interface ISetupDotnetTarget
 {
     Target SetupDotnetTarget => t => t;
 }

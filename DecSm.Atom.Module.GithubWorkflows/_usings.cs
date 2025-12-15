@@ -2,6 +2,7 @@ global using System.Globalization;
 global using System.IO.Compression;
 global using System.Text;
 global using DecSm.Atom.Artifacts;
+global using DecSm.Atom.Build;
 global using DecSm.Atom.Build.Definition;
 global using DecSm.Atom.Build.Model;
 global using DecSm.Atom.Hosting;

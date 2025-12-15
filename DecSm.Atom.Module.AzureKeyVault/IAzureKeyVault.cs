@@ -8,8 +8,7 @@
 ///     and configures the necessary services for retrieving secrets.
 /// </remarks>
 [ConfigureHostBuilder]
-[TargetDefinition]
-public partial interface IAzureKeyVault
+public partial interface IAzureKeyVault : IBuildAccessor
 {
     /// <summary>
     ///     Gets the address (URI) of the Azure Key Vault.

@@ -17,8 +17,7 @@ public partial class WorkflowDependentTargetBuild : MinimalBuildDefinition,
     ];
 }
 
-[TargetDefinition]
-public partial interface IWorkflowDependentTarget1
+public interface IWorkflowDependentTarget1
 {
     Target WorkflowDependentTarget1 =>
         t => t
@@ -26,8 +25,7 @@ public partial interface IWorkflowDependentTarget1
             .Executes(() => Task.CompletedTask);
 }
 
-[TargetDefinition]
-public partial interface IWorkflowDependentTarget2
+public interface IWorkflowDependentTarget2
 {
     Target WorkflowTarget2 =>
         t => t

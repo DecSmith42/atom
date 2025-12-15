@@ -12,8 +12,7 @@
 ///     to categorize or tag the artifacts.
 ///     This target is hidden by default, primarily for internal use or custom artifact workflows.
 /// </remarks>
-[TargetDefinition]
-public partial interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
+public interface IStoreArtifact : IAtomArtifactsParam, ISetupBuildInfo
 {
     /// <summary>
     ///     Gets the configured <see cref="IArtifactProvider" /> instance.
