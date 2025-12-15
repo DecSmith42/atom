@@ -9,67 +9,263 @@
 /// </remarks>
 internal static class RunCommand
 {
+    [UsedImplicitly(Reason = "Used in tests")]
+    public static IFileSystem FileSystem { get; set; } = new FileSystem();
+
+    [UsedImplicitly(Reason = "Used in tests")]
+    public static bool MockDotnetCli { get; set; }
+
     /// <summary>
     ///     Executes the specified DecSm.Atom project.
     /// </summary>
     /// <param name="runArgs">Arguments to pass directly to the DecSm.Atom project.</param>
-    /// <param name="project">The name of the DecSm.Atom project to run (e.g., "_atom").</param>
+    /// <param name="subject">The name of the DecSm.Atom project or file-based app to run (e.g., "_atom").</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The exit code of the executed `dotnet run` command.</returns>
-    public static async Task<int> Handle(string[] runArgs, string project, CancellationToken cancellationToken)
+    public static async Task<int> Handle(string[] runArgs, string subject, CancellationToken cancellationToken)
     {
-        var currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
+        subject = subject
+            .Replace("\n", string.Empty)
+            .Replace("\r", string.Empty)
+            .Trim('"', '\'', ' ');
 
-        // Traverse up the directory tree to find the specified Atom project
-        while (currentDirectory?.Exists is true)
+        var subjectInputType = subject switch
         {
-            if (Directory.Exists(Path.Combine(currentDirectory.FullName, project)))
+            var s when s.EndsWith(".cs") => SubjectInputType.File,
+            var s when s.EndsWith(".csproj") => SubjectInputType.Project,
+            { Length: > 0 } => SubjectInputType.Either,
+            _ => SubjectInputType.None,
+        };
+
+        switch (subjectInputType)
+        {
+            case SubjectInputType.Project:
             {
-                // Sanitize arguments to prevent shell injection
-                var escapedArgs = runArgs.Select(arg =>
+                var knownProjectResult = await FindAndExecuteKnownProject(subject, runArgs, cancellationToken);
+
+                if (knownProjectResult is not null)
+                    return knownProjectResult.Value;
+
+                await Console.Error.WriteLineAsync($"Error: Could not find project file '{subject}'.");
+
+                return 1;
+            }
+
+            case SubjectInputType.File:
+            {
+                var knownFileResult = await FindAndExecuteKnownFile(subject, runArgs, cancellationToken);
+
+                if (knownFileResult is not null)
+                    return knownFileResult.Value;
+
+                await Console.Error.WriteLineAsync($"Error: Could not find cs file '{subject}'.");
+
+                return 1;
+            }
+
+            case SubjectInputType.Either:
+            {
+                var eitherResult = await FindAndExecuteKnownEither(subject, runArgs, cancellationToken);
+
+                if (eitherResult is not null)
+                    return eitherResult.Value;
+
+                await Console.Error.WriteLineAsync($"Error: Could not find project or cs file '{subject}'.");
+
+                return 1;
+            }
+
+            case SubjectInputType.None:
+            {
+                var noneResult = await FindAndExecuteUnknown(runArgs, cancellationToken);
+
+                if (noneResult is not null)
+                    return noneResult.Value;
+
+                await Console.Error.WriteLineAsync(
+                    "Error: Could not find project or cs file (searched names: _atom, _build, Atom, Build).");
+
+                return 1;
+            }
+
+            default:
+                throw new UnreachableException();
+        }
+    }
+
+    private static async Task<int?> FindAndExecuteKnownProject(
+        string name,
+        string[] runArgs,
+        CancellationToken cancellationToken)
+    {
+        if (!name.EndsWith(".csproj"))
+            name = $"{name}.csproj";
+
+        var nonCsProjName = name[..^".csproj".Length];
+
+        if (FileSystem.Path.IsPathRooted(name) && FileSystem.FileInfo.New(name) is { Exists: true } rootedFileInfo)
+            return await Execute(rootedFileInfo, runArgs, false, cancellationToken);
+
+        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+
+        while (currentDirectory is { Exists: true })
+        {
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name)) is
                 {
-                    arg = arg
-                        .Replace("\n", string.Empty)
-                        .Replace("\r", string.Empty);
+                    Exists: true,
+                } fileInfo)
+                return await Execute(fileInfo, runArgs, false, cancellationToken);
 
-                    // Quote arguments containing special characters
-                    return arg.Contains(';') || arg.Contains('&') || arg.Contains('|') || arg.Contains(' ')
-                        ? $"\"{arg}\""
-                        : arg;
-                });
-
-                // Sanitize the project name if it contains special characters
-                if (runArgs.Length > 0 && project is { Length: > 0 })
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, nonCsProjName, name)) is
                 {
-                    project = project
-                        .Replace("\n", string.Empty)
-                        .Replace("\r", string.Empty);
+                    Exists: true,
+                } nestedFileInfo)
+                return await Execute(nestedFileInfo, runArgs, false, cancellationToken);
 
-                    if (project.Contains(';') ||
-                        project.Contains('&') ||
-                        project.Contains('|') ||
-                        project.Contains(' '))
-                        project = $"\"{project}\"";
-                }
+            currentDirectory = currentDirectory.Parent;
+        }
 
-                var atomProjectPath = Path.Combine(currentDirectory.FullName, project, $"{project}.csproj");
-                var allArgs = new[] { "run", "--project", atomProjectPath, "--" }.Concat(escapedArgs);
+        return null;
+    }
 
-                var atomProcess = Process.Start("dotnet", allArgs);
-                await atomProcess.WaitForExitAsync(cancellationToken);
+    private static async Task<int?> FindAndExecuteKnownFile(
+        string name,
+        string[] runArgs,
+        CancellationToken cancellationToken)
+    {
+        if (FileSystem.Path.IsPathRooted(name) && FileSystem.FileInfo.New(name) is { Exists: true } rootedFileInfo)
+            return await Execute(rootedFileInfo, runArgs, true, cancellationToken);
 
-                return atomProcess.ExitCode;
+        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+
+        while (currentDirectory is { Exists: true })
+        {
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name)) is
+                {
+                    Exists: true,
+                } fileInfo)
+                return await Execute(fileInfo, runArgs, true, cancellationToken);
+
+            currentDirectory = currentDirectory.Parent;
+        }
+
+        return null;
+    }
+
+    private static async Task<int?> FindAndExecuteKnownEither(
+        string name,
+        string[] runArgs,
+        CancellationToken cancellationToken)
+    {
+        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+
+        while (currentDirectory is { Exists: true })
+        {
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.csproj")) is
+                {
+                    Exists: true,
+                } projectFileInfo)
+                return await Execute(projectFileInfo, runArgs, false, cancellationToken);
+
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name, $"{name}.csproj")) is
+                {
+                    Exists: true,
+                } nestedProjectFileInfo)
+                return await Execute(nestedProjectFileInfo, runArgs, false, cancellationToken);
+
+            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.cs")) is
+                {
+                    Exists: true,
+                } csFileInfo)
+                return await Execute(csFileInfo, runArgs, true, cancellationToken);
+
+            currentDirectory = currentDirectory.Parent;
+        }
+
+        return null;
+    }
+
+    private static async Task<int?> FindAndExecuteUnknown(string[] runArgs, CancellationToken cancellationToken)
+    {
+        // If on nix, we want to duplicate defaultNames for case-sensitivity
+        string[] defaultNames = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? ["_atom", "_build", "Atom", "Build"]
+            : ["_atom", "_build", "Atom", "atom", "Build", "build"];
+
+        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+
+        while (currentDirectory is { Exists: true })
+        {
+            foreach (var name in defaultNames)
+            {
+                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.csproj")) is
+                    {
+                        Exists: true,
+                    } projectFileInfo)
+                    return await Execute(projectFileInfo, runArgs, false, cancellationToken);
+
+                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name, $"{name}.csproj"))
+                    is { Exists: true } nestedProjectFileInfo)
+                    return await Execute(nestedProjectFileInfo, runArgs, false, cancellationToken);
+
+                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.cs")) is
+                    {
+                        Exists: true,
+                    } nestedCsFileInfo)
+                    return await Execute(nestedCsFileInfo, runArgs, true, cancellationToken);
             }
 
             currentDirectory = currentDirectory.Parent;
         }
 
-        await Console.Error.WriteLineAsync(
-            $"Error: Could not find project '{project}' in the current directory or any parent directory.");
+        return null;
+    }
 
-        await Console.Error.WriteLineAsync(
-            "The project option must be the name of an Atom project (e.g., a directory containing a .csproj file) in the current directory or a parent directory.");
+    private static async Task<int> Execute(
+        IFileInfo path,
+        string[] runArgs,
+        bool isCsFile,
+        CancellationToken cancellationToken)
+    {
+        var sanitizedArgs = SanitizeArgs(runArgs);
 
-        return 1;
+        var args = new List<string>
+        {
+            "run",
+        };
+
+        if (isCsFile)
+        {
+            args.Add(path.FullName);
+        }
+        else
+        {
+            args.Add("--project");
+            args.Add(path.FullName);
+        }
+
+        args.Add("--");
+        args.AddRange(sanitizedArgs);
+
+        if (MockDotnetCli)
+            return 0;
+
+        var atomProcess = Process.Start("dotnet", args);
+        await atomProcess.WaitForExitAsync(cancellationToken);
+
+        return atomProcess.ExitCode;
+    }
+
+    private static IEnumerable<string> SanitizeArgs(IEnumerable<string> runArgs) =>
+        runArgs.Select(arg => arg
+            .Replace("\n", string.Empty)
+            .Replace("\r", string.Empty));
+
+    private enum SubjectInputType
+    {
+        None,
+        Either,
+        File,
+        Project,
     }
 }

@@ -23,8 +23,11 @@ internal sealed class CommandModel
     ///     These arguments are typically used to specify targets or parameters for the build.
     /// </param>
     /// <param name="project">
-    ///     Optional. The name of the DecSm.Atom project to run. Defaults to "_atom".
+    ///     Optional. The name of the DecSm.Atom project or file-based app to run. Defaults to "_atom".
     ///     This allows specifying which build definition to execute within a multi-project solution.
+    /// </param>
+    /// <param name="file">
+    ///     Optional. The path to a C# file to run as a file-based DecSm.Atom application.
     /// </param>
     /// <param name="cancellationToken">A cancellation token to observe while waiting for the command to complete.</param>
     /// <returns>The exit code of the executed DecSm.Atom build command.</returns>
@@ -33,13 +36,18 @@ internal sealed class CommandModel
     public Task<int> Root(
         ConsoleAppContext context,
         [Argument] string[]? runArgs = null,
-        string project = "_atom",
+        string? project = null,
+        string? file = null,
         CancellationToken cancellationToken = default) =>
         RunCommand.Handle(context
                 .Arguments
                 .Skip(context.EscapeIndex)
                 .ToArray(),
-            project,
+            project is { Length: > 0 }
+                ? project
+                : file is { Length: > 0 }
+                    ? file
+                    : string.Empty,
             cancellationToken);
 
     /// <summary>

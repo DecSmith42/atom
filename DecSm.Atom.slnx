@@ -23,6 +23,7 @@
     <Project Path="DecSm.Atom.SourceGenerators.Tests/DecSm.Atom.SourceGenerators.Tests.csproj" />
     <Project Path="DecSm.Atom.Tests/DecSm.Atom.Tests.csproj" />
     <Project Path="DecSm.Atom.TestUtils/DecSm.Atom.TestUtils.csproj" />
+    <Project Path="DecSm.Atom.Tool.Tests/DecSm.Atom.Tool.Tests.csproj" />
   </Folder>
   <Folder Name="/Tools/">
     <Project Path="DecSm.Atom.DotnetCliGenerator/DecSm.Atom.DotnetCliGenerator.csproj" />
