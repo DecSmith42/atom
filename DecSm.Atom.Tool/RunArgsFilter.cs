@@ -38,8 +38,8 @@ internal class RunArgsFilter(ConsoleAppFilter next) : ConsoleAppFilter(next)
                 context.State,
                 null,
                 context.CommandDepth,
-                context.Arguments[0] is "-p" or "--project"
-                    ? 2 // Skip "-p" or "--project" and the project name
+                context.Arguments[0] is "-p" or "--project" or "-f" or "--file"
+                    ? 2 // Skip "-p" or "--project" or "-f" or "--file" and the project/file name
                     : 0), // All arguments are for the Atom project
             cancellationToken);
     }
