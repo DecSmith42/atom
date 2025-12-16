@@ -36,8 +36,8 @@ internal sealed class CommandModel
     public Task<int> Root(
         ConsoleAppContext context,
         [Argument] string[]? runArgs = null,
-        string? project = null,
-        string? file = null,
+        [HideDefaultValue] string? project = null,
+        [HideDefaultValue] string? file = null,
         CancellationToken cancellationToken = default) =>
         RunCommand.Handle(context
                 .Arguments
