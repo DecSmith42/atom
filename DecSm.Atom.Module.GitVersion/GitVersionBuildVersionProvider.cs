@@ -32,7 +32,10 @@ internal sealed class GitVersionBuildVersionProvider(
                 return field;
 
             var currentGitHash = processRunner
-                .Run(new("git", "rev-parse HEAD"))
+                .Run(new("git", "rev-parse HEAD")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                })
                 .Output
                 .Trim();
 
