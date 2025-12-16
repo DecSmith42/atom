@@ -10,7 +10,9 @@
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
     IProcessRunner processRunner,
-    IBuildDefinition buildDefinition
+    IBuildDefinition buildDefinition,
+    IAtomFileSystem fileSystem,
+    ILogger<GitVersionBuildIdProvider> logger
 ) : IBuildIdProvider
 {
     /// <summary>
@@ -33,17 +35,46 @@ internal sealed class GitVersionBuildIdProvider(
             if (field is { Length: > 0 })
                 return field;
 
-            dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
+            var currentGitHash = processRunner
+                .Run(new("git", "rev-parse HEAD"))
+                .Output
+                .Trim();
 
-            var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+            var hashCache = fileSystem.AtomPublishDirectory / ".gitversioncache" / currentGitHash;
+
+            JsonElement? jsonOutput = null;
+
+            if (fileSystem.File.Exists(hashCache))
+                try
+                {
+                    var cachedContent = fileSystem.File.ReadAllText(hashCache);
+                    jsonOutput = JsonSerializer.Deserialize(cachedContent, JsonElementContext.Default.JsonElement);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to read or parse cached GitVersion output. Will re-run GitVersion.");
+                    jsonOutput = null;
+                    fileSystem.File.Delete(hashCache);
+                }
+
+            if (jsonOutput is null)
             {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+                dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
-            var jsonOutput =
-                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+                var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                });
+
+                jsonOutput =
+                    JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+            }
+
+            fileSystem.Directory.CreateDirectory(fileSystem.AtomPublishDirectory / ".gitversioncache");
+            fileSystem.File.WriteAllText(hashCache, jsonOutput.Value.GetRawText());
 
             var buildId = jsonOutput
+                .Value
                 .GetProperty("FullSemVer")
                 .GetString();
 

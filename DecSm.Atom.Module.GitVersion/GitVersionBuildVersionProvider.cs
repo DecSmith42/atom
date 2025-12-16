@@ -11,7 +11,9 @@
 [PublicAPI]
 internal sealed class GitVersionBuildVersionProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
-    IProcessRunner processRunner
+    IProcessRunner processRunner,
+    IAtomFileSystem fileSystem,
+    ILogger<GitVersionBuildVersionProvider> logger
 ) : IBuildVersionProvider
 {
     /// <summary>
@@ -29,29 +31,58 @@ internal sealed class GitVersionBuildVersionProvider(
             if (field is not null)
                 return field;
 
-            dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
+            var currentGitHash = processRunner
+                .Run(new("git", "rev-parse HEAD"))
+                .Output
+                .Trim();
 
-            var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+            var hashCache = fileSystem.AtomPublishDirectory / ".gitversioncache" / currentGitHash;
+
+            JsonElement? jsonOutput = null;
+
+            if (fileSystem.File.Exists(hashCache))
+                try
+                {
+                    var cachedContent = fileSystem.File.ReadAllText(hashCache);
+                    jsonOutput = JsonSerializer.Deserialize(cachedContent, JsonElementContext.Default.JsonElement);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Failed to read or parse cached GitVersion output. Will re-run GitVersion.");
+                    jsonOutput = null;
+                    fileSystem.File.Delete(hashCache);
+                }
+
+            if (jsonOutput is null)
             {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+                dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
-            var jsonOutput =
-                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+                var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                });
+
+                jsonOutput =
+                    JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+            }
 
             var majorProp = jsonOutput
+                .Value
                 .GetProperty("Major")
                 .GetUInt32();
 
             var minorProp = jsonOutput
+                .Value
                 .GetProperty("Minor")
                 .GetUInt32();
 
             var patchProp = jsonOutput
+                .Value
                 .GetProperty("Patch")
                 .GetUInt32();
 
             var preReleaseTagProp = jsonOutput
+                .Value
                 .GetProperty("PreReleaseTag")
                 .GetString()!;
 
