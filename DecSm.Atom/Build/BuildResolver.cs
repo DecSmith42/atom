@@ -6,10 +6,12 @@
 /// <param name="buildDefinition">The core build definition.</param>
 /// <param name="paramService">The service for resolving parameters.</param>
 /// <param name="commandLineArgs">The parsed command-line arguments.</param>
+/// <param name="logger">The logger for diagnostics.</param>
 internal sealed class BuildResolver(
     IBuildDefinition buildDefinition,
     IParamService paramService,
-    CommandLineArgs commandLineArgs
+    CommandLineArgs commandLineArgs,
+    ILogger<BuildResolver> logger
 )
 {
     /// <summary>
@@ -19,6 +21,8 @@ internal sealed class BuildResolver(
     /// <exception cref="InvalidOperationException">Thrown if duplicate or circular target dependencies are detected.</exception>
     public BuildModel Resolve()
     {
+        var startTime = Stopwatch.GetTimestamp();
+
         var defaultValuesOnlyScope = paramService.CreateDefaultValuesOnlyScope();
 
         var paramModels = buildDefinition
@@ -181,6 +185,13 @@ internal sealed class BuildResolver(
                      .Select(target => targetStates[target])
                      .Where(state => state.Status is not TargetRunState.PendingRun))
             state.Status = TargetRunState.Skipped;
+
+        if (logger.IsEnabled(LogLevel.Debug))
+        {
+            var endTime = Stopwatch.GetTimestamp();
+            var duration = TimeSpan.FromTicks((endTime - startTime) * TimeSpan.TicksPerSecond / Stopwatch.Frequency);
+            logger.LogDebug("Build resolution completed in {Duration}", duration);
+        }
 
         return new()
         {
