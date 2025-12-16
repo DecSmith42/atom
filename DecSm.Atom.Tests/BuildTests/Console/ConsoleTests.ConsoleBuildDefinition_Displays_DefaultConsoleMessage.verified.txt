@@ -13,10 +13,6 @@ Options
   -hl, --headless    Run in headless mode (no prompts or logins, used in CI)
   -v,  --verbose     Show verbose output (extra logging)
 
-Atom Commands
-
-ValidateBuild | Checks the atom build for common issues.
-
 Project Commands
 
 ConsoleTarget | Console target
