@@ -24,7 +24,7 @@ A `ParamDefinition` includes:
 ## `ParamDefinitionAttribute`
 
 The `[ParamDefinition]` attribute is how you declare a standard parameter in your Atom build. You apply this attribute
-to properties within your build definition interfaces.
+to properties within your build definition class or interfaces.
 
 **When to use it:**
 
@@ -32,7 +32,7 @@ to properties within your build definition interfaces.
 * When you want to expose a configurable option for your build.
 
 **How to use it:**
-Declare a property of the desired type within a `partial interface` (often the same one where you define your targets).
+Declare a property of the desired type within your build class or a `partial interface` (often the same one where you define your targets).
 Mark this property with `[ParamDefinition]`, providing an `argName` (for command-line usage) and a `description`. Use
 the `GetParam` helper method to retrieve its value.
 

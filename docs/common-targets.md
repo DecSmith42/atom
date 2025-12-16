@@ -35,8 +35,8 @@ public partial class MyBuild : BuildDefinition, IBuildTargets
         {
             Targets =
             [
-                Targets.PackProjects, // Use the PackProjects target
-                Targets.PackTool      // Use the PackTool target
+                WorkflowTargets.PackProjects, // Use the PackProjects target
+                WorkflowTargets.PackTool      // Use the PackTool target
             ],
             // ...
         }
@@ -73,7 +73,7 @@ public partial class MyBuild : BuildDefinition, ITestTargets
         {
             Targets =
             [
-                Targets.TestProjects // Run all tests
+                WorkflowTargets.TestProjects // Run all tests
             ],
             // ...
         }
@@ -113,8 +113,8 @@ public partial class MyBuild : BuildDefinition, IDeployTargets
             Triggers = [GitPushTrigger.ToMain], // Trigger on push to main
             Targets =
             [
-                Targets.PushToNuget,   // Push packages to NuGet
-                Targets.PushToRelease  // Create a GitHub Release
+                WorkflowTargets.PushToNuget,   // Push packages to NuGet
+                WorkflowTargets.PushToRelease  // Create a GitHub Release
             ],
             // ...
         }

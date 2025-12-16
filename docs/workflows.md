@@ -52,9 +52,9 @@ public partial class MyBuild : BuildDefinition, IMyCustomTargets
             ],
             Targets =
             [
-                Targets.SetupBuildInfo, // Common setup target
-                Targets.Compile,        // Your custom compile target
-                Targets.RunTests        // Your custom test target
+                WorkflowTargets.SetupBuildInfo, // Common setup target
+                WorkflowTargets.Compile,        // Your custom compile target
+                WorkflowTargets.RunTests        // Your custom test target
             ],
             WorkflowTypes =
             [
@@ -103,12 +103,12 @@ generated `Targets` static class) and then use fluent methods to configure them.
 
 ```csharp
 // In your WorkflowDefinition's Targets list
-Targets.Compile.WithMatrixDimensions(
+WorkflowTargets.Compile.WithMatrixDimensions(
     new MatrixDimension("os") { Values = [IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag] },
     new MatrixDimension("dotnet-version") { Values = ["6.0.x", "8.0.x"] }
 );
 
-Targets.PackProjects.WithSuppressedArtifactPublishing; // Don't publish artifacts for this specific target in this workflow
+WorkflowTargets.PackProjects.WithSuppressedArtifactPublishing; // Don't publish artifacts for this specific target in this workflow
 ```
 
 ## `WorkflowGenerator`

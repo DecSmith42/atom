@@ -15,9 +15,9 @@ components of your build process:
 * **Global Options**: Settings that apply across all workflows.
 
 You won't typically implement `IBuildDefinition` directly. Instead, you'll define your build class and mark it with the
-`[BuildDefinition]` attribute. This attribute, along with Atom's source generators, will automatically provide the
-necessary base implementation, either `BuildDefinition` (by default) or `MinimalBuildDefinition` (if explicitly
-specified).
+`[BuildDefinition]` attribute. You must also explicitly inherit from either `BuildDefinition` (recommended) or
+`MinimalBuildDefinition`. The source generators will then provide the implementation for the abstract members of `IBuildDefinition`
+based on your defined targets and parameters.
 
 ## `MinimalBuildDefinition`
 
@@ -38,7 +38,7 @@ properties and override virtual ones as needed.
 ```csharp
 // In _atom/Build.cs
 [BuildDefinition]
-public partial class MyMinimalBuild : IMyCustomTargets
+public partial class MyMinimalBuild : MinimalBuildDefinition, IMyCustomTargets
 {
     // Implement abstract properties and override virtual ones
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
@@ -83,7 +83,7 @@ additional interfaces.
 ```csharp
 // In _atom/Build.cs
 [BuildDefinition]
-public partial class MyBuild : IMyCustomTargets
+public partial class MyBuild : BuildDefinition, IMyCustomTargets
 {
     public override IReadOnlyList<WorkflowDefinition> Workflows =>
     [
