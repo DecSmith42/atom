@@ -23,8 +23,8 @@ A `TargetDefinition` allows you to specify:
 * **Extensions**: How this target might extend or inherit behavior from another target.
 
 **How to define a Target:**
-Targets are typically defined as properties of type `Target` within a `partial interface` that is marked with
-`[TargetDefinition]`.
+Targets can be defined as properties of type `Target` within your main build definition class (marked with `[BuildDefinition]`)
+or within a `partial interface` that is marked with `[TargetDefinition]`.
 
 ```csharp
 // In IMyTargets.cs

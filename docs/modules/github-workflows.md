@@ -50,11 +50,19 @@ namespace Atom;
 [BuildDefinition]
 internal partial class Build : IGithubWorkflows
 {
-    private Workflow CiWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("ci")
-            .OnPush(new[] { "main", "develop" })
-            .OnPullRequest(new[] { "main", "develop" })
-            .Target(Compile); // Assuming 'Compile' is a defined target
+        {
+            Triggers =
+            [
+                new GitPushTrigger { IncludedBranches = ["main", "develop"] },
+                new GitPullRequestTrigger { IncludedBranches = ["main", "develop"] }
+            ],
+            Targets = [WorkflowTargets.Compile], // Assuming 'Compile' is a defined target
+            WorkflowTypes = [Github.WorkflowType]
+        }
+    ];
 
     private Target Compile =>
         t => t
@@ -83,7 +91,10 @@ namespace Atom;
 [BuildDefinition]
 internal partial class Build : IGithubWorkflows
 {
-    private Workflow Dependabot => Github.DependabotDefaultWorkflow();
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
+        Github.DependabotDefaultWorkflow()
+    ];
 }
 ```
 
@@ -155,11 +166,18 @@ namespace Atom;
 [BuildDefinition]
 internal partial class Build : IGithubWorkflows, IGithubHelper
 {
-    private Workflow DeployWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("deploy")
-            .OnPush(new[] { "main" })
-            .Target(DeployApp)
-            .WithGithubTokenInjection(); // Injects GITHUB_TOKEN into the workflow job
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets =
+            [
+                WorkflowTargets.DeployApp.WithGithubTokenInjection() // Injects GITHUB_TOKEN into the workflow job
+            ],
+            WorkflowTypes = [Github.WorkflowType]
+        }
+    ];
 
     private Target DeployApp =>
         t => t
@@ -218,11 +236,19 @@ internal partial class Build : IGithubWorkflows
                 Logger.LogInformation("Running tests on {OS}", JobRunsOn); // JobRunsOn will be the current OS from the matrix
             });
 
-    private Workflow CiWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("ci")
-            .OnPush(new[] { "main" })
-            .Target(TestOnMultipleOs)
-            .WithGithubRunnerMatrix(new[] { "ubuntu-latest", "windows-latest" }); // Run TestOnMultipleOs on both OSes
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets =
+            [
+                WorkflowTargets.TestOnMultipleOs
+                    .WithGithubRunnerMatrix("ubuntu-latest", "windows-latest") // Run TestOnMultipleOs on both OSes
+            ],
+            WorkflowTypes = [Github.WorkflowType]
+        }
+    ];
 }
 ```
 
@@ -246,11 +272,16 @@ internal partial class Build : IGithubWorkflows
                 Logger.LogInformation("Running in custom image.");
             });
 
-    private Workflow CustomImageWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("custom-image")
-            .OnPush(new[] { "main" })
-            .Target(RunInCustomImage)
-            .Options(new GithubSnapshotImageOption(new("my-custom-image", "1.0.0")));
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets = [WorkflowTargets.RunInCustomImage],
+            Options = [new GithubSnapshotImageOption(new("my-custom-image", "1.0.0"))],
+            WorkflowTypes = [Github.WorkflowType]
+        }
+    ];
 }
 ```
 
@@ -261,6 +292,7 @@ The module provides a fluent API to construct GitHub Actions expressions, which 
 ```csharp
 using DecSm.Atom.Build.Definition;
 using DecSm.Atom.Module.GithubWorkflows;
+using DecSm.Atom.Module.GithubWorkflows.Generation.Options; // For GithubIf
 using DecSm.Atom.Workflows;
 
 namespace Atom;
@@ -276,14 +308,23 @@ internal partial class Build : IGithubWorkflows
                 Logger.LogInformation("This step ran conditionally.");
             });
 
-    private Workflow ConditionalWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("conditional")
-            .OnPush(new[] { "main" })
-            .Target(ConditionalStep)
-            .WithCondition(
-                GithubExpressions.Variables.RefName.EqualTo("main")
-                    .And(GithubExpressions.Variables.EventName.EqualTo("push"))
-            );
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets =
+            [
+                WorkflowTargets.ConditionalStep.WithOptions(
+                    GithubIf.Create(
+                        new PropertyExpression("github", "ref_name").EqualTo(new StringExpression("main"))
+                            .And(new PropertyExpression("github", "event_name").EqualTo(new StringExpression("push")))
+                    )
+                )
+            ],
+            WorkflowTypes = [Github.WorkflowType]
+        }
+    ];
 }
 ```
 

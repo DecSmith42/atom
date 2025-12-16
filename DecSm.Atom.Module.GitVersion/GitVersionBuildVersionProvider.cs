@@ -11,9 +11,17 @@
 [PublicAPI]
 internal sealed class GitVersionBuildVersionProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
-    IProcessRunner processRunner
+    IProcessRunner processRunner,
+    IAtomFileSystem fileSystem,
+    ILogger<GitVersionBuildVersionProvider> logger
 ) : IBuildVersionProvider
 {
+    #if NET9_0_OR_GREATER
+    private readonly Lock _lock = new();
+    #else
+    private readonly object _lock = new();
+    #endif
+
     /// <summary>
     ///     Gets the semantic version of the build, derived from GitVersion's output.
     /// </summary>
@@ -29,35 +37,75 @@ internal sealed class GitVersionBuildVersionProvider(
             if (field is not null)
                 return field;
 
-            dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
+            var currentGitHash = processRunner
+                .Run(new("git", "rev-parse HEAD")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                })
+                .Output
+                .Trim();
 
-            var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+            var hashCache = fileSystem.AtomPublishDirectory / ".gitversioncache" / currentGitHash;
+
+            JsonElement? jsonOutput = null;
+
+            lock (_lock)
             {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+                if (fileSystem.File.Exists(hashCache))
+                    try
+                    {
+                        var cachedContent = fileSystem.File.ReadAllText(hashCache);
+                        jsonOutput = JsonSerializer.Deserialize(cachedContent, JsonElementContext.Default.JsonElement);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex,
+                            "Failed to read or parse cached GitVersion output. Will re-run GitVersion.");
 
-            var jsonOutput =
-                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+                        jsonOutput = null;
+                        fileSystem.File.Delete(hashCache);
+                    }
 
-            var majorProp = jsonOutput
-                .GetProperty("Major")
-                .GetUInt32();
+                if (jsonOutput is null)
+                {
+                    dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
-            var minorProp = jsonOutput
-                .GetProperty("Minor")
-                .GetUInt32();
+                    var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+                    {
+                        InvocationLogLevel = LogLevel.Debug,
+                    });
 
-            var patchProp = jsonOutput
-                .GetProperty("Patch")
-                .GetUInt32();
+                    jsonOutput = JsonSerializer.Deserialize(gitVersionResult.Output,
+                        JsonElementContext.Default.JsonElement);
 
-            var preReleaseTagProp = jsonOutput
-                .GetProperty("PreReleaseTag")
-                .GetString()!;
+                    fileSystem.Directory.CreateDirectory(fileSystem.AtomPublishDirectory / ".gitversioncache");
+                    fileSystem.File.WriteAllText(hashCache, jsonOutput.Value.GetRawText());
+                }
 
-            return field = preReleaseTagProp is { Length: > 0 }
-                ? SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}")
-                : SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}");
+                var majorProp = jsonOutput
+                    .Value
+                    .GetProperty("Major")
+                    .GetUInt32();
+
+                var minorProp = jsonOutput
+                    .Value
+                    .GetProperty("Minor")
+                    .GetUInt32();
+
+                var patchProp = jsonOutput
+                    .Value
+                    .GetProperty("Patch")
+                    .GetUInt32();
+
+                var preReleaseTagProp = jsonOutput
+                    .Value
+                    .GetProperty("PreReleaseTag")
+                    .GetString()!;
+
+                return field = preReleaseTagProp is { Length: > 0 }
+                    ? SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}-{preReleaseTagProp}")
+                    : SemVer.Parse($"{majorProp}.{minorProp}.{patchProp}");
+            }
         }
     }
 }

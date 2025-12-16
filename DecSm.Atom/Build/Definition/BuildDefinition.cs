@@ -31,4 +31,4 @@
 /// <seealso cref="IBuildDefinition" />
 [PublicAPI]
 public abstract class BuildDefinition(IServiceProvider services)
-    : MinimalBuildDefinition(services), ISetupBuildInfo, IValidateBuild, IDotnetUserSecrets;
+    : MinimalBuildDefinition(services), ISetupBuildInfo, IDotnetUserSecrets;

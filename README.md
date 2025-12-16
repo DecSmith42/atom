@@ -3,6 +3,8 @@
 [![Validate](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml)
 [![Build](https://github.com/DecSmith42/atom/actions/workflows/Build.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Build.yml)
 [![Dependabot Updates](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates)
+[![CodeQL](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql)
+[![Automatic Dependency Submission](https://github.com/DecSmith42/atom/actions/workflows/dependency-graph/auto-submission/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/dependency-graph/auto-submission)
 
 Atom is an opinionated, type-safe build automation framework for .NET. It enables you to define your build logic in C#,
 debug it like standard code, and automatically generate CI/CD configuration files for GitHub Actions and Azure DevOps.
@@ -17,33 +19,35 @@ debug it like standard code, and automatically generate CI/CD configuration file
 
 ## Basic Example
 
-```csharp
-[BuildDefinition]
-partial class MyBuild
-{
-    Target MyTarget => t => t
-        .DescribedAs("Runs my target")
-        .Executes(() => Console.WriteLine("Hello World!"));
-}
-```
+1. Create a new file `Build.cs`
 
-```bash
-atom MyTarget
+   ```csharp
+   #:package DecSm.Atom@2.*
+   
+   [BuildDefinition]
+   [GenerateEntryPoint]
+   partial class Build : BuildDefinition
+   {
+       Target SayHello => t => t
+           .Executes(() => Logger.LogInformation("Hello, World!"));
+   }
+   ```
 
-# 25-11-11 +10:00  DecSm.Atom.Build.BuildExecutor:
-# 01:42:06.900 INF Executing build
-# 
-# Executing target MyTarget...
-# 
-# MyTarget
-# Runs my target
-# 
-# Hello World!
-#
-# Build Summary
-#                                    
-#   MyTarget │ Succeeded │ 0.00s  
-```
+2. Execute `dotnet run Build.cs SayHello`
+
+   ```
+   25-12-16 +10:00  DecSm.Atom.Build.BuildExecutor:
+   22:46:01.754 INF Executing build
+   
+   SayHello
+   
+   25-12-16 +10:00  SayHello | Build:
+   22:46:01.790 INF Hello, World!    
+
+   Build Summary
+   
+     SayHello │ Succeeded │ <0.01s
+   ```
 
 ## Getting Started
 

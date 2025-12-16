@@ -17,18 +17,6 @@
         BuildVersion,
         BuildTimestamp
       ]
-    },
-    {
-      Name: ValidateBuild,
-      Description: Checks the atom build for common issues.,
-      IsHidden: false,
-      Tasks: [
-        {
-          Type: Func<CancellationToken, Task>,
-          Target: TargetDefinition.<>c__DisplayClass49_0,
-          Method: System.Threading.Tasks.Task Executes(System.Threading.CancellationToken)
-        }
-      ]
     }
   ]
 }

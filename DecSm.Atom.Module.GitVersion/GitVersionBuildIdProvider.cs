@@ -10,9 +10,17 @@
 internal sealed class GitVersionBuildIdProvider(
     IDotnetToolInstallHelper dotnetToolInstallHelper,
     IProcessRunner processRunner,
-    IBuildDefinition buildDefinition
+    IBuildDefinition buildDefinition,
+    IAtomFileSystem fileSystem,
+    ILogger<GitVersionBuildIdProvider> logger
 ) : IBuildIdProvider
 {
+    #if NET9_0_OR_GREATER
+    private readonly Lock _lock = new();
+    #else
+    private readonly object _lock = new();
+    #endif
+
     /// <summary>
     ///     Gets the build ID, derived from GitVersion's FullSemVer.
     /// </summary>
@@ -33,21 +41,58 @@ internal sealed class GitVersionBuildIdProvider(
             if (field is { Length: > 0 })
                 return field;
 
-            dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
+            var currentGitHash = processRunner
+                .Run(new("git", "rev-parse HEAD")
+                {
+                    InvocationLogLevel = LogLevel.Debug,
+                })
+                .Output
+                .Trim();
 
-            var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+            var hashCache = fileSystem.AtomPublishDirectory / ".gitversioncache" / currentGitHash;
+
+            JsonElement? jsonOutput = null;
+
+            lock (_lock)
             {
-                InvocationLogLevel = LogLevel.Debug,
-            });
+                if (fileSystem.File.Exists(hashCache))
+                    try
+                    {
+                        var cachedContent = fileSystem.File.ReadAllText(hashCache);
+                        jsonOutput = JsonSerializer.Deserialize(cachedContent, JsonElementContext.Default.JsonElement);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogWarning(ex,
+                            "Failed to read or parse cached GitVersion output. Will re-run GitVersion.");
 
-            var jsonOutput =
-                JsonSerializer.Deserialize(gitVersionResult.Output, JsonElementContext.Default.JsonElement);
+                        jsonOutput = null;
+                        fileSystem.File.Delete(hashCache);
+                    }
 
-            var buildId = jsonOutput
-                .GetProperty("FullSemVer")
-                .GetString();
+                if (jsonOutput is null)
+                {
+                    dotnetToolInstallHelper.InstallTool("GitVersion.Tool");
 
-            return field = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
+                    var gitVersionResult = processRunner.Run(new("dotnet", "gitversion /output json")
+                    {
+                        InvocationLogLevel = LogLevel.Debug,
+                    });
+
+                    jsonOutput = JsonSerializer.Deserialize(gitVersionResult.Output,
+                        JsonElementContext.Default.JsonElement);
+
+                    fileSystem.Directory.CreateDirectory(fileSystem.AtomPublishDirectory / ".gitversioncache");
+                    fileSystem.File.WriteAllText(hashCache, jsonOutput.Value.GetRawText());
+                }
+
+                var buildId = jsonOutput
+                    .Value
+                    .GetProperty("FullSemVer")
+                    .GetString();
+
+                return field = buildId ?? throw new InvalidOperationException("Failed to determine build ID");
+            }
         }
     }
 

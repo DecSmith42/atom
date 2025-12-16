@@ -42,12 +42,11 @@ dotnet tool install -g DecSm.Atom.Tool
     // _atom/Build.cs
     
     // The DecSm.Atom NuGet package provides global usings for most Atom types.
-    // Only explicitly required usings are shown here.
-    using Microsoft.Extensions.Logging;
 
     // Mark this class as the build definition and generate an entry point
     [BuildDefinition]
-    public partial class Build
+    [GenerateEntryPoint]
+    public partial class Build : BuildDefinition
     {        
         // Define your targets
         Target MyCustomTarget => t => t
@@ -72,10 +71,10 @@ dotnet tool install -g DecSm.Atom.Tool
                 // Defines the targets that should be executed when the workflow runs
                 Targets =
                 [
-                    // Targets.* is a source-generated static class.
+                    // WorkflowTargets.* is a source-generated static class.
                     // Atom automatically creates properties for each defined Target in your Build class,
                     // allowing for convenient access and strong typing.
-                    Targets.MyCustomTarget,
+                    WorkflowTargets.MyCustomTarget,
                 ],
                 
                 // Generate workflows for GitHub Actions

@@ -54,20 +54,17 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
     public override System.Collections.Generic.IReadOnlyDictionary<string, Target> TargetDefinitions => _targetDefinitions ??= new System.Collections.Generic.Dictionary<string, Target>
     {
         { nameof(DecSm.Atom.ISetupBuildInfo.SetupBuildInfo), ((DecSm.Atom.ISetupBuildInfo)this).SetupBuildInfo },
-        { nameof(DecSm.Atom.IValidateBuild.ValidateBuild), ((DecSm.Atom.IValidateBuild)this).ValidateBuild },
     };
 
     public static class WorkflowTargets
     {
         public static readonly DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition SetupBuildInfo = new(nameof(DecSm.Atom.ISetupBuildInfo.SetupBuildInfo));
-        public static readonly DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition ValidateBuild = new(nameof(DecSm.Atom.IValidateBuild.ValidateBuild));
     }
 
     private static DecSm.Atom.Workflows.Definition.WorkflowTargetDefinition WorkflowTarget(string name) =>
         name switch
         {
             nameof(DecSm.Atom.ISetupBuildInfo.SetupBuildInfo) => WorkflowTargets.SetupBuildInfo,
-            nameof(DecSm.Atom.IValidateBuild.ValidateBuild) => WorkflowTargets.ValidateBuild,
             _ => throw new System.ArgumentException($"Target with name '{name}' is not defined in the build definition.", nameof(name))
         };
 
@@ -166,7 +163,6 @@ partial class DefaultTestDefinition : DecSm.Atom.Build.Definition.IBuildDefiniti
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.ISetupBuildInfo>(builder.Services, static p => (DecSm.Atom.ISetupBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.BuildInfo.IBuildInfo>(builder.Services, static p => (DecSm.Atom.BuildInfo.IBuildInfo)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.Variables.IVariablesHelper>(builder.Services, static p => (DecSm.Atom.Variables.IVariablesHelper)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
-        Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.IValidateBuild>(builder.Services, static p => (DecSm.Atom.IValidateBuild)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
         Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<DecSm.Atom.Reports.IReportsHelper>(builder.Services, static p => (DecSm.Atom.Reports.IReportsHelper)p.GetRequiredService<DecSm.Atom.Build.Definition.IBuildDefinition>());
         DecSm.Atom.Secrets.IDotnetUserSecrets.ConfigureBuilder(builder);
     }

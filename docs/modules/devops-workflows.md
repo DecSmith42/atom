@@ -48,11 +48,19 @@ namespace Atom;
 [BuildDefinition]
 internal partial class Build : IDevopsWorkflows
 {
-    private Workflow CiPipeline =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("ci")
-            .OnPush(new[] { "main", "develop" })
-            .OnPullRequest(new[] { "main", "develop" })
-            .Target(Compile); // Assuming 'Compile' is a defined target
+        {
+            Triggers =
+            [
+                new GitPushTrigger { IncludedBranches = ["main", "develop"] },
+                new GitPullRequestTrigger { IncludedBranches = ["main", "develop"] }
+            ],
+            Targets = [WorkflowTargets.Compile], // Assuming 'Compile' is a defined target
+            WorkflowTypes = [Devops.WorkflowType]
+        }
+    ];
 
     private Target Compile =>
         t => t
@@ -122,11 +130,19 @@ internal partial class Build : IDevopsWorkflows
                 Logger.LogInformation("Running tests on agent OS: {OS}", Devops.Variables.AgentOs);
             });
 
-    private Workflow CiPipeline =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("ci")
-            .OnPush(new[] { "main" })
-            .Target(TestOnMultipleOs)
-            .WithDevopsPoolMatrix(new[] { "ubuntu-latest", "windows-latest" }); // Run TestOnMultipleOs on both OSes
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets =
+            [
+                WorkflowTargets.TestOnMultipleOs
+                    .WithDevopsPoolMatrix("ubuntu-latest", "windows-latest") // Run TestOnMultipleOs on both OSes
+            ],
+            WorkflowTypes = [Devops.WorkflowType]
+        }
+    ];
 }
 ```
 
@@ -183,11 +199,16 @@ namespace Atom;
 [BuildDefinition]
 internal partial class Build : IDevopsWorkflows
 {
-    private Workflow CheckoutLfsWorkflow =>
+    public override IReadOnlyList<WorkflowDefinition> Workflows =>
+    [
         new("checkout-lfs")
-            .OnPush(new[] { "main" })
-            .Target(BuildProject)
-            .Options(new DevopsCheckoutOption(lfs: true)); // Enable LFS during checkout
+        {
+            Triggers = [new GitPushTrigger { IncludedBranches = ["main"] }],
+            Targets = [WorkflowTargets.BuildProject],
+            Options = [new DevopsCheckoutOption(lfs: true)], // Enable LFS during checkout
+            WorkflowTypes = [Devops.WorkflowType]
+        }
+    ];
 
     private Target BuildProject =>
         t => t
