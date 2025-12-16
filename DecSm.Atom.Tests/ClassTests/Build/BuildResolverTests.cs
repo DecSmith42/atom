@@ -38,7 +38,8 @@ public class BuildResolverTests
         var buildDefinition = new TestBuildDefinition(_services);
         var paramService = A.Fake<IParamService>();
         var commandLineArgs = new CommandLineArgs(true, []);
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -61,7 +62,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, []);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -89,7 +91,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, []);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         // Assert
@@ -110,7 +113,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, [new CommandArg("Target1")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -142,7 +146,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, [new CommandArg("Target1"), new CommandArg("Target2")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -184,7 +189,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, [new CommandArg("Target1")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -225,7 +231,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, [new CommandArg("Target1")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         // Assert
@@ -247,7 +254,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(false, [new CommandArg("Target1")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
@@ -291,7 +299,8 @@ public class BuildResolverTests
 
         var commandLineArgs = new CommandLineArgs(true, [new CommandArg("Target1")]);
         var paramService = A.Fake<IParamService>();
-        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs);
+        var logger = A.Fake<ILogger<BuildResolver>>();
+        var buildResolver = new BuildResolver(buildDefinition, paramService, commandLineArgs, logger);
 
         // Act
         var buildModel = buildResolver.Resolve();
