@@ -129,7 +129,14 @@ public class GenerateInterfaceMembersSourceGenerator : IIncrementalGenerator
         var methodInputParams = string.Join(", ",
             typeWithMethod.Method.Parameters.Select(static param =>
             {
-                var attributes = param.GetAttributes();
+                var attributes = param
+                    .GetAttributes()
+                    .Where(x => x
+                        .AttributeClass
+                        ?.ToDisplayString()
+                        .StartsWith("System.Runtime.CompilerServices", StringComparison.OrdinalIgnoreCase) is false)
+                    .ToArray();
+
                 var type = param.Type.ToDisplayString();
                 var name = param.Name;
                 string? defaultValue = null;
