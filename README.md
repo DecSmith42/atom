@@ -51,12 +51,11 @@ debug it like standard code, and automatically generate CI/CD configuration file
 
 ## Getting Started
 
-To get started with DecSm.Atom, follow the [Getting Started Guide](./docs/getting-started.md).
+To get started with DecSm.Atom, follow the [Getting Started Guide](https://decsm42.gitbook.io/atom/getting-started).
 
 ## Documentation
 
-For comprehensive guides and detailed information, including specific module documentation and
-a [Development Guide](./docs/development.md) for contributors, please refer to the [guides](./docs/guides.md).
+Full documentation is available on [GitBook](https://decsm42.gitbook.io/atom/).
 
 ## License
 
