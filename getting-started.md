@@ -4,111 +4,145 @@ icon: flag
 
 # Getting Started
 
-#### Installation
+Welcome to DecSm.Atom! This guide will walk you through setting up your first Atom-powered build project. Atom provides\
+a powerful, type-safe, and extensible framework for defining your build, test, and deployment pipelines entirely in C#.
 
-Atom comes with a .NET tool. You can install the Atom CLI tool, `DecSm.Atom.Tool`, to manage and run your builds.
+### Prerequisites
 
-Bash
+Before you begin, ensure you have the following installed:
 
+* **.NET SDK 10.0 (recommended, 8.0 or later supported)**: Atom projects are built with .NET.
+* **(Optional) Git**: For version control and triggering workflows. However, atom can also be used without Git.
+* **(Optional) An IDE with C# support**: Visual Studio, Rider, or VS Code are recommended, though any text editor with the .NET SDK and CLI will work.
+
+### 0. (Optional) Install the Atom Tool
+
+While you can run Atom builds using `dotnet run`, installing the Atom CLI tool provides a more streamlined experience.
+
+```bash
+dotnet tool install -g DecSm.Atom.Tool
 ```
-dotnet tool install --global DecSm.Atom.Tool
-```
 
-_(Assuming the tool is published to NuGet. If it's a local tool, you might need to specify the path or use `dotnet tool install --local` commands within the repository context after packing it.)_
+### 1. Set up the Build Definition
 
-{% hint style="info" %}
-You don't have to install the tool, it just streamlines the run process.\
-`dotnet run --project <atom-project>` will also work.
-{% endhint %}
+**Note:** The following `dotnet` commands should be executed in your terminal.
 
-#### Basic Usage
+1.  **Create a new C# project for your build definition**:
 
-1. **Create a Build Project:** Typically, you'll have a dedicated build project within your solution. In this repository, the `_atom` project serves this purpose. This project will contain your build logic.
-2.  **Define Your Build Definition:** In your build project (e.g., `_atom/Build.cs`), create a class that inherits from `DefaultBuildDefinition` (or `BuildDefinition` for more control). This class will house your targets and workflow configurations.
-
-    C#
-
+    ```bash
+    dotnet new worker -n _atom
     ```
-    // _atom/Build.cs
-    using DecSm.Atom.Build.Definition;
-    using DecSm.Atom.Hosting;
-    // ... other necessary using statements for your targets
+2.  **Add the `DecSm.Atom` package to your `_atom` project**:
 
+    ```bash
+    cd _atom
+    dotnet add package DecSm.Atom
+    dotnet add package DecSm.Atom.GithubWorkflows 
+    ```
+3.  **Define your `Build` class**: Create a file named `Build.cs` inside the `_atom` folder and define your build.
+
+    ```csharp
+    // _atom/Build.cs
+
+    // The DecSm.Atom NuGet package provides global usings for most Atom types.
+
+    // Mark this class as the build definition and generate an entry point
     [BuildDefinition]
-    [GenerateEntryPoint] // This generates the Main method for your build project
-    internal partial class Build : DefaultBuildDefinition, IMyCustomTarget // Implement interfaces for your targets
-    {
-        // Define workflows, default options, etc.
+    [GenerateEntryPoint]
+    public partial class Build : BuildDefinition
+    {        
+        // Define your targets
+        Target MyCustomTarget => t => t
+            .DescribedAs("My first custom Atom target.")
+            .Executes(() =>
+            {
+                Logger.LogInformation("Hello from MyCustomTarget!");
+            });
+        
+        // Define your workflows here
         public override IReadOnlyList<WorkflowDefinition> Workflows =>
         [
-            new("MyWorkflow")
+            new("my-workflow")
             {
-                Triggers = [GitPushTrigger.ToMain], // Example trigger
-                StepDefinitions =
+                // Defines the conditions under which the workflow should run
+                Triggers =
                 [
-                    Targets.MyCustomTarget, // Refer to your defined targets
+                    GitPushTrigger.ToMain,
+                    GitPullRequestTrigger.IntoMain,
                 ],
-                WorkflowTypes = [Github.WorkflowType], // Example workflow type
-            },
+                
+                // Defines the targets that should be executed when the workflow runs
+                Targets =
+                [
+                    // WorkflowTargets.* is a source-generated static class.
+                    // Atom automatically creates properties for each defined Target in your Build class,
+                    // allowing for convenient access and strong typing.
+                    WorkflowTargets.MyCustomTarget,
+                ],
+                
+                // Generate workflows for GitHub Actions
+                WorkflowTypes = [Github.WorkflowType],
+            }
         ];
     }
     ```
-3.  **Define Targets:** Targets represent individual tasks or operations in your build process. Define them by creating interfaces that inherit from `IBuildAccessor` and are marked with `[TargetDefinition]`. Implement the target logic within these interfaces.
 
-    C#
+### 2. Run Your Build
 
-    ```
-    // _atom/Targets/MyCustomTarget.cs
-    using DecSm.Atom.Build.Definition;
-    using DecSm.Atom.Build; // For IBuildAccessor
-    using System.Threading.Tasks;
+**Note:** The following commands should be executed in your terminal from your build project directory (e.g., `_atom`).
 
-    [TargetDefinition]
-    internal partial interface IMyCustomTarget : IBuildAccessor
-    {
-        Target MyCustomTarget => d => d
-            .DescribedAs("This is my custom build target.")
-            .Executes(async () =>
-            {
-                Logger.LogInformation("Executing MyCustomTarget...");
-                // Your target logic here
-                await Task.CompletedTask;
-            });
-    }
-    ```
+Now you can run your Atom build from the command line.
 
-    Make sure your main `Build` class inherits from these target interfaces (e.g., `public partial class Build : DefaultBuildDefinition, IMyCustomTarget`).
-4.  **Running Builds:** Once your build project is set up, you can run your build targets using the Atom CLI tool from your repository root:
+```bash
+# Run the build, specifying your _atom project
+atom MyCustomTarget
 
-    Bash
+# Or without the tool
+dotnet run -- MyCustomTarget
+```
 
-    ```
-    atom MyCustomTarget
-    ```
+You should see output similar to:
 
-    To see available targets and options:
+```
+Executing target MyCustomTarget...
 
-    Bash
+My first custom Atom target.
 
-    ```
-    atom --help
-    ```
-5.  **Workflow Generation:** Atom can generate CI/CD workflow files (e.g., for GitHub Actions, Azure DevOps). Configure your workflows in the `Workflows` property of your `Build` class. To generate these files, run:
+Hello from MyCustomTarget!
+```
 
-    Bash
+### 3. Generate CI/CD Workflows
 
-    ```
-    atom --gen
-    ```
+**Note:** The following commands should be executed in your terminal from your build project directory (e.g., `_atom`).
 
-    This will create/update files in locations like `.github/workflows/` or `.devops/workflows/` based on your `WorkflowTypes` and the corresponding `WorkflowFileWriter` implementations.
+Atom can automatically generate CI/CD workflow files (e.g., GitHub Actions YAML) based on your `WorkflowDefinition`s.
 
-#### Core Concepts
+```bash
+# Generate workflows
+atom -g
 
-* **Build Definition (`BuildDefinition`, `DefaultBuildDefinition`):** The central class where you define your build process, targets, parameters, and workflows.
-* **Targets (`TargetDefinition`, `Target`):** Individual units of work, like compiling code, running tests, or packaging applications.
-* **Parameters (`ParamDefinitionAttribute`, `SecretDefinitionAttribute`):** Inputs to your build targets, which can be sourced from command-line arguments, environment variables, configuration files, or secret providers.
-* **Workflows (`WorkflowDefinition`, `WorkflowTargetDefinition`):** Define how targets are orchestrated, often for CI/CD pipelines, including triggers (e.g., git push, pull request) and options.
-* **Modules:** Atom is extensible through modules that provide integrations and helpers for specific tools or platforms (e.g., `DecSm.Atom.Module.Dotnet`, `DecSm.Atom.Module.GithubWorkflows`, `DecSm.Atom.Module.AzureKeyVault`).
+# Or without the tool
+dotnet run -- -g
+```
 
-For more detailed examples, refer to the `_atom` project in this repository and the various `*.cs` files defining targets and build logic. The `.github/workflows` and `.devops/workflows` directories contain examples of generated workflow files.
+This will create a `.github/workflows` directory (if using `Github.WorkflowType`) containing `my-workflow.yml` (or whatever you named your workflow).
+
+### Next Steps
+
+You've successfully set up and run your first Atom build! To learn more about Atom's capabilities, explore the following guides:
+
+* **Build Definitions**: Understand the core structure of your build.
+* **Targets**: Learn how to define and execute units of work.
+* **Parameters**: Configure your build with external inputs.
+* **Workflows**: Orchestrate your targets for CI/CD.
+* **Build Accessor**: Access core services and helpers.
+* **Atom File System**: Perform file operations safely.
+* **Process Runner**: Execute external commands.
+* **Secrets Management**: Handle sensitive data securely.
+* **Workflow Variables**: Share data between targets and jobs.
+* **Common Targets**: Leverage pre-built targets for common tasks.
+* **Build Information Providers**: Customize build ID, version, and timestamp.
+* **Rich Console Output**: Enhance your build's console experience.
+* **File Transformation Scopes**: Temporarily modify files.
+* **Semantic Versioning**: Work with `SemVer` types.
+* **Step Failed Exception**: Handle build failures gracefully.

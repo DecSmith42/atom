@@ -1,24 +1,64 @@
 ---
-icon: atom
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: false
-  pagination:
-    visible: true
+icon: house
 ---
 
 # Atom
 
-#### What is Atom?
+[![Validate](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Validate.yml)    [![Build](https://github.com/DecSmith42/atom/actions/workflows/Build.yml/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/Build.yml)    [![Dependabot Updates](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates)
 
-Atom is a C# based task and build automation framework designed to be flexible and extensible. It helps automate development workflows by defining and executing build tasks.
+[![CodeQL](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/github-code-scanning/codeql)    [![Automatic Dependency Submission](https://github.com/DecSmith42/atom/actions/workflows/dependency-graph/auto-submission/badge.svg)](https://github.com/DecSmith42/atom/actions/workflows/dependency-graph/auto-submission)
 
-Heavily inspired by the likes of [NUKE](https://nuke.build/), Atom aims to provide a flexible, extensible framework for defining and executing build tasks.
 
-It leverages .NET and provides a comprehensive set of features for automating your development workflow.
+
+Atom is an opinionated, type-safe build automation framework for .NET.&#x20;
+
+It enables you to define your build logic in C#, debug it like standard code, and automatically generate CI/CD configuration files for GitHub Actions and Azure DevOps.
+
+### Why Atom?
+
+* **Zero Context Switching**: Write build logic in C# alongside your application code.
+* **Intellisense & Debugging**: Step through your build process using your IDE.
+* **CI/CD Agnostic**: Define logic once; Atom generates the YAML for GitHub and Azure DevOps.
+* **Modular**: Pull in capabilities via NuGet packages (GitVersion, Azure KeyVault, etc.).
+* **Source Generators**: Reduces boilerplate by automatically discovering targets and parameters.
+
+### Basic Example
+
+1.  Create a new file `Build.cs`
+
+    ```csharp
+    #:package DecSm.Atom@2.*
+
+    [BuildDefinition]
+    [GenerateEntryPoint]
+    partial class Build : BuildDefinition
+    {
+        Target SayHello => t => t
+            .Executes(() => Logger.LogInformation("Hello, World!"));
+    }
+    ```
+2.  Execute `dotnet run Build.cs SayHello`
+
+    ```
+    25-12-16 +10:00  DecSm.Atom.Build.BuildExecutor:
+    22:46:01.754 INF Executing build
+
+    SayHello
+
+    25-12-16 +10:00  SayHello | Build:
+    22:46:01.790 INF Hello, World!    
+
+    Build Summary
+
+      SayHello │ Succeeded │ <0.01s
+    ```
+
+### Getting Started
+
+To get started with DecSm.Atom, follow the [Getting Started Guide](getting-started.md).
+
+
+
+### License
+
+Atom is released under the [MIT License](https://github.com/DecSmith42/atom/blob/main/LICENSE.txt).
