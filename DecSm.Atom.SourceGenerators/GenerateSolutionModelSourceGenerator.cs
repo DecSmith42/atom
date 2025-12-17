@@ -163,7 +163,10 @@ public class GenerateSolutionModelSourceGenerator : IIncrementalGenerator
                 var validIdentifier = kvp
                     .Key
                     .Replace('.', '_')
-                    .Replace(' ', '_');
+                    .Replace(' ', '_')
+                    .Replace("\\", "/")
+                    .Split('/')
+                    .Last();
 
                 var projectPath = kvp.Value.Replace("\\", "/");
 
