@@ -120,7 +120,7 @@ internal static class RunCommand
         var foundPath = FileFinder.FindFile(FileSystem, FileSystem.Directory.GetCurrentDirectory(), [name], false);
 
         if (foundPath is not null)
-            return await Execute(foundPath, runArgs, false, cancellationToken);
+            return await Execute(foundPath, runArgs, true, cancellationToken);
 
         return null;
     }
