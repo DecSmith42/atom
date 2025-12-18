@@ -101,29 +101,10 @@ internal static class RunCommand
         if (!name.EndsWith(".csproj"))
             name = $"{name}.csproj";
 
-        var nonCsProjName = name[..^".csproj".Length];
+        var foundPath = FileFinder.FindFile(FileSystem, FileSystem.Directory.GetCurrentDirectory(), [name], true);
 
-        if (FileSystem.Path.IsPathRooted(name) && FileSystem.FileInfo.New(name) is { Exists: true } rootedFileInfo)
-            return await Execute(rootedFileInfo, runArgs, false, cancellationToken);
-
-        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
-
-        while (currentDirectory is { Exists: true })
-        {
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name)) is
-                {
-                    Exists: true,
-                } fileInfo)
-                return await Execute(fileInfo, runArgs, false, cancellationToken);
-
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, nonCsProjName, name)) is
-                {
-                    Exists: true,
-                } nestedFileInfo)
-                return await Execute(nestedFileInfo, runArgs, false, cancellationToken);
-
-            currentDirectory = currentDirectory.Parent;
-        }
+        if (foundPath is not null)
+            return await Execute(foundPath, runArgs, false, cancellationToken);
 
         return null;
     }
@@ -133,21 +114,13 @@ internal static class RunCommand
         string[] runArgs,
         CancellationToken cancellationToken)
     {
-        if (FileSystem.Path.IsPathRooted(name) && FileSystem.FileInfo.New(name) is { Exists: true } rootedFileInfo)
-            return await Execute(rootedFileInfo, runArgs, true, cancellationToken);
+        if (!name.EndsWith(".cs"))
+            name = $"{name}.cs";
 
-        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+        var foundPath = FileFinder.FindFile(FileSystem, FileSystem.Directory.GetCurrentDirectory(), [name], false);
 
-        while (currentDirectory is { Exists: true })
-        {
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name)) is
-                {
-                    Exists: true,
-                } fileInfo)
-                return await Execute(fileInfo, runArgs, true, cancellationToken);
-
-            currentDirectory = currentDirectory.Parent;
-        }
+        if (foundPath is not null)
+            return await Execute(foundPath, runArgs, false, cancellationToken);
 
         return null;
     }
@@ -157,30 +130,17 @@ internal static class RunCommand
         string[] runArgs,
         CancellationToken cancellationToken)
     {
-        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
+        var currentDirectory = FileSystem.Directory.GetCurrentDirectory();
 
-        while (currentDirectory is { Exists: true })
-        {
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.csproj")) is
-                {
-                    Exists: true,
-                } projectFileInfo)
-                return await Execute(projectFileInfo, runArgs, false, cancellationToken);
+        var projectPath = FileFinder.FindFile(FileSystem, currentDirectory, [name, $"{name}.csproj"], true);
 
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name, $"{name}.csproj")) is
-                {
-                    Exists: true,
-                } nestedProjectFileInfo)
-                return await Execute(nestedProjectFileInfo, runArgs, false, cancellationToken);
+        if (projectPath is not null)
+            return await Execute(projectPath, runArgs, false, cancellationToken);
 
-            if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.cs")) is
-                {
-                    Exists: true,
-                } csFileInfo)
-                return await Execute(csFileInfo, runArgs, true, cancellationToken);
+        var csPath = FileFinder.FindFile(FileSystem, currentDirectory, [name, $"{name}.cs"], false);
 
-            currentDirectory = currentDirectory.Parent;
-        }
+        if (csPath is not null)
+            return await Execute(csPath, runArgs, true, cancellationToken);
 
         return null;
     }
@@ -192,30 +152,12 @@ internal static class RunCommand
             ? ["_atom", "_build", "Atom", "Build"]
             : ["_atom", "_build", "Atom", "atom", "Build", "build"];
 
-        var currentDirectory = FileSystem.DirectoryInfo.New(FileSystem.Directory.GetCurrentDirectory());
-
-        while (currentDirectory is { Exists: true })
+        foreach (var name in defaultNames)
         {
-            foreach (var name in defaultNames)
-            {
-                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.csproj")) is
-                    {
-                        Exists: true,
-                    } projectFileInfo)
-                    return await Execute(projectFileInfo, runArgs, false, cancellationToken);
+            var result = await FindAndExecuteKnownEither(name, runArgs, cancellationToken);
 
-                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, name, $"{name}.csproj"))
-                    is { Exists: true } nestedProjectFileInfo)
-                    return await Execute(nestedProjectFileInfo, runArgs, false, cancellationToken);
-
-                if (FileSystem.FileInfo.New(FileSystem.Path.Combine(currentDirectory.FullName, $"{name}.cs")) is
-                    {
-                        Exists: true,
-                    } nestedCsFileInfo)
-                    return await Execute(nestedCsFileInfo, runArgs, true, cancellationToken);
-            }
-
-            currentDirectory = currentDirectory.Parent;
+            if (result is not null)
+                return result;
         }
 
         return null;
