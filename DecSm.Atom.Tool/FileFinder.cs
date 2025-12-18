@@ -2,7 +2,7 @@
 
 public static class FileFinder
 {
-    private const int MaxDownstreamDepth = 8;
+    private const int MaxDownstreamDepth = 4;
 
     /// <summary>
     ///     Directories to ignore during the downward Breadth-First Search.
