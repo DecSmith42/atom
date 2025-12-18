@@ -21,6 +21,7 @@
         <Using Include="DecSm.Atom.Workflows.Definition.Triggers" Global="true"/>
         <Using Include="DecSm.Atom.Workflows.Model" Global="true"/>
         <Using Include="DecSm.Atom.Workflows.Options" Global="true"/>
+        <Using Include="Microsoft.Extensions.Hosting" Global="true"/>
         <Using Include="Microsoft.Extensions.Logging" Global="true"/>
     </ItemGroup>
 </Project>
