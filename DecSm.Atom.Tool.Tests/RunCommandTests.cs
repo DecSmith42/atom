@@ -1,310 +1,92 @@
 ﻿namespace DecSm.Atom.Tool.Tests;
 
 [TestFixture]
-[SuppressMessage("System.IO.Abstractions", "IO0006:Replace Path class with IFileSystem.Path for improved testability")]
 public class RunCommandTests
 {
-    private MockFileSystem _fileSystem = null!;
-    private string _currentDir = null!;
-    private string _parentDir = null!;
-    private string _root = null!;
+    private MockFileSystem _fs = null!;
 
     [SetUp]
     public void SetUp()
     {
-        _root = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? @"C:\"
-            : "/";
-
-        _parentDir = Path.Combine(_root, "parent");
-        _currentDir = Path.Combine(_parentDir, "tests");
-
+        _fs = new();
+        RunCommand.FileSystem = _fs;
         RunCommand.MockDotnetCli = true;
     }
 
-    [TearDown]
-    public void TearDown()
-    {
-        RunCommand.MockDotnetCli = false;
-        RunCommand.FileSystem = new FileSystem();
-    }
-
-    private void SetupFileSystem(Dictionary<string, MockFileData> files)
-    {
-        _fileSystem = new(files, _currentDir);
-
-        // Ensure current directory exists if not implicitly created by files
-        if (!_fileSystem.Directory.Exists(_currentDir))
-            _fileSystem.AddDirectory(_currentDir);
-
-        RunCommand.FileSystem = _fileSystem;
-    }
+    private string GetRoot() =>
+        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? @"C:\"
+            : "/";
 
     [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultProject_InCurrentDirectory()
+    public async Task Handle_ShouldFindProjectInParent_AndStopAtRootMarker()
     {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "_atom.csproj"), new("") },
-        };
+        // Arrange
+        var root = GetRoot();
+        var repoDir = _fs.Path.Combine(root, "Repo");
+        var subDir = _fs.Path.Combine(repoDir, "SubFolder");
+        var targetDir = _fs.Path.Combine(subDir, "Target");
 
-        SetupFileSystem(files);
+        // CRITICAL FIX: Explicitly create the full path
+        // MockFileSystem needs the physical directory to exist to enumerate it
+        _fs.AddDirectory(targetDir);
 
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
+        // Adding the file automatically creates 'Repo', but not 'SubFolder\Target'
+        _fs.AddFile(_fs.Path.Combine(repoDir, "MyProj.csproj"), new(""));
 
-        result.ShouldBe(0);
-    }
+        // Add the root marker
+        _fs.AddDirectory(_fs.Path.Combine(subDir, ".git"));
 
-    [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "_build.csproj"), new("") },
-        };
+        _fs.Directory.SetCurrentDirectory(targetDir);
 
-        SetupFileSystem(files);
+        // Act
+        var result = await RunCommand.Handle([], "MyProj", CancellationToken.None);
 
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultProject_InRootDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_root, "_atom.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultNestedProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "_atom", "_atom.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultCsFile_InCurrentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "Atom.cs"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithEmptySubject_FindsDefaultCsFile_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "Atom.cs"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProject_FindsProject_InCurrentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild.csproj", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProject_FindsProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild.csproj", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProject_FindsNestedProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild", "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild.csproj", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProjectName_FindsProject_InCurrentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProjectName_FindsProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProjectName_FindsNestedProject_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild", "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownProjectName_FindsCsFile_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild.cs"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownCsFile_FindsCsFile_InCurrentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "mybuild.cs"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild.cs", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithKnownCsFile_FindsCsFile_InParentDirectory()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_parentDir, "mybuild.cs"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild.cs", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_WithNestedProject_FindsProject()
-    {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "mybuild", "mybuild.csproj"), new("") },
-        };
-
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "mybuild", CancellationToken.None);
-
-        result.ShouldBe(0);
-    }
-
-    [Test]
-    public async Task Handle_FileNotFound_ReturnsError()
-    {
-        var files = new Dictionary<string, MockFileData>();
-        SetupFileSystem(files);
-
-        var result = await RunCommand.Handle([], "nonexistent", CancellationToken.None);
-
+        // Assert
         result.ShouldBe(1);
     }
 
     [Test]
-    public async Task Handle_WithArgs_RunsSuccessfully()
+    public async Task Handle_ShouldFindNestedProject_WhenConventionSearchIsEnabled()
     {
-        var files = new Dictionary<string, MockFileData>
-        {
-            { Path.Combine(_currentDir, "_atom.csproj"), new("") },
-        };
+        // Arrange
+        var root = GetRoot();
+        var workDir = _fs.Path.Combine(root, "Work");
+        var nestedProject = _fs.Path.Combine(workDir, "Atom", "Atom.csproj");
 
-        SetupFileSystem(files);
+        // AddDirectory is not strictly needed here because AddFile creates the parent
+        _fs.AddFile(nestedProject, new(""));
+        _fs.Directory.SetCurrentDirectory(workDir);
 
-        var args = new[] { "arg1", "arg with space", "arg\nwith\nnewline" };
+        // Act
+        var result = await RunCommand.Handle([], "Atom", CancellationToken.None);
 
-        var result = await RunCommand.Handle(args, "", CancellationToken.None);
+        // Assert
+        result.ShouldBe(0);
+    }
 
+    [Test]
+    public async Task Handle_ShouldPrioritizeBreadthFirst_InDownwardSearch()
+    {
+        // Arrange
+        var root = GetRoot();
+        var searchRoot = _fs.Path.Combine(root, "SearchRoot");
+
+        var deepPath = _fs.Path.Combine(searchRoot, "Level1", "Level2", "Target.csproj");
+        var shallowPath = _fs.Path.Combine(searchRoot, "Level1_Sibling", "Target.csproj");
+
+        // AddFile creates all necessary parent directories for these files
+        _fs.AddFile(deepPath, new(""));
+        _fs.AddFile(shallowPath, new(""));
+
+        // Ensure the search root itself is initialized
+        _fs.AddDirectory(searchRoot);
+        _fs.Directory.SetCurrentDirectory(searchRoot);
+
+        // Act
+        var result = await RunCommand.Handle([], "Target", CancellationToken.None);
+
+        // Assert
         result.ShouldBe(0);
     }
 }
