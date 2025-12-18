@@ -22,11 +22,11 @@ public static class FileFinder
         ".idea",
 
         // --- Build Artifacts & Output ---
+        // Note - 'build' excluded as it might be a valid search
         "bin",
         "obj",
         "dist",
         "out",
-        "build",
         "target",
         "publish",
 
@@ -76,6 +76,10 @@ public static class FileFinder
         string[] fileNames,
         bool checkParentSubfolderMatches)
     {
+        // if it's already a file, return it
+        if (fileSystem.File.Exists(startDirectory))
+            return fileSystem.FileInfo.New(startDirectory);
+
         var initialDir = fileSystem.DirectoryInfo.New(startDirectory);
 
         // Search up
