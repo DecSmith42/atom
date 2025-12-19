@@ -14,11 +14,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(RuntimeIdentifier) == ''">
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net10.0'">
-    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-arm64;any</RuntimeIdentifiers>
     <PublishAot>true</PublishAot>
 
     <!--  Size optimisation bits for Native AOT -->
