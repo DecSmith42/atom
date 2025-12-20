@@ -797,8 +797,15 @@ internal sealed class GithubWorkflowWriter(
         var projectPath = fileSystem
             .FileSystem
             .DirectoryInfo
-            .New(fileSystem.FileSystem.Directory.GetCurrentDirectory())
-            .EnumerateFiles()
+            .New(fileSystem.AtomRootDirectory)
+            .EnumerateFiles("*.csproj",
+                new EnumerationOptions
+                {
+                    IgnoreInaccessible = true,
+                    MaxRecursionDepth = 4,
+                    RecurseSubdirectories = true,
+                    ReturnSpecialDirectories = false,
+                })
             .FirstOrDefault(f => f.Name.Equals($"{projectName}.csproj", StringComparison.OrdinalIgnoreCase));
 
         if (projectPath?.FullName is null)
