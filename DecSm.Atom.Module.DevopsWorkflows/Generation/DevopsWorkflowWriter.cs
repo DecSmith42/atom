@@ -411,26 +411,52 @@ internal sealed partial class DevopsWorkflowWriter(
                 .DistinctBy(x => x.FeedName)
                 .ToList();
 
-            using (WriteSection("- script: dotnet tool update --global DecSm.Atom.Tool"))
-                WriteLine("displayName: 'Install atom tool'");
-
-            WriteLine();
-
-            using (WriteSection("- script: |"))
+            // If we know the SetupDotnet step was run for dotnet 10+,
+            // then we can use the dotnet tool exec command instead of installing the tool to run it
+            if (setupDotnetSteps.Any(x =>
+                    SemVer.TryParse(x.DotnetVersion?.Replace("x", "0"), out var version) && version.Major >= 10))
             {
-                foreach (var feedToAdd in feedsToAdd)
-                    WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
-
-                WriteLine("displayName: 'Setup NuGet'");
-
-                using (WriteSection("env:"))
+                using (WriteSection("- script: |"))
                 {
                     foreach (var feedToAdd in feedsToAdd)
                         WriteLine(
-                            $"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
+                            $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+
+                    WriteLine("displayName: 'Setup NuGet'");
+
+                    using (WriteSection("env:"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
+                    }
+
+                    WriteLine();
                 }
+            }
+            else
+            {
+                using (WriteSection("- script: dotnet tool update --global DecSm.Atom.Tool"))
+                    WriteLine("displayName: 'Install atom tool'");
 
                 WriteLine();
+
+                using (WriteSection("- script: |"))
+                {
+                    foreach (var feedToAdd in feedsToAdd)
+                        WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+
+                    WriteLine("displayName: 'Setup NuGet'");
+
+                    using (WriteSection("env:"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $"{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}: $({feedToAdd.SecretName})");
+                    }
+
+                    WriteLine();
+                }
             }
         }
 
