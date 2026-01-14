@@ -492,29 +492,57 @@ internal sealed class GithubWorkflowWriter(
                 .DistinctBy(x => x.FeedName)
                 .ToList();
 
-            using (WriteSection("- name: Install atom tool"))
+            // If we know the SetupDotnet step was run for dotnet 10+,
+            // then we can use the dotnet tool exec command instead of installing the tool to run it
+            if (setupDotnetSteps.Any(x =>
+                    SemVer.TryParse(x.DotnetVersion?.Replace("x", "0"), out var version) && version.Major >= 10))
             {
-                WriteLine("run: dotnet tool update --global DecSm.Atom.Tool");
-                WriteLine("shell: bash");
-            }
-
-            WriteLine();
-
-            using (WriteSection("- name: Setup NuGet"))
-            {
-                using (WriteSection("run: |"))
+                using (WriteSection("- name: Setup NuGet"))
                 {
-                    foreach (var feedToAdd in feedsToAdd)
-                        WriteLine($"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                    using (WriteSection("run: |"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                    }
+
+                    WriteLine("shell: bash");
+
+                    using (WriteSection("env:"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                    }
+                }
+            }
+            else
+            {
+                using (WriteSection("- name: Install atom tool"))
+                {
+                    WriteLine("run: dotnet tool update --global DecSm.Atom.Tool");
+                    WriteLine("shell: bash");
                 }
 
-                WriteLine("shell: bash");
+                WriteLine();
 
-                using (WriteSection("env:"))
+                using (WriteSection("- name: Setup NuGet"))
                 {
-                    foreach (var feedToAdd in feedsToAdd)
-                        WriteLine(
-                            $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                    using (WriteSection("run: |"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $"  atom nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                    }
+
+                    WriteLine("shell: bash");
+
+                    using (WriteSection("env:"))
+                    {
+                        foreach (var feedToAdd in feedsToAdd)
+                            WriteLine(
+                                $$$"""{{{AddNugetFeedsStep.GetEnvVarNameForFeed(feedToAdd.FeedName)}}}: ${{ secrets.{{{feedToAdd.SecretName}}} }}""");
+                    }
                 }
             }
         }
