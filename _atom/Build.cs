@@ -14,7 +14,12 @@ internal partial class Build : BuildDefinition,
 {
     public static readonly string[] PlatformNames =
     [
-        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+        IJobRunsOn.WindowsLatestTag,
+        "windows-11-arm",
+        IJobRunsOn.UbuntuLatestTag,
+        "ubuntu-24.04-arm",
+        "macos-15-intel",
+        IJobRunsOn.MacOsLatestTag,
     ];
 
     public static readonly string[] FrameworkNames = ["net8.0", "net9.0", "net10.0"];

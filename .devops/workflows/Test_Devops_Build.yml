@@ -91,9 +91,15 @@ jobs:
       matrix:
         001_windows-latest:
           job-runs-on: 'windows-latest'
-        002_ubuntu-latest:
+        002_windows-11-arm:
+          job-runs-on: 'windows-11-arm'
+        003_ubuntu-latest:
           job-runs-on: 'ubuntu-latest'
-        003_macos-latest:
+        004_ubuntu-24-04-arm:
+          job-runs-on: 'ubuntu-24.04-arm'
+        005_macos-15-intel:
+          job-runs-on: 'macos-15-intel'
+        006_macos-latest:
           job-runs-on: 'macos-latest'
     pool:
       vmImage: $(job-runs-on)
@@ -126,28 +132,55 @@ jobs:
         001_windows-latest_net8-0:
           job-runs-on: 'windows-latest'
           test-framework: 'net8.0'
-        002_ubuntu-latest_net8-0:
+        002_windows-11-arm_net8-0:
+          job-runs-on: 'windows-11-arm'
+          test-framework: 'net8.0'
+        003_ubuntu-latest_net8-0:
           job-runs-on: 'ubuntu-latest'
           test-framework: 'net8.0'
-        003_macos-latest_net8-0:
+        004_ubuntu-24-04-arm_net8-0:
+          job-runs-on: 'ubuntu-24.04-arm'
+          test-framework: 'net8.0'
+        005_macos-15-intel_net8-0:
+          job-runs-on: 'macos-15-intel'
+          test-framework: 'net8.0'
+        006_macos-latest_net8-0:
           job-runs-on: 'macos-latest'
           test-framework: 'net8.0'
-        004_windows-latest_net9-0:
+        007_windows-latest_net9-0:
           job-runs-on: 'windows-latest'
           test-framework: 'net9.0'
-        005_ubuntu-latest_net9-0:
+        008_windows-11-arm_net9-0:
+          job-runs-on: 'windows-11-arm'
+          test-framework: 'net9.0'
+        009_ubuntu-latest_net9-0:
           job-runs-on: 'ubuntu-latest'
           test-framework: 'net9.0'
-        006_macos-latest_net9-0:
+        010_ubuntu-24-04-arm_net9-0:
+          job-runs-on: 'ubuntu-24.04-arm'
+          test-framework: 'net9.0'
+        011_macos-15-intel_net9-0:
+          job-runs-on: 'macos-15-intel'
+          test-framework: 'net9.0'
+        012_macos-latest_net9-0:
           job-runs-on: 'macos-latest'
           test-framework: 'net9.0'
-        007_windows-latest_net10-0:
+        013_windows-latest_net10-0:
           job-runs-on: 'windows-latest'
           test-framework: 'net10.0'
-        008_ubuntu-latest_net10-0:
+        014_windows-11-arm_net10-0:
+          job-runs-on: 'windows-11-arm'
+          test-framework: 'net10.0'
+        015_ubuntu-latest_net10-0:
           job-runs-on: 'ubuntu-latest'
           test-framework: 'net10.0'
-        009_macos-latest_net10-0:
+        016_ubuntu-24-04-arm_net10-0:
+          job-runs-on: 'ubuntu-24.04-arm'
+          test-framework: 'net10.0'
+        017_macos-15-intel_net10-0:
+          job-runs-on: 'macos-15-intel'
+          test-framework: 'net10.0'
+        018_macos-latest_net10-0:
           job-runs-on: 'macos-latest'
           test-framework: 'net10.0'
     pool:
@@ -280,7 +313,25 @@ jobs:
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Tool
         inputs:
+          artifact: DecSm.Atom.Tool-windows-11-arm
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
           artifact: DecSm.Atom.Tool-ubuntu-latest
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-ubuntu-24.04-arm
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-macos-15-intel
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2
