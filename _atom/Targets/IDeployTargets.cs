@@ -35,6 +35,12 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
                         cancellationToken: cancellationToken);
             });
 
+    Target PushToNugetDevops =>
+        d => d
+            .Extends<IDeployTargets>(x => x.PushToNuget)
+            .ConsumesNoArtifacts()
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, DevopsPlatformNames);
+
     Target PushToRelease =>
         d => d
             .DescribedAs("Pushes the packages to the release feed.")

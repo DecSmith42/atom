@@ -22,6 +22,11 @@ internal partial class Build : BuildDefinition,
         IJobRunsOn.MacOsLatestTag,
     ];
 
+    public static readonly string[] DevopsPlatformNames =
+    [
+        IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
+    ];
+
     public static readonly string[] FrameworkNames = ["net8.0", "net9.0", "net10.0"];
 
     private static readonly MatrixDimension TestFrameworkMatrix = new(nameof(ITestTargets.TestFramework))
@@ -102,7 +107,7 @@ internal partial class Build : BuildDefinition,
                 WorkflowTargets.PackTool.WithDevopsPoolMatrix(PlatformNames),
                 WorkflowTargets
                     .TestProjects
-                    .WithDevopsPoolMatrix(PlatformNames)
+                    .WithDevopsPoolMatrix(DevopsPlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 WorkflowTargets.PushToNuget,
