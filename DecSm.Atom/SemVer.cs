@@ -202,25 +202,6 @@ public readonly partial record struct SemVer()
             : string.CompareOrdinal(Metadata, other.Metadata);
     }
 
-    /// <summary>
-    ///     Compares the current instance with another <see cref="SemVer" /> and returns an integer that indicates
-    ///     whether the current instance precedes, follows, or occurs in the same position in the sort order.
-    /// </summary>
-    /// <param name="other">The <see cref="SemVer" /> to compare with this instance.</param>
-    /// <returns>
-    ///     A value that indicates the relative order of the objects being compared:
-    ///     Less than zero if this instance precedes <paramref name="other" />;
-    ///     Zero if they are equal;
-    ///     Greater than zero if this instance follows <paramref name="other" />.
-    /// </returns>
-    public int CompareTo(SemVer? other)
-    {
-        if (other is null)
-            return 1;
-
-        return CompareTo(other.Value);
-    }
-
     public static bool operator >(SemVer left, SemVer right) =>
         left.CompareTo(right) > 0;
 
@@ -232,12 +213,6 @@ public readonly partial record struct SemVer()
 
     public static bool operator <=(SemVer left, SemVer right) =>
         left.CompareTo(right) <= 0;
-
-    public static bool operator ==(SemVer? left, SemVer? right) =>
-        (left is null && right is null) || left?.Equals(right) == true;
-
-    public static bool operator !=(SemVer? left, SemVer? right) =>
-        !(left == right);
 
     /// <summary>
     ///     Parses a string representation of a semantic version using the specified format provider.
@@ -351,6 +326,31 @@ public readonly partial record struct SemVer()
         IFormatProvider? provider,
         [MaybeNullWhen(false)] out SemVer result) =>
         TryParse(s.ToString(), provider, out result);
+
+    /// <summary>
+    ///     Compares the current instance with another <see cref="SemVer" /> and returns an integer that indicates
+    ///     whether the current instance precedes, follows, or occurs in the same position in the sort order.
+    /// </summary>
+    /// <param name="other">The <see cref="SemVer" /> to compare with this instance.</param>
+    /// <returns>
+    ///     A value that indicates the relative order of the objects being compared:
+    ///     Less than zero if this instance precedes <paramref name="other" />;
+    ///     Zero if they are equal;
+    ///     Greater than zero if this instance follows <paramref name="other" />.
+    /// </returns>
+    public int CompareTo(SemVer? other)
+    {
+        if (other is null)
+            return 1;
+
+        return CompareTo(other.Value);
+    }
+
+    public static bool operator ==(SemVer? left, SemVer? right) =>
+        (left is null && right is null) || left?.Equals(right) == true;
+
+    public static bool operator !=(SemVer? left, SemVer? right) =>
+        !(left == right);
 
     /// <summary>
     ///     Determines whether the current version is between two specified versions.

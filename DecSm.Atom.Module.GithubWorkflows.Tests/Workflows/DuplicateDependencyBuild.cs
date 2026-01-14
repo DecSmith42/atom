@@ -16,7 +16,6 @@ public partial class DuplicateDependencyBuild : MinimalBuildDefinition, IGithubW
     ];
 }
 
-
 [ConfigureHostBuilder]
 public partial interface IDuplicateDependencyTarget : IStoreArtifact, IRetrieveArtifact
 {
