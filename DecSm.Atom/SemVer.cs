@@ -23,11 +23,11 @@
 /// </code>
 /// </example>
 [PublicAPI]
-public sealed partial class SemVer()
+public readonly partial record struct SemVer()
     : ISpanParsable<SemVer>, IComparable<SemVer>, IComparisonOperators<SemVer, SemVer, bool>
 {
     /// <summary>
-    ///     Initializes a new instance of the <see cref="SemVer" /> class with the specified version components.
+    ///     Initializes a new instance of the <see cref="SemVer" /> struct with the specified version components.
     ///     This constructor is used for JSON deserialization.
     /// </summary>
     /// <param name="major">The major version number.</param>
@@ -148,11 +148,8 @@ public sealed partial class SemVer()
     ///         <item>Metadata is used only as a final tiebreaker</item>
     ///     </list>
     /// </remarks>
-    public int CompareTo(SemVer? other)
+    public int CompareTo(SemVer other)
     {
-        if (other is null)
-            return 1;
-
         var majorComparison = Major.CompareTo(other.Major);
 
         if (majorComparison != 0)
@@ -205,6 +202,25 @@ public sealed partial class SemVer()
             : string.CompareOrdinal(Metadata, other.Metadata);
     }
 
+    /// <summary>
+    ///     Compares the current instance with another <see cref="SemVer" /> and returns an integer that indicates
+    ///     whether the current instance precedes, follows, or occurs in the same position in the sort order.
+    /// </summary>
+    /// <param name="other">The <see cref="SemVer" /> to compare with this instance.</param>
+    /// <returns>
+    ///     A value that indicates the relative order of the objects being compared:
+    ///     Less than zero if this instance precedes <paramref name="other" />;
+    ///     Zero if they are equal;
+    ///     Greater than zero if this instance follows <paramref name="other" />.
+    /// </returns>
+    public int CompareTo(SemVer? other)
+    {
+        if (other is null)
+            return 1;
+
+        return CompareTo(other.Value);
+    }
+
     public static bool operator >(SemVer left, SemVer right) =>
         left.CompareTo(right) > 0;
 
@@ -223,6 +239,13 @@ public sealed partial class SemVer()
     public static bool operator !=(SemVer? left, SemVer? right) =>
         !(left == right);
 
+    /// <summary>
+    ///     Parses a string representation of a semantic version using the specified format provider.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="provider">The format provider to use (ignored).</param>
+    /// <returns>A <see cref="SemVer" /> equivalent to the version contained in <paramref name="s" />.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="s" /> is not a valid semantic version string.</exception>
     public static SemVer Parse(string s, IFormatProvider? provider)
     {
         var match = SemVerRegex()
@@ -246,6 +269,16 @@ public sealed partial class SemVer()
         };
     }
 
+    /// <summary>
+    ///     Tries to parse a string representation of a semantic version using the specified format provider.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="provider">The format provider to use (ignored).</param>
+    /// <param name="result">
+    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in
+    ///     <paramref name="s" />, if the conversion succeeded, or default if the conversion failed.
+    /// </param>
+    /// <returns>true if <paramref name="s" /> was converted successfully; otherwise, false.</returns>
     public static bool TryParse(
         [NotNullWhen(true)] string? s,
         IFormatProvider? provider,
@@ -253,7 +286,7 @@ public sealed partial class SemVer()
     {
         if (s is null)
         {
-            result = null;
+            result = default;
 
             return false;
         }
@@ -269,7 +302,7 @@ public sealed partial class SemVer()
             !int.TryParse(match.Groups[3].Value, out var patch) ||
             patch < 0)
         {
-            result = null;
+            result = default;
 
             return false;
         }
@@ -293,9 +326,26 @@ public sealed partial class SemVer()
         return true;
     }
 
+    /// <summary>
+    ///     Parses a span of characters representing a semantic version using the specified format provider.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">The format provider to use (ignored).</param>
+    /// <returns>A <see cref="SemVer" /> equivalent to the version contained in <paramref name="s" />.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="s" /> is not a valid semantic version string.</exception>
     public static SemVer Parse(ReadOnlySpan<char> s, IFormatProvider? provider) =>
         Parse(s.ToString(), provider);
 
+    /// <summary>
+    ///     Tries to parse a span of characters representing a semantic version using the specified format provider.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">The format provider to use (ignored).</param>
+    /// <param name="result">
+    ///     When this method returns, contains the <see cref="SemVer" /> equivalent to the version contained in
+    ///     <paramref name="s" />, if the conversion succeeded, or default if the conversion failed.
+    /// </param>
+    /// <returns>true if <paramref name="s" /> was converted successfully; otherwise, false.</returns>
     public static bool TryParse(
         ReadOnlySpan<char> s,
         IFormatProvider? provider,
@@ -303,7 +353,7 @@ public sealed partial class SemVer()
         TryParse(s.ToString(), provider, out result);
 
     /// <summary>
-    ///     Determines whether the current version is between two specified versions (exclusive).
+    ///     Determines whether the current version is between two specified versions.
     /// </summary>
     /// <param name="firstBound">The first boundary version.</param>
     /// <param name="secondBound">The second boundary version.</param>
@@ -442,14 +492,6 @@ public sealed partial class SemVer()
     /// <returns>true if the specified <see cref="SemVer" /> is equal to the current instance; otherwise, false.</returns>
     public bool Equals(SemVer? other) =>
         CompareTo(other) == 0;
-
-    /// <summary>
-    ///     Determines whether the specified object is equal to the current instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with the current instance.</param>
-    /// <returns>true if the specified object is equal to the current instance; otherwise, false.</returns>
-    public override bool Equals(object? obj) =>
-        obj is SemVer semVer && Equals(semVer);
 
     /// <summary>
     ///     Serves as the default hash function.

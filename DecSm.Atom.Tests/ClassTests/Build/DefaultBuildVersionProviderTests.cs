@@ -47,7 +47,7 @@ public class DefaultBuildVersionProviderTests
         var version = provider.Version;
 
         // Assert
-        version.ShouldSatisfyAllConditions(x => x.ShouldNotBeNull(),
+        version.ShouldSatisfyAllConditions(x => x.ShouldNotBe(default),
             x => x
                 .ToString()
                 .ShouldBe("1.2.3"));

@@ -502,7 +502,9 @@ internal sealed class GithubWorkflowWriter(
                                         ?.InformationalVersion ??
                                     "",
                         out var semVer))
-                    toolVersion = semVer;
+                    toolVersion =
+                        SemVer.Parse(
+                            $"{semVer.Prefix}{(semVer.IsPreRelease ? $"-{semVer.PreRelease}" : string.Empty)}");
                 else
                     throw new InvalidOperationException(
                         "Failed to parse DecSm.Atom.Host assembly version as SemVer for syncing atom tool version");
