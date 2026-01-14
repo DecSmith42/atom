@@ -34,7 +34,7 @@ internal sealed class GitVersionBuildVersionProvider(
     {
         get
         {
-            if (field is not null)
+            if (field != default)
                 return field;
 
             var currentGitHash = processRunner
