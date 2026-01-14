@@ -3,8 +3,6 @@
 [TestFixture]
 public class RunCommandTests
 {
-    private MockFileSystem _fs = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -12,6 +10,8 @@ public class RunCommandTests
         RunCommand.FileSystem = _fs;
         RunCommand.MockDotnetCli = true;
     }
+
+    private MockFileSystem _fs = null!;
 
     private string GetRoot() =>
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
