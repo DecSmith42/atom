@@ -14,6 +14,16 @@ internal partial class Build : BuildDefinition,
 {
     public static readonly string[] PlatformNames =
     [
+        IJobRunsOn.WindowsLatestTag,
+        "windows-11-arm",
+        IJobRunsOn.UbuntuLatestTag,
+        "ubuntu-24.04-arm",
+        "macos-15-intel",
+        IJobRunsOn.MacOsLatestTag,
+    ];
+
+    public static readonly string[] DevopsPlatformNames =
+    [
         IJobRunsOn.WindowsLatestTag, IJobRunsOn.UbuntuLatestTag, IJobRunsOn.MacOsLatestTag,
     ];
 
@@ -94,10 +104,10 @@ internal partial class Build : BuildDefinition,
             [
                 WorkflowTargets.SetupBuildInfo,
                 WorkflowTargets.PackProjects,
-                WorkflowTargets.PackTool.WithDevopsPoolMatrix(PlatformNames),
+                WorkflowTargets.PackTool.WithDevopsPoolMatrix(DevopsPlatformNames),
                 WorkflowTargets
                     .TestProjects
-                    .WithDevopsPoolMatrix(PlatformNames)
+                    .WithDevopsPoolMatrix(DevopsPlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
                 WorkflowTargets.PushToNuget,

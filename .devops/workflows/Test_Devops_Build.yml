@@ -280,7 +280,25 @@ jobs:
       - task: DownloadPipelineArtifact@2
         displayName: DecSm.Atom.Tool
         inputs:
+          artifact: DecSm.Atom.Tool-windows-11-arm
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
           artifact: DecSm.Atom.Tool-ubuntu-latest
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-ubuntu-24.04-arm
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-macos-15-intel
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
       - task: DownloadPipelineArtifact@2

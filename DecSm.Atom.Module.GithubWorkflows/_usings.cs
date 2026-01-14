@@ -1,5 +1,6 @@
 global using System.Globalization;
 global using System.IO.Compression;
+global using System.Reflection;
 global using System.Text;
 global using DecSm.Atom.Artifacts;
 global using DecSm.Atom.Build;
@@ -13,6 +14,7 @@ global using DecSm.Atom.Nuget;
 global using DecSm.Atom.Params;
 global using DecSm.Atom.Paths;
 global using DecSm.Atom.Reports;
+global using DecSm.Atom.Util.Scope;
 global using DecSm.Atom.Variables;
 global using DecSm.Atom.Workflows.Definition;
 global using DecSm.Atom.Workflows.Definition.Options;
