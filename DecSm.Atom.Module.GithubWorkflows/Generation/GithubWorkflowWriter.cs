@@ -492,6 +492,22 @@ internal sealed class GithubWorkflowWriter(
                 .DistinctBy(x => x.FeedName)
                 .ToList();
 
+            var syncAtomToolVersionToLibraryVersion = setupNugetSteps.Any(x => x.SyncAtomToolVersionToLibraryVersion);
+            var toolVersion = "";
+
+            if (syncAtomToolVersionToLibraryVersion)
+            {
+                if (SemVer.TryParse(typeof(AtomHost).Assembly
+                                        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                                        ?.InformationalVersion ??
+                                    "",
+                        out var semVer))
+                    toolVersion = semVer;
+                else
+                    throw new InvalidOperationException(
+                        "Failed to parse DecSm.Atom.Host assembly version as SemVer for syncing atom tool version");
+            }
+
             // If we know the SetupDotnet step was run for dotnet 10+,
             // then we can use the dotnet tool exec command instead of installing the tool to run it
             if (setupDotnetSteps.Any(x =>
@@ -502,8 +518,12 @@ internal sealed class GithubWorkflowWriter(
                     using (WriteSection("run: |"))
                     {
                         foreach (var feedToAdd in feedsToAdd)
-                            WriteLine(
-                                $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                            if (syncAtomToolVersionToLibraryVersion)
+                                WriteLine(
+                                    $"dotnet tool exec decsm.atom.tool@{toolVersion} -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                            else
+                                WriteLine(
+                                    $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
                     }
 
                     WriteLine("shell: bash");

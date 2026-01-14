@@ -15,6 +15,8 @@ public sealed record AddNugetFeedsStep : CustomStep
     /// </summary>
     public IReadOnlyList<NugetFeedOptions> FeedsToAdd { get; init; } = [];
 
+    public bool SyncAtomToolVersionToLibraryVersion { get; init; }
+
     /// <summary>
     ///     Generates a standardized environment variable name for a given NuGet feed's authentication token.
     /// </summary>
