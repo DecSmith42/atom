@@ -104,7 +104,7 @@ internal partial class Build : BuildDefinition,
             [
                 WorkflowTargets.SetupBuildInfo,
                 WorkflowTargets.PackProjects,
-                WorkflowTargets.PackTool.WithDevopsPoolMatrix(PlatformNames),
+                WorkflowTargets.PackTool.WithDevopsPoolMatrix(DevopsPlatformNames),
                 WorkflowTargets
                     .TestProjects
                     .WithDevopsPoolMatrix(DevopsPlatformNames)
