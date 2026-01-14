@@ -406,7 +406,7 @@ public sealed class TargetDefinition
     /// <summary>
     ///     Clears all produced variables for the current target, ensuring it does not produce any variables.
     /// </summary>
-    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns
+    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
     public TargetDefinition ProducesNoVariables()
     {
         ProducedVariables.Clear();
