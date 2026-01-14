@@ -475,6 +475,6 @@ internal sealed class ParamService(
         }
 
         public void Dispose() =>
-            _paramService._overrideSources.Value = null;
+            _paramService._overrideSources.Value = _sources;
     }
 }

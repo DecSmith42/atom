@@ -520,12 +520,9 @@ internal sealed class GithubWorkflowWriter(
                     using (WriteSection("run: |"))
                     {
                         foreach (var feedToAdd in feedsToAdd)
-                            if (syncAtomToolVersionToLibraryVersion)
-                                WriteLine(
-                                    $"dotnet tool exec decsm.atom.tool@{toolVersion} -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
-                            else
-                                WriteLine(
-                                    $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
+                            WriteLine(syncAtomToolVersionToLibraryVersion
+                                ? $"dotnet tool exec decsm.atom.tool@{toolVersion} -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\""
+                                : $"dotnet tool exec decsm.atom.tool -y -- nuget-add --name \"{feedToAdd.FeedName}\" --url \"{feedToAdd.FeedUrl}\"");
                     }
 
                     WriteLine("shell: bash");

@@ -176,15 +176,10 @@ internal static class RunCommand
             "run",
         };
 
-        if (isCsFile)
-        {
-            args.Add(path.FullName);
-        }
-        else
-        {
+        if (!isCsFile)
             args.Add("--project");
-            args.Add(path.FullName);
-        }
+
+        args.Add(path.FullName);
 
         args.Add("--");
         args.AddRange(sanitizedArgs);

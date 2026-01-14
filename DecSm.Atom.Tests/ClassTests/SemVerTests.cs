@@ -271,9 +271,10 @@ internal sealed class SemVerTests
         var semVer = SemVer.Parse(versionString);
 
         var json = JsonSerializer.Serialize(semVer, JsonSerializerOptions.Default);
-        var actual = JsonSerializer.Deserialize<SemVer>(json, JsonSerializerOptions.Default)!;
+        var actual = JsonSerializer.Deserialize<SemVer>(json, JsonSerializerOptions.Default);
 
         actual
+            ?
             .ToString()
             .ShouldBe(expectedString);
     }

@@ -13,7 +13,7 @@ public class RunCommandTests
 
     private MockFileSystem _fs = null!;
 
-    private string GetRoot() =>
+    private static string GetRoot() =>
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
             ? @"C:\"
             : "/";

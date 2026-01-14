@@ -28,13 +28,11 @@ internal sealed class GitVersionBuildVersionProvider(
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the version information cannot be determined from GitVersion's output.
     /// </exception>
-    [field: AllowNull]
-    [field: MaybeNull]
     public SemVer Version
     {
         get
         {
-            if (field != default)
+            if (field is not null)
                 return field;
 
             var currentGitHash = processRunner
