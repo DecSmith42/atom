@@ -411,4 +411,29 @@ public class WorkflowTests
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);
     }
+
+    [Test]
+    public async Task GithubCustomStepBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build = CreateTestHost<GithubCustomStepBuild>(fileSystem: fileSystem,
+            commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(WorkflowDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}github-custom-step-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
 }

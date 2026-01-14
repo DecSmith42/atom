@@ -16,12 +16,12 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     : IWorkflowWriter<T>
     where T : IWorkflowType
 {
-    private readonly StringBuilder _stringBuilder = new();
+    protected StringBuilder StringBuilder { get; } = new();
 
     /// <summary>
     ///     Gets the current indentation level for formatting nested content.
     /// </summary>
-    private int IndentLevel { get; set; }
+    protected int IndentLevel { get; private set; }
 
     /// <summary>
     ///     Gets the number of spaces to use for each indentation level. Defaults to 2.
@@ -49,8 +49,8 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
 
         WriteWorkflow(workflow);
 
-        var newText = _stringBuilder.ToString();
-        _stringBuilder.Clear();
+        var newText = StringBuilder.ToString();
+        StringBuilder.Clear();
 
         var existingText = fileSystem.File.Exists(filePath)
             ? await fileSystem.File.ReadAllTextAsync(filePath, cancellationToken)
@@ -89,11 +89,11 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
 
         WriteWorkflow(workflow);
 
-        var newText = _stringBuilder
+        var newText = StringBuilder
             .ToString()
             .ReplaceLineEndings();
 
-        _stringBuilder.Clear();
+        StringBuilder.Clear();
 
         var existingText = fileSystem.File.Exists(filePath)
             ? await fileSystem.File.ReadAllTextAsync(filePath, cancellationToken)
@@ -120,9 +120,9 @@ public abstract class WorkflowFileWriter<T>(IAtomFileSystem fileSystem, ILogger<
     protected void WriteLine(string? value = null)
     {
         if (IndentLevel > 0)
-            _stringBuilder.Append(new string(' ', IndentLevel));
+            StringBuilder.Append(new string(' ', IndentLevel));
 
-        _stringBuilder.AppendLine(value);
+        StringBuilder.AppendLine(value);
     }
 
     /// <summary>
