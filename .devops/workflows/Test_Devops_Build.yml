@@ -214,7 +214,7 @@ jobs:
           targetPath: "$(Build.BinariesDirectory)/DecSm.Atom.Tool.Tests"
       
   
-  - job: PushToNuget
+  - job: PushToNugetDevops
     dependsOn: [ TestProjects, PackProjects, PackTool, SetupBuildInfo ]
     pool:
       vmImage: ubuntu-latest
@@ -307,8 +307,26 @@ jobs:
           artifact: DecSm.Atom.Tool-macos-latest
           path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
       
-      - script: dotnet run --project _atom/_atom.csproj PushToNuget --skip --headless
-        name: PushToNuget
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-windows-latest
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-ubuntu-latest
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - task: DownloadPipelineArtifact@2
+        displayName: DecSm.Atom.Tool
+        inputs:
+          artifact: DecSm.Atom.Tool-macos-latest
+          path: "$(Build.ArtifactStagingDirectory)/DecSm.Atom.Tool"
+      
+      - script: dotnet run --project _atom/_atom.csproj PushToNugetDevops --skip --headless
+        name: PushToNugetDevops
         env:
           build-id: $(build-id)
           azure-vault-app-secret: $(AZURE_VAULT_APP_SECRET)

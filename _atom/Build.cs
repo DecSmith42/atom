@@ -129,7 +129,7 @@ internal partial class Build : BuildDefinition,
                     .WithDevopsPoolMatrix(DevopsPlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                WorkflowTargets.PushToNuget,
+                WorkflowTargets.PushToNugetDevops,
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],
