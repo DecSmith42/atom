@@ -20,6 +20,8 @@ public abstract record IGithubExpression
     public override string ToString() =>
         Write();
 
+    public string Expression => $"${{{{ {Write()} }}}}";
+
     /// <summary>
     ///     Implicitly converts an <see cref="IGithubExpression" /> to its string representation.
     /// </summary>

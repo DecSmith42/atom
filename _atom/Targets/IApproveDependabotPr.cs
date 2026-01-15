@@ -7,9 +7,12 @@ namespace Atom.Targets;
 
 public interface IApproveDependabotPr : IGithubHelper
 {
+    [ParamDefinition("pull-request-number", "The pull request number to approve.")]
+    string? PullRequestNumber => GetParam(() => PullRequestNumber);
+
     Target ApproveDependabotPr =>
         t => t
-            .RequiresParam(nameof(GithubToken))
+            .RequiresParam(nameof(GithubToken), nameof(PullRequestNumber))
             .Executes(async cancellationToken =>
             {
                 var pullRequestNumberVariable = Environment.GetEnvironmentVariable("GITHUB_EVENT");
@@ -30,7 +33,6 @@ public interface IApproveDependabotPr : IGithubHelper
                 Logger.LogInformation("Github API action context: {Context}",
                     new
                     {
-                        Github.Variables.Ref,
                         PullRequestNumber = pullRequestNumberVariable,
                         Owner = owner,
                         Repo = repo,
