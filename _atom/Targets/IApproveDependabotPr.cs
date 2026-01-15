@@ -17,9 +17,9 @@ public interface IApproveDependabotPr : IGithubHelper
                 Logger.LogInformation("Determined pull request number from environment variable {VariableName}",
                     pullRequestNumberVariable);
 
-                if (pullRequestNumberVariable is not { Length: > 0 } ||
-                    !int.TryParse(pullRequestNumberVariable, out var prNumber))
-                    throw new StepFailedException("Could not determine pull request number from environment.");
+                // if (pullRequestNumberVariable is not { Length: > 0 } ||
+                //     !int.TryParse(pullRequestNumberVariable, out var prNumber))
+                //     throw new StepFailedException("Could not determine pull request number from environment.");
 
                 var owner = Github.Variables.RepositoryOwner;
                 var repo = Github.Variables.Repository;
@@ -30,7 +30,8 @@ public interface IApproveDependabotPr : IGithubHelper
                 Logger.LogInformation("Github API action context: {Context}",
                     new
                     {
-                        PullRequestNumber = prNumber,
+                        Github.Variables.Ref,
+                        PullRequestNumber = pullRequestNumberVariable,
                         Owner = owner,
                         Repo = repo,
                         ClientMutationId = clientMutationId,
@@ -44,7 +45,7 @@ public interface IApproveDependabotPr : IGithubHelper
 
                 var prQuery = new Query()
                     .Repository(repo, owner)
-                    .PullRequest(prNumber)
+                    .PullRequest(int.Parse(pullRequestNumberVariable!))
                     .Select(p => new
                     {
                         p.Id,
