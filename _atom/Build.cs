@@ -99,15 +99,7 @@ internal partial class Build : BuildDefinition,
         new("Dependabot Enable auto-merge")
         {
             Triggers = [GitPullRequestTrigger.IntoMain],
-            Targets =
-            [
-                WorkflowTargets.ApproveDependabotPr.WithGithubTokenInjection(new()
-                {
-                    Contents = GithubTokenPermission.Read,
-                    IdToken = GithubTokenPermission.Write,
-                    PullRequests = GithubTokenPermission.Write,
-                }),
-            ],
+            Targets = [WorkflowTargets.ApproveDependabotPr],
             WorkflowTypes = [Github.WorkflowType],
             Options =
             [
