@@ -101,7 +101,7 @@ public sealed record GithubTokenPermissionsOption : IWorkflowOption
             .Select(x => (x.Item1, x.Item2!))
             .ToList();
 
-    private string? GetTokenPermissionString(GithubTokenPermission? permission) =>
+    private static string? GetTokenPermissionString(GithubTokenPermission? permission) =>
         permission switch
         {
             GithubTokenPermission.None => "none",

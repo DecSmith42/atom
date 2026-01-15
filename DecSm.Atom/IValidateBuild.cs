@@ -9,6 +9,7 @@
 ///         of Atom build scripts by catching common configuration mistakes early in the process.
 ///     </para>
 /// </remarks>
+[PublicAPI]
 public interface IValidateBuild : IReportsHelper
 {
     /// <summary>

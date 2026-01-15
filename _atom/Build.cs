@@ -10,7 +10,8 @@ internal partial class Build : BuildDefinition,
     IGitVersion,
     IBuildTargets,
     ITestTargets,
-    IDeployTargets
+    IDeployTargets,
+    IApproveDependabotPr
 {
     public static readonly string[] PlatformNames =
     [
@@ -95,6 +96,24 @@ internal partial class Build : BuildDefinition,
             WorkflowTypes = [Github.WorkflowType],
             Options = [GithubTokenPermissionsOption.NoneAll],
         },
+        new("Dependabot - Auto Approve")
+        {
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
+            Targets =
+            [
+                WorkflowTargets.ApproveDependabotPr.WithGithubTokenInjection(new()
+                {
+                    IdToken = GithubTokenPermission.Write,
+                    PullRequests = GithubTokenPermission.Write,
+                }),
+            ],
+            WorkflowTypes = [Github.WorkflowType],
+            Options =
+            [
+                GithubTokenPermissionsOption.NoneAll,
+                GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
+            ],
+        },
 
         // Test workflows
         new("Test_Devops_Build")
@@ -110,7 +129,7 @@ internal partial class Build : BuildDefinition,
                     .WithDevopsPoolMatrix(DevopsPlatformNames)
                     .WithMatrixDimensions(TestFrameworkMatrix)
                     .WithOptions(new SetupDotnetStep("8.0.x"), new SetupDotnetStep("9.0.x")),
-                WorkflowTargets.PushToNuget,
+                WorkflowTargets.PushToNugetDevops,
             ],
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],

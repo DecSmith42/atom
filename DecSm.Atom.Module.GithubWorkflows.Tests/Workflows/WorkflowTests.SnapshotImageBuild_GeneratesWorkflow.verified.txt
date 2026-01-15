@@ -5,7 +5,7 @@ on:
 
 jobs:
   
-  CheckoutOptionTarget:
+  SnapshotImageTarget:
     runs-on: ubuntu-latest
     snapshot:
       image-name: snapshot-image-test
@@ -17,6 +17,6 @@ jobs:
         with:
           fetch-depth: 0
       
-      - name: CheckoutOptionTarget
-        id: CheckoutOptionTarget
-        run: dotnet run --project AtomTest/AtomTest.csproj CheckoutOptionTarget --skip --headless
+      - name: SnapshotImageTarget
+        id: SnapshotImageTarget
+        run: dotnet run --project AtomTest/AtomTest.csproj SnapshotImageTarget --skip --headless

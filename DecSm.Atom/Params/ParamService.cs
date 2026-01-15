@@ -123,8 +123,13 @@ internal sealed class ParamService(
 ) : IParamService
 {
     private readonly Dictionary<string, object?> _cache = [];
+
+    /// <summary>
+    ///     Gets or sets a value indicating whether parameter resolution is currently suppressed.
+    /// </summary>
+    private readonly AsyncLocal<bool> _defaultValuesOnly = new();
+
     private readonly List<string> _knownSecrets = [];
-    private readonly ISecretsProvider[] _secretsProviders = secretsProviders.ToArray();
 
     /// <summary>
     ///     Gets or sets a value indicating whether parameter caching is disabled.
@@ -132,14 +137,11 @@ internal sealed class ParamService(
     private readonly AsyncLocal<bool> _noCache = new();
 
     /// <summary>
-    ///     Gets or sets a value indicating whether parameter resolution is currently suppressed.
-    /// </summary>
-    private readonly AsyncLocal<bool> _defaultValuesOnly = new();
-
-    /// <summary>
     ///     Gets or sets an optional override for parameter sources to use when resolving parameters.
     /// </summary>
     private readonly AsyncLocal<ParamSource?> _overrideSources = new();
+
+    private readonly ISecretsProvider[] _secretsProviders = secretsProviders.ToArray();
 
     /// <inheritdoc />
     public IDisposable CreateNoCacheScope() =>
@@ -473,6 +475,6 @@ internal sealed class ParamService(
         }
 
         public void Dispose() =>
-            _paramService._overrideSources.Value = null;
+            _paramService._overrideSources.Value = _sources;
     }
 }

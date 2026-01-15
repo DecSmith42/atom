@@ -10,7 +10,7 @@ public partial class ExtensionTargetBuild : MinimalBuildDefinition, IBaseExtensi
 
 public interface IBaseExtensionTarget
 {
-    bool BaseExtensionTargetExecuted { get; set; }
+    bool BaseExtensionTargetExecuted { set; }
 
     Target BaseExtensionTarget =>
         t => t.Executes(() =>
@@ -23,7 +23,7 @@ public interface IBaseExtensionTarget
 
 public interface IExtendedExtensionTarget
 {
-    bool ExtendedExtensionTargetExecuted { get; set; }
+    bool ExtendedExtensionTargetExecuted { set; }
 
     Target ExtendedExtensionTarget =>
         t => t

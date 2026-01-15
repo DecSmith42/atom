@@ -105,6 +105,7 @@ public interface IAtomFileSystem : IFileSystem
 /// <param name="logger">The logger for diagnostics.</param>
 internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFileSystem
 {
+    private readonly AsyncLocal<int> _getPathDepth = new();
     private readonly Dictionary<string, RootedPath> _pathCache = [];
 
     public required IReadOnlyList<IPathProvider> PathLocators { private get; init; }
@@ -115,8 +116,6 @@ internal sealed class AtomFileSystem(ILogger<AtomFileSystem> logger) : IAtomFile
     public bool IsFileBasedApp => AppContext.GetData("EntryPointFilePath") is string s && s.EndsWith(".cs");
 
     public required IFileSystem FileSystem { get; init; }
-
-    private readonly AsyncLocal<int> _getPathDepth = new();
 
     /// <inheritdoc />
     public RootedPath GetPath(string key)

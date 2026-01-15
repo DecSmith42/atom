@@ -18,7 +18,7 @@ public partial class DependencyTargetBuild : MinimalBuildDefinition,
 
 public interface IDependencyTarget1
 {
-    bool DependencyTarget1Executed { get; set; }
+    bool DependencyTarget1Executed { set; }
 
     Target DependencyTarget1 =>
         t => t.Executes(() =>
@@ -31,7 +31,7 @@ public interface IDependencyTarget1
 
 public interface IDependencyTarget2
 {
-    bool DependencyTarget2Executed { get; set; }
+    bool DependencyTarget2Executed { set; }
 
     Target DependencyTarget2 =>
         t => t
@@ -46,7 +46,7 @@ public interface IDependencyTarget2
 
 public interface IDependencyFailTarget1
 {
-    bool DependencyFailTarget1Executed { get; set; }
+    bool DependencyFailTarget1Executed { set; }
 
     Target DependencyFailTarget1 =>
         t => t.Executes(() =>
@@ -59,7 +59,7 @@ public interface IDependencyFailTarget1
 
 public interface IDependencyFailTarget2
 {
-    bool DependencyFailTarget2Executed { get; set; }
+    bool DependencyFailTarget2Executed { set; }
 
     Target DependencyFailTarget2 =>
         t => t

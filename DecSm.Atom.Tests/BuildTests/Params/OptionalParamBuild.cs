@@ -16,9 +16,9 @@ public interface IOptionalParamTarget1 : IBuildAccessor
     [ParamDefinition("param-2", "Param 2")]
     string? Param2 => GetParam(() => Param2);
 
-    string? ExecuteValue1 { get; set; }
+    string? ExecuteValue1 { set; }
 
-    string? ExecuteValue2 { get; set; }
+    string? ExecuteValue2 { set; }
 
     Target OptionalParamTarget1 =>
         t => t

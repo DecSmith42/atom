@@ -4,9 +4,6 @@ public static class Symbols
 {
     public const string BuildDefinitionAttribute = "DecSm.Atom.Build.Definition.BuildDefinitionAttribute";
 
-    public const string GeneratedBuildDefinitionAttribute =
-        "DecSm.Atom.Build.Definition.GeneratedBuildDefinitionAttribute";
-
     public const string GenerateEntryPointAttribute = "DecSm.Atom.Hosting.GenerateEntryPointAttribute";
 
     public const string GenerateInterfaceMembersAttribute =
