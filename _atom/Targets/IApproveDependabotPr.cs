@@ -15,14 +15,17 @@ public interface IApproveDependabotPr : IGithubHelper
                 if (Github.Variables.Actor != "dependabot[bot]")
                     throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
 
-                var pullRequestNumberVariable = Environment.GetEnvironmentVariable("GITHUB_EVENT_NUMBER");
+                var pullRequestNumberVariable = Environment.GetEnvironmentVariable("GITHUB_EVENT");
+
+                Logger.LogInformation("Determined pull request number from environment variable {VariableName}",
+                    pullRequestNumberVariable);
 
                 if (pullRequestNumberVariable is not { Length: > 0 } ||
                     !int.TryParse(pullRequestNumberVariable, out var prNumber))
                     throw new StepFailedException("Could not determine pull request number from environment.");
 
-                const string owner = "DecSmith42";
-                const string repo = "atom";
+                var owner = Github.Variables.RepositoryOwner;
+                var repo = Github.Variables.Repository;
 
                 var clientMutationId =
                     $"atom-{Environment.MachineName.ToLowerInvariant().Replace(" ", "-")}-{Environment.ProcessId}";
