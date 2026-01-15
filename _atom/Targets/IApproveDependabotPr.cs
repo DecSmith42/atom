@@ -16,7 +16,11 @@ public interface IApproveDependabotPr : IGithubHelper
             .Executes(async cancellationToken =>
             {
                 var owner = Github.Variables.RepositoryOwner;
-                var repo = Github.Variables.Repository;
+
+                var repo = Github.Variables
+                    .Repository
+                    .Split('/')
+                    .Last();
 
                 var clientMutationId =
                     $"atom-{Environment.MachineName.ToLowerInvariant().Replace(" ", "-")}-{Environment.ProcessId}";
