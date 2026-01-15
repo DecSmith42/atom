@@ -61,16 +61,18 @@ public interface IApproveDependabotPr : IGithubHelper
                 if (prQueryResult.Id.Value is null)
                     throw new StepFailedException("Could not find pull request.");
 
-                var enableAutoMergeMutation = new Mutation().EnablePullRequestAutoMerge(
-                    new EnablePullRequestAutoMergeInput
+                var enableAutoMergeMutation = new Mutation()
+                    .EnablePullRequestAutoMerge(new EnablePullRequestAutoMergeInput
                     {
                         ClientMutationId = clientMutationId,
                         PullRequestId = prQueryResult.Id,
                         AuthorEmail = DependabotActorEmail,
                         ExpectedHeadOid = prQueryResult.HeadRefOid,
-                    });
+                    })
+                    .Compile();
 
-                var enableAutoMergeResult = await connection.Run(enableAutoMergeMutation, cancellationToken);
+                var enableAutoMergeResult =
+                    await connection.Run(enableAutoMergeMutation, cancellationToken: cancellationToken);
 
                 if (enableAutoMergeResult is null)
                     throw new StepFailedException("Could not enable auto merge.");
