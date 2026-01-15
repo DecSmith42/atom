@@ -205,7 +205,10 @@ public sealed class AzureBlobArtifactProvider(
 
             var hasAtLeastOneBlob = false;
 
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: artifactBlobDir,
+            var blobs = containerClient.GetBlobsByHierarchyAsync(new()
+                {
+                    Prefix = artifactBlobDir,
+                },
                 cancellationToken: cancellationToken);
 
             await foreach (var blobItem in blobs)
@@ -265,7 +268,10 @@ public sealed class AzureBlobArtifactProvider(
             var buildIdPathPrefix = buildIdProvider.GetBuildIdGroup(buildId);
             var buildIdPath = $"{buildIdPathPrefix}/{buildId}";
 
-            var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/{buildIdPath}/",
+            var blobs = containerClient.GetBlobsByHierarchyAsync(new()
+                {
+                    Prefix = $"{buildName}/{buildIdPath}/",
+                },
                 cancellationToken: cancellationToken);
 
             await foreach (var blob in blobs)
@@ -314,7 +320,10 @@ public sealed class AzureBlobArtifactProvider(
                 : $"{artifactName}/";
         }
 
-        var blobs = containerClient.GetBlobsByHierarchyAsync(prefix: $"{buildName}/",
+        var blobs = containerClient.GetBlobsByHierarchyAsync(new()
+            {
+                Prefix = $"{buildName}/",
+            },
             cancellationToken: cancellationToken);
 
         var buildIds = new List<string>();

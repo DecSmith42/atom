@@ -7,6 +7,9 @@ namespace Atom.Targets;
 
 public interface IApproveDependabotPr : IGithubHelper
 {
+    const string DependabotActorName = "dependabot[bot]";
+    const string DependabotActorEmail = "dependabot[bot]@users.noreply.github.com";
+
     [ParamDefinition("pull-request-number", "The pull request number to approve.")]
     int PullRequestNumber => GetParam(() => PullRequestNumber);
 
@@ -35,7 +38,7 @@ public interface IApproveDependabotPr : IGithubHelper
                         Github.Variables.Actor,
                     });
 
-                if (Github.Variables.Actor != "dependabot[bot]")
+                if (Github.Variables.Actor != DependabotActorName)
                     throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
@@ -61,7 +64,7 @@ public interface IApproveDependabotPr : IGithubHelper
                     {
                         ClientMutationId = clientMutationId,
                         PullRequestId = prQueryResult.Id,
-                        AuthorEmail = "dependabot[bot]@users.noreply.github.com",
+                        AuthorEmail = DependabotActorEmail,
                         ExpectedHeadOid = prQueryResult.HeadRefOid,
                     });
 
