@@ -101,9 +101,9 @@ internal partial class Build : BuildDefinition,
             Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
             Targets =
             [
-                WorkflowTargets.ApprovePr.WithGithubTokenInjection(new()
+                WorkflowTargets.ApproveDependabotPr.WithGithubTokenInjection(new()
                 {
-                    IdToken = GithubTokenPermission.Read,
+                    IdToken = GithubTokenPermission.Write,
                     PullRequests = GithubTokenPermission.Write,
                 }),
             ],

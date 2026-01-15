@@ -7,7 +7,7 @@ namespace Atom.Targets;
 
 public interface IApproveDependabotPr : IGithubHelper
 {
-    Target ApprovePr =>
+    Target ApproveDependabotPr =>
         t => t
             .RequiresParam(nameof(GithubToken))
             .Executes(async cancellationToken =>
@@ -27,7 +27,7 @@ public interface IApproveDependabotPr : IGithubHelper
                 var clientMutationId =
                     $"atom-{Environment.MachineName.ToLowerInvariant().Replace(" ", "-")}-{Environment.ProcessId}";
 
-                var productHeader = new ProductHeaderValue("YourAppName");
+                var productHeader = new ProductHeaderValue("Atom");
                 var connection = new Connection(productHeader, new InMemoryCredentialStore(new(GithubToken)));
 
                 var prQuery = new Query()
@@ -58,18 +58,5 @@ public interface IApproveDependabotPr : IGithubHelper
 
                 if (enableAutoMergeResult is null)
                     throw new StepFailedException("Could not enable auto merge.");
-
-                var approvePrMutation = new Mutation().AddPullRequestReview(new AddPullRequestReviewInput
-                {
-                    ClientMutationId = clientMutationId,
-                    PullRequestId = prQueryResult.Id,
-                    Event = PullRequestReviewEvent.Approve,
-                    Body = "Automated approval by build system.",
-                });
-
-                var approvePrResult = await connection.Run(approvePrMutation, cancellationToken);
-
-                if (approvePrResult is null)
-                    throw new StepFailedException("Could not approve pull request.");
             });
 }
