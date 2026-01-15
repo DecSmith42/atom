@@ -103,6 +103,7 @@ internal partial class Build : BuildDefinition,
             [
                 WorkflowTargets.ApproveDependabotPr.WithGithubTokenInjection(new()
                 {
+                    Contents = GithubTokenPermission.Read,
                     IdToken = GithubTokenPermission.Write,
                     PullRequests = GithubTokenPermission.Write,
                 }),

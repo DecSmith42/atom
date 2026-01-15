@@ -1,7 +1,6 @@
 using Octokit.GraphQL;
 using Octokit.GraphQL.Internal;
 using Octokit.GraphQL.Model;
-using Environment = System.Environment;
 
 namespace Atom.Targets;
 
@@ -27,9 +26,6 @@ public interface IApproveDependabotPr : IGithubHelper
                     .Split('/')
                     .Last();
 
-                var clientMutationId =
-                    $"atom-{Environment.MachineName.ToLowerInvariant().Replace(" ", "-")}-{Environment.ProcessId}";
-
                 Logger.LogInformation("Github API action context: {Context}",
                     new
                     {
@@ -37,7 +33,6 @@ public interface IApproveDependabotPr : IGithubHelper
                         PullRequestNumber,
                         Owner = owner,
                         Repo = repo,
-                        ClientMutationId = clientMutationId,
                     });
 
                 if (actor != DependabotActorName)
@@ -64,7 +59,6 @@ public interface IApproveDependabotPr : IGithubHelper
                 var enableAutoMergeMutation = new Mutation()
                     .EnablePullRequestAutoMerge(new EnablePullRequestAutoMergeInput
                     {
-                        ClientMutationId = clientMutationId,
                         PullRequestId = prQueryResult.Id,
                         AuthorEmail = DependabotActorEmail,
                         ExpectedHeadOid = prQueryResult.HeadRefOid,
