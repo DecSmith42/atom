@@ -63,8 +63,7 @@ public interface IApproveDependabotPr : IGithubHelper
                     .EnablePullRequestAutoMerge(new EnablePullRequestAutoMergeInput
                     {
                         PullRequestId = prQueryResult.Id,
-                        AuthorEmail = DependabotActorEmail,
-                        ExpectedHeadOid = prQueryResult.HeadRefOid,
+                        MergeMethod = PullRequestMergeMethod.Merge,
                     })
                     .Select(x => new
                     {
