@@ -1,8 +1,7 @@
-name: Dependabot - Auto Approve
+name: Dependabot Enable auto-merge
 
 permissions: { }
 on:
-  workflow_dispatch:
   pull_request:
     branches:
       - 'main'
@@ -11,6 +10,7 @@ jobs:
   
   ApproveDependabotPr:
     runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
     permissions:
       id-token: write
       pull-requests: write

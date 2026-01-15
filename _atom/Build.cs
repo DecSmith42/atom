@@ -96,9 +96,9 @@ internal partial class Build : BuildDefinition,
             WorkflowTypes = [Github.WorkflowType],
             Options = [GithubTokenPermissionsOption.NoneAll],
         },
-        new("Dependabot - Auto Approve")
+        new("Dependabot Enable auto-merge")
         {
-            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
+            Triggers = [GitPullRequestTrigger.IntoMain],
             Targets =
             [
                 WorkflowTargets.ApproveDependabotPr.WithGithubTokenInjection(new()
@@ -111,7 +111,7 @@ internal partial class Build : BuildDefinition,
             Options =
             [
                 GithubTokenPermissionsOption.NoneAll,
-                // GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
+                GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
                 new WorkflowParamInjection(nameof(IApproveDependabotPr.PullRequestNumber),
                     new LiteralExpression("github.event.number").Expression),
             ],

@@ -18,6 +18,8 @@ public interface IApproveDependabotPr : IGithubHelper
             .RequiresParam(nameof(GithubToken), nameof(PullRequestNumber))
             .Executes(async cancellationToken =>
             {
+                var actor = Github.Variables.Actor;
+
                 var owner = Github.Variables.RepositoryOwner;
 
                 var repo = Github.Variables
@@ -31,14 +33,14 @@ public interface IApproveDependabotPr : IGithubHelper
                 Logger.LogInformation("Github API action context: {Context}",
                     new
                     {
+                        Actor = actor,
                         PullRequestNumber,
                         Owner = owner,
                         Repo = repo,
                         ClientMutationId = clientMutationId,
-                        Github.Variables.Actor,
                     });
 
-                if (Github.Variables.Actor != DependabotActorName)
+                if (actor != DependabotActorName)
                     throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
