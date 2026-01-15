@@ -69,6 +69,10 @@ public interface IApproveDependabotPr : IGithubHelper
                         AuthorEmail = DependabotActorEmail,
                         ExpectedHeadOid = prQueryResult.HeadRefOid,
                     })
+                    .Select(x => new
+                    {
+                        x.ClientMutationId,
+                    })
                     .Compile();
 
                 var enableAutoMergeResult =
