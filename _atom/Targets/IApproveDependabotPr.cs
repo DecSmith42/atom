@@ -12,9 +12,6 @@ public interface IApproveDependabotPr : IGithubHelper
             .RequiresParam(nameof(GithubToken))
             .Executes(async cancellationToken =>
             {
-                if (Github.Variables.Actor != "dependabot[bot]")
-                    throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
-
                 var pullRequestNumberVariable = Environment.GetEnvironmentVariable("GITHUB_EVENT");
 
                 Logger.LogInformation("Determined pull request number from environment variable {VariableName}",
@@ -29,6 +26,18 @@ public interface IApproveDependabotPr : IGithubHelper
 
                 var clientMutationId =
                     $"atom-{Environment.MachineName.ToLowerInvariant().Replace(" ", "-")}-{Environment.ProcessId}";
+
+                Logger.LogInformation("Github API action context: {Context}",
+                    new
+                    {
+                        PullRequestNumber = prNumber,
+                        Owner = owner,
+                        Repo = repo,
+                        ClientMutationId = clientMutationId,
+                    });
+
+                if (Github.Variables.Actor != "dependabot[bot]")
+                    throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
                 var connection = new Connection(productHeader, new InMemoryCredentialStore(new(GithubToken)));

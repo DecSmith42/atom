@@ -111,7 +111,7 @@ internal partial class Build : BuildDefinition,
             Options =
             [
                 GithubTokenPermissionsOption.NoneAll,
-                GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
+                // GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
             ],
         },
 
