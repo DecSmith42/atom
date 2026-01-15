@@ -28,6 +28,7 @@ public interface IApproveDependabotPr : IGithubHelper
                         Owner = owner,
                         Repo = repo,
                         ClientMutationId = clientMutationId,
+                        Github.Variables.Actor,
                     });
 
                 if (Github.Variables.Actor != "dependabot[bot]")
