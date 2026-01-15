@@ -11,7 +11,7 @@ public interface IUserSecretsTarget : IBuildAccessor
     [SecretDefinition("secret-1", "Secret 1")]
     string? Secret1 => GetParam(() => Secret1);
 
-    string? ExecutionValue { get; set; }
+    string? ExecutionValue { set; }
 
     Target UserSecretsTarget =>
         t => t

@@ -10,7 +10,7 @@ public partial class TestTargetAtomBuild : MinimalBuildDefinition, ITestTarget
 
 public interface ITestTarget
 {
-    string Description { get; set; }
+    string Description { get; }
 
     Func<Task> Execute { get; set; }
 

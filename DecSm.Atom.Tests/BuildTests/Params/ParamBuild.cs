@@ -11,7 +11,7 @@ public interface IParamTarget1 : IBuildAccessor
     [ParamDefinition("param-1", "Param 1")]
     string Param1 => GetParam(() => Param1, "DefaultValue");
 
-    string? ExecuteValue { get; set; }
+    string? ExecuteValue { set; }
 
     Target ParamTarget1 =>
         t => t.Executes(() =>
@@ -27,7 +27,7 @@ public interface IParamTarget2 : IBuildAccessor
     [ParamDefinition("param-2", "Param 2")]
     string Param2 => GetParam(() => Param2)!;
 
-    string? ExecuteValue { get; set; }
+    string? ExecuteValue { set; }
 
     Target ParamTarget2 =>
         t => t

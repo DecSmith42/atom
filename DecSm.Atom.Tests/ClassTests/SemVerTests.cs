@@ -274,8 +274,7 @@ internal sealed class SemVerTests
         var actual = JsonSerializer.Deserialize<SemVer>(json, JsonSerializerOptions.Default);
 
         actual
-            ?
-            .ToString()
+            ?.ToString()
             .ShouldBe(expectedString);
     }
 

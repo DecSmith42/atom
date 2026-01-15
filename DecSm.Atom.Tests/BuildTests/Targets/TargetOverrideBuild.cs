@@ -10,7 +10,7 @@ public partial class TargetOverrideBuild : MinimalBuildDefinition, IOverrideTarg
 
 public interface IBaseOverrideTarget
 {
-    bool BaseOverrideTargetExecuted { get; set; }
+    bool BaseOverrideTargetExecuted { set; }
 
     Target OverrideTarget =>
         t => t.Executes(() =>
@@ -23,7 +23,7 @@ public interface IBaseOverrideTarget
 
 public interface IOverrideTarget : IBaseOverrideTarget
 {
-    bool OverrideOverrideTargetExecuted { get; set; }
+    bool OverrideOverrideTargetExecuted { set; }
 
     new Target OverrideTarget =>
         t => t.Executes(() =>
