@@ -10,7 +10,8 @@ internal partial class Build : BuildDefinition,
     IGitVersion,
     IBuildTargets,
     ITestTargets,
-    IDeployTargets
+    IDeployTargets,
+    IApproveDependabotPr
 {
     public static readonly string[] PlatformNames =
     [
@@ -94,6 +95,24 @@ internal partial class Build : BuildDefinition,
             ],
             WorkflowTypes = [Github.WorkflowType],
             Options = [GithubTokenPermissionsOption.NoneAll],
+        },
+        new("Dependabot - Auto Approve")
+        {
+            Triggers = [ManualTrigger.Empty, GitPullRequestTrigger.IntoMain],
+            Targets =
+            [
+                WorkflowTargets.ApprovePr.WithGithubTokenInjection(new()
+                {
+                    IdToken = GithubTokenPermission.Read,
+                    PullRequests = GithubTokenPermission.Write,
+                }),
+            ],
+            WorkflowTypes = [Github.WorkflowType],
+            Options =
+            [
+                GithubTokenPermissionsOption.NoneAll,
+                GithubIf.Create(new EqualExpression("github.actor", new StringExpression("dependabot[bot]"))),
+            ],
         },
 
         // Test workflows
