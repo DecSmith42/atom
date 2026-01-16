@@ -11,6 +11,10 @@ jobs:
   ApproveDependabotPr:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
     steps:
       
       - name: Checkout
@@ -29,4 +33,5 @@ jobs:
           azure-vault-address: ${{ vars.AZURE_VAULT_ADDRESS }}
           azure-vault-tenant-id: ${{ vars.AZURE_VAULT_TENANT_ID }}
           azure-vault-app-id: ${{ vars.AZURE_VAULT_APP_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           pull-request-number: ${{ github.event.number }}

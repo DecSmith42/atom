@@ -17,7 +17,7 @@ public interface IApproveDependabotPr : IGithubHelper
 
     Target ApproveDependabotPr =>
         t => t
-            .RequiresParam(nameof(GithubPrRwToken), nameof(PullRequestNumber))
+            .RequiresParam(nameof(GithubToken), nameof(PullRequestNumber))
             .Executes(async cancellationToken =>
             {
                 var actor = Github.Variables.Actor;
@@ -42,7 +42,7 @@ public interface IApproveDependabotPr : IGithubHelper
                     throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
-                var connection = new Connection(productHeader, new InMemoryCredentialStore(GithubPrRwToken));
+                var connection = new Connection(productHeader, new InMemoryCredentialStore(GithubToken));
 
                 var prQuery = new Query()
                     .Repository(repo, owner)
