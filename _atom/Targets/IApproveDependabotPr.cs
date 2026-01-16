@@ -1,19 +1,11 @@
-using Octokit.GraphQL;
-using Octokit.GraphQL.Internal;
-using Octokit.GraphQL.Model;
-
 namespace Atom.Targets;
 
 public interface IApproveDependabotPr : IGithubHelper
 {
     const string DependabotActorName = "dependabot[bot]";
-    const string DependabotActorEmail = "dependabot[bot]@users.noreply.github.com";
 
     [ParamDefinition("pull-request-number", "The pull request number to approve.")]
     int PullRequestNumber => GetParam(() => PullRequestNumber);
-
-    [SecretDefinition("gh-pullrequest-rw-token", "GitHub Pull Request Read/Write Token")]
-    string? GithubPrRwToken => GetParam(() => GithubPrRwToken);
 
     Target ApproveDependabotPr =>
         t => t
@@ -21,7 +13,6 @@ public interface IApproveDependabotPr : IGithubHelper
             .Executes(async cancellationToken =>
             {
                 var actor = Github.Variables.Actor;
-
                 var owner = Github.Variables.RepositoryOwner;
 
                 var repo = Github.Variables
@@ -39,7 +30,8 @@ public interface IApproveDependabotPr : IGithubHelper
                     });
 
                 if (actor != DependabotActorName)
-                    throw new StepFailedException("Only pull requests from Dependabot can be auto-approved.");
+                    throw new StepFailedException(
+                        $"Only pull requests from {DependabotActorName} can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
                 var connection = new Connection(productHeader, new InMemoryCredentialStore(GithubToken));
