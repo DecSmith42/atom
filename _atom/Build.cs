@@ -137,6 +137,24 @@ internal partial class Build : BuildDefinition,
             WorkflowTypes = [Devops.WorkflowType],
             Options = [new WorkflowParamInjection(Params.NugetDryRun, "true"), new DevopsVariableGroup("Atom")],
         },
-        Github.DependabotDefaultWorkflow(),
+        Github.DependabotWorkflow(new()
+        {
+            Registries = [new("nuget", DependabotValues.NugetType, DependabotValues.NugetUrl)],
+            Updates =
+            [
+                new(DependabotValues.NugetEcosystem)
+                {
+                    Registries = ["nuget"],
+                    Groups =
+                    [
+                        new("nuget-deps")
+                        {
+                            Patterns = ["*"],
+                        },
+                    ],
+                    Schedule = DependabotSchedule.Daily,
+                },
+            ],
+        }),
     ];
 }
