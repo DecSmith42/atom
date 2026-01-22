@@ -3,6 +3,7 @@ namespace Atom.Targets;
 public interface IApproveDependabotPr : IGithubHelper, IPullRequestHelper
 {
     const string DependabotActorName = "dependabot[bot]";
+
     Target ApproveDependabotPr =>
         t => t
             .RequiresParam(nameof(GithubToken), nameof(PullRequestNumber))
