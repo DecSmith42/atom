@@ -45,12 +45,10 @@ public class PublicApiSurfaceTests
         };
 }
 
-public sealed record Type(string Name, IReadOnlyList<IMember> Members);
+public sealed record Type(string Name, [UsedImplicitly] IReadOnlyList<IMember> Members);
 
 public interface IMember
 {
-    string ToString();
-
     string Name { get; }
 }
 
