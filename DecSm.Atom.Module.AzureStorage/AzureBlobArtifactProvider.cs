@@ -209,7 +209,7 @@ public sealed class AzureBlobArtifactProvider(
                 {
                     Prefix = artifactBlobDir,
                 },
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
             await foreach (var blobItem in blobs)
             {
@@ -272,7 +272,7 @@ public sealed class AzureBlobArtifactProvider(
                 {
                     Prefix = $"{buildName}/{buildIdPath}/",
                 },
-                cancellationToken: cancellationToken);
+                cancellationToken);
 
             await foreach (var blob in blobs)
             {
@@ -324,7 +324,7 @@ public sealed class AzureBlobArtifactProvider(
             {
                 Prefix = $"{buildName}/",
             },
-            cancellationToken: cancellationToken);
+            cancellationToken);
 
         var buildIds = new List<string>();
 
