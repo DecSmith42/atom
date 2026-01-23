@@ -7,9 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.8.0" />
     <PackageReference Include="Azure.Identity" Version="1.17.1" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="DecSm.Analyzers.PublicApiSurface" Version="0.1.0-rc.11" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

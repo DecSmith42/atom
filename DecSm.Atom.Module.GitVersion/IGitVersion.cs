@@ -8,6 +8,7 @@
 ///     GitVersion for generating build IDs and version numbers, ensuring consistent and
 ///     semantically versioned builds based on your Git history.
 /// </remarks>
+[PublicAPI]
 [ConfigureHostBuilder]
 public partial interface IGitVersion
 {
