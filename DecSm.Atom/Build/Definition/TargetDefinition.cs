@@ -299,17 +299,6 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Clears all produced artifacts for the current target, ensuring it does not produce any artifacts.
-    /// </summary>
-    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
-    public TargetDefinition ProducesNoArtifacts()
-    {
-        ProducedArtifacts.Clear();
-
-        return this;
-    }
-
-    /// <summary>
     ///     Declares an artifact that this target consumes.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the artifact.</param>
@@ -378,17 +367,6 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Clears all consumed artifacts for the current target, ensuring it does not depend on any external artifacts.
-    /// </summary>
-    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
-    public TargetDefinition ConsumesNoArtifacts()
-    {
-        ConsumedArtifacts.Clear();
-
-        return this;
-    }
-
-    /// <summary>
     ///     Declares a variable that this target produces.
     /// </summary>
     /// <param name="variableName">The name of the variable.</param>
@@ -404,17 +382,6 @@ public sealed class TargetDefinition
     }
 
     /// <summary>
-    ///     Clears all produced variables for the current target, ensuring it does not produce any variables.
-    /// </summary>
-    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
-    public TargetDefinition ProducesNoVariables()
-    {
-        ProducedVariables.Clear();
-
-        return this;
-    }
-
-    /// <summary>
     ///     Declares a variable that this target consumes.
     /// </summary>
     /// <param name="targetName">The name of the target that produces the variable.</param>
@@ -423,17 +390,6 @@ public sealed class TargetDefinition
     public TargetDefinition ConsumesVariable(string targetName, string outputName)
     {
         ConsumedVariables.Add(new(targetName, outputName));
-
-        return this;
-    }
-
-    /// <summary>
-    ///     Clears all consumed variables for the current target, ensuring it does not depend on any external variables.
-    /// </summary>
-    /// <returns>The current <see cref="TargetDefinition" /> for fluent chaining.</returns>
-    public TargetDefinition ConsumesNoVariables()
-    {
-        ConsumedVariables.Clear();
 
         return this;
     }

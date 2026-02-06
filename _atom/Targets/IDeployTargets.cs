@@ -37,9 +37,14 @@ internal interface IDeployTargets : INugetHelper, IGithubReleaseHelper, ISetupBu
 
     Target PushToNugetDevops =>
         d => d
-            .Extends<IDeployTargets>(x => x.PushToNuget)
-            .ConsumesNoArtifacts()
-            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, DevopsPlatformNames);
+            .DescribedAs("Pushes the packages to Nuget")
+            .RequiresParam(nameof(NugetFeed))
+            .RequiresParam(nameof(NugetApiKey))
+            .ConsumesVariable(nameof(SetupBuildInfo), nameof(BuildId))
+            .ConsumesArtifacts(nameof(IBuildTargets.PackProjects), IBuildTargets.ProjectsToPack)
+            .ConsumesArtifact(nameof(IBuildTargets.PackTool), Projects.DecSm_Atom_Tool.Name, DevopsPlatformNames)
+            .DependsOn(nameof(ITestTargets.TestProjects))
+            .Executes(() => Logger.LogInformation("Simulating push to Nuget feed"));
 
     Target PushToRelease =>
         d => d
