@@ -452,12 +452,6 @@
         Name: ConsumesArtifacts
       },
       {
-        Name: ConsumesNoArtifacts
-      },
-      {
-        Name: ConsumesNoVariables
-      },
-      {
         Name: ConsumesVariable
       },
       {
@@ -513,12 +507,6 @@
       },
       {
         Name: ProducesArtifacts
-      },
-      {
-        Name: ProducesNoArtifacts
-      },
-      {
-        Name: ProducesNoVariables
       },
       {
         Name: ProducesVariable
