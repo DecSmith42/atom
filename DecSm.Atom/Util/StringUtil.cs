@@ -91,5 +91,35 @@ public static class StringUtil
 
             return @string[..maxLength] + "...";
         }
+
+        /// <summary>
+        ///     Sanitizes a string by replacing specified secret substrings with asterisks or a fixed mask, ensuring that the
+        ///     secrets are not exposed in logs or outputs.
+        /// </summary>
+        /// <param name="secrets">
+        ///     A list of secret substrings to be sanitized from the input string. Secrets that are null or empty
+        ///     will be ignored.
+        /// </param>
+        /// <returns>
+        ///     The sanitized string with secrets replaced, or <c>null</c> if the input string was <c>null</c> or empty, or if no
+        ///     valid secrets were provided. If the input string is shorter than the shortest valid secret, it will be returned
+        ///     unchanged.
+        /// </returns>
+        [return: NotNullIfNotNull(nameof(@string))]
+        public string? SanitizeSecrets(List<string> secrets)
+        {
+            var validSecrets = secrets
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+
+            return @string is null or "" || validSecrets.Count is 0 || @string.Length < validSecrets.Min(s => s.Length)
+                ? @string
+                : validSecrets.Aggregate(@string,
+                    static (current, secret) => current.Replace(secret,
+                        secret.Length < 5
+                            ? new('*', secret.Length)
+                            : "*****",
+                        StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

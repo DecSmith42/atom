@@ -77,7 +77,7 @@ public interface IParamService
         GetParam<string>(paramName, defaultValue);
 
     /// <summary>
-    ///     Replaces known secret values in the provided text with a mask ("*****").
+    ///     Replaces known secret values in the provided text with a mask (e.g. "*****").
     /// </summary>
     /// <param name="text">The text to scan and mask.</param>
     /// <returns>The text with any resolved secret values replaced by a mask.</returns>
@@ -157,10 +157,7 @@ internal sealed class ParamService(
 
     /// <inheritdoc />
     public string MaskMatchingSecrets(string text) =>
-        _knownSecrets.Aggregate(text,
-            (current, knownSecret) => knownSecret is { Length: > 0 }
-                ? current.Replace(knownSecret, "*****", StringComparison.OrdinalIgnoreCase)
-                : current);
+        text.SanitizeSecrets(_knownSecrets);
 
     /// <inheritdoc />
     public T? GetParam<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>(
