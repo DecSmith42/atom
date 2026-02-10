@@ -77,7 +77,7 @@ public interface IParamService
         GetParam<string>(paramName, defaultValue);
 
     /// <summary>
-    ///     Replaces known secret values in the provided text with a mask ("*****").
+    ///     Replaces known secret values in the provided text with a mask (e.g. "*****").
     /// </summary>
     /// <param name="text">The text to scan and mask.</param>
     /// <returns>The text with any resolved secret values replaced by a mask.</returns>
