@@ -133,7 +133,7 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
                 : "dim";
 
             var columns = new Columns(new Text("                "),
-                new Markup($"[{messageStyle}]{message.EscapeMarkup()}[/]").LeftJustified()).Collapse();
+                new Markup($"[{messageStyle}]{message}[/]").LeftJustified()).Collapse();
 
             ServiceStaticAccessor<IAnsiConsole>.Service?.Write(columns);
 
