@@ -93,13 +93,17 @@ public static class StringUtil
         }
 
         /// <summary>
-        ///     Sanitizes a string by masking any occurrences of specified secrets with asterisks. The method handles secrets that
-        ///     may span across line boundaries and preserves whitespace.
+        ///     Sanitizes a string by replacing specified secret substrings with asterisks or a fixed mask, ensuring that the
+        ///     secrets are not exposed in logs or outputs.
         /// </summary>
-        /// <param name="secrets">An enumerable of secrets to be masked. Secrets that are null or empty will be ignored.</param>
+        /// <param name="secrets">
+        ///     A list of secret substrings to be sanitized from the input string. Secrets that are null or empty
+        ///     will be ignored.
+        /// </param>
         /// <returns>
-        ///     The sanitized string with secrets masked, or <c>null</c> if the input was <c>null</c> or empty. If the input is
-        ///     empty, it will be returned as is.
+        ///     The sanitized string with secrets replaced, or <c>null</c> if the input string was <c>null</c> or empty, or if no
+        ///     valid secrets were provided. If the input string is shorter than the shortest valid secret, it will be returned
+        ///     unchanged.
         /// </returns>
         [return: NotNullIfNotNull(nameof(@string))]
         public string? SanitizeSecrets(List<string> secrets)
