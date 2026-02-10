@@ -31,7 +31,6 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
     /// <remarks>
     ///     This method formats log messages based on their level, with colors and prefixes. It filters out Trace and Debug
     ///     messages unless verbose logging is enabled. It also handles special formatting for process output and exceptions.
-    ///     Secrets are not masked here; the custom Spectre console output handles masking.
     /// </remarks>
     public void Log<TState>(
         LogLevel logLevel,
@@ -120,6 +119,9 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
 
         if (message is "(null)")
             return;
+
+        // If the message contains any secrets, we want to mask them
+        message = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(message) ?? message;
 
         message = message.EscapeMarkup();
 
