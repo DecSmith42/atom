@@ -1913,6 +1913,9 @@
       },
       {
         Name: SanitizeForLogging
+      },
+      {
+        Name: SanitizeSecrets
       }
     ]
   },

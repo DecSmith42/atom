@@ -91,5 +91,31 @@ public static class StringUtil
 
             return @string[..maxLength] + "...";
         }
+
+        /// <summary>
+        ///     Sanitizes a string by masking any occurrences of specified secrets with asterisks. The method handles secrets that
+        ///     may span across line boundaries and preserves whitespace.
+        /// </summary>
+        /// <param name="secrets">An enumerable of secrets to be masked. Secrets that are null or empty will be ignored.</param>
+        /// <returns>
+        ///     The sanitized string with secrets masked, or <c>null</c> if the input was <c>null</c> or empty. If the input is
+        ///     empty, it will be returned as is.
+        /// </returns>
+        [return: NotNullIfNotNull(nameof(@string))]
+        public string? SanitizeSecrets(List<string> secrets)
+        {
+            var validSecrets = secrets
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToList();
+
+            return @string is null or "" || validSecrets.Count is 0 || @string.Length < validSecrets.Min(s => s.Length)
+                ? @string
+                : validSecrets.Aggregate(@string,
+                    static (current, secret) => current.Replace(secret,
+                        secret.Length < 5
+                            ? new('*', secret.Length)
+                            : "*****",
+                        StringComparison.OrdinalIgnoreCase));
+        }
     }
 }

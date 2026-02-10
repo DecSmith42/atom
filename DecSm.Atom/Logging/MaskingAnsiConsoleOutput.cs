@@ -63,12 +63,7 @@ internal sealed class MaskingAnsiConsoleOutput : IAnsiConsoleOutput
         public override void Write(string? value)
         {
             if (value is { Length: > 0 })
-            {
-                var masker = ServiceStaticAccessor<IParamService>.Service;
-
-                if (masker is not null)
-                    value = masker.MaskMatchingSecrets(value);
-            }
+                value = ServiceStaticAccessor<IParamService>.Service?.MaskMatchingSecrets(value) ?? value;
 
             _innerWriter.Write(value);
         }
