@@ -2,11 +2,11 @@
 
 registries:
   registry-1:
-    type: nuget-feed
+    type: type1
     url: url1
     token: ${{token1}}
   registry-2:
-    type: nuget-feed
+    type: type2
     url: url2
     token: ${{token2}}
 

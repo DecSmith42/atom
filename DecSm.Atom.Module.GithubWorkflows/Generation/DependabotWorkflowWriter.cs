@@ -29,7 +29,7 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                 foreach (var registry in dependabot.Registries)
                     using (WriteSection($"{registry.Name}:"))
                     {
-                        WriteLine("type: nuget-feed");
+                        WriteLine($"type: {registry.Type}");
                         WriteLine($"url: {registry.Url}");
 
                         if (registry.Token is not null)
