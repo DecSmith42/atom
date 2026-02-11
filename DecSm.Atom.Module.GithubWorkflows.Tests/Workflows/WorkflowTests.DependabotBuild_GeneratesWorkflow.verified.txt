@@ -1,0 +1,35 @@
+﻿version: 2
+
+registries:
+  registry-1:
+    type: nuget-feed
+    url: url1
+    token: ${{token1}}
+  registry-2:
+    type: nuget-feed
+    url: url2
+    token: ${{token2}}
+
+updates:
+  - package-ecosystem: "update-1"
+    target-branch: "package-ecosystem-1"
+    directory: "directory-1"
+    registries:
+      - registry-1
+      - registry-2
+    groups:
+      group-1:
+        patterns:
+          - "pattern-1"
+          - "pattern-2"
+    schedule:
+      interval:
+        daily
+    open-pull-requests-limit: 1
+  - package-ecosystem: "update-2"
+    target-branch: "package-ecosystem-2"
+    directory: "directory-2"
+    schedule:
+      interval:
+        monthly
+    open-pull-requests-limit: 2

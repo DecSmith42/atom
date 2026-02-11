@@ -20,7 +20,7 @@ public sealed record DependabotUpdate(
     DependabotSchedule Schedule = DependabotSchedule.Weekly
 )
 {
-    public required IReadOnlyCollection<string> Registries { get; init; } = [];
+    public IReadOnlyCollection<string> Registries { get; init; } = [];
 
     public IReadOnlyCollection<DependabotUpdateGroup> Groups { get; init; } = [];
 }
