@@ -9,7 +9,14 @@ public sealed record DependabotOptions : IWorkflowOption
 }
 
 [PublicAPI]
-public sealed record DependabotRegistry(string Name, string Type, string Url, string? Token = null);
+public sealed record DependabotRegistry(string Name, string Type, string Url)
+{
+    public IGithubExpression? Username { get; init; }
+
+    public IGithubExpression? Password { get; init; }
+
+    public IGithubExpression? Token { get; init; }
+}
 
 [PublicAPI]
 public sealed record DependabotUpdate(

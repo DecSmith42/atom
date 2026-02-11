@@ -7,7 +7,16 @@ public partial class DependabotBuild : MinimalBuildDefinition, IGithubWorkflows
     [
         Github.DependabotWorkflow(new()
         {
-            Registries = [new("registry-1", "type1", "url1", "token1"), new("registry-2", "type2", "url2", "token2")],
+            Registries =
+            [
+                new("registry-1", "type1", "url1")
+                {
+                    Username = new LiteralExpression("username1"),
+                    Password = new LiteralExpression("secrets.PASSWORD").Expression,
+                    Token = new LiteralExpression("secrets.TOKEN").Expression,
+                },
+                new("registry-2", "type2", "url2"),
+            ],
             Updates =
             [
                 new("update-1", "package-ecosystem-1", "directory-1", 1, DependabotSchedule.Daily)

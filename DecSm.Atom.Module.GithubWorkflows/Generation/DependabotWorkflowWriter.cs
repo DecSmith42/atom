@@ -32,8 +32,14 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                         WriteLine($"type: {registry.Type}");
                         WriteLine($"url: {registry.Url}");
 
+                        if (registry.Username is not null)
+                            WriteLine($"username: {registry.Username}");
+
+                        if (registry.Password is not null)
+                            WriteLine($"password: {registry.Password}");
+
                         if (registry.Token is not null)
-                            WriteLine($"token: ${{{{{registry.Token}}}}}");
+                            WriteLine($"token: {registry.Token}");
                     }
             }
         }
