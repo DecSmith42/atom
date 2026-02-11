@@ -62,10 +62,15 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                             {
                                 foreach (var group in update.Groups)
                                     using (WriteSection($"{group.Name}:"))
-                                    using (WriteSection("patterns:"))
                                     {
-                                        foreach (var pattern in group.Patterns ?? [])
-                                            WriteLine($"- \"{pattern}\"");
+                                        if (group.Patterns is not { Count: > 0 })
+                                            continue;
+
+                                        using (WriteSection("patterns:"))
+                                        {
+                                            foreach (var pattern in group.Patterns)
+                                                WriteLine($"- \"{pattern}\"");
+                                        }
                                     }
                             }
 
