@@ -13,23 +13,33 @@ registries:
 
 updates:
   - package-ecosystem: "update-1"
-    target-branch: "package-ecosystem-1"
-    directory: "directory-1"
+    target-branch: 'package-ecosystem-1'
+    directory: 'directory-1'
     registries:
       - registry-1
       - registry-2
     groups:
       group-1:
         patterns:
-          - "pattern-1"
-          - "pattern-2"
+          - 'pattern-1'
+          - 'pattern-2'
+    allow:
+      - dependency-name: 'dependency-1'
+        versions:
+          - '1.0.0'
+          - '2.0.0'
+        update-types:
+          - 'version-update:semver-patch'
+          - 'version-update:semver-minor'
+    ignore:
+      - dependency-name: 'dependency-2'
     schedule:
       interval:
         daily
     open-pull-requests-limit: 1
   - package-ecosystem: "update-2"
-    target-branch: "package-ecosystem-2"
-    directory: "directory-2"
+    target-branch: 'package-ecosystem-2'
+    directory: 'directory-2'
     schedule:
       interval:
         monthly

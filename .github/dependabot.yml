@@ -7,14 +7,14 @@ registries:
 
 updates:
   - package-ecosystem: "nuget"
-    target-branch: "main"
-    directory: "/"
+    target-branch: 'main'
+    directory: '/'
     registries:
       - nuget
     groups:
       nuget-deps:
         patterns:
-          - "*"
+          - '*'
     schedule:
       interval:
         daily

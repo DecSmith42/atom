@@ -29,6 +29,15 @@ public partial class DependabotBuild : MinimalBuildDefinition, IGithubWorkflows
                             Patterns = ["pattern-1", "pattern-2"],
                         },
                     ],
+                    Allow =
+                    [
+                        new("dependency-1")
+                        {
+                            Versions = ["1.0.0", "2.0.0"],
+                            UpdateTypes = ["version-update:semver-patch", "version-update:semver-minor"],
+                        },
+                    ],
+                    Ignore = [new("dependency-2")],
                 },
                 new("update-2", "package-ecosystem-2", "directory-2", 2, DependabotSchedule.Monthly),
             ],

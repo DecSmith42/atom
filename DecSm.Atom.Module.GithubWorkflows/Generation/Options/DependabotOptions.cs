@@ -32,6 +32,10 @@ public sealed record DependabotUpdate(
     public IReadOnlyCollection<DependabotUpdateGroup> Groups { get; init; } = [];
 
     public IReadOnlyCollection<string> ExcludePaths { get; init; } = [];
+
+    public IReadOnlyCollection<DependabotDependency> Allow { get; init; } = [];
+
+    public IReadOnlyCollection<DependabotDependency> Ignore { get; init; } = [];
 }
 
 [PublicAPI]
@@ -46,6 +50,14 @@ public enum DependabotSchedule
     Daily,
     Weekly,
     Monthly,
+}
+
+[PublicAPI]
+public sealed record DependabotDependency(string DependencyName)
+{
+    public IReadOnlyCollection<string> Versions { get; init; } = [];
+
+    public IReadOnlyCollection<string> UpdateTypes { get; init; } = [];
 }
 
 [PublicAPI]

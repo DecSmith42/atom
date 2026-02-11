@@ -53,14 +53,14 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                 foreach (var update in dependabot.Updates)
                     using (WriteSection($"- package-ecosystem: \"{update.Ecosystem}\""))
                     {
-                        WriteLine($"target-branch: \"{update.TargetBranch}\"");
-                        WriteLine($"directory: \"{update.Directory}\"");
+                        WriteLine($"target-branch: '{update.TargetBranch}'");
+                        WriteLine($"directory: '{update.Directory}'");
 
                         if (update.ExcludePaths is { Count: > 0 })
                             using (WriteSection("exclude-paths:"))
                             {
                                 foreach (var excludePath in update.ExcludePaths)
-                                    WriteLine($"- \"{excludePath}\"");
+                                    WriteLine($"- '{excludePath}'");
                             }
 
                         if (update.Registries.Count > 0)
@@ -82,8 +82,52 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                                         using (WriteSection("patterns:"))
                                         {
                                             foreach (var pattern in group.Patterns)
-                                                WriteLine($"- \"{pattern}\"");
+                                                WriteLine($"- '{pattern}'");
                                         }
+                                    }
+                            }
+
+                        if (update.Allow is { Count: > 0 })
+                            using (WriteSection("allow:"))
+                            {
+                                foreach (var dependency in update.Allow)
+                                    using (WriteSection($"- dependency-name: '{dependency.DependencyName}'"))
+                                    {
+                                        if (dependency.Versions is { Count: > 0 })
+                                            using (WriteSection("versions:"))
+                                            {
+                                                foreach (var version in dependency.Versions)
+                                                    WriteLine($"- '{version}'");
+                                            }
+
+                                        if (dependency.UpdateTypes.Count > 0)
+                                            using (WriteSection("update-types:"))
+                                            {
+                                                foreach (var updateType in dependency.UpdateTypes)
+                                                    WriteLine($"- '{updateType}'");
+                                            }
+                                    }
+                            }
+
+                        if (update.Ignore is { Count: > 0 })
+                            using (WriteSection("ignore:"))
+                            {
+                                foreach (var dependency in update.Ignore)
+                                    using (WriteSection($"- dependency-name: '{dependency.DependencyName}'"))
+                                    {
+                                        if (dependency.Versions is { Count: > 0 })
+                                            using (WriteSection("versions:"))
+                                            {
+                                                foreach (var version in dependency.Versions)
+                                                    WriteLine($"- '{version}'");
+                                            }
+
+                                        if (dependency.UpdateTypes.Count > 0)
+                                            using (WriteSection("update-types:"))
+                                            {
+                                                foreach (var updateType in dependency.UpdateTypes)
+                                                    WriteLine($"- '{updateType}'");
+                                            }
                                     }
                             }
 
