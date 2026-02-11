@@ -23,6 +23,8 @@ public sealed record DependabotUpdate(
     public IReadOnlyCollection<string> Registries { get; init; } = [];
 
     public IReadOnlyCollection<DependabotUpdateGroup> Groups { get; init; } = [];
+
+    public IReadOnlyCollection<string> ExcludePaths { get; init; } = [];
 }
 
 [PublicAPI]
