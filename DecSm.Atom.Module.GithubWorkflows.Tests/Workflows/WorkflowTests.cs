@@ -8,6 +8,11 @@ public class WorkflowTests
             ? @"C:\Atom\.github\workflows\"
             : "/Atom/.github/workflows/";
 
+    private static string DependabotDir =>
+        Environment.OSVersion.Platform is PlatformID.Win32NT
+            ? @"C:\Atom\.github\"
+            : "/Atom/.github/";
+
     [Test]
     public void MinimalBuild_GeneratesNoWorkflows()
     {
@@ -432,6 +437,30 @@ public class WorkflowTests
             .ShouldBeTrue();
 
         var workflow = await fileSystem.File.ReadAllTextAsync($"{WorkflowDir}github-custom-step-workflow.yml");
+
+        await Verify(workflow);
+        await TestContext.Out.WriteAsync(workflow);
+    }
+
+    [Test]
+    public async Task DependabotBuild_GeneratesWorkflow()
+    {
+        // Arrange
+        var fileSystem = FileSystemUtils.DefaultMockFileSystem;
+
+        var build = CreateTestHost<DependabotBuild>(fileSystem: fileSystem, commandLineArgs: new(true, [new GenArg()]));
+
+        // Act
+        await build.RunAsync();
+
+        // Assert
+        fileSystem
+            .DirectoryInfo
+            .New(DependabotDir)
+            .Exists
+            .ShouldBeTrue();
+
+        var workflow = await fileSystem.File.ReadAllTextAsync($"{DependabotDir}dependabot.yml");
 
         await Verify(workflow);
         await TestContext.Out.WriteAsync(workflow);

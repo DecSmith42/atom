@@ -20,51 +20,61 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
 
         WriteLine("version: 2");
 
-        if (dependabot.Registries.Count == 0)
-            return;
-
-        WriteLine();
-
-        using (WriteSection("registries:"))
+        if (dependabot.Registries.Count > 0)
         {
-            foreach (var registry in dependabot.Registries)
-                using (WriteSection($"{registry.Name}:"))
-                {
-                    WriteLine("type: nuget-feed");
-                    WriteLine($"url: {registry.Url}");
+            WriteLine();
 
-                    if (registry.Token is not null)
-                        WriteLine($"token: ${{{{{registry.Token}}}}}");
-                }
+            using (WriteSection("registries:"))
+            {
+                foreach (var registry in dependabot.Registries)
+                    using (WriteSection($"{registry.Name}:"))
+                    {
+                        WriteLine($"type: {registry.Type}");
+                        WriteLine($"url: {registry.Url}");
+
+                        if (registry.Token is not null)
+                            WriteLine($"token: ${{{{{registry.Token}}}}}");
+                    }
+            }
         }
 
-        WriteLine();
-
-        using (WriteSection("updates:"))
+        if (dependabot.Updates.Count > 0)
         {
-            foreach (var update in dependabot.Updates)
-                using (WriteSection("- package-ecosystem: \"nuget\""))
-                {
-                    WriteLine($"target-branch: \"{update.TargetBranch}\"");
-                    WriteLine("directory: \"/\"");
+            WriteLine();
 
-                    if (dependabot.Registries.Count != 0)
+            using (WriteSection("updates:"))
+            {
+                foreach (var update in dependabot.Updates)
+                    using (WriteSection($"- package-ecosystem: \"{update.Ecosystem}\""))
                     {
-                        WriteLine("registries:");
+                        WriteLine($"target-branch: \"{update.TargetBranch}\"");
+                        WriteLine($"directory: \"{update.Directory}\"");
 
-                        foreach (var registry in dependabot.Registries)
-                            WriteLine($"  - {registry.Name}");
-                    }
+                        if (update.Registries.Count > 0)
+                            using (WriteSection("registries:"))
+                            {
+                                foreach (var registry in update.Registries)
+                                    WriteLine($"- {registry}");
+                            }
 
-                    using (WriteSection("groups:"))
-                    using (WriteSection("nuget-deps:"))
-                    using (WriteSection("patterns:"))
-                        WriteLine("- \"*\"");
+                        if (update.Groups.Count > 0)
+                            using (WriteSection("groups:"))
+                            {
+                                foreach (var group in update.Groups)
+                                    using (WriteSection($"{group.Name}:"))
+                                    {
+                                        if (group.Patterns is not { Count: > 0 })
+                                            continue;
 
-                    WriteLine($"open-pull-requests-limit: {update.OpenPullRequestsLimit}");
+                                        using (WriteSection("patterns:"))
+                                        {
+                                            foreach (var pattern in group.Patterns)
+                                                WriteLine($"- \"{pattern}\"");
+                                        }
+                                    }
+                            }
 
-                    using (WriteSection("schedule:"))
-                    {
+                        using (WriteSection("schedule:"))
                         using (WriteSection("interval:"))
                         {
                             WriteLine(update.Schedule switch
@@ -77,8 +87,10 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                                     $"Dependabot schedule '{update.Schedule}' is not supported."),
                             });
                         }
+
+                        WriteLine($"open-pull-requests-limit: {update.OpenPullRequestsLimit}");
                     }
-                }
+            }
         }
     }
 }
