@@ -50,6 +50,13 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                         WriteLine($"target-branch: \"{update.TargetBranch}\"");
                         WriteLine($"directory: \"{update.Directory}\"");
 
+                        if (update.ExcludePaths is { Count: > 0 })
+                            using (WriteSection("exclude-paths:"))
+                            {
+                                foreach (var excludePath in update.ExcludePaths)
+                                    WriteLine($"- \"{excludePath}\"");
+                            }
+
                         if (update.Registries.Count > 0)
                             using (WriteSection("registries:"))
                             {
