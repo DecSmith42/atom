@@ -38,6 +38,7 @@ public partial class DependabotBuild : MinimalBuildDefinition, IGithubWorkflows
                         },
                     ],
                     Ignore = [new("dependency-2")],
+                    VersioningStrategy = DependabotVersioningStrategy.Increase,
                 },
                 new("update-2", "package-ecosystem-2", "directory-2", 2, DependabotSchedule.Monthly),
             ],

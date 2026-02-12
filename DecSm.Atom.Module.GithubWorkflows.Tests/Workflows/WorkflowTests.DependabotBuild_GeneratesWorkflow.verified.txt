@@ -33,6 +33,7 @@ updates:
           - 'version-update:semver-minor'
     ignore:
       - dependency-name: 'dependency-2'
+    versioning-strategy: increase
     schedule:
       interval:
         daily

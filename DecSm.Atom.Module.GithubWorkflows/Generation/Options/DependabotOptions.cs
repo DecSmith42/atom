@@ -24,7 +24,8 @@ public sealed record DependabotUpdate(
     string TargetBranch = "main",
     string Directory = "/",
     int OpenPullRequestsLimit = 10,
-    DependabotSchedule Schedule = DependabotSchedule.Weekly
+    DependabotSchedule Schedule = DependabotSchedule.Weekly,
+    DependabotVersioningStrategy? VersioningStrategy = null
 )
 {
     public IReadOnlyCollection<string> Registries { get; init; } = [];
@@ -50,6 +51,16 @@ public enum DependabotSchedule
     Daily,
     Weekly,
     Monthly,
+}
+
+[PublicAPI]
+public enum DependabotVersioningStrategy
+{
+    Auto,
+    Increase,
+    IncreaseIfNecessary,
+    LockfileOnly,
+    Widen,
 }
 
 [PublicAPI]

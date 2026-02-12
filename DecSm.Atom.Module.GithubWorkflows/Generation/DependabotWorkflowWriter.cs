@@ -131,6 +131,19 @@ internal sealed class DependabotWorkflowWriter(IAtomFileSystem fileSystem, ILogg
                                     }
                             }
 
+                        if (update.VersioningStrategy is not null)
+                            WriteLine($"versioning-strategy: {update.VersioningStrategy switch
+                            {
+                                DependabotVersioningStrategy.Auto => "auto",
+                                DependabotVersioningStrategy.Increase => "increase",
+                                DependabotVersioningStrategy.IncreaseIfNecessary => "increase-if-necessary",
+                                DependabotVersioningStrategy.LockfileOnly => "lockfile-only",
+                                DependabotVersioningStrategy.Widen => "widen",
+                                _ => throw new ArgumentOutOfRangeException(nameof(workflow),
+                                    nameof(update.VersioningStrategy),
+                                    $"Dependabot versioning strategy '{update.VersioningStrategy}' is not supported."),
+                            }}");
+
                         using (WriteSection("schedule:"))
                         using (WriteSection("interval:"))
                         {
