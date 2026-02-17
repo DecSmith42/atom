@@ -7,9 +7,13 @@ public interface IApproveDependabotPr : IGithubHelper
     [ParamDefinition("pull-request-number", "The pull request number to approve.")]
     int PullRequestNumber => GetParam(() => PullRequestNumber);
 
+    [SecretDefinition("dependabot-enable-auto-merge-pat",
+        "A GitHub PAT with permissions to enable auto-merge on pull requests.")]
+    string? DependabotEnableAutoMergePat => GetParam(() => DependabotEnableAutoMergePat);
+
     Target ApproveDependabotPr =>
         t => t
-            .RequiresParam(nameof(GithubToken), nameof(PullRequestNumber))
+            .RequiresParam(nameof(PullRequestNumber), nameof(DependabotEnableAutoMergePat))
             .Executes(async cancellationToken =>
             {
                 var actor = Github.Variables.Actor;
@@ -34,7 +38,9 @@ public interface IApproveDependabotPr : IGithubHelper
                         $"Only pull requests from {DependabotActorName} can be auto-approved.");
 
                 var productHeader = new ProductHeaderValue("Atom");
-                var connection = new Connection(productHeader, new InMemoryCredentialStore(GithubToken));
+
+                var connection = new Connection(productHeader,
+                    new InMemoryCredentialStore(DependabotEnableAutoMergePat));
 
                 var prQuery = new Query()
                     .Repository(repo, owner)
