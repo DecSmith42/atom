@@ -10,6 +10,8 @@ namespace DecSm.Atom.Module.GithubWorkflows;
 [PublicAPI]
 public abstract record IGithubExpression
 {
+    public string Expression => $"${{{{ {Write()} }}}}";
+
     /// <summary>
     ///     Writes the expression to its GitHub Actions string representation.
     /// </summary>
@@ -19,8 +21,6 @@ public abstract record IGithubExpression
     /// <inheritdoc />
     public override string ToString() =>
         Write();
-
-    public string Expression => $"${{{{ {Write()} }}}}";
 
     /// <summary>
     ///     Implicitly converts an <see cref="IGithubExpression" /> to its string representation.

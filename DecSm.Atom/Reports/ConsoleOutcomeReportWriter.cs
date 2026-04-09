@@ -250,8 +250,7 @@ internal partial class ConsoleOutcomeReportWriter(
     /// </summary>
     private void Write(TableReportData reportData)
     {
-        var table = new Table()
-            .Border(TableBorder.Minimal);
+        var table = new Table().Border(TableBorder.Minimal);
 
         var columnCount = reportData
             .Rows
