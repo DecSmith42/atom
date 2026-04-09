@@ -42,11 +42,15 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
         if (!IsEnabled(logLevel))
             return;
 
-        if (logLevel is LogLevel.Debug or LogLevel.Trace && !LogOptions.IsVerboseEnabled)
-            return;
+        switch (logLevel)
+        {
+            case LogLevel.None:
+            case LogLevel.Debug or LogLevel.Trace when !LogOptions.IsVerboseEnabled:
+                return;
+        }
 
-        var levelText = string.Empty;
-        var levelColour = string.Empty;
+        string levelText;
+        string levelColour;
         var levelBackground = string.Empty;
         var messageStyle = string.Empty;
 
@@ -92,8 +96,6 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
                 break;
 
             case LogLevel.None:
-                break;
-
             default:
                 throw new UnreachableException();
         }
@@ -133,7 +135,9 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
                 : "dim";
 
             var columns = new Columns(new Text("                "),
-                new Markup($"[{messageStyle}]{message}[/]").LeftJustified()).Collapse();
+                new Markup(messageStyle is { Length: > 0 }
+                    ? $"[{messageStyle}]{message}[/]"
+                    : message).LeftJustified()).Collapse();
 
             ServiceStaticAccessor<IAnsiConsole>.Service?.Write(columns);
 
@@ -148,7 +152,9 @@ internal sealed partial class SpectreLogger(string categoryName, IExternalScopeP
             .AddRow($"[dim]{time:yy-MM-dd zzz}[/]",
                 $"[dim]{FormatCategoryName(categoryName.EscapeMarkup(), command)}:[/]")
             .AddRow($"[dim]{time:HH:mm:ss.fff}[/] [bold {levelColour}{levelBackground}]{levelText}[/]",
-                $"[{messageStyle}]{message}[/]")
+                messageStyle is { Length: > 0 }
+                    ? $"[{messageStyle}]{message}[/]"
+                    : message)
             .AddRow(string.Empty);
 
         if (exception is not null)

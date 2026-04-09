@@ -23,12 +23,11 @@ internal partial class ConsoleOutcomeReportWriter(
     public Task ReportRunOutcome(CancellationToken cancellationToken)
     {
         var table = new Table()
-            .LeftAligned()
             .HideHeaders()
             .Border(TableBorder.Minimal)
-            .AddColumn("Target")
-            .AddColumn("Outcome")
-            .AddColumn("Duration");
+            .AddColumn("Target", c => c.LeftAligned())
+            .AddColumn("Outcome", c => c.LeftAligned())
+            .AddColumn("Duration", c => c.LeftAligned());
 
         foreach (var state in buildModel
                      .TargetStates
@@ -203,9 +202,8 @@ internal partial class ConsoleOutcomeReportWriter(
             return;
 
         var table = new Table()
-            .Alignment(Justify.Left)
-            .AddColumn("Name")
-            .AddColumn("Path")
+            .AddColumn("Name", c => c.LeftAligned())
+            .AddColumn("Path", c => c.LeftAligned())
             .Border(TableBorder.Minimal);
 
         foreach (var artifact in reportData)
@@ -253,7 +251,6 @@ internal partial class ConsoleOutcomeReportWriter(
     private void Write(TableReportData reportData)
     {
         var table = new Table()
-            .Alignment(Justify.Left)
             .Border(TableBorder.Minimal);
 
         var columnCount = reportData
