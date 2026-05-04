@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class TransformFileScope | Atom </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class TransformFileScope | Atom ">
+      
+      <meta name="description" content="Provides disposable scopes for performing temporary, reversible transformations on a single file&#39;s content.">
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/DecSmith42/atom/new/main/apiSpec/new?filename=DecSm_Atom_FileSystem_TransformFileScope.md&amp;value=---%0Auid%3A%20DecSm.Atom.FileSystem.TransformFileScope%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Atom">
+            Atom
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DecSm.Atom.FileSystem.TransformFileScope">
+
+
+
+  <h1 id="DecSm_Atom_FileSystem_TransformFileScope" data-uid="DecSm.Atom.FileSystem.TransformFileScope" class="text-break">
+Class TransformFileScope  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L30"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DecSm.html">DecSm</a>.<a class="xref" href="DecSm.Atom.html">Atom</a>.<a class="xref" href="DecSm.Atom.FileSystem.html">FileSystem</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DecSm.Atom.FileSystem.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Provides disposable scopes for performing temporary, reversible transformations on a single
+file's content.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
+public sealed class TransformFileScope</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><span class="xref">object</span></div>
+      <div><span class="xref">TransformFileScope</span></div>
+    </dd>
+  </dl>
+
+
+
+
+
+
+  <h2 id="DecSm_Atom_FileSystem_TransformFileScope_examples">Examples</h2>
+  <pre><code class="lang-csharp">await using var scope = await TransformFileScope.CreateAsync(
+    myProjectFile,
+    content =&gt; content.Replace("1.0.0", "2.0.0"));
+// File now contains "2.0.0". Original is restored when scope is disposed.</code></pre>
+
+
+  <h2 id="DecSm_Atom_FileSystem_TransformFileScope_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>
+    On creation the file's current content is captured.  The supplied transform is applied and
+    written back immediately.  On disposal the original content is restored, or — if the file
+    did not exist before the scope was opened — the file is deleted.
+</p>
+<p>
+    This is useful during an operation when a file (e.g. a project file or a config file) needs to
+    be temporarily modified for a specific step without permanently altering it.
+</p>
+<p>
+    Call <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html#DecSm_Atom_FileSystem_TransformFileScope_CancelRestore">CancelRestore()</a> before disposing to <em>commit</em> the transformation
+    instead of rolling it back.
+</p>
+</div>
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_Add_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Add*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_Add_System_Func_System_String_System_String__" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Add(System.Func{System.String,System.String})">
+  Add(Func&lt;string, string&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L244"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Applies an additional transformation to the file within an already-open scope,
+using synchronous I/O.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TransformFileScope Add(Func&lt;string, string&gt; transform)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>transform</code> <span class="xref">Func</span>&lt;<span class="xref">string</span>, <span class="xref">string</span>&gt;</dt>
+    <dd><p>A function that receives the file's <em>current</em> (already-transformed) content and
+returns the next content to write.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a></dt>
+    <dd><p>The same <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a> instance, for fluent chaining.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DecSm_Atom_FileSystem_TransformFileScope_Add_System_Func_System_String_System_String___remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>The scope still restores to the <em>original</em> content (captured at creation time),
+not the content at the point of the last <code>Add</code> call.  Multiple calls build up
+transformations; disposal always unwinds them all at once.</p>
+</div>
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><span class="xref">ObjectDisposedException</span></dt>
+    <dd><p>Thrown if the scope has already been disposed.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_AddAsync_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.AddAsync*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_AddAsync_System_Func_System_String_System_String__System_Threading_CancellationToken_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.AddAsync(System.Func{System.String,System.String},System.Threading.CancellationToken)">
+  AddAsync(Func&lt;string, string&gt;, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L175"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Applies an additional transformation to the file within an already-open scope,
+using asynchronous I/O.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;TransformFileScope&gt; AddAsync(Func&lt;string, string&gt; transform, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>transform</code> <span class="xref">Func</span>&lt;<span class="xref">string</span>, <span class="xref">string</span>&gt;</dt>
+    <dd><p>A function that receives the file's <em>current</em> (already-transformed) content and
+returns the next content to write.</p>
+</dd>
+    <dt><code>cancellationToken</code> <span class="xref">CancellationToken</span></dt>
+    <dd><p>A cancellation token.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">Task</span>&lt;<a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a>&gt;</dt>
+    <dd><p>The same <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a> instance, for fluent chaining.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DecSm_Atom_FileSystem_TransformFileScope_AddAsync_System_Func_System_String_System_String__System_Threading_CancellationToken__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>The scope still restores to the <em>original</em> content (captured at creation time),
+not the content at the point of the last <code>Add</code> call.  Multiple calls build up
+transformations; disposal always unwinds them all at once.</p>
+</div>
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><span class="xref">ObjectDisposedException</span></dt>
+    <dd><p>Thrown if the scope has already been disposed.</p>
+</dd>
+    <dt><span class="xref">OperationCanceledException</span></dt>
+    <dd><p>Thrown (and the file restored) if <code class="paramref">cancellationToken</code> is cancelled during
+the write.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_CancelRestore_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.CancelRestore*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_CancelRestore" data-uid="DecSm.Atom.FileSystem.TransformFileScope.CancelRestore">
+  CancelRestore()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L265"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Prevents the file from being restored to its original content when the scope is disposed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CancelRestore()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DecSm_Atom_FileSystem_TransformFileScope_CancelRestore_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>Call this when the transformation should be made permanent — for example after a build
+step has successfully consumed the transformed file and the change no longer needs to be
+rolled back.  Once called it cannot be undone.</p>
+</div>
+
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_Create_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Create*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_Create_DecSm_Atom_FileSystem_RootedPath_System_Func_System_String_System_String__" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Create(DecSm.Atom.FileSystem.RootedPath,System.Func{System.String,System.String})">
+  Create(RootedPath, Func&lt;string, string&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L211"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a>, applying a synchronous transformation
+to the target file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static TransformFileScope Create(RootedPath file, Func&lt;string, string&gt; transform)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>file</code> <a class="xref" href="DecSm.Atom.FileSystem.RootedPath.html">RootedPath</a></dt>
+    <dd><p>The file to transform.</p>
+</dd>
+    <dt><code>transform</code> <span class="xref">Func</span>&lt;<span class="xref">string</span>, <span class="xref">string</span>&gt;</dt>
+    <dd><p>A function that receives the file's current content (or an empty string if the file does
+not yet exist) and returns the new content to write.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a></dt>
+    <dd><p>A <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a> that will restore the file when disposed.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_CreateAsync_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.CreateAsync*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_CreateAsync_DecSm_Atom_FileSystem_RootedPath_System_Func_System_String_System_String__System_Threading_CancellationToken_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.CreateAsync(DecSm.Atom.FileSystem.RootedPath,System.Func{System.String,System.String},System.Threading.CancellationToken)">
+  CreateAsync(RootedPath, Func&lt;string, string&gt;, CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L121"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates a new <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a>, applying an asynchronous transformation
+to the target file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Task&lt;TransformFileScope&gt; CreateAsync(RootedPath file, Func&lt;string, string&gt; transform, CancellationToken cancellationToken = default)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>file</code> <a class="xref" href="DecSm.Atom.FileSystem.RootedPath.html">RootedPath</a></dt>
+    <dd><p>The file to transform.</p>
+</dd>
+    <dt><code>transform</code> <span class="xref">Func</span>&lt;<span class="xref">string</span>, <span class="xref">string</span>&gt;</dt>
+    <dd><p>A function that receives the file's current content (or an empty string if the file does
+not yet exist) and returns the new content to write.</p>
+</dd>
+    <dt><code>cancellationToken</code> <span class="xref">CancellationToken</span></dt>
+    <dd><p>A cancellation token.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">Task</span>&lt;<a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a>&gt;</dt>
+    <dd><p>A <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html">TransformFileScope</a> that will restore the file when disposed.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><span class="xref">OperationCanceledException</span></dt>
+    <dd><p>Thrown (and the file restored) if <code class="paramref">cancellationToken</code> is cancelled while
+the transformed content is being written.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_Dispose_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Dispose*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_Dispose" data-uid="DecSm.Atom.FileSystem.TransformFileScope.Dispose">
+  Dispose()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L88"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Synchronously disposes the scope and restores the file to its original state.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DecSm_Atom_FileSystem_TransformFileScope_Dispose_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><ul><li>If <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html#DecSm_Atom_FileSystem_TransformFileScope_CancelRestore">CancelRestore()</a> was called, the file is left as-is.</li><li>If the file did not exist when the scope was created, it is deleted.</li><li>Otherwise the original content is written back.</li><li>Calling this method more than once is safe — subsequent calls are no-ops.</li></ul>
+<p>No cancellation token is accepted here: we prefer to wait for the write to complete so
+the file is not left in a partially-written state.</p>
+</div>
+
+
+
+
+  <a id="DecSm_Atom_FileSystem_TransformFileScope_DisposeAsync_" data-uid="DecSm.Atom.FileSystem.TransformFileScope.DisposeAsync*"></a>
+
+  <h3 id="DecSm_Atom_FileSystem_TransformFileScope_DisposeAsync" data-uid="DecSm.Atom.FileSystem.TransformFileScope.DisposeAsync">
+  DisposeAsync()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Asynchronously disposes the scope and restores the file to its original state.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">ValueTask</span></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DecSm_Atom_FileSystem_TransformFileScope_DisposeAsync_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><ul><li>If <a class="xref" href="DecSm.Atom.FileSystem.TransformFileScope.html#DecSm_Atom_FileSystem_TransformFileScope_CancelRestore">CancelRestore()</a> was called, the file is left as-is.</li><li>If the file did not exist when the scope was created, it is deleted.</li><li>Otherwise the original content is written back.</li><li>Calling this method more than once is safe — subsequent calls are no-ops.</li></ul>
+<p>No cancellation token is accepted here: we prefer to wait for the write to complete so
+the file is not left in a partially-written state.</p>
+</div>
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/DecSmith42/atom/blob/feature/v-next/src/DecSm.Atom.FileSystem/TransformFileScope.cs/#L30" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Atom — Build Automation for .NET
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

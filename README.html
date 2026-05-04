@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Atom | Atom </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Atom | Atom ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/DecSmith42/atom/blob/main/README.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="Atom">
+            Atom
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="atom">Atom</h1>
+
+<p><a href="https://github.com/DecSmith42/atom/actions/workflows/Validate.yml"><img src="https://github.com/DecSmith42/atom/actions/workflows/Validate.yml/badge.svg" alt="Validate"></a>
+<a href="https://github.com/DecSmith42/atom/actions/workflows/Build.yml"><img src="https://github.com/DecSmith42/atom/actions/workflows/Build.yml/badge.svg" alt="Build"></a>
+<a href="https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates"><img src="https://github.com/DecSmith42/atom/actions/workflows/dependabot/dependabot-updates/badge.svg" alt="Dependabot Updates"></a></p>
+<p>Atom is an opinionated, type-safe build automation framework for .NET. It enables you to define your build logic in C#,
+debug it like standard code, and automatically generate CI/CD configuration files for GitHub Actions and Azure DevOps.</p>
+<h2 id="why-atom">Why Atom?</h2>
+<ul>
+<li><strong>Zero Context Switching</strong>: Write build logic in C# alongside your application code.</li>
+<li><strong>Intellisense &amp; Debugging</strong>: Step through your build process using your IDE.</li>
+<li><strong>CI/CD Agnostic</strong>: Define logic once; Atom generates the YAML for GitHub and Azure DevOps.</li>
+<li><strong>Modular</strong>: Pull in capabilities via NuGet packages (GitVersion, Azure KeyVault, etc.).</li>
+<li><strong>Source Generators</strong>: Reduces boilerplate by automatically discovering targets and parameters.</li>
+</ul>
+<h2 id="basic-example">Basic Example</h2>
+<ol>
+<li><p>Create a new file <code>Build.cs</code></p>
+<pre><code class="lang-csharp">#:package DecSm.Atom@2.*
+
+[BuildDefinition]
+[GenerateEntryPoint]
+partial class Build : BuildDefinition
+{
+    Target SayHello =&gt; t =&gt; t
+        .Executes(() =&gt; Logger.LogInformation(&quot;Hello, World!&quot;));
+}
+</code></pre>
+</li>
+<li><p>Execute <code>dotnet run Build.cs SayHello</code></p>
+<pre><code>25-12-16 +10:00  DecSm.Atom.Build.BuildExecutor:
+22:46:01.754 INF Executing build
+
+SayHello
+
+25-12-16 +10:00  SayHello | Build:
+22:46:01.790 INF Hello, World!    
+
+Build Summary
+
+  SayHello │ Succeeded │ &lt;0.01s
+</code></pre>
+</li>
+</ol>
+<h2 id="documentation">Documentation</h2>
+<h3 id="getting-started">Getting Started</h3>
+<ul>
+<li><a href="docs/getting-started/introduction.html">Introduction</a> — What Atom is and why you'd use it</li>
+<li><a href="docs/getting-started/your-first-build.html">Your First Build</a> — Create a minimal build and run it</li>
+<li><a href="docs/getting-started/base-vs-workflow-build.html">Base vs Workflow Build</a> — <code>BuildDefinition</code> vs
+<code>WorkflowBuildDefinition</code></li>
+</ul>
+<h3 id="core-concepts">Core Concepts</h3>
+<ul>
+<li><a href="docs/core-concepts/build-definitions.html">Build Definitions</a> — The <code>[BuildDefinition]</code> attribute and source generators</li>
+<li><a href="docs/core-concepts/targets.html">Targets</a> — Defining targets with the fluent <code>TargetDefinition</code> API</li>
+<li><a href="docs/core-concepts/parameters.html">Parameters</a> — Declaring, requiring, and resolving parameters</li>
+<li><a href="docs/core-concepts/secrets.html">Secrets</a> — Secure parameter handling with <code>ISecretsProvider</code></li>
+<li><a href="docs/core-concepts/artifacts.html">Artifacts</a> — Producing and consuming build artifacts</li>
+<li><a href="docs/core-concepts/variables.html">Variables</a> — Sharing data between targets with workflow variables</li>
+<li><a href="docs/core-concepts/file-system.html">File System</a> — <code>IAtomFileSystem</code>, <code>RootedPath</code>, and path providers</li>
+<li><a href="docs/core-concepts/process-runner.html">Process Runner</a> — Executing external processes</li>
+<li><a href="docs/core-concepts/build-info.html">Build Info</a> — Build ID, version, and timestamp providers</li>
+<li><a href="docs/core-concepts/build-options.html">Build Options</a> — Configuring build behaviour with <code>IBuildOption</code></li>
+<li><a href="docs/core-concepts/hosting.html">Hosting</a> — <code>AtomHost</code>, <code>[GenerateEntryPoint]</code>, and host configuration</li>
+<li><a href="docs/core-concepts/lifecycle-hooks.html">Lifecycle Hooks</a> — <code>IAtomLifecycleHook</code> for pre/post-build logic</li>
+<li><a href="docs/core-concepts/logging-and-reports.html">Logging &amp; Reports</a> — Spectre console output and report data</li>
+<li><a href="docs/core-concepts/file-transformations.html">File Transformations</a> — Temporary, reversible file edits with
+<code>TransformFileScope</code></li>
+</ul>
+<h3 id="workflows">Workflows</h3>
+<ul>
+<li><a href="docs/workflows/overview.html">Overview</a> — What workflows add on top of a base build</li>
+<li><a href="docs/workflows/workflow-definitions.html">Workflow Definitions</a> — <code>WorkflowDefinition</code>, targets, and types</li>
+<li><a href="docs/workflows/triggers.html">Triggers</a> — Push, pull request, and manual triggers</li>
+<li><a href="docs/workflows/workflow-options.html">Workflow Options</a> — Checkout, deployment, conditions, and more</li>
+<li><a href="docs/workflows/variables-in-workflows.html">Variables in Workflows</a> — Cross-job data sharing</li>
+<li><a href="docs/workflows/debugging-workflows.html">Debugging Workflows</a> — Local workflow simulation</li>
+</ul>
+<h3 id="modules">Modules</h3>
+<ul>
+<li><a href="docs/modules/overview.html">Overview</a> — What a module is and how to add one</li>
+<li><a href="docs/modules/dotnet.html">.NET</a> — <code>DecSm.Atom.Module.Dotnet</code></li>
+<li><a href="docs/modules/github-workflows.html">GitHub Workflows</a> — <code>DecSm.Atom.Module.GithubWorkflows</code></li>
+<li><a href="docs/modules/devops-workflows.html">DevOps Workflows</a> — <code>DecSm.Atom.Module.DevopsWorkflows</code></li>
+<li><a href="docs/modules/azure-key-vault.html">Azure Key Vault</a> — <code>DecSm.Atom.Module.AzureKeyVault</code></li>
+<li><a href="docs/modules/azure-storage.html">Azure Storage</a> — <code>DecSm.Atom.Module.AzureStorage</code></li>
+<li><a href="docs/modules/git-version.html">GitVersion</a> — <code>DecSm.Atom.Module.GitVersion</code></li>
+</ul>
+<h3 id="built-in-targets">Built-in Targets</h3>
+<ul>
+<li><a href="docs/built-in-targets/setup-build-info.html">SetupBuildInfo</a> — Initialises build ID, version, and timestamp</li>
+<li><a href="docs/built-in-targets/validate-build.html">ValidateBuild</a> — Checks the build for common issues</li>
+<li><a href="docs/built-in-targets/generate-workflow-files.html">GenerateWorkflowFiles</a> — Generates CI/CD YAML files</li>
+</ul>
+<h3 id="developer-guide">Developer Guide</h3>
+<ul>
+<li><a href="docs/developer-guide/writing-a-module.html">Writing a Module</a> — Creating a reusable Atom module NuGet package</li>
+<li><a href="docs/developer-guide/custom-providers.html">Custom Providers</a> — Implementing <code>IArtifactProvider</code>, <code>ISecretsProvider</code>,
+and more</li>
+<li><a href="docs/developer-guide/source-generators.html">Source Generators</a> — How the Atom analysers and source generators work</li>
+<li><a href="docs/developer-guide/testing.html">Testing</a> — Using <code>DecSm.Atom.TestUtils</code></li>
+</ul>
+<h3 id="reference">Reference</h3>
+<ul>
+<li><a href="docs/reference/cli.html">CLI</a> — Command-line arguments and the Atom global tool</li>
+<li><a href="api/index.html">API Reference</a> — Auto-generated API documentation (via DocFX)</li>
+</ul>
+<h2 id="ai-disclaimer">AI Disclaimer</h2>
+<p>The Atom libraries are human-made, however GitHub Copilot completions have been used on a superficial level.</p>
+<p>Generative AI was also used to assist in writing tests and documentation.</p>
+<h2 id="license">License</h2>
+<p>Atom is released under the <a href="LICENSE.txt">MIT License</a>.</p>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/DecSmith42/atom/blob/main/README.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Atom — Build Automation for .NET
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
