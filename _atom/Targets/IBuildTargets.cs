@@ -4,7 +4,14 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
 {
     static readonly string[] ProjectsToPack =
     [
-        Projects.DecSm_Atom.Name,
+        Projects.DecSm_Atom_Build.Name,
+        Projects.DecSm_Atom_FileSystem.Name,
+        Projects.DecSm_Atom_Process.Name,
+        Projects.DecSm_Atom_SemanticVersion.Name,
+        Projects.DecSm_Atom_Workflows.Name,
+        Projects.DecSm_StructuredText.Name,
+        Projects.DecSm_StructuredText_AzureDevopsPipelines.Name,
+        Projects.DecSm_StructuredText_GithubActions.Name,
         Projects.DecSm_Atom_Module_AzureKeyVault.Name,
         Projects.DecSm_Atom_Module_AzureStorage.Name,
         Projects.DecSm_Atom_Module_DevopsWorkflows.Name,
@@ -33,7 +40,7 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
 
                 Logger.LogInformation("Packing AOT Atom tool for runtime {RuntimeIdentifier}", runtimeIdentifier);
 
-                await DotnetPackAndStage(FileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
+                await DotnetPackAndStage(AtomFileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
                     new()
                     {
                         PackOptions = new()
@@ -51,7 +58,7 @@ internal interface IBuildTargets : IDotnetPackHelper, IDotnetPublishHelper
                 {
                     Logger.LogInformation("Packing Atom tool for non-native AOT");
 
-                    await DotnetPackAndStage(FileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
+                    await DotnetPackAndStage(AtomFileSystem.GetPath<Projects.DecSm_Atom_Tool>(),
                         new()
                         {
                             ClearPublishDirectory = false,
